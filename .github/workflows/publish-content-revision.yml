@@ -1,0 +1,32 @@
+name: Publish content revision
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request web content synchronization
+        env:
+          DISPATCH_TOKEN: ${{ secrets.QTSURFER_WEB_DISPATCH_TOKEN }}
+          CONTENT_COMMIT: ${{ github.sha }}
+        run: |
+          if [ -z "$DISPATCH_TOKEN" ]; then
+            echo "Missing QTSURFER_WEB_DISPATCH_TOKEN repository secret." >&2
+            exit 1
+          fi
+
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $DISPATCH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2026-03-10' \
+            --url 'https://api.github.com/repos/mrmx/qts-web/dispatches' \
+            --data "{\"event_type\":\"content-updated\",\"client_payload\":{\"source_repository\":\"QTSurfer/qtsurfer-content\",\"content_commit\":\"$CONTENT_COMMIT\"}}"

@@ -34,6 +34,14 @@ The web application consumes this repository as a synchronized, versioned conten
 `content/repository.json` file also provides the repository identity used by the website's page-edit
 links.
 
+## Publishing automation
+
+Merging a change to `content/` on `main` sends its immutable commit SHA to the web repository, which
+validates, builds, and commits the resulting mirror. Configure the `QTSURFER_WEB_DISPATCH_TOKEN`
+repository secret with a fine-grained token that can dispatch to `mrmx/qts-web`; grant it access only to
+that repository with `Contents: write`. The workflow deliberately does not dispatch README, license, or
+agent-instruction-only changes.
+
 ## Licensing
 
 Documentation and editorial content are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

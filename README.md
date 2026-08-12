@@ -30,9 +30,9 @@ slug across locales, and keep code identifiers and API symbols unchanged when tr
 Some developer pages are derived from upstream technical sources. Their frontmatter records the source
 repository, path, and commit; update those fields only when the upstream source actually changes.
 
-After a content pull request is merged, run `bun run docs:sync-content` in the QTSurfer web repository.
-That command records the exact source commit and updates the web repository's checked-in mirror. The
-website's “Edit this page” links use `content/repository.json` and the original content path.
+The web application consumes this repository as a synchronized, versioned content source. Its
+`content/repository.json` file also provides the repository identity used by the website's page-edit
+links.
 
 ## Licensing
 

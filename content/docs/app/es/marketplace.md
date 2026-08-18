@@ -2,7 +2,7 @@
 title: Mercado
 description: Descubre estrategias compartidas por la comunidad y aprende a publicar la tuya.
 order: 5
-lastUpdated: '2026-08-18T18:27:59Z'
+lastUpdated: '2026-08-18T18:44:33Z'
 ---
 
 El Mercado es donde las estrategias se mueven entre cuentas: descubre lo que otros

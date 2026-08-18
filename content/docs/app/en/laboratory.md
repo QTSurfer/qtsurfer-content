@@ -2,7 +2,7 @@
 title: Laboratory
 description: A visual sandbox to iterate on strategy logic before it becomes code.
 order: 4
-lastUpdated: '2026-08-18T18:27:59Z'
+lastUpdated: '2026-08-18T18:44:33Z'
 ---
 
 Laboratory is where you experiment before committing to a written strategy. Instead of

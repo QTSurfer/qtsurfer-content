@@ -2,7 +2,7 @@
 title: Marketplace
 description: Discover strategies shared by the community, and how to publish your own.
 order: 5
-lastUpdated: '2026-08-18T18:27:59Z'
+lastUpdated: '2026-08-18T18:44:33Z'
 ---
 
 The Marketplace is where strategies move between accounts: discover what other users have

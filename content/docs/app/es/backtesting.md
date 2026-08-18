@@ -2,7 +2,7 @@
 title: Backtesting
 description: Backtests de mercado vs. simulados, y cómo crear el primero.
 order: 3
-lastUpdated: '2026-08-18T18:27:59Z'
+lastUpdated: '2026-08-18T18:44:33Z'
 ---
 
 Un backtest corre una revisión de estrategia contra datos históricos e informa cómo

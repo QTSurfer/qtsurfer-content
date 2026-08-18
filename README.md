@@ -25,9 +25,9 @@ locale before using it. Spanish content under `es` must use Spanish from Spain a
 ## Editing a page
 
 Edit the Markdown file in a branch and open a pull request. Keep frontmatter valid, preserve the page
-slug across locales, and keep code identifiers and API symbols unchanged when translating prose. Every
-page has a `lastUpdated` ISO date (`YYYY-MM-DD`) taken from the latest commit that changed that file;
-refresh it when you update the page.
+slug across locales, and keep code identifiers and API symbols unchanged when translating prose. The
+publishing workflow refreshes each changed page's `lastUpdated` ISO 8601 timestamp automatically from
+the commit that changed it; do not edit that field by hand.
 
 Some developer pages are derived from upstream technical sources. Their frontmatter records the source
 repository, path, and commit; update those fields only when the upstream source actually changes.

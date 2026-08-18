@@ -2,7 +2,7 @@
 title: Getting started
 description: What you see the moment you sign in, and where to go next.
 order: 1
-lastUpdated: '2026-08-18'
+lastUpdated: '2026-08-18T20:02:23+02:00'
 ---
 
 Signing in takes you straight to the dashboard (`/`). It's a single screen that answers

@@ -2,7 +2,7 @@
 title: Clientes y SDKs
 description: Elige entre los SDKs de flujo y los clientes API de bajo nivel de QTSurfer.
 order: 5
-lastUpdated: '2026-08-12'
+lastUpdated: '2026-08-18T20:02:23+02:00'
 ---
 
 QTSurfer ofrece SDKs orientados a los flujos habituales y clientes de bajo nivel que siguen de cerca

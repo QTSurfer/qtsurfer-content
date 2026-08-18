@@ -2,6 +2,7 @@
 title: Backtesting
 description: Market vs. simulated backtests, and how to create your first one.
 order: 3
+lastUpdated: '2026-08-12'
 ---
 
 A backtest runs a strategy revision against historical data and reports how it would have

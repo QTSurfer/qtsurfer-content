@@ -16,8 +16,9 @@ English is the source language. Spanish content under `es` must use Spanish from
 “elegí”, “podés”, or “volvé”.
 
 Keep the same slug across translations. Preserve code, identifiers, package names, API symbols, and
-source-provenance frontmatter when translating. A missing translation is preferable to a partial or
-stale one because the web application exposes its English fallback visibly.
+source-provenance frontmatter when translating. Every page must declare `lastUpdated` as an ISO date
+(`YYYY-MM-DD`) based on the latest committed change to that file. A missing translation is preferable to
+a partial or stale one because the web application exposes its English fallback visibly.
 
 Pages derived from `QTSurfer/strategy-skills` must retain their exact `upstreamRepository`,
 `upstreamCommit`, and `upstreamPath` values. Do not hand-edit generated English pages; update them with

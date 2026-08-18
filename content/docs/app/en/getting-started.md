@@ -5,13 +5,13 @@ order: 1
 ---
 
 Signing in takes you straight to the dashboard (`/`). It's a single screen that answers
-three questions: what's in your workspace, what the market is doing right now, and what
+three questions: what's in your platform, what the market is doing right now, and what
 your best results look like so far. The first time you land here, a guided tour (the
 **Show guide** button) walks through the same sections below, anchored to the actual UI.
 
 ## The summary row
 
-Five cards summarize your workspace at a glance:
+Five cards summarize your platform at a glance:
 
 - **Exchanges** — how many exchange connections are active. Open it to inspect them.
 - **Assets** — a shortcut into the asset catalog, the instruments you can analyze.

@@ -12,10 +12,10 @@ backtests, o publica una de tus estrategias para que otros la encuentren.
 
 1. Recorre el catálogo y abre una publicación para evaluarla.
 2. **Publicaciones gratuitas** — haz clic en **Usar estrategia** para añadirla
-   directamente a tu espacio de trabajo.
+   directamente a tu plataforma.
 3. **Publicaciones premium** — requieren pago antes de que la estrategia se copie a tu
-   espacio de trabajo y puedas ejecutar backtests con ella.
-4. Una vez que está en tu espacio de trabajo, adapta parámetros, activos y fechas y ejecuta
+   plataforma y puedas ejecutar backtests con ella.
+4. Una vez que está en tu plataforma, adapta parámetros, activos y fechas y ejecuta
    tu propio [backtest](/docs/app/backtesting) con ella, igual que con cualquier estrategia
    que hayas escrito tú.
 
@@ -27,7 +27,7 @@ editar el código depende de la **exposición** de la publicación (ver abajo).
 
 1. Primero, [crea la estrategia](/docs/app/strategies) — un título claro y el código
    generado y compilado a través del editor de estrategias.
-2. Una vez que existe en tu espacio de trabajo, abre **Compartir** en la revisión que
+2. Una vez que existe en tu plataforma, abre **Compartir** en la revisión que
    quieres publicar (desde el listado de estrategias o desde la estrategia misma).
 3. En la pantalla de compartir, elige:
    - **Revisión** — exactamente cuál se publica; publicar una revisión posterior no cambia

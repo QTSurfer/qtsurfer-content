@@ -5,14 +5,14 @@ order: 1
 ---
 
 Al iniciar sesión llegas directamente al dashboard (`/`). Es una sola pantalla que responde tres
-preguntas: qué hay en tu espacio de trabajo, qué está haciendo el mercado ahora mismo, y
+preguntas: qué hay en tu plataforma, qué está haciendo el mercado ahora mismo, y
 cómo se ven tus mejores resultados hasta el momento. La primera vez que llegas aquí, una
 guía visual (el botón **Mostrar guía**) recorre estas mismas secciones señalando la interfaz
 real.
 
 ## La fila de resumen
 
-Cinco tarjetas resumen tu espacio de trabajo de un vistazo:
+Cinco tarjetas resumen tu plataforma de un vistazo:
 
 - **Exchanges** — cuántas conexiones de exchange están activas. Puedes abrirla para
   inspeccionarlas.

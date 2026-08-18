@@ -17,9 +17,9 @@ English is the source language. Spanish content under `es` must use Spanish from
 
 Keep the same slug across translations. Preserve code, identifiers, package names, API symbols, and
 source-provenance frontmatter when translating. `scripts/refresh-last-updated.ts` owns each page's
-`lastUpdated` ISO 8601 timestamp and the publishing workflow refreshes it automatically from the commit
-that changed the Markdown file. A missing translation is preferable to a partial or stale one because
-the web application exposes its English fallback visibly.
+`lastUpdated` UTC ISO 8601 timestamp and the publishing workflow refreshes it automatically from the
+commit that changed the Markdown file. A missing translation is preferable to a partial or stale one
+because the web application exposes its English fallback visibly.
 
 Pages derived from `QTSurfer/strategy-skills` must retain their exact `upstreamRepository`,
 `upstreamCommit`, and `upstreamPath` values. Do not hand-edit generated English pages; update them with

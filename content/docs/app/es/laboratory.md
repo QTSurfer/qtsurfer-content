@@ -2,7 +2,7 @@
 title: Laboratorio
 description: Un sandbox visual para iterar la lógica de una estrategia antes de que sea código.
 order: 4
-lastUpdated: '2026-08-18T20:27:48+02:00'
+lastUpdated: '2026-08-18T18:27:59Z'
 ---
 
 Laboratorio es donde experimentas antes de comprometerte con una estrategia escrita. En

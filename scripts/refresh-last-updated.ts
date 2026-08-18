@@ -88,6 +88,15 @@ function refreshLastUpdated(
   return `${frontmatter[1]}${metadata}${frontmatter[3]}${markdown.slice(frontmatter[0].length)}`;
 }
 
+function asUtcTimestamp(timestamp: string, path: string): string {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Invalid Git timestamp for ${path}: ${timestamp}`);
+  }
+
+  return date.toISOString().replace(".000Z", "Z");
+}
+
 async function main(): Promise<void> {
   const documentPaths = allDocuments
     ? listMarkdownFiles(docsRoot).map((path) =>
@@ -113,14 +122,15 @@ async function main(): Promise<void> {
         `Cannot determine the last update timestamp for ${documentPath}`,
       );
 
+    const utcTimestamp = asUtcTimestamp(lastUpdated, documentPath);
     const absolutePath = join(repositoryRoot, documentPath);
     const updated = refreshLastUpdated(
       readFileSync(absolutePath, "utf8"),
-      lastUpdated,
+      utcTimestamp,
       documentPath,
     );
     writeAtomically(absolutePath, updated);
-    console.log(`Updated ${documentPath} at ${lastUpdated}`);
+    console.log(`Updated ${documentPath} at ${utcTimestamp}`);
   }
 }
 

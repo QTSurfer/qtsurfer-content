@@ -2,7 +2,7 @@
 title: Primeros pasos
 description: Qué ves al iniciar sesión y hacia dónde ir después.
 order: 1
-lastUpdated: '2026-08-18T20:27:48+02:00'
+lastUpdated: '2026-08-18T18:27:59Z'
 ---
 
 Al iniciar sesión llegas directamente al dashboard (`/`). Es una sola pantalla que responde tres

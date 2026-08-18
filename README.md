@@ -26,8 +26,8 @@ locale before using it. Spanish content under `es` must use Spanish from Spain a
 
 Edit the Markdown file in a branch and open a pull request. Keep frontmatter valid, preserve the page
 slug across locales, and keep code identifiers and API symbols unchanged when translating prose. The
-publishing workflow refreshes each changed page's `lastUpdated` ISO 8601 timestamp automatically from
-the commit that changed it; do not edit that field by hand.
+publishing workflow refreshes each changed page's `lastUpdated` UTC ISO 8601 timestamp automatically
+from the commit that changed it; do not edit that field by hand.
 
 Some developer pages are derived from upstream technical sources. Their frontmatter records the source
 repository, path, and commit; update those fields only when the upstream source actually changes.

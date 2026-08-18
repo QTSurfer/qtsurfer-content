@@ -2,7 +2,7 @@
 title: Estrategias
 description: Qué es una estrategia, cómo funcionan las revisiones y cómo crear la primera.
 order: 2
-lastUpdated: '2026-08-18T20:27:48+02:00'
+lastUpdated: '2026-08-18T18:27:59Z'
 ---
 
 Una estrategia es un fragmento de código **Java** que reacciona a datos de mercado y emite

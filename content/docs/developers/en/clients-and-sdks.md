@@ -10,18 +10,18 @@ the HTTP API. Choose the highest-level library that still gives you the control 
 
 ## Workflow SDKs
 
-- [Java SDK](https://qtsurfer.github.io/sdk-java/) — Java workflows, authentication, and normalized
-  errors.
-- [TypeScript SDK](https://qtsurfer.github.io/sdk-ts/) — workflow orchestration, polling,
-  cancellation, normalized errors, and a single-call backtest flow.
+- [Java SDK](https://github.com/QTSurfer/sdk-java) · [documentation](https://qtsurfer.github.io/sdk-java/) — Java workflows,
+  authentication, and normalized errors.
+- [TypeScript SDK](https://github.com/QTSurfer/sdk-ts) · [documentation](https://qtsurfer.github.io/sdk-ts/) — workflow orchestration,
+  polling, cancellation, normalized errors, and a single-call backtest flow.
 
 Use an SDK when you want authentication and multi-step operations handled as one workflow.
 
 ## Generated API clients
 
-- [Java API client](https://qtsurfer.github.io/api-client-java/)
-- [TypeScript API client](https://qtsurfer.github.io/api-client-ts/)
-- [Python API client](https://qtsurfer.github.io/api-client-python/qtsurfer/api/client.html)
+- [Java API client](https://github.com/QTSurfer/api-client-java) · [documentation](https://qtsurfer.github.io/api-client-java/)
+- [TypeScript API client](https://github.com/QTSurfer/api-client-ts) · [documentation](https://qtsurfer.github.io/api-client-ts/)
+- [Python API client](https://github.com/QTSurfer/api-client-python) · [documentation](https://qtsurfer.github.io/api-client-python/qtsurfer/api/client.html)
 
 Use an API client when you want one typed operation per endpoint and prefer to own polling, retries,
 and workflow composition. The TypeScript client uses native `fetch` and supports Node.js 20 or later,

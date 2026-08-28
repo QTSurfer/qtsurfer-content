@@ -1,7 +1,7 @@
 ---
 title: Clients and SDKs
 description: Choose between QTSurfer workflow SDKs and low-level generated API clients.
-order: 5
+order: 6
 lastUpdated: '2026-08-20T21:19:02Z'
 ---
 
@@ -14,6 +14,8 @@ the HTTP API. Choose the highest-level library that still gives you the control 
   authentication, and normalized errors.
 - [TypeScript SDK](https://github.com/QTSurfer/sdk-ts) · [documentation](https://qtsurfer.github.io/sdk-ts/) — workflow orchestration,
   polling, cancellation, normalized errors, and a single-call backtest flow.
+- [Python SDK](https://github.com/QTSurfer/sdk-python) · [documentation](https://qtsurfer.github.io/sdk-python/) — Python workflows,
+  authentication, token refresh, and normalized errors.
 
 Use an SDK when you want authentication and multi-step operations handled as one workflow.
 
@@ -26,6 +28,3 @@ Use an SDK when you want authentication and multi-step operations handled as one
 Use an API client when you want one typed operation per endpoint and prefer to own polling, retries,
 and workflow composition. The TypeScript client uses native `fetch` and supports Node.js 20 or later,
 modern browsers, Deno, and Bun.
-
-There is currently no high-level Python SDK listed in the official documentation; Python developers
-should use the API client directly.

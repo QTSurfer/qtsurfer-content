@@ -1,7 +1,7 @@
 ---
 title: Clientes y SDKs
 description: Elige entre los SDKs de flujo y los clientes API de bajo nivel de QTSurfer.
-order: 5
+order: 6
 lastUpdated: '2026-08-20T21:19:02Z'
 ---
 
@@ -14,6 +14,8 @@ la API HTTP. Elige la biblioteca de mayor nivel que te proporcione el control qu
   autenticación y errores normalizados.
 - [SDK de TypeScript](https://github.com/QTSurfer/sdk-ts) · [documentación](https://qtsurfer.github.io/sdk-ts/) — orquestación,
   polling, cancelación, errores normalizados y ejecución de backtests con una sola llamada.
+- [SDK de Python](https://github.com/QTSurfer/sdk-python) · [documentación](https://qtsurfer.github.io/sdk-python/) — flujos Python,
+  autenticación, renovación de tokens y errores normalizados.
 
 Usa un SDK cuando quieras resolver la autenticación y las operaciones de varios pasos como un único
 flujo.
@@ -27,6 +29,3 @@ flujo.
 Usa un cliente API cuando quieras una operación tipada por endpoint y prefieras controlar el polling,
 los reintentos y la composición de los flujos. El cliente TypeScript utiliza `fetch` nativo y es
 compatible con Node.js 20 o posterior, navegadores modernos, Deno y Bun.
-
-La documentación oficial no incluye actualmente un SDK de alto nivel para Python; utiliza
-directamente el cliente API.

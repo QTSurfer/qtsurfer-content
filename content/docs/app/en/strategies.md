@@ -2,7 +2,7 @@
 title: Strategies
 description: What a strategy is, how revisions work, and how to create your first one.
 order: 2
-lastUpdated: '2026-08-18T18:44:33Z'
+lastUpdated: '2026-08-29T12:14:21Z'
 ---
 
 A strategy is a piece of **Java** code that reacts to market data and emits trading

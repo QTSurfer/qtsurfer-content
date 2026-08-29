@@ -43,33 +43,52 @@ Pega el Java generado en el editor. **Cargar ejemplo** completa una pequeña est
 referencia funcional si quieres ver primero la forma esperada: un cruce de medias EMA:
 
 ```java
+import com.wualabs.qtsurfer.engine.strategy.*;
+import com.wualabs.qtsurfer.engine.strategy.event.signal.InfoStrategySignal;
+import com.wualabs.qtsurfer.engine.indicators.helpers.WindowTimeRTIndicator.WindowTime;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.core.state.StateStore;
+
 public class EmaCrossStrategy extends AbstractTickerStrategy {
 
     @Override
     protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
         indicators
-                .addPrice()
-                .ema("fast", 20)
-                .ema("slow", 50)
-                .window("fast", WindowTime.s1, new CrossListener(indicators));
+            .addPrice()
+            .ema("fast", 20)
+            .ema("slow", 50)
+            .window("fast", WindowTime.s1, new CrossListener(indicators));
     }
 
     private class CrossListener extends AbstractWindowListener {
+        public CrossListener(InstrumentGroupRTIndicator indicators) {
+            super(EmaCrossStrategy.this, indicators);
+        }
+
         @Override
         public void onChange(StateStore store, double prev, double actual) {
+            double price = indicators.getValue("price");
             double fast = indicators.getValue("fast");
             double slow = indicators.getValue("slow");
+
             InfoStrategySignal signal = createInfoSignal();
 
-            if (fast > slow && !store.is("bullish")) {
+            boolean wasBullish = store.is("bullish");
+            boolean isBullish = fast > slow;
+
+            if (isBullish && !wasBullish) {
                 store.set("bullish");
-                signal.set("_m", "shape", "arrowUp", "text", "BUY", "color", "#16a34a");
-                emitSignal(signal);
-            } else if (fast < slow && store.is("bullish")) {
+                signal.set("_m", "position", "belowBar", "shape", "arrowUp",
+                    "color", "#26a69a", "text", "BUY");
+                emitBuy(price);
+            } else if (!isBullish && wasBullish) {
                 store.unset("bullish");
-                signal.set("_m", "shape", "arrowDown", "text", "SELL", "color", "#dc2626");
-                emitSignal(signal);
+                signal.set("_m", "position", "aboveBar", "shape", "arrowDown",
+                    "color", "#ef5350", "text", "SELL");
+                emitSell(price);
             }
+
+            emitSignal(signal);
         }
     }
 }

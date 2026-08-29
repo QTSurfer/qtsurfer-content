@@ -15,6 +15,8 @@ content/docs/app/en/          Product documentation in English
 content/docs/app/es/          Product documentation in Spanish (Spain)
 content/docs/developers/en/   Developer documentation in English
 content/docs/developers/es/   Developer documentation in Spanish (Spain)
+content/docs/developers/en/api/  Imported QTSurfer API guides, preserving upstream filenames
+static/img/docs/               Static resources referenced by documentation
 ```
 
 Application locale identifiers are region-specific. Content directories may use the aliases declared
@@ -31,6 +33,11 @@ from the commit that changed it; do not edit that field by hand.
 
 Some developer pages are derived from upstream technical sources. Their frontmatter records the source
 repository, path, and commit; update those fields only when the upstream source actually changes.
+The English API guides under `content/docs/developers/en/api/` are imported manually from
+`QTSurfer/qtsurfer-api/docs/`. Keep their Markdown filenames identical to upstream so future updates
+remain directly comparable. Keep their imported graphics under `static/img/docs/` and reference them
+with root-relative `/img/docs/...` URLs. The localized API index may exist before its child translations; the
+web application exposes the English fallback visibly.
 
 The web application consumes this repository as a synchronized, versioned content source. Its
 `content/repository.json` file also provides the repository identity used by the website's page-edit

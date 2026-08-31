@@ -5,7 +5,7 @@ order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
 upstreamPath: docs/equity_curves.md
-lastUpdated: '2026-08-30T11:47:09Z'
+lastUpdated: '2026-08-31T22:24:26Z'
 ---
 
 An equity curve describes the account value through a backtest. QTSurfer returns the same

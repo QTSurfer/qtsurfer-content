@@ -2,7 +2,7 @@
 title: API de QTSurfer
 description: Consulta la referencia REST, las guías de implementación y el repositorio fuente.
 order: 5
-lastUpdated: '2026-08-29T12:14:21Z'
+lastUpdated: '2026-08-31T22:24:26Z'
 ---
 
 La referencia interactiva de la API contiene el contrato OpenAPI completo, incluidos los esquemas de

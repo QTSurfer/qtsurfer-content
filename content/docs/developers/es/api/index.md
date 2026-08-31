@@ -19,6 +19,7 @@ solicitud y respuesta, los requisitos de autenticación y los grupos de endpoint
 - [Barridos de parámetros](/docs/developers/api/backtest_sweep) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_sweep.md)
 - [Curvas de equity](/docs/developers/api/equity_curves) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/equity_curves.md)
 - [Conjuntos de datos](/docs/developers/api/datasets) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/datasets.md)
+- [Datos de mercado](/docs/developers/api/market_data) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/market_data.md)
 
 Usa la referencia de la API para consultar el contrato HTTP exacto. Usa estas guías para los flujos,
 el sondeo, la idempotencia y los ejemplos completos.

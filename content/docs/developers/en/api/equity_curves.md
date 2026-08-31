@@ -3,9 +3,9 @@ title: Equity curves
 description: Transform, retain, retrieve, and plot backtest and sweep equity curves.
 order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 61a01ba4528c11faf47bb9a787d4fa601c4f2a7a
+upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
 upstreamPath: docs/equity_curves.md
-lastUpdated: '2026-08-29T12:14:21Z'
+lastUpdated: '2026-08-30T11:47:09Z'
 ---
 
 An equity curve describes the account value through a backtest. QTSurfer returns the same

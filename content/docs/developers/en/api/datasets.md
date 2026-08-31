@@ -3,9 +3,9 @@ title: Datasets
 description: Upload historical ticker data and use it in the standard backtesting workflow.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 61a01ba4528c11faf47bb9a787d4fa601c4f2a7a
+upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
 upstreamPath: docs/datasets.md
-lastUpdated: '2026-08-29T12:14:21Z'
+lastUpdated: '2026-08-30T11:47:09Z'
 ---
 
 Backtest against a CSV you upload instead of a managed exchange: create a dataset, `PUT` the file

@@ -3,9 +3,9 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 61a01ba4528c11faf47bb9a787d4fa601c4f2a7a
+upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-08-29T12:14:21Z'
+lastUpdated: '2026-08-30T11:47:09Z'
 ---
 
 A QTSurfer strategy consumes market data, updates indicators and state, and emits signals. This
@@ -37,7 +37,7 @@ These signal families have different effects:
 An information signal labelled `BUY` is still only information. Conversely, `emitBuy(price)`
 emits an executable buy signal even if no chart metadata is attached.
 
-The [README example](https://github.com/QTSurfer/qtsurfer-api/blob/61a01ba4528c11faf47bb9a787d4fa601c4f2a7a/README.md#strategy-example) deliberately emits both. It publishes an
+The [README example](https://github.com/QTSurfer/qtsurfer-api/blob/848593e88be3b80078c6f98d7cb582f22fd87853/README.md#strategy-example) deliberately emits both. It publishes an
 information signal on every window update so the indicator series can be inspected, but emits a
 buy or sell only when the moving averages cross:
 

@@ -6,6 +6,7 @@ order: 0
 kind: landing
 author: QTSurfer
 datePublished: '2026-08-31'
+lastUpdated: '2026-08-31T20:06:27Z'
 ---
 
 Building a strategy is only part of quantitative trading. You also need to understand what an

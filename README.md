@@ -16,6 +16,10 @@ content/docs/app/es/          Product documentation in Spanish (Spain)
 content/docs/developers/en/   Developer documentation in English
 content/docs/developers/es/   Developer documentation in Spanish (Spain)
 content/docs/developers/en/api/  Imported QTSurfer API guides, preserving upstream filenames
+content/learn/en/             Learn articles in English
+content/learn/es/             Complete Learn translations in Spanish (Spain), when available
+content/legal/en/             Legal notices in English
+content/legal/es/             Legal notices in Spanish (Spain)
 static/img/docs/               Static resources referenced by documentation
 ```
 
@@ -27,9 +31,10 @@ locale before using it. Spanish content under `es` must use Spanish from Spain a
 ## Editing a page
 
 Edit the Markdown file in a branch and open a pull request. Keep frontmatter valid, preserve the page
-slug across locales, and keep code identifiers and API symbols unchanged when translating prose. The
-publishing workflow refreshes each changed page's `lastUpdated` UTC ISO 8601 timestamp automatically
-from the commit that changed it; do not edit that field by hand.
+slug across locales, and keep code identifiers and API symbols unchanged when translating prose. Learn
+articles also preserve their original `datePublished` value. The publishing workflow refreshes each
+changed page's `lastUpdated` UTC ISO 8601 timestamp automatically from the commit that changed it; do
+not edit that field by hand.
 
 Some developer pages are derived from upstream technical sources. Their frontmatter records the source
 repository, path, and commit; update those fields only when the upstream source actually changes.

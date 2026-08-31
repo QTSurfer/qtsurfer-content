@@ -29,14 +29,14 @@ jobs:
       - name: Commit refreshed timestamps
         id: timestamps
         run: |
-          if [ -z "$(git status --porcelain -- content/docs)" ]; then
+          if [ -z "$(git status --porcelain -- content)" ]; then
             echo "content_commit=${{ github.sha }}" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           git config user.name 'qtsurfer-content-bot[bot]'
           git config user.email 'qtsurfer-content-bot[bot]@users.noreply.github.com'
-          git add content/docs
+          git add content
           git commit -m 'chore(content): refresh document timestamps'
           git push origin HEAD:main
           echo "content_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"

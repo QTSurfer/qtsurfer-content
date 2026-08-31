@@ -9,7 +9,7 @@ import { join, relative, resolve, sep } from "node:path";
 import { randomUUID } from "node:crypto";
 
 const repositoryRoot = resolve(import.meta.dir, "..");
-const docsRoot = join(repositoryRoot, "content/docs");
+const contentRoot = join(repositoryRoot, "content");
 const allDocuments = process.argv[2] === "--all";
 const [baseCommit, headCommit] = allDocuments ? [] : process.argv.slice(2);
 
@@ -55,7 +55,7 @@ async function changedMarkdownPaths(): Promise<string[]> {
     "--diff-filter=AMR",
     range,
     "--",
-    "content/docs",
+    "content",
   ]);
   return paths ? paths.split("\n").filter((path) => path.endsWith(".md")) : [];
 }
@@ -99,7 +99,7 @@ function asUtcTimestamp(timestamp: string, path: string): string {
 
 async function main(): Promise<void> {
   const documentPaths = allDocuments
-    ? listMarkdownFiles(docsRoot).map((path) =>
+    ? listMarkdownFiles(contentRoot).map((path) =>
         relative(repositoryRoot, path).split(sep).join("/"),
       )
     : await changedMarkdownPaths();

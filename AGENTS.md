@@ -3,8 +3,8 @@
 Instructions for AI agents working in this repository.
 
 All repository documentation, commit messages, and pull-request descriptions must be written in
-English. User-facing Markdown under `content/docs/<section>/<content-locale>/` is translated by
-definition.
+English. User-facing Markdown under `content/docs/<section>/<content-locale>/`,
+`content/learn/<content-locale>/`, and `content/legal/<content-locale>/` is translated by definition.
 
 Application locale identifiers are region-specific. Content directories may use only aliases declared
 in `content/locales.json` or explicit registered application locales. The `en` alias maps to `en_UK`,
@@ -34,6 +34,11 @@ the files remain straightforward to compare with upstream. Copy referenced graph
 root-relative `/img/docs/...`.
 Do not invent partial Spanish translations; the visible English fallback is preferred until a complete
 `es_ES` translation is available.
+
+Learn articles live under `content/learn/<content-locale>/`. English is the editorial source of truth;
+publish a missing translation as a visible English fallback rather than creating a partial or thin
+localized page. Every standalone concept page must answer a real reader question with substantive,
+QTSurfer-relevant material. Preserve `datePublished`; the publishing workflow owns `lastUpdated`.
 
 Documentation prose is licensed under CC BY 4.0. Source-code examples are licensed under Apache-2.0.
 Do not add third-party material whose license is incompatible with those terms.

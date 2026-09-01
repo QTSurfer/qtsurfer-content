@@ -16,8 +16,10 @@ content/docs/app/es/          Product documentation in Spanish (Spain)
 content/docs/developers/en/   Developer documentation in English
 content/docs/developers/es/   Developer documentation in Spanish (Spain)
 content/docs/developers/en/api/  Imported QTSurfer API guides, preserving upstream filenames
-content/learn/en/             Learn articles in English
-content/learn/es/             Complete Learn translations in Spanish (Spain), when available
+content/learn/articles/en/    Learn articles in English
+content/learn/articles/es/    Complete Learn translations in Spanish (Spain), when available
+content/learn/glossary/en/    Curated glossary terms in English
+content/learn/glossary/es/    Curated glossary terms in Spanish (Spain)
 content/legal/en/             Legal notices in English
 content/legal/es/             Legal notices in Spanish (Spain)
 static/img/docs/               Static resources referenced by documentation
@@ -47,6 +49,11 @@ web application exposes the English fallback visibly.
 The web application consumes this repository as a synchronized, versioned content source. Its
 `content/repository.json` file also provides the repository identity used by the website's page-edit
 links.
+
+Glossary entries use a stable `termId` and filename across locales. Their `aliases` are candidate
+spellings used for discovery, while their structured `links` contain reviewed internal and external
+resources. The web repository can report repeated words and phrases from documentation, but that
+report never edits content or links prose automatically.
 
 ## Publishing automation
 

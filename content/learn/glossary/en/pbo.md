@@ -4,7 +4,7 @@ description: An estimate of how likely an in-sample strategy selection is to und
 order: 7
 kind: glossary
 termId: pbo
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - PBO
   - probability of backtest overfitting

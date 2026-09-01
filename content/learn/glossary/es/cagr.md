@@ -4,7 +4,7 @@ description: Tasa anual constante equivalente al cambio total de una inversión 
 order: 9
 kind: glossary
 termId: cagr
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - CAGR
   - tasa de crecimiento anual compuesto

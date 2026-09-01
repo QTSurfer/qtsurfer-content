@@ -5,7 +5,7 @@ order: 2
 kind: concept
 author: QTSurfer
 datePublished: "2026-08-31"
-lastUpdated: "2026-08-31T20:06:27Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 ---
 
 **Look-ahead bias** occurs when a historical simulation makes a decision using information that would

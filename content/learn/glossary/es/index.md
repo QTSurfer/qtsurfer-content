@@ -4,7 +4,7 @@ title: Glosario de trading cuantitativo
 description: Definiciones claras de los conceptos de trading cuantitativo y QTSurfer utilizados en el sitio.
 order: 0
 kind: glossary-index
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 ---
 
 Este glosario define términos recurrentes tal y como los utiliza QTSurfer. Cada entrada enlaza a guías

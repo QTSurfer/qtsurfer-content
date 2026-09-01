@@ -4,7 +4,7 @@ description: Descenso del valor de una cartera o estrategia desde un máximo ant
 order: 4
 kind: glossary
 termId: drawdown
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - drawdowns
   - drawdown máximo

@@ -4,7 +4,7 @@ description: Testing a strategy against historical market data before risking li
 order: 1
 kind: glossary
 termId: backtesting
-lastUpdated: "2026-09-01T09:29:22Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - backtest
   - backtests

@@ -4,7 +4,7 @@ description: Serie temporal que muestra cómo cambia el valor de una estrategia 
 order: 3
 kind: glossary
 termId: equity-curve
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - curvas de equity
   - curva de capital

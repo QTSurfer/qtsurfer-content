@@ -4,7 +4,7 @@ description: Evaluación de una estrategia mediante una cuadrícula definida de 
 order: 2
 kind: glossary
 termId: parameter-sweep
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - barridos de parámetros
   - cuadrícula de parámetros

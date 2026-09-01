@@ -4,7 +4,7 @@ description: A decline in portfolio or strategy value from a previous peak.
 order: 4
 kind: glossary
 termId: drawdown
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - drawdowns
   - maximum drawdown

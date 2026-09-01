@@ -4,7 +4,7 @@ description: The constant annual growth rate equivalent to an investment's total
 order: 2
 kind: glossary
 termId: cagr
-lastUpdated: "2026-09-01T09:13:06Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - CAGR
   - compound annual growth rate

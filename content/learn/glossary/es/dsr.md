@@ -4,7 +4,7 @@ description: Medida de confianza para un ratio de Sharpe ajustada por pruebas m√
 order: 7
 kind: glossary
 termId: dsr
-lastUpdated: "2026-09-01T09:29:22Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - DSR
   - Sharpe deflactado

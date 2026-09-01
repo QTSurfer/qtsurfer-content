@@ -4,7 +4,7 @@ description: Medida de rentabilidad ajustada al riesgo que penaliza los retornos
 order: 8
 kind: glossary
 termId: sortino-ratio
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - Sortino
   - ratio de Sortino

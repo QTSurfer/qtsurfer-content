@@ -5,7 +5,7 @@ order: 1
 kind: concept
 author: QTSurfer
 datePublished: "2026-08-31"
-lastUpdated: "2026-08-31T20:06:27Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 ---
 
 A **backtest** applies a fixed trading strategy to historical market data and simulates the decisions

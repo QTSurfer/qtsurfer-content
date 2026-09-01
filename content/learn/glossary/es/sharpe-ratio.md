@@ -4,7 +4,7 @@ description: Medida de rentabilidad ajustada al riesgo basada en el exceso de re
 order: 6
 kind: glossary
 termId: sharpe-ratio
-lastUpdated: "2026-09-01T09:13:06Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - Sharpe
   - ratio de Sharpe

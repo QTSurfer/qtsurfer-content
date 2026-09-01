@@ -4,7 +4,7 @@ title: Quantitative trading glossary
 description: Clear definitions of the quantitative trading and QTSurfer concepts used throughout the site.
 order: 0
 kind: glossary-index
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 ---
 
 This glossary defines recurring terms as QTSurfer uses them. Each entry links to deeper guides and

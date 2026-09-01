@@ -4,7 +4,7 @@ description: Estimación de la probabilidad de que una estrategia elegida dentro
 order: 5
 kind: glossary
 termId: pbo
-lastUpdated: "2026-09-01T09:36:12Z"
+lastUpdated: '2026-09-01T09:41:48Z'
 aliases:
   - PBO
   - probabilidad de sobreajuste del backtest

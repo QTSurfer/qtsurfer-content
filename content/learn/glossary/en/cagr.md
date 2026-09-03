@@ -10,6 +10,8 @@ aliases:
   - compound annual growth rate
   - annualised growth rate
 links:
+  - label: Sharpe ratio in depth
+    href: /learn/articles/sharpe-ratio
   - label: Backtesting
     href: /learn/articles/backtesting
   - label: Compound annual growth rate on Wikipedia

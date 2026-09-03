@@ -10,6 +10,8 @@ aliases:
   - Sharpe ratio
   - risk-adjusted return
 links:
+  - label: Sharpe ratio in depth
+    href: /learn/articles/sharpe-ratio
   - label: Backtesting
     href: /learn/articles/backtesting
   - label: Sharpe ratio on Wikipedia

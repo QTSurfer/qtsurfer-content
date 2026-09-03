@@ -4,7 +4,7 @@ description: A time series showing how the value of a strategy or account change
 order: 5
 kind: glossary
 termId: equity-curve
-lastUpdated: '2026-09-01T09:41:48Z'
+lastUpdated: '2026-09-03T16:10:49Z'
 aliases:
   - equity curves
   - account value curve

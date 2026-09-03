@@ -4,7 +4,7 @@ description: Evaluating a strategy across a defined grid of parameter combinatio
 order: 6
 kind: glossary
 termId: parameter-sweep
-lastUpdated: '2026-09-01T09:41:48Z'
+lastUpdated: '2026-09-03T16:10:49Z'
 aliases:
   - parameter sweeps
   - parameter grid

@@ -5,7 +5,7 @@ order: 8
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T16:10:49Z'
 ---
 
 **Walk-forward analysis** tests whether the parameters that won a sweep keep working on data they

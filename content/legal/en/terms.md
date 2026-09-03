@@ -1,7 +1,7 @@
 ---
 title: Terms of service
 description: Draft terms for the QTSurfer service.
-lastUpdated: "2026-08-22T00:00:00Z"
+lastUpdated: '2026-08-22T10:14:02Z'
 ---
 
 > **Draft template.** These terms must be reviewed, completed and approved before QTSurfer is made available to users. They are not legal advice.

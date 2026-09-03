@@ -1,7 +1,7 @@
 ---
 title: Términos del servicio
 description: Borrador de los términos aplicables al servicio de QTSurfer.
-lastUpdated: "2026-08-22T00:00:00Z"
+lastUpdated: '2026-08-22T10:14:02Z'
 ---
 
 > **Plantilla en borrador.** Estos términos deben revisarse, completarse y aprobarse antes de poner QTSurfer a disposición de los usuarios. No constituyen asesoramiento jurídico.

@@ -5,7 +5,7 @@ order: 4
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T16:10:49Z'
 ---
 
 A **drawdown** is the decline in account value from a previous peak. It starts the moment equity

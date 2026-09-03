@@ -1,7 +1,7 @@
 ---
 title: Privacy notice
 description: Draft privacy notice for the QTSurfer service.
-lastUpdated: "2026-08-22T00:00:00Z"
+lastUpdated: '2026-08-22T10:14:02Z'
 ---
 
 > **Draft template.** This notice must be reviewed, completed and approved before QTSurfer is made available to users. It is not legal advice.

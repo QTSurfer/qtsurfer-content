@@ -5,7 +5,7 @@ order: 5
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T16:10:49Z'
 ---
 
 An **equity curve** is the account value of a strategy plotted through time. In a backtest it starts

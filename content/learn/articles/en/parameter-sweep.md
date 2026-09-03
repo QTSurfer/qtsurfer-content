@@ -5,7 +5,7 @@ order: 7
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T16:10:49Z'
 ---
 
 A **parameter sweep** runs the same strategy many times, each with a different combination of

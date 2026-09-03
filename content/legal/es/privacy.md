@@ -1,7 +1,7 @@
 ---
 title: Aviso de privacidad
 description: Borrador del aviso de privacidad del servicio de QTSurfer.
-lastUpdated: "2026-08-22T00:00:00Z"
+lastUpdated: '2026-08-22T10:14:02Z'
 ---
 
 > **Plantilla en borrador.** Este aviso debe revisarse, completarse y aprobarse antes de poner QTSurfer a disposición de los usuarios. No constituye asesoramiento jurídico.

@@ -5,7 +5,7 @@ order: 8
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T20:33:24Z'
 ---
 
 El **análisis walk-forward** comprueba si los parámetros que ganaron un barrido siguen funcionando

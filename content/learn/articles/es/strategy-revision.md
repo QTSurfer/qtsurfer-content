@@ -5,7 +5,7 @@ order: 12
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T20:33:24Z'
 ---
 
 Una **revisión de estrategia** es una instantánea inmutable del código de una estrategia en un punto

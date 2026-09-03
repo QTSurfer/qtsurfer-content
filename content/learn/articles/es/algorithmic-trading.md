@@ -5,7 +5,7 @@ order: 15
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T20:33:24Z'
 ---
 
 El **trading algorítmico** es la ejecución de decisiones de trading por un programa en lugar de por una

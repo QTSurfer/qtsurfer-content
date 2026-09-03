@@ -5,7 +5,7 @@ order: 2
 kind: concept
 author: QTSurfer
 datePublished: "2026-08-31"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T20:33:24Z'
 ---
 
 El **sesgo de anticipación** (*look-ahead bias*) se produce cuando una simulación histórica toma una

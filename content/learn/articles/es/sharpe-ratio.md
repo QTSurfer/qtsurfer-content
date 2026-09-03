@@ -5,7 +5,7 @@ order: 9
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T20:33:24Z'
 ---
 
 El **ratio de Sharpe** compara lo que ganó una estrategia con cuánto variaron sus retornos mientras lo

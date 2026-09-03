@@ -63,6 +63,13 @@ repository secret with a fine-grained token that can dispatch to `mrmx/qts-web`;
 that repository with `Contents: write`. The workflow deliberately does not dispatch README, license, or
 agent-instruction-only changes.
 
+`main` only accepts changes through pull requests. The workflow still commits refreshed `lastUpdated`
+timestamps directly to `main`, so it pushes with a dedicated deploy key rather than the default
+`GITHUB_TOKEN`: add an `ed25519` deploy key with write access, store its private half in the
+`CONTENT_DEPLOY_KEY` repository secret, and list that deploy key in the `main` ruleset's bypass list. The
+refresh commit carries `[skip ci]` because a deploy-key push would otherwise trigger the workflow again
+and refresh the timestamps in a loop.
+
 ## Licensing
 
 Documentation and editorial content are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

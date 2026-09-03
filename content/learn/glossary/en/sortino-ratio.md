@@ -10,6 +10,8 @@ aliases:
   - Sortino ratio
   - downside risk-adjusted return
 links:
+  - label: Sharpe ratio in depth
+    href: /learn/articles/sharpe-ratio
   - label: Sharpe ratio
     href: /learn/glossary/sharpe-ratio
   - label: Drawdown

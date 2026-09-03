@@ -18,12 +18,16 @@ to a reproducible workflow rather than stopping at a dictionary definition.
 
 ## Start here
 
+- [Quantitative strategy](quantitative-strategy) — what makes a strategy quantitative, its five
+  components, and the research loop from hypothesis to validation.
 - [Backtesting](backtesting) — what a historical simulation can tell you, what it cannot, and which
   assumptions must travel with every result.
 - [Look-ahead bias](look-ahead-bias) — how future information can leak into a strategy and make a
   backtest impossible to reproduce in live trading.
 - [Overfitting](overfitting) — why the best result of a search is biased, and how to measure how
   much of it the search itself produced.
+- [Survivorship bias](survivorship-bias) — how the universe, the catalogue, and the published record
+  quietly exclude the failures.
 
 ## Reading a result
 
@@ -31,6 +35,10 @@ to a reproducible workflow rather than stopping at a dictionary definition.
   which shapes signal fragility.
 - [Drawdown](drawdown) — the fall from a previous peak, its depth and duration, and why it changes
   how a return should be read.
+- [Sharpe ratio](sharpe-ratio) — return per unit of variability, the conventions that make two
+  values comparable, and exactly how QTSurfer computes it.
+- [Slippage](slippage) — the cost between the decided and the obtained price, and how to account
+  for it in a backtest.
 
 ## Exploring parameters
 
@@ -39,10 +47,16 @@ to a reproducible workflow rather than stopping at a dictionary definition.
 - [Walk-forward analysis](walk-forward-analysis) — sequential out-of-sample validation of a sweep
   and what parameter drift reveals.
 
+## Strategies
+
+- [EMA crossover](ema-crossover) — the reference trend-following rule: lag, whipsaw, useful
+  filters, and how to implement and sweep it.
+- [Strategy revision](strategy-revision) — immutable versions of a strategy's code, and why every
+  result should point at one.
+- [Algorithmic trading](algorithmic-trading) — from decision to order: what a trading system needs
+  beyond the signal, and the backtest-to-live gap.
+
 ## Data
 
 - [Historical market data](historical-market-data) — tickers versus candles, cadence, coverage and
   gaps, and how QTSurfer stores and serves exchange history.
-
-This collection will grow with articles about slippage, the Sharpe ratio, survivorship bias, and
-other concepts used throughout QTSurfer.

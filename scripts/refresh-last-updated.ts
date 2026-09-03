@@ -9,6 +9,9 @@ import { join, relative, resolve, sep } from "node:path";
 import { randomUUID } from "node:crypto";
 
 const repositoryRoot = resolve(import.meta.dir, "..");
+// Commits produced by the publishing workflow only move `lastUpdated`; they must not count as
+// document updates, otherwise every refresh would push the timestamps forward again.
+const refreshCommitMessage = "chore(content): refresh document timestamps";
 const contentRoot = join(repositoryRoot, "content");
 const allDocuments = process.argv[2] === "--all";
 const [baseCommit, headCommit] = allDocuments ? [] : process.argv.slice(2);
@@ -113,14 +116,18 @@ async function main(): Promise<void> {
       "log",
       "-1",
       "--format=%cI",
+      `--grep=${refreshCommitMessage}`,
+      "--invert-grep",
       revisionRange,
       "--",
       documentPath,
     ]);
-    if (!lastUpdated)
-      throw new Error(
-        `Cannot determine the last update timestamp for ${documentPath}`,
+    if (!lastUpdated) {
+      console.log(
+        `Skipped ${documentPath}: only timestamp refreshes in ${revisionRange}`,
       );
+      continue;
+    }
 
     const utcTimestamp = asUtcTimestamp(lastUpdated, documentPath);
     const absolutePath = join(repositoryRoot, documentPath);

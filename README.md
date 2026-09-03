@@ -68,7 +68,9 @@ timestamps directly to `main`, so it pushes with a dedicated deploy key rather t
 `GITHUB_TOKEN`: add an `ed25519` deploy key with write access, store its private half in the
 `CONTENT_DEPLOY_KEY` repository secret, and list that deploy key in the `main` ruleset's bypass list. The
 refresh commit carries `[skip ci]` because a deploy-key push would otherwise trigger the workflow again
-and refresh the timestamps in a loop.
+and refresh the timestamps in a loop. Timestamp-refresh commits are ignored when computing `lastUpdated`,
+so the workflow can also be run manually from the Actions page: that refreshes every document from
+history and dispatches the resulting commit, which is the recovery path after a failed run.
 
 ## Licensing
 

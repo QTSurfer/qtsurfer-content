@@ -6,6 +6,8 @@ on:
     paths:
       - "content/**"
       - "static/**"
+  # Manual recovery: refresh every document's timestamp from history and re-dispatch the sync.
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -34,10 +36,15 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - name: Refresh timestamps for changed documents
+        if: github.event_name == 'push'
         env:
           BASE_COMMIT: ${{ github.event.before }}
           HEAD_COMMIT: ${{ github.sha }}
         run: bun scripts/refresh-last-updated.ts "$BASE_COMMIT" "$HEAD_COMMIT"
+
+      - name: Refresh timestamps for every document
+        if: github.event_name == 'workflow_dispatch'
+        run: bun scripts/refresh-last-updated.ts --all
 
       - name: Commit refreshed timestamps
         id: timestamps

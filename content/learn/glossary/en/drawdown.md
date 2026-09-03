@@ -10,6 +10,8 @@ aliases:
   - maximum drawdown
   - max drawdown
 links:
+  - label: Drawdown in depth
+    href: /learn/articles/drawdown
   - label: Equity curve
     href: /learn/glossary/equity-curve
   - label: Drawdown on Wikipedia

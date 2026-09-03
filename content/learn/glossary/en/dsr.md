@@ -10,6 +10,8 @@ aliases:
   - deflated Sharpe
   - deflated Sharpe ratio
 links:
+  - label: Overfitting
+    href: /learn/articles/overfitting
   - label: Sharpe ratio
     href: /learn/glossary/sharpe-ratio
   - label: Parameter sweep

@@ -10,6 +10,10 @@ aliases:
   - parameter grid
   - grid search
 links:
+  - label: Parameter sweep in depth
+    href: /learn/articles/parameter-sweep
+  - label: Walk-forward analysis
+    href: /learn/articles/walk-forward-analysis
   - label: QTSurfer parameter-sweep API guide
     href: /docs/developers/api/backtest_sweep
   - label: Backtesting

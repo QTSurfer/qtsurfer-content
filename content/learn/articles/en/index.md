@@ -22,6 +22,27 @@ to a reproducible workflow rather than stopping at a dictionary definition.
   assumptions must travel with every result.
 - [Look-ahead bias](look-ahead-bias) — how future information can leak into a strategy and make a
   backtest impossible to reproduce in live trading.
+- [Overfitting](overfitting) — why the best result of a search is biased, and how to measure how
+  much of it the search itself produced.
 
-This collection will grow with articles about overfitting, drawdown, equity curves, slippage,
-parameter sweeps, walk-forward analysis, and other concepts used throughout QTSurfer.
+## Reading a result
+
+- [Equity curve](equity-curve) — what the account-value series records, how to normalise it, and
+  which shapes signal fragility.
+- [Drawdown](drawdown) — the fall from a previous peak, its depth and duration, and why it changes
+  how a return should be read.
+
+## Exploring parameters
+
+- [Parameter sweep](parameter-sweep) — grid, random, and Latin hypercube sampling, leaderboards,
+  plateaus, and sensitivity views.
+- [Walk-forward analysis](walk-forward-analysis) — sequential out-of-sample validation of a sweep
+  and what parameter drift reveals.
+
+## Data
+
+- [Historical market data](historical-market-data) — tickers versus candles, cadence, coverage and
+  gaps, and how QTSurfer stores and serves exchange history.
+
+This collection will grow with articles about slippage, the Sharpe ratio, survivorship bias, and
+other concepts used throughout QTSurfer.

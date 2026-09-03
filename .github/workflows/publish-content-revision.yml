@@ -6,6 +6,8 @@ on:
     paths:
       - "content/**"
       - "static/**"
+  # Manual recovery: refresh every document's timestamp from history and re-dispatch the sync.
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,17 +16,35 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Require the publishing deploy key
+        env:
+          DEPLOY_KEY: ${{ secrets.CONTENT_DEPLOY_KEY }}
+        run: |
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "Missing CONTENT_DEPLOY_KEY repository secret (write deploy key listed in the main ruleset bypass)." >&2
+            exit 1
+          fi
+
+      # The deploy key, not GITHUB_TOKEN, pushes the refreshed timestamps: main only accepts
+      # changes through pull requests, and a deploy key can be granted bypass while the
+      # GitHub Actions app cannot be selected in a ruleset bypass list.
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ssh-key: ${{ secrets.CONTENT_DEPLOY_KEY }}
 
       - uses: oven-sh/setup-bun@v2
 
       - name: Refresh timestamps for changed documents
+        if: github.event_name == 'push'
         env:
           BASE_COMMIT: ${{ github.event.before }}
           HEAD_COMMIT: ${{ github.sha }}
         run: bun scripts/refresh-last-updated.ts "$BASE_COMMIT" "$HEAD_COMMIT"
+
+      - name: Refresh timestamps for every document
+        if: github.event_name == 'workflow_dispatch'
+        run: bun scripts/refresh-last-updated.ts --all
 
       - name: Commit refreshed timestamps
         id: timestamps
@@ -37,7 +57,9 @@ jobs:
           git config user.name 'qtsurfer-content-bot[bot]'
           git config user.email 'qtsurfer-content-bot[bot]@users.noreply.github.com'
           git add content
-          git commit -m 'chore(content): refresh document timestamps'
+          # A deploy-key push triggers workflows (unlike GITHUB_TOKEN), and every refresh moves
+          # the timestamps again, so the refresh commit must skip its own run.
+          git commit -m 'chore(content): refresh document timestamps [skip ci]'
           git push origin HEAD:main
           echo "content_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 

@@ -10,6 +10,8 @@ aliases:
   - backtests
   - historical simulation
 links:
+  - label: Historical market data
+    href: /learn/articles/historical-market-data
   - label: Learn about backtesting
     href: /learn/articles/backtesting
   - label: QTSurfer backtest API guide

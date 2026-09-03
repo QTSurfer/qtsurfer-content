@@ -10,6 +10,8 @@ aliases:
   - probability of backtest overfitting
   - backtest overfitting probability
 links:
+  - label: Overfitting
+    href: /learn/articles/overfitting
   - label: Backtesting
     href: /learn/glossary/backtesting
   - label: Parameter sweep

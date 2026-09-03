@@ -9,6 +9,8 @@ aliases:
   - equity curves
   - account value curve
 links:
+  - label: Equity curve in depth
+    href: /learn/articles/equity-curve
   - label: QTSurfer equity-curve API guide
     href: /docs/developers/api/equity_curves
   - label: Drawdown

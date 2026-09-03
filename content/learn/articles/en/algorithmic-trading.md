@@ -5,7 +5,7 @@ order: 15
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T18:29:00Z'
 ---
 
 **Algorithmic trading** is the execution of trading decisions by a program rather than by a person

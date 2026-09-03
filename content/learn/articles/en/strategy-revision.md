@@ -5,7 +5,7 @@ order: 12
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T18:29:00Z'
 ---
 
 A **strategy revision** is an immutable snapshot of a strategy's code at one point in its

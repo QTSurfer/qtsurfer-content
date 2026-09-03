@@ -4,7 +4,7 @@ description: A risk-adjusted return measure based on excess return and return va
 order: 8
 kind: glossary
 termId: sharpe-ratio
-lastUpdated: '2026-09-01T09:41:48Z'
+lastUpdated: '2026-09-03T18:29:00Z'
 aliases:
   - Sharpe
   - Sharpe ratio

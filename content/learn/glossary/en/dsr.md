@@ -4,7 +4,7 @@ description: A confidence measure for a Sharpe ratio adjusted for multiple testi
 order: 3
 kind: glossary
 termId: dsr
-lastUpdated: '2026-09-03T16:10:49Z'
+lastUpdated: '2026-09-03T18:29:00Z'
 aliases:
   - DSR
   - deflated Sharpe

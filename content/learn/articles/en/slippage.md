@@ -5,7 +5,7 @@ order: 6
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T18:29:00Z'
 ---
 
 **Slippage** is the difference between the price a strategy decided to trade at and the price it

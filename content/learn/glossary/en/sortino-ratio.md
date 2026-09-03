@@ -4,7 +4,7 @@ description: A risk-adjusted return measure that penalizes returns below a chose
 order: 9
 kind: glossary
 termId: sortino-ratio
-lastUpdated: '2026-09-01T09:41:48Z'
+lastUpdated: '2026-09-03T18:29:00Z'
 aliases:
   - Sortino
   - Sortino ratio

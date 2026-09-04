@@ -3,9 +3,9 @@ title: Parameter sweeps
 description: Run parameter grids, rank trials, and validate results with walk-forward folds.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
+upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
 upstreamPath: docs/backtest_sweep.md
-lastUpdated: '2026-08-31T22:24:26Z'
+lastUpdated: '2026-09-04T00:00:00Z'
 ---
 
 Run a strategy across a parameter grid instead of one fixed set of values, poll a ranked
@@ -209,7 +209,7 @@ curl "https://api.qtsurfer.net/v1/backtest/binance/ticker/executeSweep/$PREPARE_
       "params": {"rsiPeriod": 16, "useTrendFilter": true},
       "sharpe": 1.84, "plateauScore": 1.61, "neighbourCount": 6,
       "sortino": 2.10, "pnl": 812.40, "pnlPct": 8.12, "cagr": 0.31,
-      "maxDdPct": 6.4, "trades": 118, "winRate": 57.6,
+      "maxDdPct": 6.4, "trades": 118, "winRate": 0.576,
       "belowTradeFloor": false, "aborted": false, "runtimeMs": 842
     }
   ],

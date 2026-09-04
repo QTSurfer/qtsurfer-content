@@ -4,13 +4,25 @@ description: Configura, compón y amplía el pipeline de indicadores en tiempo r
 order: 2
 lastUpdated: '2026-09-04T10:18:11Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: d0fc9b6b50458ffb46ad07ee472b226d24f31c68
+upstreamCommit: 5c90b3afbb7a4ccace1e3054060525ee0e2caef3
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 ---
 
 Todos los métodos de abajo están en `InstrumentGroupRTIndicator` y devuelven `this` para
 encadenar. El nombre por defecto de un indicador (cuando se omite `name`) es el nombre del método
 más los parámetros, por ejemplo `rsi14`.
+
+Los métodos que reciben un callback (`fun`, `predicate`, `periodCount`, `conditional`, `clamp`,
+`decorate`) reciben clases anónimas internas como las de abajo, no lambdas — consulta «Nivel de
+lenguaje» en SKILL.md. Implementan
+`java.util.function.{Predicate,BiFunction,UnaryOperator,Consumer}` de la biblioteca estándar;
+importa la que uses. **Declara los parámetros del método sobrescrito como `Object` y haz la
+conversión dentro del cuerpo**, no con el tipo real del genérico (`Double`, `RTIndicator`, …) — la
+plataforma no genera el método puente que necesita una sobrescritura tipada realmente como
+`Double`/`RTIndicator` para satisfacer la interfaz con borrado de tipos, así que una sobrescritura
+con los tipos naturales falla con «must implement method ... apply(Object, Object)» aunque parezca
+correcta. El tipo de retorno no lo necesita — declara ese con el tipo real, solo los parámetros
+necesitan `Object`.
 
 ## Fuentes de precio
 
@@ -74,7 +86,10 @@ más los parámetros, por ejemplo `rsi14`.
 .diff("spread", "ask", "bid")         // diff = ask - bid
 .mul("price", 0.01)                   // scale by coefficient
 .mul("ratio", "vol", "price")         // vol * price
-.fun("custom", "a", "b", (a, b) -> a / b)  // arbitrary BiFunction
+.fun("custom", "a", "b", new BiFunction<Double, Double, Double>() {
+    public Double apply(Object a, Object b) { return (Double) a / (Double) b; }
+})  // arbitrary BiFunction — see Language level in SKILL.md for why not a lambda,
+    // and note apply()'s params are Object, not Double: generic bridge methods aren't generated
 ```
 
 ## Predicados y condicionales
@@ -86,8 +101,12 @@ más los parámetros, por ejemplo `rsi14`.
 .lessOrEqual("le", "price", 50000)
 .equal("eq", "price", 100)
 .notEqual("ne", "price", 100)
-.predicate("custom", "price", v -> v > 0 && v < 100)
-.periodCount("cnt", "oversold", v -> v > 0)  // count consecutive true periods
+.predicate("custom", "price", new Predicate<Double>() {
+    public boolean test(Object v) { return (Double) v > 0 && (Double) v < 100; }
+})
+.periodCount("cnt", "oversold", new Predicate<Double>() {
+    public boolean test(Object v) { return (Double) v > 0; }
+})  // count consecutive true periods
 ```
 
 ## Selección condicional
@@ -95,16 +114,22 @@ más los parámetros, por ejemplo `rsi14`.
 ```java
 // If indicator == coef → thenIndicator else elseIndicator
 .equal("selected", "signal", 1, "emaFast", "emaSlow")
-.conditional("out", "flag", ind -> ind.getValue() > 0, thenInd, elseInd)
+.conditional("out", "flag", new Predicate<RTIndicator>() {
+    public boolean test(Object ind) { return ((RTIndicator) ind).getValue() > 0; }
+}, thenInd, elseInd)
 ```
 
 ## Transformaciones
 
 ```java
 .clamp("price", 0.0, 100.0)          // clamp to [min, max]
-.clamp("price", v -> v < 0, 0.0)     // clamp when predicate true
+.clamp("price", new Predicate<Double>() {
+    public boolean test(Object v) { return (Double) v < 0; }
+}, 0.0)     // clamp when predicate true
 .round("price", 2)                    // round to N decimals
-.decorate("price", "price", ind -> new MyWrapper(ind))
+.decorate("price", "price", new UnaryOperator<RTIndicator>() {
+    public RTIndicator apply(Object ind) { return new MyWrapper((RTIndicator) ind); }
+})
 ```
 
 ## Window listeners
@@ -134,8 +159,9 @@ RTIndicator src = indicators.getReadOnlyExisting("ema9");
 indicators.add("custom", new MyIndicator(src));
 
 // Option C — getReadOnly() returns Optional (safe if indicator may not exist)
-indicators.getReadOnly("ema9").ifPresent(src ->
-    indicators.add("custom", new MyIndicator(src)));
+indicators.getReadOnly("ema9").ifPresent(new Consumer<RTIndicator>() {
+    public void accept(Object src) { indicators.add("custom", new MyIndicator((RTIndicator) src)); }
+});
 ```
 
 `.ro()` es un método por defecto del propio `RTIndicator` — disponible en cualquier instancia de

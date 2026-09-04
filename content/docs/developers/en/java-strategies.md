@@ -2,9 +2,8 @@
 title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
-lastUpdated: '2026-08-18T18:44:33Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: d0fc9b6b50458ffb46ad07ee472b226d24f31c68
+upstreamCommit: 5c90b3afbb7a4ccace1e3054060525ee0e2caef3
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -25,10 +24,23 @@ public class MyStrategy extends AbstractTickerStrategy {
 }
 ```
 
+## Allowed imports
+
+Strategy code runs in a sandboxed classloader with a package whitelist — importing anything outside it fails at execution time (not at compile time), with a bare `<class> could not be found`-style error and no indication of _why_. Allowed, by top-level package (every subpackage is included):
+
+- `com.wualabs.qtsurfer.engine.*` — the strategy/indicator API itself
+- `java.lang`, `java.util` (including `java.util.stream`, `java.util.function`, `java.util.regex`, `java.util.concurrent.atomic`), `java.math`
+- `java.time` (including `java.time.format`, `java.time.temporal`) — `Duration`, `Instant`, `LocalDate` etc. are fine to use, e.g. in `.window(name, Duration.ofSeconds(n), listener)`
+- `java.text` — `DecimalFormat`/`NumberFormat` for formatting values in signal messages or logs
+
+Explicitly blocked regardless of package: `System`, `Runtime`, `Thread`, `Executor`/`ExecutorService`. `java.io` is blocked outright — a strategy has no business doing file or network I/O of its own; all market data and order execution goes through the engine API above.
+
+This list is deliberately small and compiled into the platform rather than configurable — a sandbox for untrusted user code should not be extensible through a weaker channel than a reviewed code change. If a strategy needs something outside it, that's a platform decision, not something to work around client-side.
+
 `acceptInstrument` and `getExecutionMode` have sensible defaults (accept all instruments, LONG mode). Override only when needed:
 
 ```java
-import com.wualabs.qtsurfer.engine.core.Instrument;
+import com.wualabs.qtsurfer.engine.core.instrument.Instrument;
 import com.wualabs.qtsurfer.engine.strategy.execution.ExecutionMode;
 
 @Override
@@ -45,6 +57,42 @@ public ExecutionMode getExecutionMode(Instrument instrument) {
 > Note: the **default** `acceptInstrument` is _not_ unconditional — it gates on the strategy's
 > output currency / `acceptCurrency`. To accept **every** instrument unconditionally, override it
 > explicitly with `return true`.
+
+## Language level
+
+Strategy code compiles against a language base well behind the JDK the platform itself runs on —
+targeting it like modern Java produces a compile-time error with no indication that the cause is
+the language level rather than a typo. Concretely, avoid:
+
+- **`var`** (local variable type inference) — declare the type explicitly. `updateIndicators(...)`
+  returns `InstrumentMapRTIndicator`; `setupIndicators` receives `InstrumentGroupRTIndicator` — two
+  different types, easy to mix up once you can't lean on `var` to paper over it.
+- **Lambdas and method references** (`x -> ...`, `Foo::bar`) — not just style; they don't compile
+  at all here, in any position (argument, assignment, return value). Use a named or anonymous inner
+  class instead, which is also what every window listener already requires (see below).
+- **Switch expressions** (`switch (x) { case 1 -> ...; }`) — use a classic `switch` statement, or
+  `if`/`else`.
+- **Records**, **sealed types**, **pattern matching** (`instanceof` with binding, pattern `switch`)
+  — none of these are available; write the equivalent longhand.
+- **A captured local without `final`** — an anonymous/inner class reading a variable from its
+  enclosing method needs that variable declared `final`, explicitly. Effectively-final capture
+  (no keyword, as long as it's never reassigned) isn't supported — a variable that would be legal
+  to capture in modern Java still needs the keyword here.
+
+Two more, specific to implementing a generic functional interface (`Predicate<Double>`,
+`BiFunction<Double,Double,Double>`, ...) as an anonymous class — the natural-looking override
+looks correct and still fails to compile:
+
+- **Override the parameter types as `Object`, not the generic's real type**, and cast inside the
+  method body. `new Predicate<Double>() { public boolean test(Double v) { ... } }` fails with
+  _"must implement method ... test(Object)"_ — the bridge method a `Double`-typed override needs
+  is never generated. `public boolean test(Object v) { return (Double) v > 0; }` is what actually
+  compiles. This applies to every parameter of every method on these interfaces —
+  `BiFunction.apply(Object, Object)`, `Consumer.accept(Object)`, all of it.
+- **The return type doesn't have this problem** — declare it as the real type (`Double`, not
+  `Object`); only parameters need to be `Object`.
+
+Text blocks and try-with-resources are fine. When in doubt, write it the way Java 7 would.
 
 ## Indicator setup
 
@@ -73,22 +121,23 @@ Custom: `Duration.ofSeconds(n)` or `Duration.ofMinutes(n)`
 ### Reading indicator values outside a listener
 
 ```java
-import com.wualabs.qtsurfer.engine.core.Instrument;
+import com.wualabs.qtsurfer.engine.core.instrument.Instrument;
 import com.wualabs.qtsurfer.engine.core.Ticker;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentMapRTIndicator;
 
 @Override
 public void update(Ticker ticker) {
     Instrument instrument = ticker.instrument();
     updateInstrument(instrument, ticker.timestamp());
-    var ind = updateIndicators(instrument, ticker);
+    InstrumentMapRTIndicator ind = updateIndicators(instrument, ticker);
 
     if (!ind.getExisting("emaSlow").isReady()) return; // wait for warmup
 
     double fast = ind.getValue("emaFast");
     double slow = ind.getValue("emaSlow");
 
-    if (fast > slow) emitBuy(ticker.last());
-    else             emitSell(ticker.last());
+    if (fast > slow) emitBuy(instrument, ticker.last());
+    else             emitSell(instrument, ticker.last());
 }
 ```
 
@@ -160,7 +209,7 @@ in `update()`) reach it via `getStateStore(instrument)`, which returns `Optional
 public void update(Ticker ticker) {
     Instrument instrument = ticker.instrument();
     updateInstrument(instrument, ticker.timestamp());
-    var ind = updateIndicators(instrument, ticker);
+    InstrumentMapRTIndicator ind = updateIndicators(instrument, ticker);
 
     StateStore store = getStateStore(instrument).orElseThrow();
     long ticks = store.inc("ticks");
@@ -189,26 +238,52 @@ store.getState("key", def)  // with default
 
 ```java
 @StrategyProperty(name = "rsi.period", description = "RSI period", defaultValue = "14")
-private int rsiPeriod = 14;
+private int rsiPeriod;
 
 @StrategyProperty(name = "ema.fast", description = "Fast EMA period", defaultValue = "9")
-private int fastPeriod = 9;
+private int fastPeriod;
 ```
 
-Properties are injected before `setupIndicators` is called.
+The annotation and the field are the whole declaration — no getter, no setter. Properties are
+injected before `setupIndicators` is called, and the same is true of a `submit_sweep` parameter
+vector: it is written to the field directly.
+
+**The `submit_sweep` param-key is the annotation `name` (with dots), NOT the Java field name.**
+In the example above the grid key is `rsi.period` / `ema.fast`, not `rsiPeriod` / `fastPeriod`:
+
+**Let `defaultValue` be the only place the default is written.** A field initializer (`private int
+fastPeriod = 9;`) runs _after_ the annotation's default has been applied and overwrites it, so if
+the two ever disagree the strategy runs on the initializer while the platform records the
+annotation's value against the results. Declaring the default once, on the annotation, removes the
+question.
+
+Declare a JavaBean setter only when the property needs one — validation, clamping, or recomputing
+something derived from it. When a setter exists, every injection channel goes through it, so the
+guard is never bypassed. The field must not be `static` (its value would be shared across sweep
+trials running in parallel) or `final` (nothing can assign it after construction); either needs a
+setter, and a property with neither is reported as a notice rather than silently skipped.
+
+`min`, `max` and `step` on the annotation are advisory range hints a sweep's parameter grid can
+read — not validated against, just a suggested range for pre-filling one.
 
 ## Signal emission
 
-| Method               | When to use                                                     |
-| -------------------- | --------------------------------------------------------------- |
-| `emitBuy(price)`     | Enter long position                                             |
-| `emitSell(price)`    | Enter short / close long                                        |
-| `emitSignal(signal)` | Custom signal (`BuySignal`, `SellSignal`, `InfoStrategySignal`) |
+Two overloads, and which one is in scope depends on where you're calling from — mixing them up
+fails to compile with a missing-method error, not a runtime one:
+
+| Method                                                       | Where it's available                                                                                            |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `emitBuy(instrument, price)` / `emitSell(instrument, price)` | Anywhere in the strategy class itself — `update()`, `onChange()` before it delegates, helper methods            |
+| `emitBuy(price)` / `emitSell(price)`                         | Only inside a window listener (`AbstractWindowListener.onChange`, see below) — the instrument is implicit there |
+| `emitSignal(signal)`                                         | Custom signal (`BuySignal`, `SellSignal`, `InfoStrategySignal`), either context                                 |
 
 ### Data / analytics signals — `InfoStrategySignal`
 
 For non-trading strategies that emit **computed fields** (analytics, metrics) rather than
-buy/sell, build an `InfoStrategySignal` and attach arbitrary key/values, then `emitSignal`:
+buy/sell, build an `InfoStrategySignal` and attach arbitrary key/values, then `emitSignal`.
+Two constructors, matching the `emitBuy` convention:
+
+- **Top-level strategy (`update()`) — `createInfoStrategySignal(instrument)`**, instrument explicit:
 
 ```java
 InfoStrategySignal signal = createInfoStrategySignal(instrument);  // from AbstractTickerStrategy
@@ -217,6 +292,24 @@ signal.set("zscore", z);
 signal.set("vwap", vwap);
 emitSignal(signal);
 ```
+
+- **Inside a window listener (`AbstractWindowListener.onChange`) — `createInfoSignal()`**, instrument implicit:
+
+```java
+InfoStrategySignal signal = createInfoSignal();  // listener knows its instrument
+signal.set("interval", "1m");
+signal.set("zscore", z);
+signal.set("vwap", vwap);
+emitSignal(signal);
+```
+
+The listener form takes no instrument because the listener already knows it — the same
+convention as the `emitBuy(price)` / `emitSell(price)` sugar above. `createInfoSignal()`
+only exists inside the listener scope; on the top-level strategy use
+`createInfoStrategySignal(instrument)`.
+
+`signal.set(...)` also accepts a varargs market-data style for the `_m` chart marker, e.g.
+`signal.set("_m", "position", "belowBar", "shape", "arrowUp", "color", "#26a69a", "text", "BUY")`.
 
 Subscribers read the fields with `signal.get("key")` / `signal.has("key")` and
 `signal.getInstrument()`. Prefix a field's name with `_` to keep it out of reporting metadata.
@@ -314,5 +407,11 @@ misbehaves is far easier to diagnose when the engine it ran on is recorded along
 - **Forgetting `isReady()` check** — indicators need warmup periods. Always check before reading values.
 - **Mutating indicators in `update()`** — use `getReadOnlyExisting()` instead of `getExisting()` to prevent accidental state changes.
 - **One `setupIndicators` per strategy class** — it is called once per instrument, not per tick.
-- **Inner class vs lambda for listeners** — `AbstractWindowListener` gives access to helpers; prefer inner class over raw lambda.
+- **Lambda for a listener** — not a style choice: lambdas don't compile here at all. Use a named
+  inner class (see [Language level](#language-level)).
+- **`var` in strategy code** — doesn't compile; declare the type explicitly (see
+  [Language level](#language-level)).
+- **`emitBuy(price)` outside a window listener** — that single-argument overload only exists on
+  `AbstractWindowListener`; everywhere else (`update()`, helper methods) it's
+  `emitBuy(instrument, price)` (see [Signal emission](#signal-emission)).
 - **Using JavaBean getters on Ticker** — `Ticker` is a record; use `ticker.last()` not `ticker.getLast()`, `ticker.instrument()` not `ticker.getInstrument()`, `ticker.timestamp()` not `ticker.getTimestamp().getTime()`.

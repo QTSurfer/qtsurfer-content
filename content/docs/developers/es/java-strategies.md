@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 1
 lastUpdated: '2026-09-04T10:18:11Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: d0fc9b6b50458ffb46ad07ee472b226d24f31c68
+upstreamCommit: 5c90b3afbb7a4ccace1e3054060525ee0e2caef3
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -29,11 +29,33 @@ public class MyStrategy extends AbstractTickerStrategy {
 }
 ```
 
+## Imports permitidos
+
+El código de estrategia se ejecuta en un classloader aislado con una lista blanca de paquetes —
+importar cualquier cosa fuera de ella falla en tiempo de ejecución (no de compilación), con un
+error del estilo `<class> could not be found` a secas y sin indicación de _por qué_. Permitidos,
+por paquete de primer nivel (se incluye cada subpaquete):
+
+- `com.wualabs.qtsurfer.engine.*` — la propia API de estrategias e indicadores
+- `java.lang`, `java.util` (incluidos `java.util.stream`, `java.util.function`, `java.util.regex`, `java.util.concurrent.atomic`), `java.math`
+- `java.time` (incluidos `java.time.format`, `java.time.temporal`) — `Duration`, `Instant`, `LocalDate`, etc., se pueden usar sin problema, por ejemplo en `.window(name, Duration.ofSeconds(n), listener)`
+- `java.text` — `DecimalFormat`/`NumberFormat` para formatear valores en mensajes de señal o logs
+
+Bloqueados explícitamente sea cual sea el paquete: `System`, `Runtime`, `Thread`,
+`Executor`/`ExecutorService`. `java.io` está bloqueado por completo — una estrategia no tiene por
+qué hacer entrada/salida de ficheros o de red por su cuenta; todos los datos de mercado y la
+ejecución de órdenes pasan por la API del motor de arriba.
+
+Esta lista es deliberadamente pequeña y está compilada dentro de la plataforma en lugar de ser
+configurable — un sandbox para código de usuario no confiable no debería poder ampliarse por un
+canal más débil que un cambio de código revisado. Si una estrategia necesita algo fuera de ella,
+eso es una decisión de plataforma, no algo que sortear desde el cliente.
+
 `acceptInstrument` y `getExecutionMode` tienen valores por defecto razonables (aceptar todos los
 instrumentos, modo LONG). Sobrescríbelos solo si lo necesitas:
 
 ```java
-import com.wualabs.qtsurfer.engine.core.Instrument;
+import com.wualabs.qtsurfer.engine.core.instrument.Instrument;
 import com.wualabs.qtsurfer.engine.strategy.execution.ExecutionMode;
 
 @Override
@@ -50,6 +72,47 @@ public ExecutionMode getExecutionMode(Instrument instrument) {
 > Nota: el `acceptInstrument` **por defecto** _no_ es incondicional — filtra según la moneda de
 > salida de la estrategia / `acceptCurrency`. Para aceptar **todos** los instrumentos sin
 > condición, sobrescríbelo explícitamente devolviendo `true`.
+
+## Nivel de lenguaje
+
+El código de estrategia se compila contra una base de lenguaje bastante anterior al JDK sobre el
+que corre la propia plataforma — escribirlo como Java moderno produce un error de compilación sin
+ninguna pista de que la causa es el nivel de lenguaje y no una errata. En concreto, evita:
+
+- **`var`** (inferencia de tipo en variables locales) — declara el tipo explícitamente.
+  `updateIndicators(...)` devuelve `InstrumentMapRTIndicator`; `setupIndicators` recibe
+  `InstrumentGroupRTIndicator` — dos tipos distintos, fáciles de confundir en cuanto no puedes
+  apoyarte en `var` para taparlo.
+- **Lambdas y referencias a método** (`x -> ...`, `Foo::bar`) — no es solo cuestión de estilo: aquí
+  no compilan en absoluto, en ninguna posición (argumento, asignación, valor de retorno). Usa una
+  clase interna con nombre o anónima, que es además lo que ya exige todo window listener (ver más
+  abajo).
+- **Expresiones `switch`** (`switch (x) { case 1 -> ...; }`) — usa una sentencia `switch` clásica,
+  o `if`/`else`.
+- **Records**, **tipos sellados**, **coincidencia de patrones** (`instanceof` con vinculación,
+  `switch` con patrones) — nada de esto está disponible; escribe el equivalente en formato largo.
+- **Una variable local capturada sin `final`** — una clase anónima o interna que lee una variable
+  de su método envolvente necesita que esa variable esté declarada `final`, explícitamente. La
+  captura de variables efectivamente finales (sin palabra clave, mientras no se reasignen) no está
+  soportada: una variable que sería legal capturar en Java moderno aquí sigue necesitando la
+  palabra clave.
+
+Dos más, específicas de implementar una interfaz funcional genérica (`Predicate<Double>`,
+`BiFunction<Double,Double,Double>`, …) como clase anónima — la sobrescritura de aspecto natural
+parece correcta y aun así no compila:
+
+- **Declara los parámetros sobrescritos como `Object`, no con el tipo real del genérico**, y haz la
+  conversión dentro del cuerpo del método.
+  `new Predicate<Double>() { public boolean test(Double v) { ... } }` falla con
+  _«must implement method ... test(Object)»_ — el método puente que necesita una sobrescritura
+  tipada como `Double` nunca se genera. `public boolean test(Object v) { return (Double) v > 0; }`
+  es lo que compila de verdad. Esto aplica a cada parámetro de cada método de estas interfaces:
+  `BiFunction.apply(Object, Object)`, `Consumer.accept(Object)`, todos.
+- **El tipo de retorno no tiene este problema** — decláralo con el tipo real (`Double`, no
+  `Object`); solo los parámetros necesitan ser `Object`.
+
+Los bloques de texto y el `try`-with-resources sí funcionan. Ante la duda, escríbelo como lo haría
+Java 7.
 
 ## Configuración de indicadores
 
@@ -79,22 +142,23 @@ Personalizado: `Duration.ofSeconds(n)` o `Duration.ofMinutes(n)`
 ### Leer valores de indicadores fuera de un listener
 
 ```java
-import com.wualabs.qtsurfer.engine.core.Instrument;
+import com.wualabs.qtsurfer.engine.core.instrument.Instrument;
 import com.wualabs.qtsurfer.engine.core.Ticker;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentMapRTIndicator;
 
 @Override
 public void update(Ticker ticker) {
     Instrument instrument = ticker.instrument();
     updateInstrument(instrument, ticker.timestamp());
-    var ind = updateIndicators(instrument, ticker);
+    InstrumentMapRTIndicator ind = updateIndicators(instrument, ticker);
 
     if (!ind.getExisting("emaSlow").isReady()) return; // wait for warmup
 
     double fast = ind.getValue("emaFast");
     double slow = ind.getValue("emaSlow");
 
-    if (fast > slow) emitBuy(ticker.last());
-    else             emitSell(ticker.last());
+    if (fast > slow) emitBuy(instrument, ticker.last());
+    else             emitSell(instrument, ticker.last());
 }
 ```
 
@@ -170,7 +234,7 @@ de un listener (por ejemplo en `update()`) accede a él con `getStateStore(instr
 public void update(Ticker ticker) {
     Instrument instrument = ticker.instrument();
     updateInstrument(instrument, ticker.timestamp());
-    var ind = updateIndicators(instrument, ticker);
+    InstrumentMapRTIndicator ind = updateIndicators(instrument, ticker);
 
     StateStore store = getStateStore(instrument).orElseThrow();
     long ticks = store.inc("ticks");
@@ -199,27 +263,56 @@ store.getState("key", def)  // with default
 
 ```java
 @StrategyProperty(name = "rsi.period", description = "RSI period", defaultValue = "14")
-private int rsiPeriod = 14;
+private int rsiPeriod;
 
 @StrategyProperty(name = "ema.fast", description = "Fast EMA period", defaultValue = "9")
-private int fastPeriod = 9;
+private int fastPeriod;
 ```
 
-Las propiedades se inyectan antes de que se llame a `setupIndicators`.
+La anotación y el campo son toda la declaración — sin getter, sin setter. Las propiedades se
+inyectan antes de que se llame a `setupIndicators`, y lo mismo vale para un vector de parámetros de
+`submit_sweep`: se escribe directamente en el campo.
+
+**La clave de parámetro de `submit_sweep` es el `name` de la anotación (con puntos), NO el nombre
+del campo Java.** En el ejemplo de arriba, la clave de la cuadrícula es `rsi.period` / `ema.fast`,
+no `rsiPeriod` / `fastPeriod`:
+
+**Deja que `defaultValue` sea el único sitio donde se escribe el valor por defecto.** Un
+inicializador de campo (`private int fastPeriod = 9;`) se ejecuta _después_ de haberse aplicado el
+valor por defecto de la anotación y lo sobrescribe, así que, si los dos llegan a discrepar, la
+estrategia corre con el inicializador mientras la plataforma registra el valor de la anotación
+junto a los resultados. Declarar el valor por defecto una sola vez, en la anotación, elimina la
+duda.
+
+Declara un setter de JavaBean solo cuando la propiedad lo necesite — validación, acotado, o
+recalcular algo derivado de ella. Cuando existe un setter, todos los canales de inyección pasan por
+él, así que la protección nunca se salta. El campo no puede ser `static` (su valor se compartiría
+entre ensayos de un barrido corriendo en paralelo) ni `final` (nada podría asignarlo tras la
+construcción); cualquiera de los dos casos necesita un setter, y una propiedad sin ninguno se
+reporta como aviso en lugar de omitirse en silencio.
+
+`min`, `max` y `step` en la anotación son pistas de rango orientativas que puede leer la cuadrícula
+de parámetros de un barrido — no se validan contra ellas, son solo un rango sugerido para
+prerrellenarla.
 
 ## Emisión de señales
 
-| Método                | Cuándo usarlo                                                    |
-| --------------------- | ----------------------------------------------------------------- |
-| `emitBuy(price)`     | Entrar en largo                                                   |
-| `emitSell(price)`    | Entrar en corto / cerrar el largo                                 |
-| `emitSignal(signal)` | Señal personalizada (`BuySignal`, `SellSignal`, `InfoStrategySignal`) |
+Hay dos sobrecargas, y cuál está disponible depende de desde dónde llames — confundirlas falla al
+compilar con un error de método inexistente, no en tiempo de ejecución:
+
+| Método                                                        | Dónde está disponible                                                                                                    |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `emitBuy(instrument, price)` / `emitSell(instrument, price)` | En cualquier punto de la propia clase de estrategia — `update()`, `onChange()` antes de delegar, métodos auxiliares       |
+| `emitBuy(price)` / `emitSell(price)`                         | Solo dentro de un window listener (`AbstractWindowListener.onChange`, ver más abajo) — ahí el instrumento es implícito    |
+| `emitSignal(signal)`                                         | Señal personalizada (`BuySignal`, `SellSignal`, `InfoStrategySignal`), en cualquiera de los dos contextos                 |
 
 ### Señales de datos / analítica — `InfoStrategySignal`
 
 Para estrategias que no operan y que emiten **campos calculados** (analítica, métricas) en lugar de
-compra/venta, construye un `InfoStrategySignal`, adjúntale pares clave/valor arbitrarios y
-llama a `emitSignal`:
+compra/venta, construye un `InfoStrategySignal`, adjúntale pares clave/valor arbitrarios y llama a
+`emitSignal`. Hay dos constructores, siguiendo la misma convención que `emitBuy`:
+
+- **Nivel de estrategia (`update()`) — `createInfoStrategySignal(instrument)`**, instrumento explícito:
 
 ```java
 InfoStrategySignal signal = createInfoStrategySignal(instrument);  // from AbstractTickerStrategy
@@ -228,6 +321,25 @@ signal.set("zscore", z);
 signal.set("vwap", vwap);
 emitSignal(signal);
 ```
+
+- **Dentro de un window listener (`AbstractWindowListener.onChange`) — `createInfoSignal()`**, instrumento implícito:
+
+```java
+InfoStrategySignal signal = createInfoSignal();  // listener knows its instrument
+signal.set("interval", "1m");
+signal.set("zscore", z);
+signal.set("vwap", vwap);
+emitSignal(signal);
+```
+
+La forma del listener no recibe instrumento porque el listener ya lo conoce — la misma convención
+que el azúcar sintáctico `emitBuy(price)` / `emitSell(price)` de arriba. `createInfoSignal()` solo
+existe dentro del ámbito del listener; en el nivel de estrategia usa
+`createInfoStrategySignal(instrument)`.
+
+`signal.set(...)` también acepta un estilo varargs de datos de mercado para el marcador de gráfico
+`_m`, por ejemplo
+`signal.set("_m", "position", "belowBar", "shape", "arrowUp", "color", "#26a69a", "text", "BUY")`.
 
 Los suscriptores leen los campos con `signal.get("key")` / `signal.has("key")` y
 `signal.getInstrument()`. Prefija el nombre de un campo con `_` para que quede fuera de los
@@ -344,8 +456,13 @@ diagnosticar cuando el motor sobre el que corrió queda registrado junto al resu
 - **Mutar indicadores en `update()`** — usa `getReadOnlyExisting()` en lugar de `getExisting()`
   para evitar cambios accidentales de estado.
 - **Un `setupIndicators` por clase de estrategia** — se llama una vez por instrumento, no por tick.
-- **Clase interna frente a lambda para listeners** — `AbstractWindowListener` da acceso a helpers;
-  prefiere una clase interna frente a una lambda cruda.
+- **Lambda como listener** — no es una cuestión de estilo: aquí las lambdas no compilan en
+  absoluto. Usa una clase interna con nombre (consulta [Nivel de lenguaje](#nivel-de-lenguaje)).
+- **`var` en código de estrategia** — no compila; declara el tipo explícitamente (consulta
+  [Nivel de lenguaje](#nivel-de-lenguaje)).
+- **`emitBuy(price)` fuera de un window listener** — esa sobrecarga de un solo argumento solo existe
+  en `AbstractWindowListener`; en cualquier otro sitio (`update()`, métodos auxiliares) es
+  `emitBuy(instrument, price)` (consulta [Emisión de señales](#emisión-de-señales)).
 - **Usar getters de JavaBean sobre `Ticker`** — `Ticker` es un record; usa `ticker.last()` en lugar
   de `ticker.getLast()`, `ticker.instrument()` en lugar de `ticker.getInstrument()`,
   `ticker.timestamp()` en lugar de `ticker.getTimestamp().getTime()`.

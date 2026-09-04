@@ -2,9 +2,8 @@
 title: Strategy patterns
 description: Apply reusable filters, exits, state transitions, and market-wide calculations.
 order: 3
-lastUpdated: '2026-08-18T18:44:33Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: d0fc9b6b50458ffb46ad07ee472b226d24f31c68
+upstreamCommit: 5c90b3afbb7a4ccace1e3054060525ee0e2caef3
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
 ---
 
@@ -25,10 +24,13 @@ raw signal
 indicators
     .add("raw", TickerValueSource.Close)
     .distance("distemas", "ema60", "ema500")
-    .clamp("distemas", v -> Math.abs(v) <= 0.1, 0.0)
+    .clamp("distemas", new Predicate<Double>() {
+        public boolean test(Object v) { return Math.abs((Double) v) <= 0.1; }
+    }, 0.0)
     .percentChange("chgDistemas")
-    .conditional("smoothDistemas", "chgDistemas", v -> v != 0,
-        indicators.getReadOnlyExisting("ema500"), zeroIndicator)
+    .conditional("smoothDistemas", "chgDistemas", new Predicate<RTIndicator>() {
+        public boolean test(Object ind) { return ((RTIndicator) ind).getValue() != 0; }
+    }, indicators.getReadOnlyExisting("ema500"), zeroIndicator)
     .window("smoothDistemas", WindowTime.s1, new DetectorListener(this, indicators));
 ```
 
@@ -217,13 +219,21 @@ public void update(Ticker ticker) {
     Instrument ins = ticker.instrument();
 
     double z = getRTIndicator(ins, "closeZScore")     // this instrument's own indicator
-        .map(RTIndicator::getValue).orElse(Double.NaN);
+        .map(new Function<RTIndicator, Double>() {
+            public Double apply(Object r) { return ((RTIndicator) r).getValue(); }
+        }).orElse(Double.NaN);
 
-    List<Double> prices = new ArrayList<>();          // read across all tracked instruments
+    // final: a local captured by an anonymous class below must be declared final here —
+    // effectively-final capture (no keyword needed) isn't supported.
+    final List<Double> prices = new ArrayList<>();    // read across all tracked instruments
     for (Instrument other : getInstruments()) {
         getRTIndicator(other, "price")
-            .filter(RTIndicator::isReady)
-            .ifPresent(ind -> prices.add(ind.getValue()));
+            .filter(new Predicate<RTIndicator>() {
+                public boolean test(Object r) { return ((RTIndicator) r).isReady(); }
+            })
+            .ifPresent(new Consumer<RTIndicator>() {
+                public void accept(Object ind) { prices.add(((RTIndicator) ind).getValue()); }
+            });
     }
     // ... compute a market-wide stat from `prices`, then emitSignal(...)
 }

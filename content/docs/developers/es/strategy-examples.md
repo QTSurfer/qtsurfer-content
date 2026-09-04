@@ -4,7 +4,7 @@ description: Usa estrategias Java completas que muestran el ciclo de vida admiti
 order: 4
 lastUpdated: '2026-09-04T10:18:11Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: d0fc9b6b50458ffb46ad07ee472b226d24f31c68
+upstreamCommit: 5c90b3afbb7a4ccace1e3054060525ee0e2caef3
 upstreamPath: skills/qtsurfer-java-strategy/references/examples.md
 ---
 
@@ -13,9 +13,10 @@ upstreamPath: skills/qtsurfer-java-strategy/references/examples.md
 Compra cuando la EMA rápida cruza por encima de la lenta; vende en el cruce contrario.
 
 ```java
-import com.wualabs.qtsurfer.engine.core.Instrument;
+import com.wualabs.qtsurfer.engine.core.instrument.Instrument;
 import com.wualabs.qtsurfer.engine.core.Ticker;
 import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentMapRTIndicator;
 import com.wualabs.qtsurfer.engine.strategy.AbstractTickerStrategy;
 
 public class EmaCrossoverStrategy extends AbstractTickerStrategy {
@@ -31,15 +32,15 @@ public class EmaCrossoverStrategy extends AbstractTickerStrategy {
     public void update(Ticker ticker) {
         Instrument inst = ticker.instrument();
         updateInstrument(inst, ticker.timestamp());
-        var ind = updateIndicators(inst, ticker);
+        InstrumentMapRTIndicator ind = updateIndicators(inst, ticker);
 
         if (!ind.getExisting("slow").isReady()) return;
 
         boolean currentFastAbove = ind.getValue("fast") > ind.getValue("slow");
         if (fastAboveSlow == null) { fastAboveSlow = currentFastAbove; return; }
 
-        if (currentFastAbove && !fastAboveSlow)  emitBuy(ticker.last());
-        if (!currentFastAbove && fastAboveSlow)  emitSell(ticker.last());
+        if (currentFastAbove && !fastAboveSlow)  emitBuy(inst, ticker.last());
+        if (!currentFastAbove && fastAboveSlow)  emitSell(inst, ticker.last());
         fastAboveSlow = currentFastAbove;
     }
 }
@@ -188,14 +189,16 @@ import java.time.Duration;
 
 public class ConfigurableEmaStrategy extends AbstractTickerStrategy {
 
+    // The annotation is the whole declaration: no accessors, and the default written once, on
+    // defaultValue rather than on a field initializer that would overwrite it.
     @StrategyProperty(name = "ema.fast", description = "Fast EMA period", defaultValue = "9")
-    private int fastPeriod = 9;
+    private int fastPeriod;
 
     @StrategyProperty(name = "ema.slow", description = "Slow EMA period", defaultValue = "21")
-    private int slowPeriod = 21;
+    private int slowPeriod;
 
     @StrategyProperty(name = "window.seconds", description = "Window in seconds", defaultValue = "1")
-    private int windowSeconds = 1;
+    private int windowSeconds;
 
     @Override
     protected void setupIndicators(InstrumentGroupRTIndicator indicators) {

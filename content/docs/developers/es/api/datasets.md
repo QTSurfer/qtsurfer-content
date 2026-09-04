@@ -5,7 +5,7 @@ order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
 upstreamPath: docs/datasets.md
-lastUpdated: '2026-09-04T00:00:00Z'
+lastUpdated: '2026-09-04T10:18:11Z'
 ---
 
 Haz backtest contra un CSV que subes en lugar de contra un exchange gestionado: crea un conjunto

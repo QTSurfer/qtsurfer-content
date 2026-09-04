@@ -2,7 +2,7 @@
 title: Modelo de ejecución de un backtest
 description: El modelo mental detrás de la API de backtest — las tres identidades de las que depende una ejecución, qué garantiza cada etapa del ciclo de vida, cómo funcionan el sondeo y la idempotencia, y qué contiene un resultado.
 order: 5.8
-lastUpdated: '2026-09-04T00:00:00Z'
+lastUpdated: '2026-09-04T10:18:11Z'
 ---
 
 Las guías de la API documentan cada endpoint. Esta página describe el modelo que comparten esos

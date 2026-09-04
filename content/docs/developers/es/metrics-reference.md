@@ -2,7 +2,7 @@
 title: Referencia de métricas
 description: Cada campo que informa un resultado de backtest, barrido o walk-forward — su definición, unidades, cómo lo calcula el motor y cuándo está presente.
 order: 5.9
-lastUpdated: '2026-09-04T00:00:00Z'
+lastUpdated: '2026-09-04T10:18:11Z'
 ---
 
 Los resultados llevan dos familias de números con convenciones distintas. Los campos cuyo nombre

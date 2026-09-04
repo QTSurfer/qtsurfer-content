@@ -3,9 +3,9 @@ title: Equity curves
 description: Transform, retain, retrieve, and plot backtest and sweep equity curves.
 order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
+upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
 upstreamPath: docs/equity_curves.md
-lastUpdated: '2026-08-31T22:24:26Z'
+lastUpdated: '2026-09-04T00:00:00Z'
 ---
 
 An equity curve describes the account value through a backtest. QTSurfer returns the same
@@ -208,5 +208,8 @@ according to `meta`, not according to the submitted defaults or query string.
 The endpoint returns `404` when the sweep or `runIx` is unknown, or when that trial's curve was not
 retained. Those cases are intentionally indistinguishable to the caller.
 
-Without a retained sweep curve, reproduce the chosen trial by compiling its winning parameter values
-as strategy defaults and running a plain execution against the same prepared window.
+Without a retained sweep curve, reproduce the chosen trial with [`params` on a plain
+`execute`](backtest_execute#executing-a-backtest) — pass the row's winning parameter values and
+the same `prepareJobId`, no recompile needed. This is an independent execution, not a replay of the
+sweep trial: the two paths don't share a simulator, so a metric may differ from the leaderboard row
+that sent you here.

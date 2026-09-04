@@ -3,9 +3,9 @@ title: Datasets
 description: Upload historical ticker data and use it in the standard backtesting workflow.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
+upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
 upstreamPath: docs/datasets.md
-lastUpdated: '2026-08-31T22:24:26Z'
+lastUpdated: '2026-09-04T00:00:00Z'
 ---
 
 Backtest against a CSV you upload instead of a managed exchange: create a dataset, `PUT` the file
@@ -104,8 +104,15 @@ micros — detected from the first row, then enforced for every later row) and `
 required columns. Optional: `open`, `high`, `low`, `volume`, `quoteVolume`, `bid`, `bidSize`,
 `ask`, `askSize`. **Cadence and timestamp unit are discovered from the data, not declared.**
 
+The bytes `PUT` to `upload.url` may be that CSV directly, gzipped (`.gz`), or zipped (`.zip`,
+exactly one file inside — a dataset is one file regardless of how it travels). Detected from
+the content itself: there is no filename or `Content-Type` anywhere in this flow for a client
+to declare it with, so nothing needs to be sent besides the bytes.
+
 ```bash
 curl -X PUT "$UPLOAD_URL" --data-binary @my-btc-ticks.csv
+# or gzip/zip it first -- detected from content, no extra parameter needed
+curl -X PUT "$UPLOAD_URL" --data-binary @my-btc-ticks.csv.gz
 ```
 
 ## Finalizing an upload (triggering ingest)
@@ -141,7 +148,7 @@ case below).
 
 | Field | Notes |
 |---|---|
-| `status` | `uploading` (file `PUT`, not finalized yet) → `ingesting` (finalize called, worker parsing/validating) → `ready` (`version` carries the result) \| `failed` (e.g. bad CSV contract, mixed timestamp units) |
+| `status` | `uploading` (file `PUT`, not finalized yet) → `ingesting` (finalize called, worker parsing/validating) → `ready` (`version` carries the result) \| `failed` (e.g. bad CSV contract, mixed timestamp units, a `.zip` with no file inside or more than one) |
 | `jobId` | the ingest job id, while `status` is `ingesting` |
 | `version` | a [`DatasetVersion`](#datasetversion), present when `status` is `ready` or `failed` |
 
@@ -150,7 +157,8 @@ case below).
 | Field | Notes |
 |---|---|
 | `id` | the version id — pass as `datasetVersionId` on prepare to pin it |
-| `bytes`, `rows` | size of the uploaded file, number of data rows |
+| `bytes` | size of the CSV itself -- decompressed, if the upload was a `.gz`/`.zip` -- not the size of the bytes `PUT` to storage |
+| `rows` | number of data rows |
 | `cadence` | discovered bar cadence (`1s`, `1m`, `1h`, ...) |
 | `timestampUnit` | `iso` \| `s` \| `ms` \| `us` — the unit the `timestamp` column arrived in |
 | `gaps`, `largestGapSteps` | gap count at the discovered cadence, and the largest one's size in cadence steps |

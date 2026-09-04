@@ -2,7 +2,7 @@
 title: Metrics reference
 description: Every field a backtest, sweep, or walk-forward result reports — its definition, units, how the engine computes it, and when it is present.
 order: 5.9
-lastUpdated: '2026-09-03T00:00:00Z'
+lastUpdated: '2026-09-03T22:06:47Z'
 ---
 
 Results carry two families of numbers with different conventions. Fields whose name ends in

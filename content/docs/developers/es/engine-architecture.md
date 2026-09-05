@@ -146,11 +146,10 @@ consulta [Compilar una estrategia](/docs/developers/api/strategy).
 
 ## Compilación y validación
 
-Las estrategias se envían como código fuente Java y se compilan en la plataforma. La clase
-compilada usa un subconjunto restringido de Java — por ejemplo, se usa una clase anónima donde
-iría una lambda — y los diagnósticos del compilador vuelven literalmente cuando falla la
-compilación. La identidad de una estrategia compilada se deriva de lo que significa el código, así
-que reformatearlo no crea una estrategia nueva.
+Las estrategias se envían como código fuente Java y se compilan en la plataforma, y los
+diagnósticos del compilador vuelven literalmente cuando falla la compilación. La identidad de una
+estrategia compilada se deriva de lo que significa el código, así que reformatearlo no crea una
+estrategia nueva.
 
 La validación va un paso más allá que la compilación: el motor instancia la clase y la hace pasar
 por una serie sintética acotada, de modo que fallos de cableado como un listener que nunca se

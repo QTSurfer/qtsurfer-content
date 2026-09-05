@@ -136,10 +136,9 @@ against known keys — see [Compiling a strategy](/docs/developers/api/strategy)
 
 ## Compilation and validation
 
-Strategies are submitted as Java source and compiled on the platform. The compiled class is a
-restricted subset of Java — for example, an anonymous class is used where a lambda would be — and
-the compiler diagnostics come back verbatim when compilation fails. A compiled strategy's identity
-is derived from what the code means, so reformatting does not create a new strategy.
+Strategies are submitted as Java source and compiled on the platform, and the compiler diagnostics
+come back verbatim when compilation fails. A compiled strategy's identity is derived from what the
+code means, so reformatting does not create a new strategy.
 
 Validation goes one step further than compilation: the engine instantiates the class and drives it
 through a bounded synthetic series, so wiring faults such as a listener that never fires or an

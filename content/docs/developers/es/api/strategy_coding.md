@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
+upstreamCommit: d7e359ba7fb2011e8d73fa75772823d417d4d0a5
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-09-04T10:18:11Z'
 ---
@@ -139,9 +139,7 @@ emitSignal(buy);
 
 Los mismos campos se aplican de forma simétrica a una entrada en corto. Una condición de stop la
 evalúa el motor de forma repetida y puede suprimir el stop hasta que una condición más amplia de la
-estrategia lo permita. Es lógica de estrategia en vivo, no datos de señal serializables. Como las
-estrategias compiladas usan un subconjunto restringido de Java, usa un `BooleanSupplier` anónimo en
-lugar de una lambda cuando necesites uno.
+estrategia lo permita. Es lógica de estrategia en vivo, no datos de señal serializables.
 
 ## Información y metadatos de gráfico
 

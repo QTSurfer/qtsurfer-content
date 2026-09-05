@@ -3,7 +3,7 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
+upstreamCommit: d7e359ba7fb2011e8d73fa75772823d417d4d0a5
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-08-31T22:24:26Z'
 ---
@@ -138,8 +138,7 @@ emitSignal(buy);
 
 The same fields apply symmetrically to a short entry. A stop condition is evaluated repeatedly by
 the engine and can suppress the stop until a wider strategy condition permits it. It is live
-strategy logic, not serializable signal data. Because compiled strategies use a restricted Java
-subset, use an anonymous `BooleanSupplier` rather than a lambda when one is needed.
+strategy logic, not serializable signal data.
 
 ## Information and chart metadata
 

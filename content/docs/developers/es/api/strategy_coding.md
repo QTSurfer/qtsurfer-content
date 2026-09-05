@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d7e359ba7fb2011e8d73fa75772823d417d4d0a5
+upstreamCommit: 6376f14116357a82885e640ab700e704196b0299
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-09-05T11:05:51Z'
 ---
@@ -20,9 +20,9 @@ la skill mantenida [`qtsurfer-java-strategy`][strategy-skill]:
 npx skills add QTSurfer/strategy-skills --skill qtsurfer-java-strategy
 ```
 
-La skill también cubre cómo elegir una clase base de estrategia, configurar indicadores, gestionar
-el estado por instrumento y el subconjunto de Java que acepta el compilador de estrategias. Una vez
-listo el fuente, [compílalo y valídalo a través de la API](strategy).
+La skill también cubre cómo elegir una clase base de estrategia, configurar indicadores y gestionar
+el estado por instrumento. Una vez listo el fuente, [compílalo y valídalo a través de la
+API](strategy).
 
 ## Señales de ejecución y señales de información
 

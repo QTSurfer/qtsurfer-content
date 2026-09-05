@@ -151,6 +151,13 @@ diagnósticos del compilador vuelven literalmente cuando falla la compilación. 
 estrategia compilada se deriva de lo que significa el código, así que reformatearlo no crea una
 estrategia nueva.
 
+Escribe Java normal para JDK 25. La sintaxis moderna está soportada — `var`, lambdas y referencias
+a método, expresiones `switch`, records, coincidencia de patrones — de modo que una estrategia se
+lee como cualquier otra clase Java que escribirías hoy.
+
+Java es por donde empieza la plataforma, no donde termina: vienen más lenguajes y más formas de
+construir una estrategia. Esta página lo dirá cuando lleguen.
+
 La validación va un paso más allá que la compilación: el motor instancia la clase y la hace pasar
 por una serie sintética acotada, de modo que fallos de cableado como un listener que nunca se
 dispara o un indicador leído antes de estar listo aparecen antes del primer backtest real. El

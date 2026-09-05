@@ -140,6 +140,13 @@ Strategies are submitted as Java source and compiled on the platform, and the co
 come back verbatim when compilation fails. A compiled strategy's identity is derived from what the
 code means, so reformatting does not create a new strategy.
 
+Write ordinary Java for JDK 25. Modern syntax is supported — `var`, lambdas and method references,
+switch expressions, records, pattern matching — so a strategy reads the way any other Java class
+you would write today reads.
+
+Java is where the platform starts, not where it stops: more languages and more ways to build a
+strategy are on the way. This page will say so when they land.
+
 Validation goes one step further than compilation: the engine instantiates the class and drives it
 through a bounded synthetic series, so wiring faults such as a listener that never fires or an
 indicator read before it is ready surface before the first real backtest. The verdict, together

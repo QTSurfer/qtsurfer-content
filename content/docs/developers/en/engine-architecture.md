@@ -2,7 +2,7 @@
 title: Engine architecture
 description: How the QTSurfer engine turns market data into strategy decisions and results — data sources, incremental indicators, window listeners, signals, execution pipelines, properties, and compilation.
 order: 0.5
-lastUpdated: '2026-09-03T22:06:47Z'
+lastUpdated: '2026-09-05T10:47:57Z'
 ---
 
 Every QTSurfer strategy runs inside the same engine, whether it is being backtested against

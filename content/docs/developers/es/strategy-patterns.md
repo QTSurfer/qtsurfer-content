@@ -4,7 +4,7 @@ description: Aplica filtros, salidas, transiciones de estado y cálculos a nivel
 order: 3
 lastUpdated: '2026-09-04T10:18:11Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: d0fc9b6b50458ffb46ad07ee472b226d24f31c68
+upstreamCommit: 47cc75d5b0a11695ac0f8b5e80513780a3f671b8
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
 ---
 

@@ -3,7 +3,7 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d7e359ba7fb2011e8d73fa75772823d417d4d0a5
+upstreamCommit: 6376f14116357a82885e640ab700e704196b0299
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-09-05T11:05:51Z'
 ---
@@ -20,9 +20,9 @@ signal package][signal-javadoc]. For agent-assisted authoring, install the maint
 npx skills add QTSurfer/strategy-skills --skill qtsurfer-java-strategy
 ```
 
-The skill also covers choosing a strategy base class, configuring indicators, managing
-per-instrument state, and the Java subset accepted by the strategy compiler. Once the source is
-ready, [compile and validate it through the API](strategy).
+The skill also covers choosing a strategy base class, configuring indicators, and managing
+per-instrument state. Once the source is ready, [compile and validate it through the
+API](strategy).
 
 ## Execution signals and information signals
 

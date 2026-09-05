@@ -5,7 +5,7 @@ order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 6376f14116357a82885e640ab700e704196b0299
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-09-05T11:05:51Z'
+lastUpdated: '2026-09-05T11:15:20Z'
 ---
 
 Una estrategia de QTSurfer consume datos de mercado, actualiza indicadores y estado, y emite

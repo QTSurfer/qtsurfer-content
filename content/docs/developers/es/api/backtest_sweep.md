@@ -5,7 +5,7 @@ order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: b17ef4083a2579846561f87a3fb39026dfabeb73
 upstreamPath: docs/backtest_sweep.md
-lastUpdated: '2026-09-04T10:18:11Z'
+lastUpdated: '2026-09-07T11:57:33Z'
 ---
 
 Ejecuta una estrategia sobre una cuadrícula de parámetros en lugar de un único conjunto fijo de

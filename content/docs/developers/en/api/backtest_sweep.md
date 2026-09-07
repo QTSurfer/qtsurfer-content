@@ -5,7 +5,7 @@ order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: b17ef4083a2579846561f87a3fb39026dfabeb73
 upstreamPath: docs/backtest_sweep.md
-lastUpdated: '2026-09-04T09:49:48Z'
+lastUpdated: '2026-09-07T11:57:33Z'
 ---
 
 Run a strategy across a parameter grid instead of one fixed set of values, poll a ranked

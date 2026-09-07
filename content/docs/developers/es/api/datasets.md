@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6de1a8ef5eb063b0e26823925708f5471e11c72c
+upstreamCommit: 9eded3b0fbcb360bcc888b1ad4f02cf9631706a0
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-07T13:05:19Z'
 ---
@@ -62,7 +62,7 @@ ciclo de vida como `createdAt`, `currentVersionId`, el rango y la cadencia se ob
 ```
 
 `uploadId` es lo que pasas a [finalizar](#finalizar-una-subida-disparar-la-ingesta); `upload.url`
-es el destino prefirmado — sube (`PUT`) el CSV en bruto ahí directamente, sin cabecera
+es el destino prefirmado — sube (`PUT`) el fichero en bruto ahí directamente, sin cabecera
 `Authorization`.
 
 ¿Perdiste esta respuesta? No se pierde nada — llama a [`POST .../uploads`](#abrir-una-nueva-sesión-de-subida)

@@ -107,9 +107,10 @@ and TypeScript, a DuckDB extension queries `.lastra` files directly with SQL, an
 round-trips between Lastra, Parquet, CSV, and Arrow. The format and the tooling are published under
 the QTSurfer organisation on GitHub.
 
-For data QTSurfer does not manage, a **dataset** can be uploaded as CSV: a header row, a `timestamp`
-column in ISO-8601 or epoch seconds, milliseconds, or microseconds, a `close` column, and optional
-open, high, low, volume, and quote columns. Cadence and timestamp unit are discovered from the data
+For data QTSurfer does not manage, a **dataset** can be uploaded as CSV or parquet: a header row on
+a CSV (a parquet file carries its columns by name), a `timestamp` column in ISO-8601 or epoch
+seconds, milliseconds, or microseconds, a `close` column, and optional open, high, low, volume, and
+quote columns. Cadence and timestamp unit are discovered from the data
 rather than declared, ingestion reports the discovered range, cadence, and gap count, and the
 dataset is then prepared and executed exactly like a managed exchange.
 

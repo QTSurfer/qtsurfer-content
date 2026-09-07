@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
+upstreamCommit: b17ef4083a2579846561f87a3fb39026dfabeb73
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-09-04T10:18:11Z'
 ---
@@ -156,7 +156,17 @@ que no sobrevive a un pequeño desplazamiento de los parámetros ya no gana por 
 se convierten ambos en `Aborted`, ya que el `PARTIAL` de un barrido ya es terminal, a diferencia
 del `Partial` no terminal en el que puede estar un job simple). `state.completed` son ticks reales
 procesados en un barrido plano; en un barrido walk-forward siempre vale `0` por ahora.
-`state.size` siempre vale `0` en toda vía de execute y sweep hoy — nada lo rellena todavía.
+
+`state.size` es una estimación de partida — el rango solicitado frente a la cadencia objetivo de la
+preparación, fijada antes de cargar dato alguno en lugar de medirse sobre él — tanto en una
+ejecución simple como en un barrido plano, de modo que `completed / size` es una proporción de
+progreso utilizable desde el momento en que arranca el job. El valor de un barrido plano es la suma
+de la estimación propia de cada shard (el tamaño por ejecución de ese shard multiplicado por su
+porción de vectores), la misma forma aditiva que ya usa `state.completed`. Un `0` significa que el
+contexto de preparación del job es anterior a este campo, nunca un valor inventado ocupando el
+lugar de uno real. En un barrido `walkForward`, `state.size` sigue valiendo siempre `0`, la misma
+exclusión de alcance que `state.completed` ya tiene ahí — no construyas sobre él una barra de
+progreso por pliegues.
 
 #### `progress` — `SweepProgress`
 

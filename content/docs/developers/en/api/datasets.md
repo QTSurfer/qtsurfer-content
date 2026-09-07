@@ -3,14 +3,14 @@ title: Datasets
 description: Upload historical ticker data and use it in the standard backtesting workflow.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
+upstreamCommit: b17ef4083a2579846561f87a3fb39026dfabeb73
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-04T09:49:48Z'
 ---
 
-Backtest against a CSV you upload instead of a managed exchange: create a dataset, `PUT` the file
-to a presigned URL, finalize it to trigger ingest, then [prepare/execute](backtest_execute)
-exactly as normal but with the reserved `exchangeId: user`.
+Backtest against a CSV or parquet file you upload instead of a managed exchange: create a dataset,
+`PUT` the file to a presigned URL, finalize it to trigger ingest, then
+[prepare/execute](backtest_execute) exactly as normal but with the reserved `exchangeId: user`.
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -99,15 +99,21 @@ Errors: `404` no such dataset for this user.
 
 ## Uploading the file
 
-**CSV format.** Header row required. `timestamp` (ISO-8601, or numeric epoch seconds / millis /
-micros — detected from the first row, then enforced for every later row) and `close` are
-required columns. Optional: `open`, `high`, `low`, `volume`, `quoteVolume`, `bid`, `bidSize`,
-`ask`, `askSize`. **Cadence and timestamp unit are discovered from the data, not declared.**
+**CSV or parquet.** A CSV needs a header row; a parquet file carries its columns by name already.
+Either way, `timestamp` (ISO-8601, or numeric epoch seconds / millis / micros — detected from the
+first row, then enforced for every later row) and `close` are required. Optional: `open`, `high`,
+`low`, `volume`, `quoteVolume`, `bid`, `bidSize`, `ask`, `askSize`. **Cadence and timestamp unit
+are discovered from the data, not declared.**
 
-The bytes `PUT` to `upload.url` may be that CSV directly, gzipped (`.gz`), or zipped (`.zip`,
-exactly one file inside — a dataset is one file regardless of how it travels). Detected from
-the content itself: there is no filename or `Content-Type` anywhere in this flow for a client
-to declare it with, so nothing needs to be sent besides the bytes.
+A CSV upload is converted to our native columnar format (`lastra`) for storage. A parquet upload
+is stored as-is today. Either way, check `dataFormat` on the [ready
+version](#datasetversion--one-successfully-ingested-upload) for which one you actually get back —
+don't assume it from how you uploaded it.
+
+The bytes `PUT` to `upload.url` may be that file directly, gzipped (`.gz`), or zipped (`.zip`,
+exactly one file inside — a dataset is one file regardless of how it travels). Format is detected
+from the content itself: there is no filename or `Content-Type` anywhere in this flow for a
+client to declare it with, so nothing needs to be sent besides the bytes.
 
 ```bash
 curl -X PUT "$UPLOAD_URL" --data-binary @my-btc-ticks.csv
@@ -157,11 +163,13 @@ case below).
 | Field | Notes |
 |---|---|
 | `id` | the version id — pass as `datasetVersionId` on prepare to pin it |
-| `bytes` | size of the CSV itself -- decompressed, if the upload was a `.gz`/`.zip` -- not the size of the bytes `PUT` to storage |
+| `bytes` | size of the **stored** file (`dataUrl`) — a converted `lastra` for a CSV upload (decompressed first, if it arrived as `.gz`/`.zip`), or the parquet file itself for a parquet upload. Not the size of the bytes originally `PUT` |
 | `rows` | number of data rows |
 | `cadence` | discovered bar cadence (`1s`, `1m`, `1h`, ...) |
 | `timestampUnit` | `iso` \| `s` \| `ms` \| `us` — the unit the `timestamp` column arrived in |
 | `gaps`, `largestGapSteps` | gap count at the discovered cadence, and the largest one's size in cadence steps |
+| `dataUrl` | presigned GET URL to the stored file — see `dataFormat`. Present once `ready` |
+| `dataFormat` | `lastra` (converted, from a CSV/gzip/zip upload) \| `parquet` (unconverted, from a parquet upload) |
 
 ```bash
 curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/uploads/$UPLOAD_ID \
@@ -175,7 +183,9 @@ curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/uploads/$UPLOAD_ID \
   "version": {
     "datasetId": "ds_3f9a1c2e7b0d4a5f", "id": "dsv_8e2b4f19c6a03d7e",
     "bytes": 4831022, "rows": 86400, "cadence": "1s",
-    "timestampUnit": "iso", "gaps": 0, "largestGapSteps": 0
+    "timestampUnit": "iso", "gaps": 0, "largestGapSteps": 0,
+    "dataUrl": "https://storage.qtsurfer.com/.../dsv_8e2b4f19c6a03d7e/ticker_BTC_USDT_....lastra?X-Amz-...",
+    "dataFormat": "lastra"
   }
 }
 ```
@@ -196,6 +206,11 @@ a dataset covers.
 | `currentVersionId` | the most recently finalized, successfully ingested version. **Absent until at least one upload has finished ingesting** |
 | `updatedAt` | when `currentVersionId` last changed; absent until it has a value |
 | `from`, `to`, `cadence` | the current version's own range/cadence, as discovered at ingest. **Absent until a version exists** |
+
+`GET /datasets/{datasetId}` alone adds `dataUrl`/`dataFormat` (same meaning as on
+[`DatasetVersion`](#datasetversion--one-successfully-ingested-upload)) once the current version is
+`ready`, plus `_links.self`. The bulk listing never mints these — a presigned download URL for
+every dataset on a screen that renders no chart isn't worth the exposure.
 
 ## Listing your datasets
 

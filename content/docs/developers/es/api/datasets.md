@@ -3,15 +3,15 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
+upstreamCommit: b17ef4083a2579846561f87a3fb39026dfabeb73
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-04T10:18:11Z'
 ---
 
-Haz backtest contra un CSV que subes en lugar de contra un exchange gestionado: crea un conjunto
-de datos, sube el fichero (`PUT`) a una URL prefirmada, finalízalo para disparar la ingesta, y
-luego [prepara/ejecuta](backtest_execute) exactamente como de costumbre pero con el
-`exchangeId: user` reservado.
+Haz backtest contra un CSV o un fichero parquet que subes en lugar de contra un exchange
+gestionado: crea un conjunto de datos, sube el fichero (`PUT`) a una URL prefirmada, finalízalo
+para disparar la ingesta, y luego [prepara/ejecuta](backtest_execute) exactamente como de
+costumbre pero con el `exchangeId: user` reservado.
 
 | Método | Ruta | Propósito |
 |---|---|---|
@@ -104,17 +104,23 @@ Errores: `404` no existe ese conjunto de datos para este usuario.
 
 ## Subir el fichero
 
-**Formato CSV.** Se requiere fila de cabecera. `timestamp` (ISO-8601, o segundos/milisegundos/
+**CSV o parquet.** Un CSV necesita fila de cabecera; un fichero parquet ya lleva sus columnas con
+nombre. En cualquiera de los dos casos, `timestamp` (ISO-8601, o segundos/milisegundos/
 microsegundos de época numéricos — detectado en la primera fila, y exigido después para cada fila
-posterior) y `close` son columnas obligatorias. Opcionales: `open`, `high`, `low`, `volume`,
-`quoteVolume`, `bid`, `bidSize`, `ask`, `askSize`. **La cadencia y la unidad de la marca de tiempo
-se descubren a partir de los datos, no se declaran.**
+posterior) y `close` son obligatorias. Opcionales: `open`, `high`, `low`, `volume`, `quoteVolume`,
+`bid`, `bidSize`, `ask`, `askSize`. **La cadencia y la unidad de la marca de tiempo se descubren a
+partir de los datos, no se declaran.**
 
-Los bytes que se suben (`PUT`) a `upload.url` pueden ser ese CSV directamente, comprimidos en
+Una subida CSV se convierte a nuestro formato columnar nativo (`lastra`) para almacenarla. Una
+subida parquet se guarda hoy tal cual. En ambos casos, consulta `dataFormat` en la [versión
+lista](#datasetversion--una-subida-ingerida-con-éxito) para saber qué recibes de vuelta
+realmente — no lo des por hecho a partir de cómo la subiste.
+
+Los bytes que se suben (`PUT`) a `upload.url` pueden ser ese fichero directamente, comprimidos en
 gzip (`.gz`), o en zip (`.zip`, exactamente un fichero dentro — un conjunto de datos es un único
-fichero sin importar cómo viaje). Se detecta a partir del propio contenido: en este flujo no hay
-ni nombre de fichero ni `Content-Type` con los que un cliente pueda declararlo, así que no hace
-falta enviar nada más que los bytes.
+fichero sin importar cómo viaje). El formato se detecta a partir del propio contenido: en este
+flujo no hay ni nombre de fichero ni `Content-Type` con los que un cliente pueda declararlo, así
+que no hace falta enviar nada más que los bytes.
 
 ```bash
 curl -X PUT "$UPLOAD_URL" --data-binary @my-btc-ticks.csv
@@ -166,11 +172,13 @@ puede caducar por sí mismo (ver el caso `404` más abajo).
 | Campo | Notas |
 |---|---|
 | `id` | el id de la versión — pásalo como `datasetVersionId` en la preparación para fijarla |
-| `bytes` | tamaño del CSV en sí -- descomprimido, si la subida fue un `.gz`/`.zip` -- no el tamaño de los bytes subidos (`PUT`) al almacenamiento |
+| `bytes` | tamaño del fichero **almacenado** (`dataUrl`) — un `lastra` convertido para una subida CSV (descomprimida antes, si llegó como `.gz`/`.zip`), o el propio fichero parquet para una subida parquet. No el tamaño de los bytes subidos originalmente (`PUT`) |
 | `rows` | número de filas de datos |
 | `cadence` | cadencia de barra descubierta (`1s`, `1m`, `1h`, ...) |
 | `timestampUnit` | `iso` \| `s` \| `ms` \| `us` — la unidad en la que llegó la columna `timestamp` |
 | `gaps`, `largestGapSteps` | número de huecos a la cadencia descubierta, y el tamaño del mayor en pasos de esa cadencia |
+| `dataUrl` | URL GET prefirmada al fichero almacenado — consulta `dataFormat`. Presente una vez `ready` |
+| `dataFormat` | `lastra` (convertido, desde una subida CSV/gzip/zip) \| `parquet` (sin convertir, desde una subida parquet) |
 
 ```bash
 curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/uploads/$UPLOAD_ID \
@@ -184,7 +192,9 @@ curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/uploads/$UPLOAD_ID \
   "version": {
     "datasetId": "ds_3f9a1c2e7b0d4a5f", "id": "dsv_8e2b4f19c6a03d7e",
     "bytes": 4831022, "rows": 86400, "cadence": "1s",
-    "timestampUnit": "iso", "gaps": 0, "largestGapSteps": 0
+    "timestampUnit": "iso", "gaps": 0, "largestGapSteps": 0,
+    "dataUrl": "https://storage.qtsurfer.com/.../dsv_8e2b4f19c6a03d7e/ticker_BTC_USDT_....lastra?X-Amz-...",
+    "dataFormat": "lastra"
   }
 }
 ```
@@ -205,6 +215,12 @@ una segunda llamada para ver qué cubre un conjunto de datos.
 | `currentVersionId` | la versión finalizada e ingerida con éxito más reciente. **Ausente hasta que al menos una subida ha terminado de ingerirse** |
 | `updatedAt` | cuándo cambió `currentVersionId` por última vez; ausente hasta que tiene un valor |
 | `from`, `to`, `cadence` | el rango/cadencia propios de la versión actual, tal como se descubrieron en la ingesta. **Ausentes hasta que existe una versión** |
+
+`GET /datasets/{datasetId}` por sí solo añade `dataUrl`/`dataFormat` (con el mismo significado que
+en [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)) una vez que la versión
+actual está `ready`, más `_links.self`. El listado masivo no los emite nunca — una URL de descarga
+prefirmada para cada conjunto de datos en una pantalla que no dibuja ninguna gráfica no compensa
+la exposición.
 
 ## Listar tus conjuntos de datos
 

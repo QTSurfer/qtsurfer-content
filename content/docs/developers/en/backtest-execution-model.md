@@ -57,8 +57,11 @@ result shape; everything before it is identical.
 
 A job's `state.status` moves through `New`, `Started`, and then one of `Completed`, `Aborted`,
 or `Failed`. A single execute job can also report `Partial` while still running. The `completed`
-counter is the number of events processed so far, which is the only progress signal a plain
-execute exposes.
+counter is the number of events processed so far, and `size` is an upfront estimate of how many
+there will be — set before any data loads, so `completed / size` is a progress ratio you can show
+from the start. A `size` of `0` means the job's prepare context predates that estimate, and a
+walk-forward sweep leaves it at `0` by design; see [Parameter
+sweeps](/docs/developers/api/backtest_sweep) for both cases.
 
 Two vocabularies coexist on sweeps: the sweep's own `status` (`RUNNING`, `COMPLETED`, `PARTIAL`,
 `CANCELLED`) and the embedded `state.status` in the job vocabulary above. `PARTIAL` and

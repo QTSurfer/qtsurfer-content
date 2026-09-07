@@ -62,8 +62,12 @@ propio sondeo y forma de resultado; todo lo anterior es idéntico.
 
 El `state.status` de un job pasa por `New`, `Started`, y luego uno de `Completed`, `Aborted` o
 `Failed`. Un job de ejecución simple también puede informar de `Partial` mientras sigue en
-marcha. El contador `completed` es el número de eventos procesados hasta el momento, que es la
-única señal de progreso que expone una ejecución simple.
+marcha. El contador `completed` es el número de eventos procesados hasta el momento, y `size` es
+una estimación de partida de cuántos habrá — fijada antes de cargar dato alguno, así que
+`completed / size` es una proporción de progreso que puedes mostrar desde el principio. Un `size`
+de `0` significa que el contexto de preparación del job es anterior a esa estimación, y un barrido
+walk-forward lo deja en `0` por diseño; consulta [Barridos de
+parámetros](/docs/developers/api/backtest_sweep) para ambos casos.
 
 En los barridos coexisten dos vocabularios: el propio `status` del barrido (`RUNNING`,
 `COMPLETED`, `PARTIAL`, `CANCELLED`) y el `state.status` incrustado, con el vocabulario de job de

@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b17ef4083a2579846561f87a3fb39026dfabeb73
+upstreamCommit: d262a75817eab6edc6689ac5c35d5382e70042f5
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-09-07T11:57:33Z'
 ---
@@ -191,7 +191,7 @@ fallida, reintentándose, o aún sin empezar.
 | `runIx` | índice determinista de base cero en la expansión de la cuadrícula, estable entre shards y ordenaciones |
 | `rank` | presente solo en la vista `ranked` |
 | `plateauScore`, `neighbourCount` | la puntuación de meseta es el objetivo del peor vecino; `neighbourCount: 0` significa que el punto no tenía vecinos con los que compararse — la puntuación no está respaldada, no confirmada. Léelos siempre juntos |
-| `deflatedSharpe` | probabilidad de que el Sharpe de esta ejecución refleje una ventaja real y no la mejor tirada entre todos los vectores probados. `> ~0,95` sobrevive a la corrección por pruebas múltiples; `≤ 0,5` es indistinguible del mejor de un montón de lanzamientos de moneda |
+| `deflatedSharpe` | probabilidad de que el Sharpe de esta ejecución refleje una ventaja real y no la mejor tirada entre todos los vectores probados. `> ~0,95` sobrevive a la corrección por pruebas múltiples; `≤ 0,5` es indistinguible del mejor de un montón de lanzamientos de moneda. **Ausente, no cero**, cuando el estadístico no es calculable de forma significativa: una ejecución abortada, un barrido con demasiado pocos ensayos para establecer dispersión alguna, menos de 3 retornos por periodo, o una serie de retornos degenerada (casi constante) |
 | `params`, `sharpe`, `sortino`, `pnl`, `pnlPct`, `cagr`, `maxDdPct`, `trades`, `winRate` | los resultados propios del ensayo |
 | `belowTradeFloor`, `aborted`, `runtimeMs` | |
 | `equityCurve` | presente solo cuando se seleccionó la curva de este ensayo — consulta [Curvas de equity](equity_curves#sweeps-select-retain-and-fetch-curves) |

@@ -97,7 +97,10 @@ atacan directamente los mecanismos anteriores, en lugar de dejar la clasificaci�
   `deflatedSharpe`: la probabilidad de que el Sharpe del ensayo refleje una ventaja real y no la
   mejor tirada entre todos los vectores probados. Los valores por encima de `0.95`, aproximadamente,
   sobreviven a la corrección por pruebas múltiples; los valores iguales o inferiores a `0.5` son
-  indistinguibles del mejor de un montón de lanzamientos de moneda.
+  indistinguibles del mejor de un montón de lanzamientos de moneda. Una fila también puede no
+  llevar `deflatedSharpe` en absoluto, y eso no es un cero: significa que el estadístico no se pudo
+  calcular — la ejecución abortó, el barrido tuvo muy pocos ensayos para establecer dispersión
+  alguna, o la serie de retornos era demasiado corta o demasiado plana para puntuarla.
 - **Probabilidad de sobreajuste del backtest.** Un barrido completado devuelve `pbo`, calculado
   mediante validación cruzada combinatoria simétrica sobre todo el barrido. Un valor por encima de
   `0.5`, aproximadamente, significa que el proceso de selección está eligiendo ruido.

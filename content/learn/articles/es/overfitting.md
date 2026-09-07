@@ -5,7 +5,7 @@ order: 3
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T20:33:24Z'
+lastUpdated: '2026-09-07T16:41:07Z'
 ---
 
 El **sobreajuste** (*overfitting*) es lo que ocurre cuando una estrategia se moldea a los accidentes

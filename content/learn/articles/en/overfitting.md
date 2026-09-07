@@ -90,7 +90,10 @@ mechanisms above directly, rather than leaving the leaderboard as the only outpu
 - **Deflated Sharpe ratio per trial.** Each leaderboard row carries a `deflatedSharpe` value: the
   probability that the trial's Sharpe reflects real edge rather than the best draw among however
   many vectors were tried. Values above roughly `0.95` survive the multiple-testing correction;
-  values at or below `0.5` are indistinguishable from the best of a pile of coin flips.
+  values at or below `0.5` are indistinguishable from the best of a pile of coin flips. A row can
+  also carry no `deflatedSharpe` at all, which is not a zero: the statistic could not be computed —
+  the run aborted, the sweep had too few trials to establish any dispersion, or the return series
+  was too short or too flat to score.
 - **Probability of backtest overfitting.** A completed sweep reports `pbo`, computed by
   combinatorially symmetric cross-validation over the whole sweep. A value above roughly `0.5`
   means the selection process is picking noise.

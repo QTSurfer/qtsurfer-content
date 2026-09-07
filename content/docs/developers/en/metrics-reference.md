@@ -94,7 +94,7 @@ comparable:
 | `sharpe`, `sortino`, `pnl`, `pnlPct`, `cagr`, `maxDdPct`, `trades`, `winRate` | As above | The trial's own results. `pnlPct` and `maxDdPct` are on the `0`–`100` scale; `cagr` and `winRate` are ratios. |
 | `plateauScore` | Same units as the objective | The objective of the **worst** run in this point's immediate neighbourhood. The default ranking key. |
 | `neighbourCount` | Count | Neighbours that existed for the plateau score. `0` means the score is unevidenced, not confirmed. Read the two together. |
-| `deflatedSharpe` | Probability, `0.0`–`1.0` | Probability that this trial's Sharpe reflects real edge rather than the best draw among the vectors tried, accounting for sample length, skewness, and kurtosis. Above roughly `0.95` survives the correction; at or below `0.5` is indistinguishable from the best of a pile of random trials. |
+| `deflatedSharpe` | Probability, `0.0`–`1.0` | Probability that this trial's Sharpe reflects real edge rather than the best draw among the vectors tried, accounting for sample length, skewness, and kurtosis. Above roughly `0.95` survives the correction; at or below `0.5` is indistinguishable from the best of a pile of random trials. **Absent, not zero**, when the statistic isn't meaningfully computable — an aborted run, too few trials to establish any dispersion, fewer than three period returns, or a near-constant return series. |
 | `belowTradeFloor` | Boolean | `trades` fell below the sweep's `minTradeFloor` (thirty by default). The row stays in the results. |
 | `aborted` | Boolean | The run threw and measured nothing. Aborted rows are excluded from sensitivity aggregates. |
 | `runtimeMs` | Milliseconds | Wall-clock time of the trial. |

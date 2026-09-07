@@ -3,7 +3,7 @@ title: Datasets
 description: Upload historical ticker data and use it in the standard backtesting workflow.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b17ef4083a2579846561f87a3fb39026dfabeb73
+upstreamCommit: 6de1a8ef5eb063b0e26823925708f5471e11c72c
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-07T12:01:29Z'
 ---
@@ -146,7 +146,7 @@ nothing to finalize · `409` `uploadId` already produced a version (the error me
 
 `GET /datasets/{datasetId}/uploads/{uploadId}` — poll after finalize until `status` is `ready` or
 `failed`. Also reports `uploading` (finalize not called yet, but the file was `PUT`) before you
-finalize at all. **Postgres-backed once a version exists**, so `ready`/`failed` are permanent
+finalize at all. **Durably recorded once a version exists**, so `ready`/`failed` are permanent
 answers; `uploading`/`ingesting` reflect in-flight state that can itself age out (see the `404`
 case below).
 

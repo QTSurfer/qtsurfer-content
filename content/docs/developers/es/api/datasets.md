@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b17ef4083a2579846561f87a3fb39026dfabeb73
+upstreamCommit: 6de1a8ef5eb063b0e26823925708f5471e11c72c
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-07T12:01:29Z'
 ---
@@ -155,7 +155,7 @@ plan para un conjunto de datos.
 
 `GET /datasets/{datasetId}/uploads/{uploadId}` — sondea tras finalizar hasta que `status` sea
 `ready` o `failed`. También informa de `uploading` (finalize aún no llamado, pero el fichero ya se
-subió) antes de que finalices. **Respaldado por Postgres una vez existe una versión**, así que
+subió) antes de que finalices. **Se registra de forma duradera una vez existe una versión**, así que
 `ready`/`failed` son respuestas permanentes; `uploading`/`ingesting` reflejan estado en curso que
 puede caducar por sí mismo (ver el caso `404` más abajo).
 

@@ -88,9 +88,9 @@ De ahí se siguen dos prácticas:
 - Elige el universo a partir de las ventanas de cobertura del catálogo y del propio histórico del
   instrumento a fecha de inicio del backtest, no de la clasificación actual. Si la pregunta es «qué
   habría hecho esta estrategia en 2024», el universo es el de 2024.
-- Cuando el histórico de un par no lo gestiona la plataforma, súbelo como dataset: un CSV con una
-  columna `timestamp` y otra `close`, opcionalmente con apertura, máximo, mínimo y volumen, se ingiere
-  con su cadencia y sus huecos descubiertos y puede prepararse y ejecutarse exactamente igual que un
+- Cuando el histórico de un par no lo gestiona la plataforma, súbelo como dataset: un CSV o un
+  fichero parquet con una columna `timestamp` y otra `close`, opcionalmente con apertura, máximo,
+  mínimo y volumen, se ingiere con su cadencia y sus huecos descubiertos y puede prepararse y ejecutarse exactamente igual que un
   exchange gestionado. Así es como los doce pares retirados del ejemplo anterior vuelven a la prueba.
 
 Los backtests en QTSurfer ejecutan un instrumento por sesión preparada, de modo que un estudio de

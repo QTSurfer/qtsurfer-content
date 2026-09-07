@@ -3,7 +3,7 @@ title: Datos de mercado
 description: Descubre exchanges, instrumentos y datos históricos de mercado a través de la API REST.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
+upstreamCommit: 9eded3b0fbcb360bcc888b1ad4f02cf9631706a0
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-09-04T10:18:11Z'
 ---
@@ -69,5 +69,5 @@ compatible en lugar de acumular una hora entera en memoria.
 
 - [Backtests](backtest_execute) usan datos de exchange gestionados tras preparar una ventana
   solicitada.
-- [Conjuntos de datos](datasets) cubre datos CSV subidos por el usuario cuando la cobertura de un
-  exchange gestionado no es la fuente deseada.
+- [Conjuntos de datos](datasets) cubre datos subidos por el usuario — CSV o parquet — cuando la
+  cobertura de un exchange gestionado no es la fuente deseada.

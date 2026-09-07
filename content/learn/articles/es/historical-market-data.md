@@ -116,9 +116,10 @@ Java, Python y TypeScript, una extensión de DuckDB consulta ficheros `.lastra` 
 un conversor hace viajes de ida y vuelta entre Lastra, Parquet, CSV y Arrow. El formato y las
 herramientas se publican bajo la organización QTSurfer en GitHub.
 
-Para datos que QTSurfer no gestiona, puede subirse un **dataset** como CSV: una fila de cabecera, una
-columna `timestamp` en ISO-8601 o en segundos, milisegundos o microsegundos de época, una columna
-`close` y columnas opcionales de apertura, máximo, mínimo, volumen y cotización. La cadencia y la unidad
+Para datos que QTSurfer no gestiona, puede subirse un **dataset** como CSV o parquet: una fila de
+cabecera si es CSV (un fichero parquet ya lleva sus columnas con nombre), una columna `timestamp` en
+ISO-8601 o en segundos, milisegundos o microsegundos de época, una columna `close` y columnas
+opcionales de apertura, máximo, mínimo, volumen y cotización. La cadencia y la unidad
 de las marcas de tiempo se descubren a partir de los datos en lugar de declararse, la ingesta informa del
 rango, la cadencia y el número de huecos descubiertos, y el dataset se prepara y ejecuta después
 exactamente igual que un exchange gestionado.

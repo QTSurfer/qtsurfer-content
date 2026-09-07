@@ -84,9 +84,9 @@ Two practices follow:
 - Choose the universe from the catalogue's coverage windows and the instrument's own history as of
   the backtest's start date, not from the current ranking. If the question is "what would this
   strategy have done in 2024", the universe is the 2024 one.
-- When a pair's history is not managed by the platform, upload it as a dataset: a CSV with a
-  `timestamp` and `close` column, optionally with open, high, low, and volume, is ingested with its
-  discovered cadence and gaps and can be prepared and executed exactly like a managed exchange.
+- When a pair's history is not managed by the platform, upload it as a dataset: a CSV or parquet
+  file with a `timestamp` and `close` column, optionally with open, high, low, and volume, is
+  ingested with its discovered cadence and gaps and can be prepared and executed exactly like a managed exchange.
   This is how the delisted twelve in the example above get back into the test.
 
 Backtests in QTSurfer run one instrument per prepared session, so a universe study is a set of

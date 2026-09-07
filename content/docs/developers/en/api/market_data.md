@@ -3,7 +3,7 @@ title: Market data
 description: Discover exchanges, instruments, and historical market data through the REST API.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
+upstreamCommit: 9eded3b0fbcb360bcc888b1ad4f02cf9631706a0
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-08-31T22:24:26Z'
 ---
@@ -63,5 +63,5 @@ the response to disk or a compatible reader instead of buffering an hour in memo
 ## Related guides
 
 - [Backtests](backtest_execute) use managed exchange data after preparing a requested window.
-- [Datasets](datasets) covers caller-uploaded CSV data when managed exchange coverage is not the
-  desired source.
+- [Datasets](datasets) covers caller-uploaded data — CSV or parquet — when managed exchange
+  coverage is not the desired source.

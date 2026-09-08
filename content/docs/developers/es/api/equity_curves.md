@@ -3,7 +3,7 @@ title: Curvas de equity
 description: Transforma, retén, recupera y traza curvas de equity de backtests y barridos.
 order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
+upstreamCommit: b7fed4c6aa305679a46e27a5b432fbe3823428a7
 upstreamPath: docs/equity_curves.md
 lastUpdated: '2026-09-04T10:18:11Z'
 ---
@@ -14,8 +14,9 @@ un barrido, con reglas de entrega distintas:
 
 - Un backtest simple devuelve la curva en línea dentro de `results.equityCurve` y fija su
   transformación cuando se envía la ejecución.
-- Una fila de la clasificación de un barrido puede llevar un puntero en `equityCurve.url`;
-  obténla por separado y elige la transformación en el momento de la lectura.
+- Una fila de barrido con curva retenida lleva `equityCurve.url`. En la vista de materialización
+  (`?order=natural`) puede además traer la curva en línea; obtén su URL para elegir otra
+  transformación en el momento de la lectura.
 
 El primer punto es un ancla en la marca de tiempo `from` del backtest con el capital inicial.
 Cada punto posterior es una muestra por cada rendimiento emitido. `equity` es el valor de la
@@ -170,7 +171,13 @@ La retención (`mode`, `n`, `maxPct`) forma parte de la identidad del barrido. L
 defecto de la transformación no: dos envíos por lo demás idénticos que solo difieren en
 `resample`, `differential` o `outMode` deduplican al mismo `sweepId`.
 
-Las filas seleccionadas de la clasificación contienen un puntero, no puntos en línea:
+Con `topN` o `topPct`, toda ejecución completada que produjo operaciones retiene una curva.
+`equityCurve` está ausente, no es `null`, solo cuando una ejecución abortó, no produjo operaciones,
+o el barrido no pidió retención (`mode: auto` o `none`). La selección cambia cómo se entrega, no si
+la curva existe: la vista ordenada lleva un puntero, mientras que la vista de materialización
+(`?order=natural`) puede llevar ese mismo puntero junto con los puntos en línea.
+
+Por ejemplo, una fila de la vista ordenada puede contener un puntero:
 
 ```json
 {
@@ -188,9 +195,15 @@ Las filas seleccionadas de la clasificación contienen un puntero, no puntos en 
 }
 ```
 
-`equityCurve` está ausente, no es `null`, en las filas no seleccionadas. Los metadatos de la fila
-son una vista previa capturada en el momento de la selección; obtén `url` para la curva real,
-posiblemente ajustada por tamaño, y sus metadatos autoritativos.
+No uses la presencia de `equityCurve`, ni la ausencia de `url`, para saber si una curva viene en
+línea. Las dos señales engañan: una fila que solo lleva puntero tiene `equityCurve`, y una curva en
+línea conserva `url` para poder pedirla de nuevo con otra transformación. Mira `points` o
+`equities` en su lugar.
+
+Cuando una fila lleva solo el puntero, obtén `url` para la curva real, posiblemente ajustada por
+tamaño, y sus metadatos autoritativos. Los metadatos de la fila pueden ser una declaración y no una
+medición: en una curva no promocionada, su número de puntos se deriva del número de operaciones en
+lugar de leerse del almacenamiento.
 
 ## Parámetros de consulta de la curva de un barrido
 
@@ -207,11 +220,12 @@ El servidor puede seguir forzando una representación más pequeña por encima d
 tamaño. Interpreta la respuesta según `meta`, no según los valores por defecto enviados ni la
 cadena de consulta.
 
-El endpoint devuelve `404` cuando el barrido o el `runIx` son desconocidos, o cuando la curva de
-ese ensayo no se retuvo. Ambos casos son deliberadamente indistinguibles para quien llama.
+El endpoint devuelve `404` cuando el barrido o el `runIx` son desconocidos, o cuando ese ensayo no
+tiene curva retenida. Ambos casos son deliberadamente indistinguibles para quien llama.
 
 Sin una curva de barrido retenida, reproduce el ensayo elegido con [`params` en un `execute`
 simple](backtest_execute#executing-a-backtest) — pasa los valores de parámetro ganadores de la
 fila y el mismo `prepareJobId`, sin necesidad de recompilar. Es una ejecución independiente, no
-una repetición del ensayo del barrido: las dos vías no comparten simulador, así que una métrica
-puede diferir de la fila de la clasificación que te trajo hasta aquí.
+una repetición del ensayo del barrido, pero las dos vías están fijadas para coincidir en todas las
+métricas de la clasificación para un mismo vector. Trata una diferencia como un fallo que merece
+reportarse.

@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d262a75817eab6edc6689ac5c35d5382e70042f5
+upstreamCommit: b7fed4c6aa305679a46e27a5b432fbe3823428a7
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-09-07T16:41:07Z'
 ---
@@ -194,7 +194,7 @@ fallida, reintentándose, o aún sin empezar.
 | `deflatedSharpe` | probabilidad de que el Sharpe de esta ejecución refleje una ventaja real y no la mejor tirada entre todos los vectores probados. `> ~0,95` sobrevive a la corrección por pruebas múltiples; `≤ 0,5` es indistinguible del mejor de un montón de lanzamientos de moneda. **Ausente, no cero**, cuando el estadístico no es calculable de forma significativa: una ejecución abortada, un barrido con demasiado pocos ensayos para establecer dispersión alguna, menos de 3 retornos por periodo, o una serie de retornos degenerada (casi constante) |
 | `params`, `sharpe`, `sortino`, `pnl`, `pnlPct`, `cagr`, `maxDdPct`, `trades`, `winRate` | los resultados propios del ensayo |
 | `belowTradeFloor`, `aborted`, `runtimeMs` | |
-| `equityCurve` | presente solo cuando se seleccionó la curva de este ensayo — consulta [Curvas de equity](equity_curves#sweeps-select-retain-and-fetch-curves) |
+| `equityCurve` | presente cuando este ensayo completado tiene una curva retenida. Puede llevar solo una URL, o una URL más los puntos en línea; para distinguirlo mira `points`/`equities`, no la presencia del objeto o de la URL. Consulta [Curvas de equity](equity_curves#sweeps-select-retain-and-fetch-curves) |
 
 ### Ejemplo
 

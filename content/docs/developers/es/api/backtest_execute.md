@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc37afd8cf9ea955d212253460ac5d46b3791bb2
+upstreamCommit: b7fed4c6aa305679a46e27a5b432fbe3823428a7
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-09-04T10:18:11Z'
 ---
@@ -125,13 +125,15 @@ campos existieran. Dos vectores de `params` distintos sobre la misma preparació
 distintos, y `9` y `9.0` son el mismo.
 
 Acepta opcionalmente `params`: propiedades de estrategia para esta única ejecución, aplicadas sin
-recompilar. Así es como se vuelve a ejecutar una fila ganadora de la clasificación de un barrido
-para obtener su `equityCurve` — una fila de barrido lleva las métricas de clasificación pero nunca
-una curva, sea cual sea su tamaño (consulta [`docs/backtest_sweep.md`](backtest_sweep)). Compila la
-estrategia una vez, llama a este endpoint N veces con distintos `params`, y cada respuesta es un
-resultado de backtest normal con la curva incluida. La reejecución es una ejecución independiente,
-no una repetición del ensayo del barrido — las dos vías no comparten simulador, así que una métrica
-puede diferir de la fila de la clasificación que te trajo hasta aquí.
+recompilar. Úsalo para volver a ejecutar una fila de un barrido como un resultado de backtest
+normal con el vector de parámetros que elijas — por ejemplo, cuando necesitas el resultado del
+backtest simple junto a la curva del barrido (consulta
+[`docs/backtest_sweep.md`](backtest_sweep)). Compila la estrategia una vez, llama a este endpoint N
+veces con distintos `params`, y cada respuesta incluye la curva en las mismas condiciones que
+cualquier otro backtest simple. Es una ejecución independiente, no una repetición del ensayo del
+barrido, pero las dos vías están fijadas para coincidir en todas las métricas de la clasificación
+para un mismo vector. Trata una diferencia como un fallo que merece reportarse, no como
+comportamiento esperado.
 
 ### Cuerpo de la petición
 

@@ -123,8 +123,9 @@ de sobreajuste del backtest** sobre toda la cuadrícula.
 
 El endpoint de **sensibilidad** devuelve marginales y mapas de calor por pares agregados a partir de
 las filas de ensayo almacenadas, sin volver a ejecutar nada, y funciona sobre un barrido aún en curso.
-Las ejecuciones abortadas se excluyen en todo momento. Las curvas de equity se retienen solo para los
-ensayos seleccionados, y cancelar un barrido conserva todas las filas ya completadas.
+Las ejecuciones abortadas se excluyen en todo momento. Las curvas de equity se retienen cuando el barrido las pide, y
+entonces para cada ensayo completado que produjo operaciones, no solo para los seleccionados.
+Cancelar un barrido conserva todas las filas ya completadas.
 
 En la aplicación, este es el flujo de los **backtests simulados**: define un barrido reducido,
 ejecútalo y envía después un refinamiento que lo acote como una nueva fase del mismo experimento.

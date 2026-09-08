@@ -102,8 +102,8 @@ forma son los metadatos, no la petición.
 En un backtest simple la transformación se fija al enviar la ejecución y la curva se devuelve en
 línea. En un barrido de parámetros, las filas de la clasificación son resultados agregados y solo
 llevan curva los ensayos retenidos, seleccionados con `mode` (`auto`, `topN`, `topPct` o `none`); esas
-filas contienen un puntero que se obtiene por separado, con la transformación elegida en el momento de
-la lectura. Los valores de los indicadores y los marcadores de compra o venta que hay detrás de la curva
+filas llevan un puntero que se obtiene por separado, con la transformación elegida en el momento de
+la lectura, y algunas vistas incluyen además los puntos en línea. Los valores de los indicadores y los marcadores de compra o venta que hay detrás de la curva
 agregada están disponibles como señales almacenadas cuando la ejecución las solicita.
 
 ## Conceptos relacionados

@@ -116,7 +116,8 @@ reports the **probability of backtest overfitting** across the whole grid.
 
 The **sensitivity** endpoint returns marginals and pairwise heatmaps aggregated from stored trial
 rows, without re-running anything, and works on a sweep still in flight. Aborted runs are excluded
-throughout. Equity curves are retained for selected trials only, and cancelling a sweep keeps every
+throughout. Equity curves are retained when the sweep asks for them, and then for every
+completed trial that produced trades, not only the selected ones. Cancelling a sweep keeps every
 row already completed.
 
 In the application, this is the **simulated backtest** workflow: define a reduced sweep, run it,

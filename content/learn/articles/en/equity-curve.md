@@ -94,8 +94,9 @@ compact representation, so the metadata, not the request, is the source of truth
 
 For a plain backtest the transform is fixed when the run is submitted and the curve is returned
 inline. In a parameter sweep, leaderboard rows are aggregate outcomes and carry curves only for
-retained trials, selected by `mode` (`auto`, `topN`, `topPct`, or `none`); those rows hold a pointer
-that is fetched separately, with the transform chosen at read time. The indicator values and buy or
+retained trials, selected by `mode` (`auto`, `topN`, `topPct`, or `none`); those rows carry a pointer
+fetched separately, with the transform chosen at read time, and some views include the points
+inline as well. The indicator values and buy or
 sell markers behind the aggregate curve are available as stored signals when the run requests them.
 
 ## Related concepts

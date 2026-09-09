@@ -5,7 +5,7 @@ order: 7
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-03T20:33:24Z'
+lastUpdated: '2026-09-08T13:58:26Z'
 ---
 
 Un **barrido de parámetros** ejecuta la misma estrategia muchas veces, cada una con una combinación

@@ -108,8 +108,9 @@ Dos vías de datos llevan a la misma llamada de ejecución:
   cubre el catálogo, y la cobertura se mide en horas con datos sobre horas esperadas.
 - **Conjunto de datos.** `exchangeId` es el valor reservado `user`, y `datasetId` (opcionalmente
   fijado a un `datasetVersionId`) sustituye al instrumento. La cobertura se mide como filas sobre
-  los pasos que implica la cadencia descubierta, y una preparación respaldada por un conjunto de
-  datos no consume capacidad de worker, porque lee un fichero ya ingerido.
+  los pasos que implica la cadencia descubierta, ausente para un conjunto de datos `rt` (sin paso
+  fijo, no hay número de filas esperado) — y una preparación respaldada por un conjunto de datos no
+  consume capacidad de worker, porque lee un fichero ya ingerido.
 
 Una vez preparada, una sesión de conjunto de datos se comporta exactamente igual que una
 gestionada: los mismos endpoints de execute, sweep y curva de equity, la misma forma de

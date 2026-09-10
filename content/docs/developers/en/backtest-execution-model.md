@@ -100,8 +100,9 @@ Two data paths lead to the same execute call:
   covers, and coverage is measured in hours with data over hours expected.
 - **Dataset.** `exchangeId` is the reserved value `user`, and `datasetId` (optionally pinned to a
   `datasetVersionId`) replaces the instrument. Coverage is measured as rows over the steps the
-  discovered cadence implies, and a dataset-backed prepare does not consume worker capacity,
-  because it reads an already-ingested file.
+  discovered cadence implies, absent for an `rt` dataset (no fixed step, so no expected row count) —
+  and a dataset-backed prepare does not consume worker capacity, because it reads an
+  already-ingested file.
 
 Once prepared, a dataset session behaves exactly like a managed one: the same execute, sweep, and
 equity-curve endpoints, the same result shape.

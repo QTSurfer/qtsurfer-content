@@ -5,7 +5,7 @@ order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 92aeb9355a85b700698bce2ffcbedd2363bf1799
 upstreamPath: docs/backtest_execute.md
-lastUpdated: '2026-09-08T13:58:26Z'
+lastUpdated: '2026-09-10T21:40:58Z'
 ---
 
 Prepare historical data, run a compiled strategy against it once, poll the result, and plot the

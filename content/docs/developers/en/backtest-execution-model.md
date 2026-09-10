@@ -2,7 +2,7 @@
 title: Backtest execution model
 description: The mental model behind the backtest API — the three identities a run depends on, what each lifecycle stage guarantees, how polling and idempotency work, and what a result contains.
 order: 5.8
-lastUpdated: '2026-09-07T11:57:33Z'
+lastUpdated: '2026-09-10T21:40:58Z'
 ---
 
 The API guides document each endpoint. This page describes the model those endpoints share, so the

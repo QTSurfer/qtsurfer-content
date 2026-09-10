@@ -3,7 +3,7 @@ title: Datasets
 description: Upload historical ticker data and use it in the standard backtesting workflow.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9eded3b0fbcb360bcc888b1ad4f02cf9631706a0
+upstreamCommit: 92aeb9355a85b700698bce2ffcbedd2363bf1799
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-07T13:26:56Z'
 ---
@@ -21,6 +21,8 @@ Backtest against a CSV or parquet file you upload instead of a managed exchange:
 | `POST` | `/datasets/{datasetId}/uploads` | Open a new upload session for an existing dataset |
 | `POST` | `/datasets/{datasetId}/uploads/{uploadId}/finalize` | Trigger ingest |
 | `GET` | `/datasets/{datasetId}/uploads/{uploadId}` | Poll upload/ingest state |
+| `POST` | `/datasets/imports` | Create a dataset by fetching history instead of uploading it |
+| `GET` | `/datasets/{datasetId}/imports/{importId}` | Poll fetch/ingest state |
 
 v1 is ticker data only — `type` is always `"ticker"`. `instrument` must be a plain spot pair
 (`BASE/QUOTE`, exactly one `/`); derivative forms (`BTC/USDT:USDT`) are rejected.
@@ -156,7 +158,8 @@ case below).
 |---|---|
 | `status` | `uploading` (file `PUT`, not finalized yet) → `ingesting` (finalize called, worker parsing/validating) → `ready` (`version` carries the result) \| `failed` (e.g. bad CSV contract, mixed timestamp units, a `.zip` with no file inside or more than one) |
 | `jobId` | the ingest job id, while `status` is `ingesting` |
-| `version` | a [`DatasetVersion`](#datasetversion), present when `status` is `ready` or `failed` |
+| `error` | human-readable reason, present when `status` is `failed`. Durably recorded alongside the failure — stays available however long after the fact you poll |
+| `version` | a [`DatasetVersion`](#datasetversion--one-successfully-ingested-upload), present when `status` is `ready` or `failed` |
 
 #### `DatasetVersion` — one successfully ingested upload
 
@@ -165,9 +168,9 @@ case below).
 | `id` | the version id — pass as `datasetVersionId` on prepare to pin it |
 | `bytes` | size of the **stored** file (`dataUrl`) — a converted `lastra` for a CSV upload (decompressed first, if it arrived as `.gz`/`.zip`), or the parquet file itself for a parquet upload. Not the size of the bytes originally `PUT` |
 | `rows` | number of data rows |
-| `cadence` | discovered bar cadence (`1s`, `1m`, `1h`, ...) |
+| `cadence` | discovered from the data's own timestamps: a fixed grid (`1s`, `5s`, `15s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `1d`) when at least half the intervals between rows fall on that step (small clock jitter tolerated), or `rt` — native data at the rate it was captured, each row at its own timestamp with no fixed step (per-trade on-chain swaps, block-spaced or sub-second ticks, irregular intervals). An `rt` dataset can be resampled to any fixed cadence at prepare time |
 | `timestampUnit` | `iso` \| `s` \| `ms` \| `us` — the unit the `timestamp` column arrived in |
-| `gaps`, `largestGapSteps` | gap count at the discovered cadence, and the largest one's size in cadence steps |
+| `gaps`, `largestGapSteps` | gap count at the discovered cadence, and the largest one's size in cadence steps. Always `0` for `rt` |
 | `dataUrl` | presigned GET URL to the stored file — see `dataFormat`. Present once `ready` |
 | `dataFormat` | `lastra` (converted, from a CSV/gzip/zip upload) \| `parquet` (unconverted, from a parquet upload) |
 
@@ -193,6 +196,131 @@ curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/uploads/$UPLOAD_ID \
 Errors: `404` no such dataset for this user, or genuinely nothing known about this `uploadId` — no
 version, no in-flight job, nothing was ever `PUT` to its upload URL.
 
+## Importing a dataset instead of uploading one
+
+`POST /datasets/imports` — a second way to get data into a dataset: instead of `PUT`ting a file
+yourself, ask the API to go fetch history on your behalf. Creates the dataset and starts the fetch
+in the same call — there's no separate upload step, and the result lands as a dataset version
+indistinguishable from an uploaded one once it's ready.
+
+`type` selects the source. `dex` — history over a pool/pair's own on-chain market — is the only
+value today; other source types join this same endpoint later. A `dex` import has two data shapes,
+chosen by the top-level `cadence`:
+
+* Omitted/blank (default) — on-chain swap history, replayed directly from the pool/pair's own
+  chain, each swap at its own timestamp (native per-trade cadence).
+* `1s` \| `1m` \| `5m` — pre-aggregated candles at that width instead of raw trades. The resulting
+  dataset's `type` is `klines`, not `ticker`.
+
+| Field | Type | Notes |
+|---|---|---|
+| `name` | string | required, unique among your datasets. `409` if already taken |
+| `instrument` | string | required, plain spot pair — the dataset's own label, independent of the pool's on-chain token order |
+| `from`, `to` | string (date-time) | required, ISO-8601 UTC. `from` inclusive, `to` exclusive, `from < to`. Total span is capped by your tier |
+| `cadence` | string | optional. Omitted/blank = native per-trade cadence (see below). One of `1s` \| `1m` \| `5m` instead asks for pre-aggregated candles at that width — any other value is `400` |
+| `type` | string | required, `"dex"` is the only value today |
+| `dex.network` | string | required, one of `ethereum` \| `robinhood` |
+| `dex.id` | string | required unless `cadence` requested candles, in which case it's ignored. `"uniswap"` is the only value today — which on-chain DEX protocol `dex.contract` implements |
+| `dex.version` | string | required unless `cadence` requested candles, in which case it's ignored. `"v2"` \| `"v3"` |
+| `dex.contract` | string | required, the pool (v3) or pair (v2) contract address |
+| `dex.factory` | string | optional — omit to auto-discover on-chain from `contract`; supply only if you already know it or the pool/pair belongs to a non-canonical factory. Either way the pool/pair is validated against whichever factory is used before anything is fetched. Ignored if `cadence` requested candles |
+
+**On-chain cadence is native, not resampled.** A plain `dex` import (no `cadence`) keeps the
+source's own per-trade event cadence — each swap at the timestamp it happened, so the resulting
+version's `cadence` is `rt` unless the swaps happen to sit on a fixed grid — rather than bucketing
+into candles; resample to a coarser cadence afterward as a separate step if you need one from
+on-chain data. Asking for `cadence: "1s"`/`"1m"`/`"5m"` instead gets you pre-aggregated candles at
+that width directly. Not every network supports every cadence yet — an unsupported combination
+fails asynchronously, same as an unresolvable pool (see `failed` below), not at request time.
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "weth-usdc-week",
+    "instrument": "WETH/USDC",
+    "from": "2026-08-01T00:00:00Z",
+    "to": "2026-08-08T00:00:00Z",
+    "type": "dex",
+    "dex": {
+      "network": "ethereum",
+      "id": "uniswap",
+      "version": "v3",
+      "contract": "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640"
+    }
+  }'
+# → 202 {"datasetId":"ds_3f9a1c2e7b0d4a5f","importId":"imp_01j9z...","jobId":"dataset-import:...","status":"fetching"}
+```
+
+Or, for pre-aggregated candles instead of raw on-chain swaps:
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "weth-usdc-1s",
+    "instrument": "WETH/USDC",
+    "from": "2026-08-01T00:00:00Z",
+    "to": "2026-08-01T06:00:00Z",
+    "cadence": "1s",
+    "type": "dex",
+    "dex": {
+      "network": "ethereum",
+      "contract": "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640"
+    }
+  }'
+```
+
+`importId` is what you poll with, below — there's no separate "finalize" step the way an upload
+has.
+
+Errors: `400` invalid request, `instrument` isn't a plain spot pair, `from >= to`, `cadence`
+present but not one of its supported values, the range exceeds your tier's import ceiling, the
+range's rough size estimate exceeds your tier's row limit, `dex.network`/`dex.id` not one of their
+supported values, `dex.contract`/`dex.factory` fail basic shape validation, or (when `cadence` is
+omitted) `dex.id`/`dex.version` missing (whether the pool/pair actually resolves, and for a candle
+`cadence` whether that combination is servable on the requested network, is checked later,
+asynchronously — see `failed` below) · `409` dataset name already taken · `429` your tier's dataset
+count limit is reached.
+
+## Polling an import
+
+`GET /datasets/{datasetId}/imports/{importId}` — poll after `POST /datasets/imports` until
+`status` is `ready` or `failed`. An import spends real time fetching from its source before
+anything is even staged; once fetched, it re-enters the exact same ingest chain an upload uses.
+
+### Response — `DatasetImportState`
+
+| Field | Notes |
+|---|---|
+| `status` | `fetching` (reading from the source, nothing staged yet — the one status only an import ever reports) → `ingesting` (fetched, staged, worker parsing/validating) → `ready` (`version` carries the result) \| `failed` |
+| `jobId` | the fetch/ingest job id, while `status` is `fetching` or `ingesting` |
+| `error` | human-readable reason, present when `status` is `failed` — an unresolvable pool/pair, no data in the requested range, a range older than the source retains, the fetch exceeding your tier's time ceiling, or any of the ingest-side reasons `DatasetUploadState.error` can carry, once fetching hands off to that same chain. Durably recorded, same as on the upload path |
+| `version` | a [`DatasetVersion`](#datasetversion--one-successfully-ingested-upload), present when `status` is `ready` or `failed` |
+
+```bash
+curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/imports/$IMPORT_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{
+  "importId": "imp_01j9z1x2y3z4a5b6c7d8e9f0g1",
+  "status": "ready",
+  "version": {
+    "datasetId": "ds_3f9a1c2e7b0d4a5f", "id": "dsv_8e2b4f19c6a03d7e",
+    "bytes": 4831022, "rows": 604800, "cadence": "rt",
+    "timestampUnit": "us", "gaps": 0, "largestGapSteps": 0,
+    "dataUrl": "https://storage.qtsurfer.com/.../dsv_8e2b4f19c6a03d7e/ticker_WETH_USDC_....lastra?X-Amz-...",
+    "dataFormat": "lastra"
+  }
+}
+```
+
+Errors: `404` no such dataset for this user, or genuinely nothing known about this `importId`.
+
 ## Dataset shape
 
 Both [`GET /datasets`](#listing-your-datasets) and [`GET
@@ -202,10 +330,10 @@ a dataset covers.
 
 | Field | Notes |
 |---|---|
-| `datasetId`, `name`, `type` (`"ticker"`), `instrument`, `createdAt` | always present |
+| `datasetId`, `name`, `type` (`"ticker"` \| `"klines"`), `instrument`, `createdAt` | always present. `type` is `"klines"` only for a `dex` import that requested a candle `cadence`; `"ticker"` for everything else (uploads, and native-cadence `dex` imports) |
 | `currentVersionId` | the most recently finalized, successfully ingested version. **Absent until at least one upload has finished ingesting** |
 | `updatedAt` | when `currentVersionId` last changed; absent until it has a value |
-| `from`, `to`, `cadence` | the current version's own range/cadence, as discovered at ingest. **Absent until a version exists** |
+| `from`, `to`, `cadence` | the current version's own range/cadence (a fixed grid or `rt`, see [`DatasetVersion`](#datasetversion--one-successfully-ingested-upload)), as discovered at ingest. **Absent until a version exists** |
 
 `GET /datasets/{datasetId}` alone adds `dataUrl`/`dataFormat` (same meaning as on
 [`DatasetVersion`](#datasetversion--one-successfully-ingested-upload)) once the current version is

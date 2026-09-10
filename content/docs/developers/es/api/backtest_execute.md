@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b7fed4c6aa305679a46e27a5b432fbe3823428a7
+upstreamCommit: 92aeb9355a85b700698bce2ffcbedd2363bf1799
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-09-08T13:58:26Z'
 ---
@@ -40,7 +40,7 @@ Dos formas, según el segmento de ruta `exchangeId`:
 | `instrument` | string | obligatorio **salvo** que `exchangeId` sea el valor reservado `user` |
 | `datasetId` | string | **solo** para `exchangeId: user` — un conjunto de datos de `POST /datasets`, en lugar de `instrument` |
 | `datasetVersionId` | string | **solo** para `exchangeId: user`, opcional — fija una versión pasada en lugar de la actual del conjunto de datos |
-| `cadence` | enum | `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — por defecto `1s`. Los valores más gruesos que el origen deben ser múltiplos exactos de la cadencia de origen |
+| `cadence` | cadena | opcional. Exchange gestionado: uno de `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — por defecto `1s`. `exchangeId: user`: por defecto es la propia cadencia descubierta de la versión del conjunto de datos, servida tal cual; se acepta cualquier cadencia igual o más gruesa que ella y múltiplo exacto suyo, incluso fuera de esa lista (por ejemplo `15s`), y un conjunto de datos `rt` se remuestrea a cualquier cadencia fija. Más fina que el origen, o que no sea múltiplo exacto, es `400` |
 
 `exchangeId: user` está reservado para tus propios datos subidos — consulta
 [`docs/datasets.md`](datasets).
@@ -68,7 +68,8 @@ capacidad de worker.
 `GET .../prepare/{jobId}`
 
 Una preparación de un solo instrumento siempre es terminal (`status: Completed`) — decide a
-partir de `coverageRatio` (por ejemplo, ejecuta en cuanto supere un umbral elegido) en lugar de
+partir de `coverageRatio` (por ejemplo, ejecuta en cuanto supere un umbral elegido; contra un
+conjunto de datos `rt`, que no tiene ratio, a partir de `dataFrom`/`dataTo`) en lugar de
 sondear a la espera de horas ausentes que quizá nunca lleguen. Una hora ausente normalmente
 significa baja actividad, no datos perdidos.
 
@@ -81,10 +82,10 @@ conjunto de datos:
 | Campo | Notas |
 |---|---|
 | `dataFrom`, `dataTo` | rango de datos disponible. Presente en ambos casos |
-| `coverageRatio` | `0`–`1`. Exchange gestionado: `hoursWithData / totalHours`. Conjunto de datos (`exchangeId: user`): `rows / expectedStepsAtCadence` sobre el rango propio de la versión del conjunto de datos, repitiendo lo que calculó la ingesta una vez |
+| `coverageRatio` | `0`–`1`. Exchange gestionado: `hoursWithData / totalHours`. Conjunto de datos (`exchangeId: user`): `rows / expectedStepsAtCadence` sobre el rango propio de la versión del conjunto de datos, repitiendo lo que calculó la ingesta una vez. **Ausente para un conjunto de datos `rt`** — sin paso fijo, no hay número de filas esperado |
 | `totalHours`, `hoursWithData` | solo exchange gestionado — ausente en una preparación respaldada por un conjunto de datos |
 | `hoursWithoutData` | solo exchange gestionado — una entrada por cada hora vacía: `{hour, expected, rationale}`. `rationale` es `pending_conversion` (un nuevo sondeo puede rellenarla), `low_activity`, o `unknown` |
-| `cadence`, `gaps`, `largestGapSteps` | solo respaldado por conjunto de datos — la cadencia propia descubierta de la versión del conjunto de datos, y su número/tamaño de huecos a esa cadencia |
+| `cadence`, `gaps`, `largestGapSteps` | solo respaldado por conjunto de datos — la cadencia propia descubierta de la versión del conjunto de datos (una cuadrícula fija o `rt`, consulta [`docs/datasets.md`](datasets)), y su número/tamaño de huecos a esa cadencia. `gaps`/`largestGapSteps` son `0` para `rt` |
 
 ### Ejemplo
 

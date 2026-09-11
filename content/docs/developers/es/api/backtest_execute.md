@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 92aeb9355a85b700698bce2ffcbedd2363bf1799
+upstreamCommit: 69b4fc678dec3b91d685b6c624015d508be463f5
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-09-10T21:40:58Z'
 ---
@@ -120,10 +120,10 @@ curl https://api.qtsurfer.net/v1/backtest/binance/ticker/prepare/$PREPARE_JOB_ID
 Ejecuta la estrategia identificada por `strategyId` sobre los datos de `prepareJobId`; el
 instrumento y el rango de fechas se recuperan del job de preparación, no se vuelven a enviar.
 Funciona igual para una preparación respaldada por un conjunto de datos. El mismo
-`(prepareJobId, strategyId, storeSignals, equityCurve, params)` → el mismo `jobId` (idempotente) —
-una petición que omite `equityCurve` o `params` deduplica exactamente igual que antes de que esos
-campos existieran. Dos vectores de `params` distintos sobre la misma preparación son dos jobs
-distintos, y `9` y `9.0` son el mismo.
+`(prepareJobId, strategyId, storeSignals, equityCurve, baseConfig, params)` → el mismo `jobId`
+(idempotente) — una petición que omite `equityCurve`, `baseConfig` o `params` deduplica exactamente
+igual que antes de que esos campos existieran. Dos vectores de `params` distintos sobre la misma
+preparación son dos jobs distintos, y `9` y `9.0` son el mismo.
 
 Acepta opcionalmente `params`: propiedades de estrategia para esta única ejecución, aplicadas sin
 recompilar. Úsalo para volver a ejecutar una fila de un barrido como un resultado de backtest
@@ -136,6 +136,14 @@ barrido, pero las dos vías están fijadas para coincidir en todas las métricas
 para un mismo vector. Trata una diferencia como un fallo que merece reportarse, no como
 comportamiento esperado.
 
+Acepta opcionalmente `baseConfig`: ajustes de capital, comisión y tamaño de posición, con la misma
+forma [`SweepBaseConfig`](backtest_sweep#baseconfig--sweepbaseconfig) que acepta `executeSweep` —
+envía el mismo objeto a cualquiera de los dos endpoints. Este endpoint tiene una única tasa de
+comisión efectiva, no las dos patas independientes de compra/venta de un barrido: un `baseConfig`
+que resuelva en tasas de compra/venta distintas, o que fije un `feeLeg` distinto del predeterminado,
+se rechaza con `400` en vez de colapsarse silenciosamente a un lado. Omítelo para ejecutar con los
+valores por defecto de la plataforma (`initialFunding: 100`, `feeRate: 0.001`).
+
 ### Cuerpo de la petición
 
 | Campo | Tipo | Notas |
@@ -144,6 +152,7 @@ comportamiento esperado.
 | `strategyId` | string | obligatorio |
 | `storeSignals` | boolean | por defecto `false`. Cuando es `true`, el worker sube las señales emitidas a almacenamiento de objetos y el resultado gana `signalsUrl`/`signalsId` |
 | `equityCurve` | [`EquityCurveOptions`](equity_curves#plain-backtests-choose-the-transform-on-submit) | opcional — remodela la curva incrustada en `results.equityCurve` |
+| `baseConfig` | [`SweepBaseConfig`](backtest_sweep#baseconfig--sweepbaseconfig) | opcional — ajustes de capital, comisión y tamaño de posición, misma forma que acepta `executeSweep`. Una única tasa de comisión efectiva: un valor que implique comisiones de compra/venta distintas, o un `feeLeg` distinto del predeterminado, es `400` |
 | `params` | object | opcional, como máximo 64 entradas. Mapa plano de nombre de propiedad de estrategia → escalar (número, cadena o booleano). Las claves son el `name` declarado en `@StrategyProperty` (no necesariamente el campo Java que anota) — `GET`/`POST /strategy` devuelve `declaredProperties` con los nombres válidos. Una clave desconocida hace fallar el job en lugar de ejecutarse silenciosamente con los valores por defecto. Omite una clave para dejarla en su valor por defecto; `null` no es un valor. Los arrays se rechazan — una lista es un eje de barrido, este endpoint ejecuta exactamente un vector. `strategyId`, `storeSignals`, `equityCurve`, `backtestEnabled`, `backtestFakeExecution` están reservados (configuran el job, no la estrategia) |
 
 ### Ejemplo
@@ -154,6 +163,17 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
   -H "Content-Type: application/json" \
   -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6"}'
 # → 202 {"jobId": "4GmNN0i9..."}
+```
+
+Con un `baseConfig` personalizado (capital y tamaño de posición, en vez de los valores por defecto
+de la plataforma):
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6","baseConfig":{"initialFunding":1000,"percentAmountToLock":10}}'
+# → 202 {"jobId": "7pQx91Ab..."}
 ```
 
 Reejecutar una fila de la clasificación de un barrido para obtener su curva, con `params`:

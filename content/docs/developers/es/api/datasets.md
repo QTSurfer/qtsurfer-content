@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 92aeb9355a85b700698bce2ffcbedd2363bf1799
+upstreamCommit: 58099e74758dc307f13f0000a5d94e685804ca57
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-10T21:40:58Z'
 ---
@@ -227,23 +227,26 @@ importación `dex` tiene dos formas de datos, elegidas por la `cadence` de nivel
 | `name` | cadena | obligatorio, único entre tus conjuntos de datos. `409` si ya está en uso |
 | `instrument` | cadena | obligatorio, par spot llano — la etiqueta propia del conjunto de datos, independiente del orden de los tokens on-chain del pool |
 | `from`, `to` | cadena (fecha-hora) | obligatorio, ISO-8601 UTC. `from` inclusivo, `to` exclusivo, `from < to`. El rango total está limitado por tu plan |
-| `cadence` | cadena | opcional. Omitida/en blanco = cadencia nativa por operación (ver abajo). Uno de `1s` \| `1m` \| `5m` pide en su lugar velas pre-agregadas a esa anchura — cualquier otro valor es `400` |
+| `cadence` | cadena | opcional. Omitida/en blanco = cadencia nativa por operación (ver abajo). Uno de `1s` \| `1m` \| `5m` pide velas pre-agregadas a esa anchura en una red que las soporte (cualquier otro valor es `400`) — en una red que no las soporte, se ignora silenciosamente, ver abajo |
 | `type` | cadena | obligatorio, `"dex"` es el único valor por ahora |
 | `dex.network` | cadena | obligatorio, uno de `ethereum` \| `robinhood` |
-| `dex.id` | cadena | obligatorio salvo que `cadence` pidiera velas, en cuyo caso se ignora. `"uniswap"` es el único valor por ahora — qué protocolo DEX on-chain implementa `dex.contract` |
-| `dex.version` | cadena | obligatorio salvo que `cadence` pidiera velas, en cuyo caso se ignora. `"v2"` \| `"v3"` |
+| `dex.id` | cadena | obligatorio salvo que una `cadence` de velas realmente se resuelva (ver abajo) — una `cadence` de velas ignorada en una red sin velas sigue exigiendo este campo. `"uniswap"` es el único valor por ahora — qué protocolo DEX on-chain implementa `dex.contract` |
+| `dex.version` | cadena | obligatorio salvo que una `cadence` de velas realmente se resuelva (ver abajo). `"v2"` \| `"v3"` |
 | `dex.contract` | cadena | obligatorio, la dirección del contrato del pool (v3) o par (v2) |
-| `dex.factory` | cadena | opcional — omite para autodescubrirla on-chain a partir de `contract`; indícala solo si ya la conoces o el pool/par pertenece a una factory no canónica. En cualquier caso el pool/par se valida contra la factory que se use antes de buscar nada. Se ignora si `cadence` pidió velas |
+| `dex.factory` | cadena | opcional — omite para autodescubrirla on-chain a partir de `contract`; indícala solo si ya la conoces o el pool/par pertenece a una factory no canónica. En cualquier caso el pool/par se valida contra la factory que se use antes de buscar nada. Se ignora si una `cadence` de velas realmente se resuelve (ver abajo) |
 
 **La cadencia on-chain es nativa, no se remuestrea.** Una importación `dex` normal (sin `cadence`)
 mantiene la propia cadencia de eventos por operación de la fuente — cada swap en la marca de tiempo
 en la que ocurrió, así que la `cadence` de la versión resultante es `rt` salvo que los swaps caigan
 por casualidad en una cuadrícula fija — en lugar de agruparlos en velas; remuestrea a una cadencia
 más gruesa después, como un paso aparte, si necesitas una a partir de datos on-chain. Pedir
-`cadence: "1s"`/`"1m"`/`"5m"` en su lugar te da velas pre-agregadas a esa anchura directamente. No
-todas las redes soportan todavía todas las cadencias — una combinación no soportada falla de forma
-asíncrona, igual que un pool que no se resuelve (ver `failed` abajo), no en el momento de la
-petición.
+`cadence: "1s"`/`"1m"`/`"5m"` en su lugar te da velas pre-agregadas a esa anchura directamente —
+pero solo en una red que realmente tenga una fuente de velas detrás. En cualquier otra red, una
+`cadence` de velas se ignora silenciosamente y la importación sigue como si `cadence` nunca se
+hubiera enviado (nativa, `dex.id`/`dex.version` obligatorios) — no falla, ni de forma síncrona ni
+asíncrona. Qué redes soportan velas hoy no forma parte de este contrato y puede cambiar; si
+necesitas saberlo antes de importar, pide la cadencia nativa y comprueba la propia `cadence` de la
+versión resultante en lugar de asumirlo.
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
@@ -338,16 +341,17 @@ este `importId`.
 ## Forma del conjunto de datos
 
 Tanto [`GET /datasets`](#listar-tus-conjuntos-de-datos) como [`GET
-/datasets/{datasetId}`](#obtener-un-conjunto-de-datos) devuelven esto — `from`/`to`/`cadence`
-reflejan el rango y la cadencia propios descubiertos de la versión *actual*, así que no necesitas
-una segunda llamada para ver qué cubre un conjunto de datos.
+/datasets/{datasetId}`](#obtener-un-conjunto-de-datos) devuelven esto — `from`/`to`/`cadence`/
+`timestampUnit` reflejan el rango, la cadencia y la unidad de marca de tiempo propios descubiertos
+de la versión *actual*, así que no necesitas una segunda llamada para ver qué cubre un conjunto de
+datos.
 
 | Campo | Notas |
 |---|---|
 | `datasetId`, `name`, `type` (`"ticker"` \| `"klines"`), `instrument`, `createdAt` | siempre presentes. `type` es `"klines"` solo para una importación `dex` que pidió una `cadence` de velas; `"ticker"` para todo lo demás (subidas, e importaciones `dex` de cadencia nativa) |
 | `currentVersionId` | la versión finalizada e ingerida con éxito más reciente. **Ausente hasta que al menos una subida ha terminado de ingerirse** |
 | `updatedAt` | cuándo cambió `currentVersionId` por última vez; ausente hasta que tiene un valor |
-| `from`, `to`, `cadence` | el rango/cadencia propios de la versión actual (una cuadrícula fija o `rt`, consulta [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)), tal como se descubrieron en la ingesta. **Ausentes hasta que existe una versión** |
+| `from`, `to`, `cadence`, `timestampUnit` | el rango/cadencia/unidad de marca de tiempo propios de la versión actual (una cuadrícula fija o cadencia `rt`, `iso`\|`s`\|`ms`\|`us` para `timestampUnit`, consulta [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)), tal como se descubrieron en la ingesta. **Ausentes hasta que existe una versión** |
 
 `GET /datasets/{datasetId}` por sí solo añade `dataUrl`/`dataFormat` (con el mismo significado que
 en [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)) una vez que la versión

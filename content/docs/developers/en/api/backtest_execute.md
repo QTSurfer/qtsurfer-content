@@ -3,7 +3,7 @@ title: Backtests
 description: Prepare historical data, execute a strategy, poll its result, and inspect its equity curve.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 92aeb9355a85b700698bce2ffcbedd2363bf1799
+upstreamCommit: 69b4fc678dec3b91d685b6c624015d508be463f5
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-09-10T21:40:58Z'
 ---
@@ -116,10 +116,10 @@ curl https://api.qtsurfer.net/v1/backtest/binance/ticker/prepare/$PREPARE_JOB_ID
 
 Runs the strategy identified by `strategyId` over the data from `prepareJobId`; instrument and
 date range are recovered from the prepare job, not sent again. Works unchanged for a
-dataset-backed prepare. Same `(prepareJobId, strategyId, storeSignals, equityCurve, params)` → same
-`jobId` (idempotent) — a request that omits `equityCurve` or `params` dedupes exactly as it did
-before those fields existed. Two different `params` vectors over one prepare are two different
-jobs, and `9` and `9.0` are the same one.
+dataset-backed prepare. Same `(prepareJobId, strategyId, storeSignals, equityCurve, baseConfig,
+params)` → same `jobId` (idempotent) — a request that omits `equityCurve`, `baseConfig` or `params`
+dedupes exactly as it did before those fields existed. Two different `params` vectors over one
+prepare are two different jobs, and `9` and `9.0` are the same one.
 
 Optionally takes `params`: strategy properties for this one run, applied without recompiling.
 Use this to re-run a sweep row as an ordinary backtest result with a chosen parameter vector — for
@@ -130,6 +130,13 @@ any other plain backtest. This is an independent execution rather than a replay 
 but the two paths are pinned to agree on every leaderboard metric for the same vector. Treat a
 difference as a bug worth reporting, not as expected behaviour.
 
+Optionally takes `baseConfig`: capital/fee/position-size overrides, the same
+[`SweepBaseConfig`](backtest_sweep#baseconfig--sweepbaseconfig) shape `executeSweep` accepts —
+send the same object to either endpoint. This endpoint has one effective fee rate rather than a
+sweep's independent buy/sell legs: a `baseConfig` that resolves to different buy/sell rates, or
+sets a non-default `feeLeg`, is rejected with `400` instead of silently collapsed to one side. Omit
+it to run at the platform defaults (`initialFunding: 100`, `feeRate: 0.001`).
+
 ### Request body
 
 | Field | Type | Notes |
@@ -138,6 +145,7 @@ difference as a bug worth reporting, not as expected behaviour.
 | `strategyId` | string | required |
 | `storeSignals` | boolean | default `false`. When `true`, the worker uploads emitted signals to object storage and the result gains `signalsUrl`/`signalsId` |
 | `equityCurve` | [`EquityCurveOptions`](equity_curves#plain-backtests-choose-the-transform-on-submit) | optional — reshape the curve baked into `results.equityCurve` |
+| `baseConfig` | [`SweepBaseConfig`](backtest_sweep#baseconfig--sweepbaseconfig) | optional — capital/fee/position-size overrides, same shape `executeSweep` accepts. One effective fee rate: a value implying asymmetric buy/sell fees, or a non-default `feeLeg`, is `400` |
 | `params` | object | optional, at most 64 entries. Flat map of strategy property name → scalar (number, string or boolean). Keys are the `name` declared on `@StrategyProperty` (not necessarily the Java field it annotates) — `GET`/`POST /strategy` returns `declaredProperties` for the valid names. An unknown key fails the job rather than silently running at defaults. Omit a key to leave it at its default; `null` is not a value. Arrays are rejected — a list is a sweep axis, this endpoint runs exactly one vector. `strategyId`, `storeSignals`, `equityCurve`, `backtestEnabled`, `backtestFakeExecution` are reserved (they configure the job, not the strategy) |
 
 ### Example
@@ -148,6 +156,16 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
   -H "Content-Type: application/json" \
   -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6"}'
 # → 202 {"jobId": "4GmNN0i9..."}
+```
+
+With a `baseConfig` override (capital and position size, instead of the platform defaults):
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6","baseConfig":{"initialFunding":1000,"percentAmountToLock":10}}'
+# → 202 {"jobId": "7pQx91Ab..."}
 ```
 
 Re-running a sweep leaderboard row for its curve, with `params`:

@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b7fed4c6aa305679a46e27a5b432fbe3823428a7
+upstreamCommit: 69b4fc678dec3b91d685b6c624015d508be463f5
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-09-08T13:58:26Z'
 ---
@@ -70,7 +70,7 @@ Se aplica de forma idéntica a todos los ensayos del barrido.
 
 | Campo | Tipo | Por defecto | Notas |
 |---|---|---|---|
-| `initialFunding` | número > 0 | `10000` | |
+| `initialFunding` | número > 0 | `100` | |
 | `feeRate` | número ≥ 0 | `0.001` | |
 | `buyFeeRate` / `sellFeeRate` | número ≥ 0 | — | sobrescribe `feeRate` por lado |
 | `feeLeg` | `RECEIVED` \| `QUOTE` \| `BASE` | `RECEIVED` | |

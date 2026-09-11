@@ -3,7 +3,7 @@ title: Parameter sweeps
 description: Run parameter grids, rank trials, and validate results with walk-forward folds.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b7fed4c6aa305679a46e27a5b432fbe3823428a7
+upstreamCommit: 69b4fc678dec3b91d685b6c624015d508be463f5
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-09-08T13:58:26Z'
 ---
@@ -70,7 +70,7 @@ Applied identically to every trial in the sweep.
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `initialFunding` | number > 0 | `10000` | |
+| `initialFunding` | number > 0 | `100` | |
 | `feeRate` | number ≥ 0 | `0.001` | |
 | `buyFeeRate` / `sellFeeRate` | number ≥ 0 | — | override `feeRate` per side |
 | `feeLeg` | `RECEIVED` \| `QUOTE` \| `BASE` | `RECEIVED` | |

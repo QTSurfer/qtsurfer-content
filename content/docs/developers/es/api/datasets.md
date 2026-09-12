@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 58099e74758dc307f13f0000a5d94e685804ca57
+upstreamCommit: c76f4c7d47be2512bd9510800dce5bf6a74248a2
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-11T23:54:12Z'
 ---
@@ -151,7 +151,9 @@ Errores: `404` no existe ese conjunto de datos para este usuario; `uploadId` no 
 este conjunto de datos (nunca se acuñó, o se acuñó para otro distinto); o todavía no se ha subido
 (`PUT`) nada a `upload.url` — un finalize sin nada que finalizar · `409` `uploadId` ya produjo una
 versión (el mensaje de error lo nombra) · `413` el fichero subido excede el límite de tamaño de tu
-plan para un conjunto de datos.
+plan para un conjunto de datos · `429` se alcanzó o se superaría el límite de almacenamiento total
+de tu cuenta (`maxTotalStorageBytes` de [`GET /account`](account)) — elimina un conjunto de datos
+para liberar espacio, o mejora de plan.
 
 ## Sondear la ingesta
 
@@ -298,7 +300,10 @@ plan, la estimación aproximada de tamaño del rango excede el límite de filas 
 validación básica de forma, o (cuando se omite `cadence`) falta `dex.id`/`dex.version` (si el
 pool/par realmente se resuelve, y para una `cadence` de velas si esa combinación se puede servir en
 la red pedida, se comprueba después, de forma asíncrona — ver `failed` abajo) · `409` nombre de
-conjunto de datos ya en uso · `429` se alcanzó el límite de conjuntos de datos de tu plan.
+conjunto de datos ya en uso · `429` se alcanzó el límite de conjuntos de datos de tu plan, o ya se
+alcanzó el límite de almacenamiento total de tu cuenta (`maxTotalStorageBytes` de [`GET
+/account`](account)) — elimina un conjunto de datos para liberar hueco o espacio, o mejora de
+plan.
 
 ## Sondear una importación
 

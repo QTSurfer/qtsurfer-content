@@ -20,6 +20,7 @@ schemas, authentication requirements, and endpoint groups.
 - [Equity curves](/docs/developers/api/equity_curves) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/equity_curves.md)
 - [Datasets](/docs/developers/api/datasets) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/datasets.md)
 - [Market data](/docs/developers/api/market_data) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/market_data.md)
+- [Account](/docs/developers/api/account) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/account.md)
 
 Use the API reference for the exact HTTP contract. Use these guides for workflows, polling,
 idempotency, and end-to-end examples.

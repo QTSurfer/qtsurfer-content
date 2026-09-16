@@ -21,12 +21,12 @@ preparada, en orden cronológico; en vivo, vienen de un flujo del exchange. El c
 estrategia es el mismo en ambos casos, y nunca ve un evento antes de su marca de tiempo.
 
 ```text
-market event (Ticker · Kline · FundingRate)
-  → indicator group for that instrument updates (incremental)
-  → window listeners fire when their window elapses
-  → strategy logic reads indicators and state, emits signals
-  → execution pipeline turns a Buy/Sell signal into an order
-  → fills update balances and the yield metrics
+evento de mercado (Ticker · Kline · FundingRate)
+  → se actualiza el grupo de indicadores de ese instrumento (incremental)
+  → los window listeners se disparan cuando su ventana concluye
+  → la lógica de la estrategia lee indicadores y estado, emite señales
+  → el pipeline de ejecución convierte una señal Buy/Sell en una orden
+  → las ejecuciones (fills) actualizan los saldos y las métricas de rendimiento
 ```
 
 ## Fuentes de datos y clases base

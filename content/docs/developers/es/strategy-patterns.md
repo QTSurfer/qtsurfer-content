@@ -16,10 +16,10 @@ El patrón de procesamiento de señal más sofisticado del código base. Convier
 en una señal limpia y suavizada:
 
 ```
-raw signal
-  → clamp(±threshold → 0)        suppress micro-noise
-    → percentChange               convert to rate of change
-      → conditional(≠0, EMA(n))  only feed non-zero changes to EMA
+señal cruda
+  → clamp(±umbral → 0)              suprime micro-ruido
+    → percentChange                 convierte a tasa de cambio
+      → conditional(≠0, EMA(n))     solo alimenta la EMA con cambios distintos de cero
 ```
 
 ```java

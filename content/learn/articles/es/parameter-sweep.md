@@ -24,9 +24,9 @@ explícita de valores. La **cuadrícula** es el producto cartesiano de todos los
 se multiplica:
 
 ```text
-rsiPeriod:      7 … 28, step 1     → 22 values
-useTrendFilter: [true, false]      →  2 values
-                                     44 combinations
+rsiPeriod:      7 … 28, paso 1     → 22 valores
+useTrendFilter: [true, false]      →  2 valores
+                                     44 combinaciones
 ```
 
 Añadir un tercer eje con diez valores convierte 44 en 440. Añadir un cuarto lo convierte en miles. La

@@ -3,9 +3,9 @@ title: Account
 description: Check your tier's limits and your live storage usage against them.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c76f4c7d47be2512bd9510800dce5bf6a74248a2
+upstreamCommit: 924e69a1c9fbcda61c29810a89d3b0d279ca47e8
 upstreamPath: docs/account.md
-lastUpdated: '2026-09-12T18:24:16Z'
+lastUpdated: '2026-09-16T17:32:57Z'
 ---
 
 All account routes require a bearer JWT obtained from [authentication](https://github.com/QTSurfer/qtsurfer-api/blob/848593e88be3b80078c6f98d7cb582f22fd87853/README.md#api-quick-start).
@@ -29,7 +29,7 @@ curl https://api.qtsurfer.net/v1/account \
 
 ```json
 {
-  "userId": "76b90203-03c2-46f6-b366-9944f167e818",
+  "userId": "00000000-0000-0000-0000-000000000000",
   "tier": "free",
   "maxDatasets": 3,
   "maxDatasetBytes": 52428800,

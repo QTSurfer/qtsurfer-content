@@ -3,9 +3,9 @@ title: Cuenta
 description: Consulta los límites de tu plan y tu uso de almacenamiento en vivo frente a ellos.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c76f4c7d47be2512bd9510800dce5bf6a74248a2
+upstreamCommit: 924e69a1c9fbcda61c29810a89d3b0d279ca47e8
 upstreamPath: docs/account.md
-lastUpdated: '2026-09-12T18:24:16Z'
+lastUpdated: '2026-09-16T17:32:57Z'
 ---
 
 Todas las rutas de cuenta requieren un JWT tipo bearer obtenido mediante
@@ -31,7 +31,7 @@ curl https://api.qtsurfer.net/v1/account \
 
 ```json
 {
-  "userId": "76b90203-03c2-46f6-b366-9944f167e818",
+  "userId": "00000000-0000-0000-0000-000000000000",
   "tier": "free",
   "maxDatasets": 3,
   "maxDatasetBytes": 52428800,

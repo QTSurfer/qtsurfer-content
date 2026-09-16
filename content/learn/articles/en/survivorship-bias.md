@@ -5,7 +5,7 @@ order: 10
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-07T13:26:56Z'
+lastUpdated: '2026-09-16T17:59:09Z'
 ---
 
 **Survivorship bias** is the error of studying only what survived. A backtest run over the

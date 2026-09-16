@@ -5,7 +5,7 @@ order: 10
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-07T13:26:56Z'
+lastUpdated: '2026-09-16T17:59:09Z'
 ---
 
 El **sesgo de supervivencia** es el error de estudiar solo lo que sobrevivió. Un backtest ejecutado

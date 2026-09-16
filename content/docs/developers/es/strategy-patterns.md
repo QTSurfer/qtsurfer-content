@@ -63,12 +63,12 @@ indicators
 ### Trailing al punto medio (probado en producción, ~7 % de media)
 
 ```java
-// In onChange:
-double percentGain = (price - buyPrice) / buyPrice * 100;
-if (percentGain > maxPcnGain) maxPcnGain = percentGain;
-double trigger = maxPcnGain - (maxPcnGain - minPercentGain) / 2;
-if (percentGain > minPercentGain && percentGain <= trigger) {
-    emitSell(price);
+// En onChange:
+double pctGanancia = (precio - precioCompra) / precioCompra * 100;
+if (pctGanancia > pctGananciaMax) pctGananciaMax = pctGanancia;
+double disparador = pctGananciaMax - (pctGananciaMax - pctGananciaMin) / 2;
+if (pctGanancia > pctGananciaMin && pctGanancia <= disparador) {
+    emitSell(precio);
 }
 ```
 
@@ -78,10 +78,10 @@ máxima. Se autocalibra a la magnitud del movimiento.
 ### Trailing al pico
 
 ```java
-// In onChange:
-if (price > maxPrice) maxPrice = price;
-double fallFromPeak = (maxPrice - price) / maxPrice * 100;
-if (fallFromPeak >= 1.0) emitSell(price); // 1% drop from peak
+// En onChange:
+if (precio > precioMax) precioMax = precio;
+double caidaDesdePico = (precioMax - precio) / precioMax * 100;
+if (caidaDesdePico >= 1.0) emitSell(precio); // caída del 1% desde el pico
 ```
 
 Más simple. Bueno para operaciones rápidas de scalping.
@@ -89,8 +89,8 @@ Más simple. Bueno para operaciones rápidas de scalping.
 ### Reinicio por ganancia de EMA
 
 ```java
-// In onChange:
-if (exitEmaGain.getPeriodCount() == 0) emitSell(price);
+// En onChange:
+if (gananciaEmaSalida.getPeriodCount() == 0) emitSell(precio);
 ```
 
 Vende cuando la EMA de salida deja de subir (el momento se ha agotado). Requiere un
@@ -103,12 +103,12 @@ Vende cuando la EMA de salida deja de subir (el momento se ha agotado). Requiere
 Un stop-loss consciente del macro contexto que evita saltar durante caídas saludables:
 
 ```java
-// In onChange:
-double percentGain = (price - buyPrice) / buyPrice * 100;
-if (percentGain < 0
-        && Math.abs(percentGain) >= 0.5           // loss > 0.5%
-        && longDistemas < 0.01) {                  // macro trend weakening
-    emitSell(price);
+// En onChange:
+double pctGanancia = (precio - precioCompra) / precioCompra * 100;
+if (pctGanancia < 0
+        && Math.abs(pctGanancia) >= 0.5            // pérdida > 0.5%
+        && distLarga < 0.01) {                     // tendencia macro debilitándose
+    emitSell(precio);
     store.set("fail");
 }
 ```
@@ -124,11 +124,11 @@ Bloquea nuevas entradas tras una operación perdedora hasta que el contexto macr
 completo:
 
 ```java
-// Entry listener:
-if (store.is("fail")) return;  // block until macro reset
-// ...entry conditions...
+// Listener de entrada:
+if (store.is("fail")) return;  // bloquea hasta que se reinicie el macro
+// ...condiciones de entrada...
 
-// Separate macro reset check (in another window or update):
+// Comprobación de reinicio macro aparte (en otra ventana o update):
 if (store.is("fail") && longEmaValue < vlongEmaValue) {
     store.unset("fail");
 }
@@ -145,7 +145,7 @@ Rastrea las operaciones por segundo de cada instrumento para identificar monedas
 despiertan:
 
 ```java
-// In update():
+// En update():
 long now = System.currentTimeMillis();
 long currentOps = opsCounter.incrementAndGet();
 if (now - lastOpsWindow > 1000) {
@@ -154,7 +154,7 @@ if (now - lastOpsWindow > 1000) {
     lastOpsWindow = now;
     opsCounter.set(0);
 }
-// Low ops + sudden spike = pump candidate
+// ops bajas + pico repentino = candidata a pump
 ```
 
 **Patrón:** ordena todos los instrumentos por ops ascendente. Las monedas con &lt; 0,1 ops/s que
@@ -206,11 +206,11 @@ Evita entradas durante periodos de baja actividad:
 indicators
     .addPrice()
     .add("vlts", new VolatilityRTIndicator(smaPeriods).clampUpdates(warmupPeriods))
-    // ...other indicators...
+    // ...otros indicadores...
 
-// In entry listener:
-double volatility = indicators.getValue("vlts");
-if (volatility < 50.0) return; // market not active enough
+// En el listener de entrada:
+double volatilidad = indicators.getValue("vlts");
+if (volatilidad < 50.0) return; // mercado sin actividad suficiente
 ```
 
 `clampUpdates(n)` suprime las primeras N actualizaciones (devuelve 0) para dejar que la SMA
@@ -229,19 +229,19 @@ evento, y luego lee los indicadores de cualquier instrumento:
 ```java
 @Override
 public void update(Ticker ticker) {
-    super.update(ticker);                       // engine updates THIS instrument's group
-    Instrument ins = ticker.instrument();
+    super.update(ticker);                       // el motor actualiza el grupo de ESTE instrumento
+    Instrument instr = ticker.instrument();
 
-    double z = getRTIndicator(ins, "closeZScore")     // this instrument's own indicator
+    double z = getRTIndicator(instr, "closeZScore")   // indicador propio de este instrumento
         .map(RTIndicator::getValue).orElse(Double.NaN);
 
-    List<Double> prices = new ArrayList<>();          // read across all tracked instruments
-    for (Instrument other : getInstruments()) {
-        getRTIndicator(other, "price")
+    List<Double> precios = new ArrayList<>();         // lee entre todos los instrumentos rastreados
+    for (Instrument otro : getInstruments()) {
+        getRTIndicator(otro, "price")
             .filter(RTIndicator::isReady)
-            .ifPresent(ind -> prices.add(ind.getValue()));
+            .ifPresent(ind -> precios.add(ind.getValue()));
     }
-    // ... compute a market-wide stat from `prices`, then emitSignal(...)
+    // ... calcula una estadística de todo el mercado a partir de `precios`, luego emitSignal(...)
 }
 ```
 

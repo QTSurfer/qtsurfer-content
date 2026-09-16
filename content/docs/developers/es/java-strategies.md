@@ -105,13 +105,13 @@ public void update(Ticker ticker) {
     updateInstrument(instrument, ticker.timestamp());
     var ind = updateIndicators(instrument, ticker);
 
-    if (!ind.getExisting("emaSlow").isReady()) return; // wait for warmup
+    if (!ind.getExisting("emaSlow").isReady()) return; // espera el calentamiento
 
-    double fast = ind.getValue("emaFast");
-    double slow = ind.getValue("emaSlow");
+    double rapido = ind.getValue("emaFast");
+    double lento = ind.getValue("emaSlow");
 
-    if (fast > slow) emitBuy(instrument, ticker.last());
-    else             emitSell(instrument, ticker.last());
+    if (rapido > lento) emitBuy(instrument, ticker.last());
+    else                emitSell(instrument, ticker.last());
 }
 ```
 
@@ -303,12 +303,12 @@ metadatos de reporte.
 ```java
 import com.wualabs.qtsurfer.engine.strategy.CrossDetector;
 
-private final CrossDetector fastSlowCross = new CrossDetector(); // one instance per pair watched
+private final CrossDetector cruceRapidoLento = new CrossDetector(); // una instancia por par vigilado
 
-// In onChange or update:
-CrossDetector.Cross cross = fastSlowCross.check(fast, slow);
-if (cross.above()) emitBuy(price);
-if (cross.below()) emitSell(price);
+// En onChange o update:
+CrossDetector.Cross cruce = cruceRapidoLento.check(rapido, lento);
+if (cruce.above()) emitBuy(precio);
+if (cruce.below()) emitSell(precio);
 ```
 
 Una única llamada a `check(left, right)` informa de ambas direcciones a la vez, de modo que siempre

@@ -3,12 +3,12 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c76f4c7d47be2512bd9510800dce5bf6a74248a2
+upstreamCommit: 924e69a1c9fbcda61c29810a89d3b0d279ca47e8
 upstreamPath: docs/datasets.md
-lastUpdated: '2026-09-12T18:24:16Z'
+lastUpdated: '2026-09-16T17:32:57Z'
 ---
 
-Haz backtest contra un CSV o un fichero parquet que subes en lugar de contra un exchange
+Haz backtest contra un CSV, un fichero parquet o un fichero lastra que subes en lugar de contra un exchange
 gestionado: crea un conjunto de datos, sube el fichero (`PUT`) a una URL prefirmada, finalízalo
 para disparar la ingesta, y luego [prepara/ejecuta](backtest_execute) exactamente como de
 costumbre pero con el `exchangeId: user` reservado.
@@ -106,17 +106,23 @@ Errores: `404` no existe ese conjunto de datos para este usuario.
 
 ## Subir el fichero
 
-**CSV o parquet.** Un CSV necesita fila de cabecera; un fichero parquet ya lleva sus columnas con
-nombre. En cualquiera de los dos casos, `timestamp` (ISO-8601, o segundos/milisegundos/
+**CSV, parquet o lastra.** Un CSV necesita fila de cabecera; un fichero parquet ya lleva sus
+columnas con nombre; un fichero `lastra` es nuestro propio formato columnar nativo — el mismo que
+te devuelve por defecto el `dataUrl` de un conjunto de datos, así que descargar un conjunto de
+datos y entregarle ese mismo fichero a otro usuario para que lo suba funciona sin ninguna
+conversión de por medio. Para CSV/parquet, `timestamp` (ISO-8601, o segundos/milisegundos/
 microsegundos de época numéricos — detectado en la primera fila, y exigido después para cada fila
-posterior) y `close` son obligatorias. Opcionales: `open`, `high`, `low`, `volume`, `quoteVolume`,
-`bid`, `bidSize`, `ask`, `askSize`. **La cadencia y la unidad de la marca de tiempo se descubren a
-partir de los datos, no se declaran.**
+posterior) y `close` son obligatorias; opcionales: `open`, `high`, `low`, `volume`, `quoteVolume`,
+`bid`, `bidSize`, `ask`, `askSize`. Una subida lastra lleva su propio conjunto fijo de columnas en
+su lugar (ya es una descarga de `dataUrl`, no un formato que construyas a mano) y solo necesita que
+estén presentes una serie de marca de tiempo y una de cierre. **La cadencia y la unidad de la marca
+de tiempo se descubren a partir de los datos, no se declaran,** para las tres.
 
 Una subida CSV se convierte a nuestro formato columnar nativo (`lastra`) para almacenarla. Una
-subida parquet se guarda hoy tal cual. En ambos casos, consulta `dataFormat` en la [versión
-lista](#datasetversion--una-subida-ingerida-con-éxito) para saber qué recibes de vuelta
-realmente — no lo des por hecho a partir de cómo la subiste.
+subida parquet o lastra se guarda hoy tal cual. En ambos casos, consulta `dataFormat` en la
+[versión lista](#datasetversion--una-subida-ingerida-con-éxito) para saber qué recibes de vuelta
+realmente — no lo des por hecho a partir de cómo la subiste (un CSV convertido y un fichero lastra
+subido reportan ambos `dataFormat: "lastra"`).
 
 Los bytes que se suben (`PUT`) a `upload.url` pueden ser ese fichero directamente, comprimidos en
 gzip (`.gz`), o en zip (`.zip`, exactamente un fichero dentro — un conjunto de datos es un único
@@ -177,13 +183,13 @@ puede caducar por sí mismo (ver el caso `404` más abajo).
 | Campo | Notas |
 |---|---|
 | `id` | el id de la versión — pásalo como `datasetVersionId` en la preparación para fijarla |
-| `bytes` | tamaño del fichero **almacenado** (`dataUrl`) — un `lastra` convertido para una subida CSV (descomprimida antes, si llegó como `.gz`/`.zip`), o el propio fichero parquet para una subida parquet. No el tamaño de los bytes subidos originalmente (`PUT`) |
+| `bytes` | tamaño del fichero **almacenado** (`dataUrl`) — un `lastra` convertido para una subida CSV (descomprimida antes, si llegó como `.gz`/`.zip`), o el propio fichero parquet/lastra, sin convertir, para una subida parquet o lastra. No el tamaño de los bytes subidos originalmente (`PUT`) |
 | `rows` | número de filas de datos |
 | `cadence` | descubierta a partir de las propias marcas de tiempo de los datos: una cuadrícula fija (`1s`, `5s`, `15s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `1d`) cuando al menos la mitad de los intervalos entre filas caen en ese paso (se tolera un pequeño desajuste de reloj), o `rt` — datos nativos a la tasa en que se capturaron, cada fila con su propia marca de tiempo sin paso fijo (swaps on-chain por operación, ticks espaciados por bloque o de menos de un segundo, intervalos irregulares). Un conjunto de datos `rt` se puede remuestrear a cualquier cadencia fija al preparar |
 | `timestampUnit` | `iso` \| `s` \| `ms` \| `us` — la unidad en la que llegó la columna `timestamp` |
 | `gaps`, `largestGapSteps` | número de huecos a la cadencia descubierta, y el tamaño del mayor en pasos de esa cadencia. Siempre `0` para `rt` |
 | `dataUrl` | URL GET prefirmada al fichero almacenado — consulta `dataFormat`. Presente una vez `ready` |
-| `dataFormat` | `lastra` (convertido, desde una subida CSV/gzip/zip) \| `parquet` (sin convertir, desde una subida parquet) |
+| `dataFormat` | `lastra` (convertido, desde una subida CSV/gzip/zip, o sin convertir, desde una subida lastra — el valor por sí solo no distingue cuál) \| `parquet` (sin convertir, desde una subida parquet) |
 
 ```bash
 curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/uploads/$UPLOAD_ID \

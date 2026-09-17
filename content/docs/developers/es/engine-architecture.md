@@ -66,9 +66,9 @@ estrategia recupera los valores con los mismos nombres.
 protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
     indicators
         .addPrice()
-        .ema("fast", 20)
-        .ema("slow", 50)
-        .window("fast", WindowTime.s1, new CrossListener(indicators));
+        .ema("rapida", 20)
+        .ema("lenta", 50)
+        .window("rapida", WindowTime.s1, new CrossListener(indicators));
 }
 ```
 
@@ -128,8 +128,8 @@ de métricas](/docs/developers/metrics-reference).
 Los parámetros de estrategia se declaran como campos anotados:
 
 ```java
-@StrategyProperty(name = "rsi.period", description = "RSI period", defaultValue = "14")
-private int rsiPeriod;
+@StrategyProperty(name = "rsi.periodo", description = "Periodo del RSI", defaultValue = "14")
+private int periodoRsi;
 ```
 
 El motor registra los campos anotados cuando se construye la estrategia y aplica el valor por

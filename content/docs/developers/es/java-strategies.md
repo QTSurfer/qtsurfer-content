@@ -24,7 +24,7 @@ public class MyStrategy extends AbstractTickerStrategy {
 
     @Override
     protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
-        // configure indicators here — called once per instrument on first tick
+        // configura los indicadores aquí — se llama una vez por instrumento en el primer tick
     }
 }
 ```
@@ -55,7 +55,7 @@ import com.wualabs.qtsurfer.engine.strategy.execution.ExecutionMode;
 
 @Override
 public boolean acceptInstrument(Instrument instrument) {
-    return instrument.base().equals("BTC"); // filter instruments here if needed
+    return instrument.base().equals("BTC"); // filtra instrumentos aquí si hace falta
 }
 
 @Override
@@ -77,12 +77,12 @@ Todos los indicadores se definen en `setupIndicators` mediante el builder fluido
 @Override
 protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
     indicators
-        .addPrice()                     // source: close price
-        .ema("emaFast", 9)             // 9-period EMA named "emaFast"
-        .ema("emaSlow", 21)            // 21-period EMA named "emaSlow"
-        .rsi(14)                        // 14-period RSI named "rsi14"
-        .bollinger("bb", 20, 2.0)      // Bollinger Bands → "bb", "bbUpper", "bbLower"
-        .window("emaFast", WindowTime.s1, new MyListener(this, indicators));
+        .addPrice()                     // fuente: precio de cierre
+        .ema("emaRapida", 9)           // EMA de 9 periodos llamada "emaRapida"
+        .ema("emaLenta", 21)           // EMA de 21 periodos llamada "emaLenta"
+        .rsi(14)                        // RSI de 14 periodos llamado "rsi14"
+        .bollinger("bb", 20, 2.0)      // Bandas de Bollinger → "bb", "bbUpper", "bbLower"
+        .window("emaRapida", WindowTime.s1, new MiListener(this, indicators));
 }
 ```
 
@@ -105,10 +105,10 @@ public void update(Ticker ticker) {
     updateInstrument(instrument, ticker.timestamp());
     var ind = updateIndicators(instrument, ticker);
 
-    if (!ind.getExisting("emaSlow").isReady()) return; // espera el calentamiento
+    if (!ind.getExisting("emaLenta").isReady()) return; // espera el calentamiento
 
-    double rapido = ind.getValue("emaFast");
-    double lento = ind.getValue("emaSlow");
+    double rapido = ind.getValue("emaRapida");
+    double lento = ind.getValue("emaLenta");
 
     if (rapido > lento) emitBuy(instrument, ticker.last());
     else                emitSell(instrument, ticker.last());
@@ -202,24 +202,24 @@ estado por instrumento en absoluto. Llamarlo, a diferencia del acceso al store p
 ventana, resuelve el store de inmediato — no espera a un listener.
 
 ```java
-store.inc("count")          // int counter, returns new value
+store.inc("count")          // contador int, devuelve el nuevo valor
 store.dec("count")
-store.set("inPosition")     // boolean flag → true
-store.unset("inPosition")   // → false
-store.is("inPosition")      // read boolean
-store.add("pnl", delta)     // double accumulator, returns new value
-store.setState("key", obj)  // arbitrary object
-store.getState("key", def)  // with default
+store.set("enPosicion")     // flag booleano → true
+store.unset("enPosicion")   // → false
+store.is("enPosicion")      // lee el booleano
+store.add("pnl", delta)     // acumulador double, devuelve el nuevo valor
+store.setState("key", obj)  // objeto arbitrario
+store.getState("key", def)  // con valor por defecto
 ```
 
 ## Propiedades configurables
 
 ```java
-@StrategyProperty(name = "rsi.period", description = "RSI period", defaultValue = "14")
-private int rsiPeriod;
+@StrategyProperty(name = "rsi.periodo", description = "Periodo del RSI", defaultValue = "14")
+private int periodoRsi;
 
-@StrategyProperty(name = "ema.fast", description = "Fast EMA period", defaultValue = "9")
-private int fastPeriod;
+@StrategyProperty(name = "ema.rapida", description = "Periodo de la EMA rápida", defaultValue = "9")
+private int periodoRapido;
 ```
 
 La anotación y el campo son toda la declaración — sin getter, sin setter. Las propiedades se
@@ -227,11 +227,11 @@ inyectan antes de que se llame a `setupIndicators`, y lo mismo vale para un vect
 `submit_sweep`: se escribe directamente en el campo.
 
 **La clave de parámetro de `submit_sweep` es el `name` de la anotación (con puntos), NO el nombre
-del campo Java.** En el ejemplo de arriba, la clave de la cuadrícula es `rsi.period` / `ema.fast`,
-no `rsiPeriod` / `fastPeriod`:
+del campo Java.** En el ejemplo de arriba, la clave de la cuadrícula es `rsi.periodo` / `ema.rapida`,
+no `periodoRsi` / `periodoRapido`:
 
 **Deja que `defaultValue` sea el único sitio donde se escribe el valor por defecto.** Un
-inicializador de campo (`private int fastPeriod = 9;`) se ejecuta _después_ de haberse aplicado el
+inicializador de campo (`private int periodoRapido = 9;`) se ejecuta _después_ de haberse aplicado el
 valor por defecto de la anotación y lo sobrescribe, así que, si los dos llegan a discrepar, la
 estrategia corre con el inicializador mientras la plataforma registra el valor de la anotación
 junto a los resultados. Declarar el valor por defecto una sola vez, en la anotación, elimina la
@@ -268,7 +268,7 @@ compra/venta, construye un `InfoStrategySignal`, adjúntale pares clave/valor ar
 - **Nivel de estrategia (`update()`) — `createInfoStrategySignal(instrument)`**, instrumento explícito:
 
 ```java
-InfoStrategySignal signal = createInfoStrategySignal(instrument);  // from AbstractTickerStrategy
+InfoStrategySignal signal = createInfoStrategySignal(instrument);  // de AbstractTickerStrategy
 signal.set("interval", "1m");
 signal.set("zscore", z);
 signal.set("vwap", vwap);
@@ -278,7 +278,7 @@ emitSignal(signal);
 - **Dentro de un window listener (`AbstractWindowListener.onChange`) — `createInfoSignal()`**, instrumento implícito:
 
 ```java
-InfoStrategySignal signal = createInfoSignal();  // listener knows its instrument
+InfoStrategySignal signal = createInfoSignal();  // el listener ya conoce su instrumento
 signal.set("interval", "1m");
 signal.set("zscore", z);
 signal.set("vwap", vwap);
@@ -374,9 +374,9 @@ de un window listener:
 ```java
 @Override
 public void update(Ticker ticker) {
-    log.info("running on engine {}", getEngineVersion());  // e.g. "1.0.81"
+    log.info("running on engine {}", getEngineVersion());  // p. ej. "1.0.81"
 
-    if (getEngineVersionMajor() >= 1) { /* ... */ }        // also getEngineVersionMinor()
+    if (getEngineVersionMajor() >= 1) { /* ... */ }        // también getEngineVersionMinor()
 }
 ```
 

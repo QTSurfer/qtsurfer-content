@@ -15,7 +15,7 @@ más los parámetros, por ejemplo `rsi14`.
 ## Fuentes de precio
 
 ```java
-.addPrice()                            // close price → "price"
+.addPrice()                            // precio de cierre → "price"
 .add("bid",  TickerValueSource.Bid)
 .add("ask",  TickerValueSource.Ask)
 .add("vol",  TickerValueSource.Volume)
@@ -26,45 +26,45 @@ más los parámetros, por ejemplo `rsi14`.
 ## Medias móviles
 
 ```java
-.sma(20)                               // 20-period SMA → "sma20"
-.sma("s20", 20)                        // custom name
-.sma("s20", 20, false)                 // continuous mode (default: discrete)
-.sma("s20", "rsi14", 20)              // SMA of another indicator
-.ema(9)                                // 9-period EMA → "ema9"
-.ema("fast", 9)
-.ema("fast", "vol", 9)                // EMA of volume
+.sma(20)                               // SMA de 20 periodos → "sma20"
+.sma("s20", 20)                        // nombre personalizado
+.sma("s20", 20, false)                 // modo continuo (por defecto: discreto)
+.sma("s20", "rsi14", 20)              // SMA de otro indicador
+.ema(9)                                // EMA de 9 periodos → "ema9"
+.ema("rapida", 9)
+.ema("rapida", "vol", 9)              // EMA del volumen
 ```
 
 ## Osciladores y momento
 
 ```java
-.rsi(14)                               // Cutler's RSI → "rsi14"
-.rsi(14, false)                        // Wilder's smoothing
-.rsi("myRsi", 14, true)
+.rsi(14)                               // RSI de Cutler → "rsi14"
+.rsi(14, false)                        // suavizado de Wilder
+.rsi("miRsi", 14, true)
 
 .bollinger("bb", 20, 2.0)             // → "bb", "bbUpper", "bbLower"
-.bollingerBandwidth("bb")             // % width of a Bollinger band
+.bollingerBandwidth("bb")             // % de anchura de una banda de Bollinger
 ```
 
 ## Tasa de cambio y distancia
 
 ```java
-.percentChange("price")                // % change tick-over-tick
-.rateChange("price")                   // absolute rate of change
+.percentChange("price")                // % de cambio tick a tick
+.rateChange("price")                   // tasa de cambio absoluta
 .rateChange("rc", "price", true)      // percent=true
-.distanceMa("ema9")                   // % distance from MA
-.distance("gap", "ema9", "ema21")     // % distance between two indicators
+.distanceMa("ema9")                   // % de distancia respecto a la MA
+.distance("gap", "ema9", "ema21")     // % de distancia entre dos indicadores
 ```
 
 ## Ganancia / pérdida / extremos
 
 ```java
-.gain("price")                         // consecutive gain periods
-.loss("price")                         // consecutive loss periods
+.gain("price")                         // periodos consecutivos de ganancia
+.loss("price")                         // periodos consecutivos de pérdida
 .gain("g", "price", false)            // resetPeriodsOnSustain=false
-.max("price")                          // running max
-.min("price")                          // running min
-.sum("vol")                            // running sum
+.max("price")                          // máximo acumulado
+.min("price")                          // mínimo acumulado
+.sum("vol")                            // suma acumulada
 ```
 
 ## Aritmética
@@ -72,47 +72,47 @@ más los parámetros, por ejemplo `rsi14`.
 ```java
 .add("spread", "ask", "bid")          // spread = ask + bid
 .diff("spread", "ask", "bid")         // diff = ask - bid
-.mul("price", 0.01)                   // scale by coefficient
+.mul("price", 0.01)                   // escala por un coeficiente
 .mul("ratio", "vol", "price")         // vol * price
-.fun("custom", "a", "b", (a, b) -> a / b)  // arbitrary BiFunction
+.fun("personalizada", "a", "b", (a, b) -> a / b)  // BiFunction arbitraria
 ```
 
 ## Predicados y condicionales
 
 ```java
-.lessThan("oversold", "rsi14", 30)    // boolean: rsi14 < 30
-.greatThan("overbought", "rsi14", 70)
+.lessThan("sobrevendido", "rsi14", 30)    // booleano: rsi14 < 30
+.greatThan("sobrecomprado", "rsi14", 70)
 .greatOrEqual("ge", "price", 50000)
 .lessOrEqual("le", "price", 50000)
 .equal("eq", "price", 100)
 .notEqual("ne", "price", 100)
-.predicate("custom", "price", v -> v > 0 && v < 100)
-.periodCount("cnt", "oversold", v -> v > 0)  // count consecutive true periods
+.predicate("personalizada", "price", v -> v > 0 && v < 100)
+.periodCount("cnt", "sobrevendido", v -> v > 0)  // cuenta periodos consecutivos en true
 ```
 
 ## Selección condicional
 
 ```java
-// If indicator == coef → thenIndicator else elseIndicator
-.equal("selected", "signal", 1, "emaFast", "emaSlow")
-.conditional("out", "flag", ind -> ind.getValue() > 0, thenInd, elseInd)
+// Si indicador == coef → entoncesInd si no sinoInd
+.equal("seleccionado", "senal", 1, "emaRapida", "emaLenta")
+.conditional("salida", "bandera", ind -> ind.getValue() > 0, entoncesInd, sinoInd)
 ```
 
 ## Transformaciones
 
 ```java
-.clamp("price", 0.0, 100.0)          // clamp to [min, max]
-.clamp("price", v -> v < 0, 0.0)     // clamp when predicate true
-.round("price", 2)                    // round to N decimals
-.decorate("price", "price", ind -> new MyWrapper(ind))
+.clamp("price", 0.0, 100.0)          // limita el valor a [min, max]
+.clamp("price", v -> v < 0, 0.0)     // aplica el clamp cuando el predicado es true
+.round("price", 2)                    // redondea a N decimales
+.decorate("price", "price", ind -> new MiEnvoltorio(ind))
 ```
 
 ## Window listeners
 
 ```java
-.window("ema9", WindowTime.s1, listener)     // fire every 1 s
-.window("ema9", Duration.ofSeconds(15), l)   // custom duration
-.window()                                     // builder pattern
+.window("ema9", WindowTime.s1, listener)     // se dispara cada 1 s
+.window("ema9", Duration.ofSeconds(15), l)   // duración personalizada
+.window()                                     // patrón builder
     .windowTime(WindowTime.m5)
     .indicator("rsi14")
     .listener(myListener)
@@ -125,17 +125,17 @@ Al construir un indicador personalizado que referencia a otro, usa una vista de 
 evitar mutar el estado compartido. Dos enfoques equivalentes:
 
 ```java
-// Option A — .ro() on any RTIndicator instance (default method on RTIndicator)
-RTIndicator src = indicators.getExisting("ema9").ro();
-indicators.add("custom", new MyIndicator(src));
+// Opción A — .ro() en cualquier instancia de RTIndicator (método por defecto de RTIndicator)
+RTIndicator fuente = indicators.getExisting("ema9").ro();
+indicators.add("personalizado", new MiIndicador(fuente));
 
-// Option B — getReadOnlyExisting() on the indicator group
-RTIndicator src = indicators.getReadOnlyExisting("ema9");
-indicators.add("custom", new MyIndicator(src));
+// Opción B — getReadOnlyExisting() en el grupo de indicadores
+RTIndicator fuente = indicators.getReadOnlyExisting("ema9");
+indicators.add("personalizado", new MiIndicador(fuente));
 
-// Option C — getReadOnly() returns Optional (safe if indicator may not exist)
-indicators.getReadOnly("ema9").ifPresent(src ->
-    indicators.add("custom", new MyIndicator(src)));
+// Opción C — getReadOnly() devuelve Optional (seguro si el indicador puede no existir)
+indicators.getReadOnly("ema9").ifPresent(fuente ->
+    indicators.add("personalizado", new MiIndicador(fuente)));
 ```
 
 `.ro()` es un método por defecto del propio `RTIndicator` — disponible en cualquier instancia de
@@ -159,11 +159,11 @@ import com.wualabs.qtsurfer.engine.indicators.statistics.pro.ZScoreRTIndicator;
 
 indicators
     .addPrice()                                                      // "price"
-    .sma("mean", 20)
-    .add("std",    new StandardDeviationRTIndicator(20))             // ctor (int periods)
-    .add("stdOf",  new StandardDeviationRTIndicator(                 // ctor (RTIndicator, int periods)
-            indicators.getReadOnlyExisting("mean"), 20))
-    .add("zscore", new ZScoreRTIndicator(/* see class for ctor */));
+    .sma("media", 20)
+    .add("desv",    new StandardDeviationRTIndicator(20))             // constructor (int periods)
+    .add("desvDe",  new StandardDeviationRTIndicator(                 // constructor (RTIndicator, int periods)
+            indicators.getReadOnlyExisting("media"), 20))
+    .add("zscore", new ZScoreRTIndicator(/* ver la clase para el constructor */));
 ```
 
 Los constructores varían según la clase — la mayoría acepta `(int periods)` y/o `(RTIndicator
@@ -198,25 +198,25 @@ para el andamiaje común:
 ```java
 import com.wualabs.qtsurfer.engine.indicators.core.RTIndicator;
 
-public class MyIndicator implements RTIndicator {
-    private double value;
-    private boolean ready;
+public class MiIndicador implements RTIndicator {
+    private double valor;
+    private boolean listo;
 
-    @Override public double getValue() { return value; }
+    @Override public double getValue() { return valor; }
 
-    @Override public double update(double newValue) {     // called once per tick with the source value
-        this.value = /* compute incrementally from newValue */ newValue;
-        this.ready = true;
-        return value;
+    @Override public double update(double nuevoValor) {     // se llama una vez por tick con el valor de origen
+        this.valor = /* calcula de forma incremental a partir de nuevoValor */ nuevoValor;
+        this.listo = true;
+        return valor;
     }
 
-    @Override public boolean isReady() { return ready; }  // gate warmup (default true)
+    @Override public boolean isReady() { return listo; }  // controla el calentamiento (por defecto true)
 
-    @Override public void reset() { value = 0; ready = false; }  // from Resettable
+    @Override public void reset() { valor = 0; listo = false; }  // de Resettable
 }
 ```
 
-Regístralo como cualquier indicador integrado: `indicators.add("myInd", new MyIndicator())`. La
+Regístralo como cualquier indicador integrado: `indicators.add("miInd", new MiIndicador())`. La
 interfaz es pequeña: `getValue()` (salida actual), `update(double)` (incremental, por tick),
 `isReady()` (puerta de calentamiento, por defecto `true`), `reset()`. `update(Number)` /
 `update(RTIndicator)` y `ro()` (vista de solo lectura) vienen como métodos por defecto, gratis.
@@ -232,28 +232,28 @@ volumen+precio para VWAP/OBV, bid/ask para microestructura — implementa
 import com.wualabs.qtsurfer.engine.indicators.core.RichRTIndicator;
 import com.wualabs.qtsurfer.engine.core.MarketSnapshot;
 
-public class MyOhlcIndicator implements RichRTIndicator<MarketSnapshot> {
-    private double value;
-    @Override public double updateFrom(MarketSnapshot snap) {  // full snapshot: O/H/L/C/V, bid/ask
-        this.value = /* combine several fields */ 0;
-        return value;
+public class MiIndicadorOhlc implements RichRTIndicator<MarketSnapshot> {
+    private double valor;
+    @Override public double updateFrom(MarketSnapshot instantanea) {  // instantánea completa: O/H/L/C/V, bid/ask
+        this.valor = /* combina varios campos */ 0;
+        return valor;
     }
-    @Override public double getValue() { return value; }
-    @Override public double update(double v) { return value; }  // scalar path unused
-    @Override public void reset() { value = 0; }
+    @Override public double getValue() { return valor; }
+    @Override public double update(double v) { return valor; }  // ruta escalar sin usar
+    @Override public void reset() { valor = 0; }
 }
 ```
 
 El motor construye el snapshot una vez por tick y lo despacha a cada `RichRTIndicator`
 registrado, mientras los indicadores escalares siguen recibiendo su campo extraído. Se registra
-igual: `indicators.add("myOhlc", new MyOhlcIndicator())`.
+igual: `indicators.add("miOhlc", new MiIndicadorOhlc())`.
 
 ## Indicadores ocultos
 
 Prefíjalos con `_` para excluirlos de los metadatos de reporte de señales:
 
 ```java
-.gain("_rawGain", "price")   // internal use, not reported
+.gain("_gananciaCruda", "price")   // uso interno, no se reporta
 ```
 
 Es azúcar sintáctico sobre la entrada de metadatos `VISIBILITY` — ver más abajo.
@@ -266,10 +266,10 @@ vía `indicators.getExisting("name")` / `getReadOnlyExisting("name")`):
 
 ```java
 RTIndicator ind = indicators.getExisting("gap");
-ind.getId();                     // canonical type id, e.g. "distance", "bollinger", "rsi"
-ind.getDisplayHint();            // DisplayHint: ABSOLUTE (default), PERCENT, or VOLUME
-ind.isHidden();                  // true if internal-only (the "_" prefix above sets this)
-ind.getMeta().get("periods");    // any other descriptive key, or null if unset
+ind.getId();                     // id de tipo canónico, p. ej. "distance", "bollinger", "rsi"
+ind.getDisplayHint();            // DisplayHint: ABSOLUTE (por defecto), PERCENT o VOLUME
+ind.isHidden();                  // true si es solo interno (el prefijo "_" de arriba lo activa)
+ind.getMeta().get("periods");    // cualquier otra clave descriptiva, o null si no está definida
 ```
 
 Útil para introspección sin analizar el nombre como cadena de texto — por ejemplo, comprobar
@@ -289,7 +289,7 @@ import com.wualabs.qtsurfer.engine.indicators.core.IndicatorMeta;
 import com.wualabs.qtsurfer.engine.indicators.core.DisplayHint;
 
 indicators.add("gap",
-    new MyDistanceIndicator(a, b)
+    new MiIndicadorDistancia(a, b)
         .withMeta(IndicatorMeta.ID, "distance")
         .withMeta("periods", 20)
         .withDisplayHint(DisplayHint.PERCENT));

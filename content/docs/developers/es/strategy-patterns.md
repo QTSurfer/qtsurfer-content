@@ -24,13 +24,13 @@ señal cruda
 
 ```java
 indicators
-    .add("raw", TickerValueSource.Close)
+    .add("cruda", TickerValueSource.Close)
     .distance("distemas", "ema60", "ema500")
     .clamp("distemas", v -> Math.abs(v) <= 0.1, 0.0)
-    .percentChange("chgDistemas")
-    .conditional("smoothDistemas", "chgDistemas", v -> v != 0,
+    .percentChange("cambioDistemas")
+    .conditional("suaveDistemas", "cambioDistemas", v -> v != 0,
         indicators.getReadOnlyExisting("ema500"), zeroIndicator)
-    .window("smoothDistemas", WindowTime.s1, new DetectorListener(this, indicators));
+    .window("suaveDistemas", WindowTime.s1, new DetectorListener(this, indicators));
 ```
 
 **Por qué:** las señales crudas de distancia entre EMA tienen demasiado ruido para decisiones
@@ -49,12 +49,12 @@ indicators
     .ema("ema60", 60)
     .ema("ema500", 500)
     .ema("ema2500", 2500)
-    .distance("shortDistemas", "ema60", "ema500")   // short-term momentum
-    .distance("longDistemas",  "ema500", "ema2500") // medium-term trend
-    .gain("longStreakCount", "ema7500");              // macro uptrend
+    .distance("distCorta", "ema60", "ema500")   // momento a corto plazo
+    .distance("distLarga", "ema500", "ema2500") // tendencia a medio plazo
+    .gain("rachaLarga", "ema7500");               // tendencia alcista macro
 ```
 
-**Puerta de entrada:** `longDistemas >= 0,35` Y `shortDistemas` en subida Y racha macro >= 300.
+**Puerta de entrada:** `distLarga >= 0,35` Y `distCorta` en subida Y racha macro >= 300.
 
 ---
 
@@ -109,7 +109,7 @@ if (pctGanancia < 0
         && Math.abs(pctGanancia) >= 0.5            // pérdida > 0.5%
         && distLarga < 0.01) {                     // tendencia macro debilitándose
     emitSell(precio);
-    store.set("fail");
+    store.set("fallido");
 }
 ```
 
@@ -118,23 +118,23 @@ volátiles pero con tendencia de fondo.
 
 ---
 
-## Protección de reentrada (estado `"fail"`)
+## Protección de reentrada (estado `"fallido"`)
 
 Bloquea nuevas entradas tras una operación perdedora hasta que el contexto macro se reinicie por
 completo:
 
 ```java
 // Listener de entrada:
-if (store.is("fail")) return;  // bloquea hasta que se reinicie el macro
+if (store.is("fallido")) return;  // bloquea hasta que se reinicie el macro
 // ...condiciones de entrada...
 
 // Comprobación de reinicio macro aparte (en otra ventana o update):
-if (store.is("fail") && longEmaValue < vlongEmaValue) {
-    store.unset("fail");
+if (store.is("fallido") && emaLargaValor < emaMuyLargaValor) {
+    store.unset("fallido");
 }
 ```
 
-Evita el revenge trading tras un stop-loss. La condición de reinicio (`longEma < vlongEma`)
+Evita el revenge trading tras un stop-loss. La condición de reinicio (`emaLargaValor < emaMuyLargaValor`)
 asegura que se complete un ciclo macro entero antes de permitir la reentrada.
 
 ---
@@ -171,7 +171,7 @@ antes de entrar:
 | ---------- | ------------------------------- | ---------------------------------- | ----------------------- |
 | S1         | Ancho de BB en [0,5, 0,6]      | Precio por encima de la EMA500    | —                        |
 | S2         | Racha de ganancia de EMA >= 3  | Precio por encima de la EMA200    | Volatilidad >= 50 %     |
-| S3         | Racha de VlongEMA >= 300       | Distancia en subida 10+ ticks     | Distancia >= 0,35 %     |
+| S3         | Racha de EMA muy larga >= 300  | Distancia en subida 10+ ticks     | Distancia >= 0,35 %     |
 
 **Regla general:** al menos una condición de momento + una condición de tendencia macro + una
 protección contra ruido/falsos positivos.
@@ -192,8 +192,8 @@ indicators
     .window("ema10", WindowTime.s1, new EntryListener(this, indicators))
     .window("price", Duration.ofMillis(100), new ExitListener(this, indicators));
 
-// EntryListener.onChange(StateStore store, ...) { store.set("inPosition"); ... }
-// ExitListener.onChange(StateStore store, ...)  { if (store.is("inPosition")) ... }
+// EntryListener.onChange(StateStore store, ...) { store.set("enPosicion"); ... }
+// ExitListener.onChange(StateStore store, ...)  { if (store.is("enPosicion")) ... }
 ```
 
 ---
@@ -232,7 +232,7 @@ public void update(Ticker ticker) {
     super.update(ticker);                       // el motor actualiza el grupo de ESTE instrumento
     Instrument instr = ticker.instrument();
 
-    double z = getRTIndicator(instr, "closeZScore")   // indicador propio de este instrumento
+    double z = getRTIndicator(instr, "zScoreCierre")  // indicador propio de este instrumento
         .map(RTIndicator::getValue).orElse(Double.NaN);
 
     List<Double> precios = new ArrayList<>();         // lee entre todos los instrumentos rastreados

@@ -6,7 +6,7 @@ order: 0
 kind: landing
 author: QTSurfer
 datePublished: "2026-08-31"
-lastUpdated: '2026-09-18T14:59:33Z'
+lastUpdated: '2026-09-18T15:00:30Z'
 ---
 
 Construir una estrategia es solo una parte del trading cuantitativo. También necesitas entender qué

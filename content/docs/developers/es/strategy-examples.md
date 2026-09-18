@@ -20,27 +20,27 @@ import com.wualabs.qtsurfer.engine.strategy.AbstractTickerStrategy;
 
 public class EmaCrossoverStrategy extends AbstractTickerStrategy {
 
-    private Boolean fastAboveSlow;
+    private Boolean rapidaSobreLenta;
 
     @Override
     protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
-        indicators.addPrice().ema("fast", 9).ema("slow", 21);
+        indicators.addPrice().ema("rapida", 9).ema("lenta", 21);
     }
 
     @Override
     public void update(Ticker ticker) {
-        Instrument inst = ticker.instrument();
-        updateInstrument(inst, ticker.timestamp());
-        var ind = updateIndicators(inst, ticker);
+        Instrument instr = ticker.instrument();
+        updateInstrument(instr, ticker.timestamp());
+        var ind = updateIndicators(instr, ticker);
 
-        if (!ind.getExisting("slow").isReady()) return;
+        if (!ind.getExisting("lenta").isReady()) return;
 
-        boolean currentFastAbove = ind.getValue("fast") > ind.getValue("slow");
-        if (fastAboveSlow == null) { fastAboveSlow = currentFastAbove; return; }
+        boolean rapidaSobreActual = ind.getValue("rapida") > ind.getValue("lenta");
+        if (rapidaSobreLenta == null) { rapidaSobreLenta = rapidaSobreActual; return; }
 
-        if (currentFastAbove && !fastAboveSlow)  emitBuy(inst, ticker.last());
-        if (!currentFastAbove && fastAboveSlow)  emitSell(inst, ticker.last());
-        fastAboveSlow = currentFastAbove;
+        if (rapidaSobreActual && !rapidaSobreLenta)  emitBuy(instr, ticker.last());
+        if (!rapidaSobreActual && rapidaSobreLenta)  emitSell(instr, ticker.last());
+        rapidaSobreLenta = rapidaSobreActual;
     }
 }
 ```
@@ -75,13 +75,13 @@ public class RsiStrategy extends AbstractTickerStrategy {
 
         @Override
         public void onChange(StateStore store, double prev, double actual) {
-            if (actual < 30 && !store.is("inPosition")) {
+            if (actual < 30 && !store.is("enPosicion")) {
                 emitBuy(indicators.getValue("price"));
-                store.set("inPosition");
+                store.set("enPosicion");
             }
-            if (actual > 70 && store.is("inPosition")) {
+            if (actual > 70 && store.is("enPosicion")) {
                 emitSell(indicators.getValue("price"));
-                store.unset("inPosition");
+                store.unset("enPosicion");
             }
         }
     }
@@ -155,17 +155,17 @@ public class BollingerReversionStrategy extends AbstractTickerStrategy {
         public void onChange(StateStore store, double prev, double actual) {
             if (!indicators.getExisting("bb").isReady()) return;
 
-            double upper = indicators.getValue("bbUpper");
-            double lower = indicators.getValue("bbLower");
+            double superior = indicators.getValue("bbUpper");
+            double inferior = indicators.getValue("bbLower");
 
-            if (actual <= lower && !store.is("long")) {
+            if (actual <= inferior && !store.is("largo")) {
                 emitBuy(actual);
-                store.set("long");
-                store.unset("short");
-            } else if (actual >= upper && !store.is("short")) {
+                store.set("largo");
+                store.unset("corto");
+            } else if (actual >= superior && !store.is("corto")) {
                 emitSell(actual);
-                store.set("short");
-                store.unset("long");
+                store.set("corto");
+                store.unset("largo");
             }
         }
     }
@@ -188,29 +188,29 @@ import java.time.Duration;
 
 public class ConfigurableEmaStrategy extends AbstractTickerStrategy {
 
-    // The annotation is the whole declaration: no accessors, and the default written once, on
-    // defaultValue rather than on a field initializer that would overwrite it.
-    @StrategyProperty(name = "ema.fast", description = "Fast EMA period", defaultValue = "9")
-    private int fastPeriod;
+    // La anotación es toda la declaración: sin accesores, y el valor por defecto escrito una
+    // sola vez, en defaultValue en lugar de en un inicializador de campo que lo sobrescribiría.
+    @StrategyProperty(name = "ema.rapida", description = "Periodo de la EMA rápida", defaultValue = "9")
+    private int periodoRapido;
 
-    @StrategyProperty(name = "ema.slow", description = "Slow EMA period", defaultValue = "21")
-    private int slowPeriod;
+    @StrategyProperty(name = "ema.lenta", description = "Periodo de la EMA lenta", defaultValue = "21")
+    private int periodoLento;
 
-    @StrategyProperty(name = "window.seconds", description = "Window in seconds", defaultValue = "1")
-    private int windowSeconds;
+    @StrategyProperty(name = "ventana.segundos", description = "Ventana en segundos", defaultValue = "1")
+    private int segundosVentana;
 
     @Override
     protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
         indicators
             .addPrice()
-            .ema("fast", fastPeriod)
-            .ema("slow", slowPeriod)
-            .window("fast", Duration.ofSeconds(windowSeconds),
+            .ema("rapida", periodoRapido)
+            .ema("lenta", periodoLento)
+            .window("rapida", Duration.ofSeconds(segundosVentana),
                 new CrossListener(this, indicators));
     }
 
     private class CrossListener extends AbstractWindowListener {
-        private final CrossDetector cross = new CrossDetector();
+        private final CrossDetector cruce = new CrossDetector();
 
         CrossListener(AbstractTickerStrategy s, InstrumentGroupRTIndicator ind) {
             super(s, ind);
@@ -218,11 +218,11 @@ public class ConfigurableEmaStrategy extends AbstractTickerStrategy {
 
         @Override
         public void onChange(StateStore store, double prev, double actual) {
-            if (!indicators.getExisting("slow").isReady()) return;
-            double slow = indicators.getValue("slow");
-            CrossDetector.Cross result = cross.check(actual, slow);
-            if (result.above()) emitBuy(actual);
-            if (result.below()) emitSell(actual);
+            if (!indicators.getExisting("lenta").isReady()) return;
+            double lenta = indicators.getValue("lenta");
+            CrossDetector.Cross resultado = cruce.check(actual, lenta);
+            if (resultado.above()) emitBuy(actual);
+            if (resultado.below()) emitSell(actual);
         }
     }
 }

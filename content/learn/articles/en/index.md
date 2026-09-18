@@ -13,7 +13,7 @@ Building a strategy is only part of quantitative trading. You also need to under
 experiment measures, which assumptions shaped the result, and how apparently strong performance can
 mislead you.
 
-Learn provides practical explanations of the concepts behind QTSurfer. Each article connects the idea
+*Learn* provides practical explanations of the concepts behind QTSurfer. Each article connects the idea
 to a reproducible workflow rather than stopping at a dictionary definition.
 
 ## Start here

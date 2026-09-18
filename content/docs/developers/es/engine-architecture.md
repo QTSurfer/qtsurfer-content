@@ -2,7 +2,7 @@
 title: Arquitectura del motor
 description: Cómo el motor de QTSurfer convierte datos de mercado en decisiones y resultados de estrategia — fuentes de datos, indicadores incrementales, window listeners, señales, pipelines de ejecución, propiedades y compilación.
 order: 0.5
-lastUpdated: '2026-09-16T18:18:21Z'
+lastUpdated: '2026-09-17T23:06:52Z'
 ---
 
 Toda estrategia de QTSurfer se ejecuta dentro del mismo motor, tanto si se está haciendo backtest

@@ -13,7 +13,7 @@ Construir una estrategia es solo una parte del trading cuantitativo. También ne
 mide un experimento, qué hipótesis han moldeado el resultado y cómo un rendimiento aparentemente
 sólido puede llevarte a engaño.
 
-Learn ofrece explicaciones prácticas de los conceptos que hay detrás de QTSurfer. Cada artículo conecta
+En esta sección se ofrece explicaciones prácticas de los conceptos que hay detrás de QTSurfer. Cada artículo conecta
 la idea con un flujo de trabajo reproducible en lugar de quedarse en una definición de diccionario.
 
 ## Por dónde empezar

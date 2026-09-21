@@ -3,7 +3,7 @@ title: Strategy API
 description: Compile, validate, inspect, retrieve, and delete Java or QTScript (beta) strategies through the REST API.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 39bc9ea24549473a89e16f3da56f291c60e7dfaa
+upstreamCommit: 1234ca1a762e589f51b4679af889ca6cba5802cb
 upstreamPath: docs/strategy.md
 lastUpdated: '2026-09-21T13:15:01Z'
 ---
@@ -27,7 +27,8 @@ Java strategies](strategy_coding).
 ## Compiling a strategy
 
 `POST /strategy` — body is the raw source, `Content-Type: text/plain`. Java is the established
-route; QTScript is a newer, compact language in beta (see [QTScript](#qtscript-beta) below).
+route; QTScript is a newer, compact language in beta (see [QTScript](#qtscript-beta) below, and
+the [QTScript guide](qtscript)).
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/strategy \
@@ -65,6 +66,7 @@ see [below](#qtscript-beta).) Two consequences:
 
 ### QTScript (beta)
 
+The [QTScript guide](qtscript) covers the language in one page, with examples. In short:
 QTScript removes the ceremony around a strategy — package, imports, class, base class, property
 annotations — and keeps every `{ }` body as plain Java. It is told apart from Java by its first
 token: a QTScript file begins with `strategy`. Whitespace and comments (`//` or `/* */`) before it

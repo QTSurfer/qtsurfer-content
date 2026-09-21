@@ -1,15 +1,15 @@
 ---
 title: API de estrategias
-description: Compila, valida, inspecciona, recupera y elimina estrategias Java a través de la API REST.
+description: Compila, valida, inspecciona, recupera y elimina estrategias Java o QTScript (beta) a través de la API REST.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 848593e88be3b80078c6f98d7cb582f22fd87853
+upstreamCommit: 39bc9ea24549473a89e16f3da56f291c60e7dfaa
 upstreamPath: docs/strategy.md
-lastUpdated: '2026-09-04T10:18:11Z'
+lastUpdated: '2026-09-21T13:15:01Z'
 ---
 
-Compila una estrategia Java, comprueba que realmente funciona, lista/inspecciona/elimina lo que
-has registrado, y recupera su código fuente.
+Compila una estrategia (Java, o QTScript en beta), comprueba que realmente funciona,
+lista/inspecciona/elimina lo que has registrado, y recupera su código fuente.
 
 Esta página documenta los recursos REST de estrategias. Para el código fuente Java en sí — clases
 base, señales de ejecución e información, parámetros de orden avanzados y metadatos de gráfico —
@@ -26,7 +26,9 @@ consulta [Programar estrategias en Java](strategy_coding).
 
 ## Compilar una estrategia
 
-`POST /strategy` — el cuerpo es el código fuente Java en crudo, `Content-Type: text/plain`.
+`POST /strategy` — el cuerpo es el código fuente en crudo, `Content-Type: text/plain`. Java es la
+vía establecida; QTScript es un lenguaje nuevo y compacto en beta (consulta [QTScript](#qtscript-beta)
+más abajo).
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/strategy \
@@ -46,22 +48,55 @@ curl -X POST https://api.qtsurfer.net/v1/strategy \
 }
 ```
 
-**Esto responde a una única pregunta: si el fuente es Java válido.** Compila, registra y devuelve
+**Esto responde a una única pregunta: si el fuente es válido.** Compila, registra y devuelve
 el id — nada más. Si la clase realmente funciona se comprueba con
 [`validate`](#comprobar-que-realmente-funciona); todo lo que se sabe de una estrategia, incluida su
 validación, se lee de [`GET /strategy/{strategyId}`](#obtener-una-estrategia).
 
-**El `strategyId` se deriva de lo que el código *significa*, no de cómo está escrito.** Un
-comentario, una línea en blanco, reindentar, reordenar imports o mover un método de sitio devuelven
-todos el **mismo** id — no has creado una segunda estrategia. Renombrar una variable, cambiar la
-capitalización de un identificador o reordenar campos/sentencias devuelve uno **distinto**. Dos
+**Para Java, el `strategyId` se deriva de lo que el código *significa*, no de cómo está escrito.**
+Un comentario, una línea en blanco, reindentar, reordenar imports o mover un método de sitio
+devuelven todos el **mismo** id — no has creado una segunda estrategia. Renombrar una variable,
+cambiar la capitalización de un identificador o reordenar campos/sentencias devuelve uno
+**distinto**. (Para QTScript las reglas son distintas — consulta [más abajo](#qtscript-beta)). Dos
 consecuencias:
 
-- reenviar una estrategia que solo has reformateado es gratis — recuperas el id que ya tenías,
-  junto con cualquier validación ya registrada contra él;
+- reenviar una estrategia Java que solo has reformateado es gratis — recuperas el id que ya
+  tenías, junto con cualquier validación ya registrada contra él;
 - el id no dice nada sobre el *comportamiento*. Dos fuentes que calculan lo mismo por medios
   distintos son dos estrategias, ya que decidir lo contrario significaría decidir la equivalencia
   de programas.
+
+### QTScript (beta)
+
+QTScript elimina la ceremonia alrededor de una estrategia — paquete, imports, clase, clase base,
+anotaciones de propiedades — y mantiene cada cuerpo `{ }` como Java tal cual. Se distingue de Java
+por su primer token: un fichero QTScript empieza por `strategy`. Los espacios en blanco y
+comentarios (`//` o `/* */`) antes de esa palabra se ignoran, así que puede haber una descripción
+encima del fichero. El mismo endpoint lo acepta, y una estrategia QTScript registrada se usa igual
+que cualquier otra.
+
+```
+strategy MiniKline kline
+
+param umbralCompra = 30
+param umbralVenta = 70
+
+setup:
+  rsi(14) window m1 {
+    if (actual < umbralCompra) emitBuy(price);
+    if (actual > umbralVenta) emitSell(price);
+  }
+```
+
+- `strategy Nombre [kline|funding]` elige la fuente de datos (ticker por defecto) — consulta
+  [Fuentes de datos](backtest_execute#fuentes-de-datos) para qué puede correr cada una.
+- Un `400` lleva entradas `Line N, Column M:` contra tu propio fuente.
+- **El `strategyId` sale del texto**, porque la indentación forma parte de la gramática. Una marca
+  de orden de bytes (BOM), el estilo de saltos de línea, los espacios en blanco al final de línea y
+  las líneas en blanco antes de la primera y después de la última se ignoran; cualquier otra cosa —
+  un comentario, la indentación, una línea en blanco intermedia — da un id distinto.
+- Un fallo mientras corre una estrategia QTScript se reporta contra tu fuente, como
+  `QTScript line 6: Index 2 out of bounds for length 1`.
 
 ### `declaredProperties` — `DeclaredProperty`
 
@@ -80,7 +115,7 @@ aquí — un nombre ausente de esta lista puede seguir siendo válido.
 | `reflected` | `true` — un valor se inyecta en el campo de la estrategia; `false` — solo disponible a través del mapa de propiedades |
 | `min`, `max`, `step` | límites de rango/barrido sugeridos, si se declararon. **Solo orientativos, nunca validados** |
 
-Errores: `400` no es Java válido — el mensaje lleva los diagnósticos del compilador, no se
+Errores: `400` no es válido — el mensaje lleva los diagnósticos, no se
 registra nada · `429` demasiadas compilaciones en curso, reintenta más tarde.
 
 ## Comprobar que realmente funciona

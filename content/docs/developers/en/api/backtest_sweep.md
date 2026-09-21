@@ -3,9 +3,9 @@ title: Parameter sweeps
 description: Run parameter grids, rank trials, and validate results with walk-forward folds.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 69b4fc678dec3b91d685b6c624015d508be463f5
+upstreamCommit: 39bc9ea24549473a89e16f3da56f291c60e7dfaa
 upstreamPath: docs/backtest_sweep.md
-lastUpdated: '2026-09-11T16:25:25Z'
+lastUpdated: '2026-09-21T13:15:01Z'
 ---
 
 Run a strategy across a parameter grid instead of one fixed set of values, poll a ranked
@@ -14,7 +14,10 @@ which parameters actually moved the objective.
 
 All five endpoints share `{exchangeId}/{type}/executeSweep/{requestId}` (`requestId` is the
 `jobId` from `POST /backtest/{exchangeId}/{type}/prepare` — a sweep reuses the same prepared
-dataset, never a fresh one):
+dataset, never a fresh one). `{type}` is `ticker` or `kline`; a kline sweep, walk-forward included,
+runs over bars of the cadence the request was prepared at (see
+[Data sources](backtest_execute#data-sources)). `funding` can be prepared but not
+swept yet:
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -116,7 +119,8 @@ curl -X POST "https://api.qtsurfer.net/v1/backtest/binance/ticker/executeSweep/$
 `queued: false` means an identical sweep already existed and this call did not enqueue a
 duplicate — prepare and execute requests are idempotent, keyed on their body.
 
-Errors: `400` invalid spec or the expanded grid exceeds the server limit · `404` `requestId`
+Errors: `400` invalid spec, a `type` that can't be swept yet (`funding`), or the expanded grid
+exceeds the server limit · `404` `requestId`
 not found or expired · `429` sweep queue or per-user concurrency limit reached.
 
 ## Polling progress and the leaderboard

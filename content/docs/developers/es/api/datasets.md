@@ -3,9 +3,9 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 924e69a1c9fbcda61c29810a89d3b0d279ca47e8
+upstreamCommit: 71549af29534eec6649774f08042f93a3bdef299
 upstreamPath: docs/datasets.md
-lastUpdated: '2026-09-16T17:59:09Z'
+lastUpdated: '2026-09-21T11:57:49Z'
 ---
 
 Haz backtest contra un CSV, un fichero parquet o un fichero lastra que subes en lugar de contra un exchange
@@ -354,15 +354,19 @@ este `importId`.
 Tanto [`GET /datasets`](#listar-tus-conjuntos-de-datos) como [`GET
 /datasets/{datasetId}`](#obtener-un-conjunto-de-datos) devuelven esto — `from`/`to`/`cadence`/
 `timestampUnit` reflejan el rango, la cadencia y la unidad de marca de tiempo propios descubiertos
-de la versión *actual*, así que no necesitas una segunda llamada para ver qué cubre un conjunto de
-datos.
+de la versión *actual*, y `status`, `bytes`, `rows`, `gaps` y `largestGapSteps` dicen si es
+utilizable y qué tamaño tiene, así que no necesitas una segunda llamada para ver qué cubre un
+conjunto de datos.
 
 | Campo | Notas |
 |---|---|
-| `datasetId`, `name`, `type` (`"ticker"` \| `"klines"`), `instrument`, `createdAt` | siempre presentes. `type` es `"klines"` solo para una importación `dex` que pidió una `cadence` de velas; `"ticker"` para todo lo demás (subidas, e importaciones `dex` de cadencia nativa) |
+| `datasetId`, `name`, `type` (`"ticker"` \| `"klines"`), `instrument`, `createdAt`, `status` | siempre presentes. `type` es `"klines"` solo para una importación `dex` que pidió una `cadence` de velas; `"ticker"` para todo lo demás (subidas, e importaciones `dex` de cadencia nativa) |
 | `currentVersionId` | la versión finalizada e ingerida con éxito más reciente. **Ausente hasta que al menos una subida ha terminado de ingerirse** |
+| `status` | `ready` — `currentVersionId` está fijado y los campos de abajo lo describen; `failed` — el intento de subida o importación más reciente falló, no hay nada que leer todavía (consulta `error`); `pending` — nunca se intentó nada (recién creado, o una subida nunca se finalizó) |
 | `updatedAt` | cuándo cambió `currentVersionId` por última vez; ausente hasta que tiene un valor |
 | `from`, `to`, `cadence`, `timestampUnit` | el rango/cadencia/unidad de marca de tiempo propios de la versión actual (una cuadrícula fija o cadencia `rt`, `iso`\|`s`\|`ms`\|`us` para `timestampUnit`, consulta [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)), tal como se descubrieron en la ingesta. **Ausentes hasta que existe una versión** |
+| `bytes`, `rows`, `gaps`, `largestGapSteps` | el tamaño almacenado, el número de filas, el número de huecos y el mayor hueco (en pasos de su cadencia) propios de la versión actual. **Presentes solo cuando `status` es `ready`** — consulta [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito) para saber qué mide `bytes` exactamente |
+| `error` | por qué falló el intento más reciente. **Presente solo cuando `status` es `failed`** |
 
 `GET /datasets/{datasetId}` por sí solo añade `dataUrl`/`dataFormat` (con el mismo significado que
 en [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)) una vez que la versión

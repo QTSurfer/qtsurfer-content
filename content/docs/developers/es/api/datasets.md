@@ -5,7 +5,7 @@ order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 71549af29534eec6649774f08042f93a3bdef299
 upstreamPath: docs/datasets.md
-lastUpdated: '2026-09-21T11:57:49Z'
+lastUpdated: '2026-09-21T11:59:16Z'
 ---
 
 Haz backtest contra un CSV, un fichero parquet o un fichero lastra que subes en lugar de contra un exchange

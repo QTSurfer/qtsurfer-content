@@ -87,13 +87,13 @@ window Sobrevendido m1 { ... }   // una sección con nombre, en la columna 0
 Tendencia s5 { ... }             // `window` es opcional aquí
 ```
 
-Una sección llamada `Principal` a la que nada hace referencia vigila el valor principal (`price`, o
+Una sección llamada `Main` a la que nada hace referencia vigila el valor principal (`price`, o
 `rate` en funding), lo que da el fichero útil más corto:
 
 ```
 strategy Simple
 
-Principal m1 {
+Main m1 {
   if (actual > prev) emitBuy(price);
 }
 ```

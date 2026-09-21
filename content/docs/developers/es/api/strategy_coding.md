@@ -3,9 +3,9 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6376f14116357a82885e640ab700e704196b0299
+upstreamCommit: 1234ca1a762e589f51b4679af889ca6cba5802cb
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-09-05T11:15:20Z'
+lastUpdated: '2026-09-21T12:08:42Z'
 ---
 
 Una estrategia de QTSurfer consume datos de mercado, actualiza indicadores y estado, y emite
@@ -23,6 +23,11 @@ npx skills add QTSurfer/strategy-skills --skill qtsurfer-java-strategy
 La skill también cubre cómo elegir una clase base de estrategia, configurar indicadores y gestionar
 el estado por instrumento. Una vez listo el fuente, [compílalo y valídalo a través de la
 API](strategy).
+
+Los helpers de señal de esta guía no están atados a una clase Java: los cuerpos `{ }` de una
+estrategia [QTScript](qtscript) (beta) — una forma compacta de escribir una estrategia que deja
+fuera la clase, los imports y el listener — llaman a `emitBuy`, `emitSell`, `emitInfo` y
+`emitSignal` exactamente como se muestra aquí.
 
 ## Señales de ejecución y señales de información
 
@@ -183,10 +188,20 @@ También acepta pares nombre/valor anidados:
 emitInfo("averages", "fast", fast, "slow", slow);
 ```
 
+`emitInfo` acepta los mismos argumentos en un cuerpo [QTScript](qtscript#dentro-de-un-cuerpo) — el
+[README](https://github.com/QTSurfer/qtsurfer-api/blob/1234ca1a762e589f51b4679af889ca6cba5802cb/README.md#the-same-strategy-in-qtscript)
+muestra el ejemplo de media móvil de arriba con sus marcadores de gráfico escritos así.
+
 Usa la forma más larga `createInfoSignal()` cuando un evento necesite varios valores de primer
 nivel o metadatos de marcador. Las señales de información son útiles para explicar una decisión,
 pero nunca sustituyen al `emitBuy` o `emitSell` correspondiente cuando la estrategia tiene que
 operar.
+
+## Ver también
+
+- [QTScript (beta)](qtscript) — las mismas estrategias escritas sin la ceremonia.
+- [Estrategias](strategy) — compila, valida, lista y recupera una estrategia, en cualquiera de los
+  dos lenguajes.
 
 [engine-javadoc]: https://qtsurfer.github.io/qtsurfer-engine-java-docs/
 [market-hint-javadoc]: https://qtsurfer.github.io/qtsurfer-engine-java-docs/com/wualabs/qtsurfer/engine/strategy/event/signal/MarketHintSignal.html

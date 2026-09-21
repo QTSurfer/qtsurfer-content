@@ -3,9 +3,9 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 69b4fc678dec3b91d685b6c624015d508be463f5
+upstreamCommit: 39bc9ea24549473a89e16f3da56f291c60e7dfaa
 upstreamPath: docs/backtest_sweep.md
-lastUpdated: '2026-09-11T16:25:25Z'
+lastUpdated: '2026-09-21T13:15:01Z'
 ---
 
 Ejecuta una estrategia sobre una cuadrícula de parámetros en lugar de un único conjunto fijo de
@@ -14,7 +14,10 @@ pliegues walk-forward, e inspecciona qué parámetros movieron realmente el obje
 
 Los cinco endpoints comparten `{exchangeId}/{type}/executeSweep/{requestId}` (`requestId` es el
 `jobId` de `POST /backtest/{exchangeId}/{type}/prepare` — un barrido reutiliza el mismo conjunto
-de datos preparado, nunca uno nuevo):
+de datos preparado, nunca uno nuevo). `{type}` es `ticker` o `kline`; un barrido kline, walk-forward
+incluido, corre sobre barras de la cadencia con la que se preparó la petición (consulta
+[Fuentes de datos](backtest_execute#fuentes-de-datos)). `funding` se puede preparar pero aún no
+barrer:
 
 | Método | Ruta | Propósito |
 |---|---|---|
@@ -117,7 +120,8 @@ curl -X POST "https://api.qtsurfer.net/v1/backtest/binance/ticker/executeSweep/$
 `queued: false` significa que ya existía un barrido idéntico y esta llamada no encoló un
 duplicado — las peticiones de preparación y ejecución son idempotentes, indexadas por su cuerpo.
 
-Errores: `400` especificación inválida o la cuadrícula expandida excede el límite del servidor ·
+Errores: `400` especificación inválida, un `type` que aún no se puede barrer (`funding`), o la
+cuadrícula expandida excede el límite del servidor ·
 `404` `requestId` no encontrado o expirado · `429` cola de barridos o límite de concurrencia por
 usuario alcanzado.
 

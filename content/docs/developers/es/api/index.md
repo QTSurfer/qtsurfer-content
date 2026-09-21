@@ -14,6 +14,7 @@ solicitud y respuesta, los requisitos de autenticación y los grupos de endpoint
 ## Guías de implementación
 
 - [Programación de estrategias Java](/docs/developers/api/strategy_coding) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy_coding.md)
+- [QTScript (beta)](/docs/developers/api/qtscript) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/qtscript.md)
 - [Estrategias](/docs/developers/api/strategy) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy.md)
 - [Backtests](/docs/developers/api/backtest_execute) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_execute.md)
 - [Barridos de parámetros](/docs/developers/api/backtest_sweep) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_sweep.md)

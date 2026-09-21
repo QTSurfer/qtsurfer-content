@@ -3,9 +3,9 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6376f14116357a82885e640ab700e704196b0299
+upstreamCommit: 1234ca1a762e589f51b4679af889ca6cba5802cb
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-09-05T11:15:20Z'
+lastUpdated: '2026-09-21T12:08:42Z'
 ---
 
 A QTSurfer strategy consumes market data, updates indicators and state, and emits signals. This
@@ -23,6 +23,11 @@ npx skills add QTSurfer/strategy-skills --skill qtsurfer-java-strategy
 The skill also covers choosing a strategy base class, configuring indicators, and managing
 per-instrument state. Once the source is ready, [compile and validate it through the
 API](strategy).
+
+The signal helpers in this guide are not tied to a Java class: the `{ }` bodies of a
+[QTScript](qtscript) strategy (beta) — a compact way to write a strategy that leaves out the
+class, imports and listener — call `emitBuy`, `emitSell`, `emitInfo` and `emitSignal` exactly as
+shown here.
 
 ## Execution signals and information signals
 
@@ -180,9 +185,18 @@ It also accepts nested name/value pairs:
 emitInfo("averages", "fast", fast, "slow", slow);
 ```
 
+`emitInfo` takes the same arguments in a [QTScript](qtscript#inside-a-body) body — the
+[README](https://github.com/QTSurfer/qtsurfer-api/blob/1234ca1a762e589f51b4679af889ca6cba5802cb/README.md#the-same-strategy-in-qtscript)
+shows the moving-average example above with its chart markers written that way.
+
 Use the longer `createInfoSignal()` form when one event needs several top-level values or marker
 metadata. Information signals are useful for explaining a decision, but they never replace the
 corresponding `emitBuy` or `emitSell` when the strategy is meant to trade.
+
+## See also
+
+- [QTScript (beta)](qtscript) — the same strategies written with the ceremony left out.
+- [Strategies](strategy) — compile, validate, list and read back a strategy, in either language.
 
 [engine-javadoc]: https://qtsurfer.github.io/qtsurfer-engine-java-docs/
 [market-hint-javadoc]: https://qtsurfer.github.io/qtsurfer-engine-java-docs/com/wualabs/qtsurfer/engine/strategy/event/signal/MarketHintSignal.html

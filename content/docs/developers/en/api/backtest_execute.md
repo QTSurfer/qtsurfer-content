@@ -3,9 +3,9 @@ title: Backtests
 description: Prepare historical data, execute a strategy, poll its result, and inspect its equity curve.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 69b4fc678dec3b91d685b6c624015d508be463f5
+upstreamCommit: 39bc9ea24549473a89e16f3da56f291c60e7dfaa
 upstreamPath: docs/backtest_execute.md
-lastUpdated: '2026-09-11T16:25:25Z'
+lastUpdated: '2026-09-21T13:15:01Z'
 ---
 
 Prepare historical data, run a compiled strategy against it once, poll the result, and plot the
@@ -20,7 +20,39 @@ equity curve. For running the *same* strategy across a parameter grid instead, s
 | `GET` | `/backtest/{exchangeId}/{type}/execute/{jobId}` | Poll the execution result |
 | `DELETE` | `/backtest/{exchangeId}/{type}/execute/{jobId}` | Cancel a running execution |
 
-`{type}` is the [`DataSourceType`](/docs/api) — `ticker` today.
+`{type}` is the [`DataSourceType`](/docs/api): `ticker`, `kline` or `funding`.
+
+## Data sources
+
+| `{type}` | Prepare | Execute | Sweep |
+|---|---|---|---|
+| `ticker` | yes | yes | yes |
+| `kline` | yes | yes | yes |
+| `funding` | yes | not yet | not yet |
+
+A `funding` request to `execute` or `executeSweep` is rejected with `400` before anything is
+queued, and the message names what can be run: `funding data can be prepared but not executed yet.
+Sources that can be executed: ticker, kline`.
+
+### Kline: you choose the bar width
+
+A kline run reads bars of exactly the `cadence` you prepared at — `1s` (the default), `1m`, `5m`,
+`15m`, `30m`, `1h`, `4h` or `1d` — whatever the strategy itself might suggest. The same strategy
+can therefore be run at several cadences by preparing the range once per cadence. Any other label
+(`5s`, `3m`, `8h`, ...) is `400` at prepare, and the message lists the accepted ones.
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/prepare \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"instrument":"BTC/USDT","from":"2026-03-14T10:00:00Z","to":"2026-03-14T16:00:00Z","cadence":"1m"}'
+# → 202 {"jobId": "5ikYAMIO..."}
+
+curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/execute \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6"}'
+```
 
 ## Preparing data
 
@@ -40,7 +72,7 @@ Two shapes, chosen by the `exchangeId` path segment:
 | `instrument` | string | required **unless** `exchangeId` is the reserved value `user` |
 | `datasetId` | string | **only** for `exchangeId: user` — a dataset from `POST /datasets`, in place of `instrument` |
 | `datasetVersionId` | string | **only** for `exchangeId: user`, optional — pins a past version instead of the dataset's current one |
-| `cadence` | string | optional. Managed exchange: one of `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — default `1s`. `exchangeId: user`: default is the dataset version's own discovered cadence, served as-is; any cadence equal to or coarser than it and an exact multiple of it is accepted, even outside that list (e.g. `15s`), and an `rt` dataset resamples to any fixed cadence. Finer than the source, or not an exact multiple of it, is `400` |
+| `cadence` | string | optional. Managed exchange, `ticker` or `funding`: one of `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — default `1s`. Managed exchange, `kline`: one of `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `1d` — default `1s`; any other label is `400`. `exchangeId: user`: default is the dataset version's own discovered cadence, served as-is; any cadence equal to or coarser than it and an exact multiple of it is accepted, even outside that list (e.g. `15s`), and an `rt` dataset resamples to any fixed cadence. Finer than the source, or not an exact multiple of it, is `400` |
 
 `exchangeId: user` is reserved for your own uploaded data — see
 [`docs/datasets.md`](datasets).
@@ -55,7 +87,8 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/prepare \
 # → 202 {"jobId": "5ikYAMIO..."}
 ```
 
-Errors: `400` invalid request, `from` older than the lookback window, `to` in the future, or (for
+Errors: `400` invalid request, `from` older than the lookback window, `to` in the future, a `kline`
+`cadence` that isn't a kline cadence, or (for
 `exchangeId: user`) the dataset's upload hasn't finished ingesting / `cadence` finer than the
 dataset's discovered cadence / range exceeds your tier's limit · `404` exchange/type not found, or
 (for `exchangeId: user`) `datasetId`/`datasetVersionId` doesn't exist or isn't yours · `429` global
@@ -178,7 +211,8 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
 # → 202 {"jobId": "9k2LpQi7..."}
 ```
 
-Errors: `400` invalid request · `404` prepare job not found or expired · `429` rate limited.
+Errors: `400` invalid request, or a `type` that can't be executed yet (`funding`) · `404` prepare job
+not found or expired · `429` rate limited.
 
 ## Polling the result
 

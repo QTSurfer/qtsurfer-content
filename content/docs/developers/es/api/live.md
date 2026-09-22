@@ -3,9 +3,9 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: a0ce71f23b7d9714a490ed9c1d455db72adf3a74
+upstreamCommit: 2ab1bcbc32470544a42e33f402e79dfa2c1b61db
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-22T19:27:53Z'
+lastUpdated: '2026-09-23T00:00:00Z'
 ---
 
 Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo, observa sus señales a
@@ -19,6 +19,7 @@ medida que ocurren, y cambia sus parámetros sin reiniciarla.
 | `GET` | `/live/public` | Explorar ejecuciones que otros usuarios han hecho públicas |
 | `PATCH` | `/live/{runId}` | Cambiar visibilidad, nombre o descripción |
 | `PUT` | `/live/{runId}/params` | Cambiar parámetros mientras sigue en vivo |
+| `GET` | `/live/{runId}/signals` | Leer las señales que ya ha producido |
 | `POST` | `/live/token` | Generar un token de conexión WebSocket |
 
 ## Ciclo de vida: sandbox, luego live
@@ -94,6 +95,13 @@ Sondear `GET .../live` te dice el *estado* de la ejecución; no transmite su sal
 las señales de una ejecución a medida que ocurren, o para enviar una actualización de parámetros
 por la misma conexión en lugar de una llamada REST aparte, abre una conexión WebSocket:
 
+Las señales solo llegan a este canal para una ejecución arrancada con `relay: true` (campo propio
+de `POST .../live`, `false` por defecto) — y solo una vez alcanza la etapa `live`; una ejecución
+todavía en `sandbox` nunca hace relay, sea lo que sea lo que se pidió al arrancar.
+`GET`/`PATCH .../live` devuelven en `relay` lo que se pidió ya combinado con esa regla de etapa —
+`true` ahí significa que las señales están llegando al canal ahora mismo, no solo que se pasó
+`relay: true` en algún momento.
+
 1. **Genera un token.** `POST /live/token` (JWT bearer, igual que cualquier otro endpoint) devuelve
    un `token` de corta duración y su `expiresAtMs`. Genera uno nuevo antes de que expire el actual
    o ante un fallo de conexión que parezca relacionado con la autenticación.
@@ -155,7 +163,7 @@ Cada payload `push` en un canal `sig:<runId>`:
 | campo | significado |
 |---|---|
 | `signalId` | Id estable de esta señal exacta — deduplica con él si tu conexión se reconecta a mitad de flujo. |
-| `stage` | `sandbox` o `live` — refleja el `stage` de `GET .../live`. |
+| `stage` | Siempre `live` en este canal — una ejecución solo hace relay una vez `relay` está en efecto, lo que nunca pasa en `sandbox` (ver arriba). |
 | `paramsVersion` | El conjunto de parámetros vigente cuando se produjo esta señal. |
 | `type` | `hint`, `info`, `marker`, o `command`. |
 | `kind` | `BUY`/`SELL` para un `hint`; el nombre del comando para un `command`; ausente en otro caso. |
@@ -169,3 +177,67 @@ Cada payload `push` en un canal `sig:<runId>`:
 Quién es el dueño de la ejecución, qué estrategia o compilación produjo una señal, y la posición
 exacta de datos de mercado detrás de ella nunca se incluyen en este canal, sea la ejecución
 pública o privada.
+
+## Leer las señales que una ejecución ya produjo
+
+El canal de arriba es solo en vivo: lleva lo que ocurre mientras estás conectado, y solo para una
+ejecución que pidió `relay`. `GET /live/{runId}/signals` sirve el registro en su lugar — las
+señales de una ejecución se guardan de todas formas, así que esto funciona tanto si `relay` estuvo
+activo como si no, y en ambas etapas. Úsalo para ponerte al día tras una desconexión, para leer una
+ejecución a la que nunca hiciste relay, o simplemente para paginar hacia atrás sobre lo que ya ha
+pasado.
+
+```
+GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/signals?sinceMs=1758330000000&limit=20
+
+200
+{
+  "signals": [ { "signalId": "…", "eventTsMs": 1758330012000, … } ],
+  "availableSinceMs": 1757725212000,
+  "_links": {"next": {"href": "/v1/live/6TzAPiPpsOWwBLdLBZCxwH/signals?cursor=eyJzZXEiOjQyfQ&limit=20"}}
+}
+```
+
+Cada entrada tiene la misma forma que empuja el canal — la tabla de arriba aplica sin cambios,
+salvo que aquí `stage` es la etapa en la que estaba la ejecución cuando se produjo la señal, así
+que las señales de una ejecución sandbox se leen como `sandbox`. Pagina con `_links.next` mientras
+esté presente; `limit` es 20 por defecto y su tope es 100. Legible por el dueño de la ejecución, y
+por cualquiera si la ejecución es `public` — la misma regla que aplica el canal a una suscripción.
+
+### Filtrar por instrumento
+
+`instrument` es opcional y reduce la página sin cambiar nada más:
+
+| `instrument` | devuelve |
+|---|---|
+| omitido, o `*` | todos los instrumentos que cubre la ejecución |
+| `BTC/USDT` | solo ese par |
+| `*/USDT` | cualquier base contra esa cotizada |
+| `BTC/*` | esa base contra cualquier cotizada |
+| `BTC/USDT,ETH/EUR` | cada par de la lista |
+
+Los símbolos coinciden exactamente, mayúsculas incluidas — pásalos tal como los reporta esta API
+(como aparecen en `sources` de la propia ejecución, o en `instrument.symbol` de una señal).
+
+### La ventana se mueve, y los cursores caducan
+
+Las señales se guardan durante un margen limitado, y las más antiguas se descartan continuamente a
+medida que llegan otras nuevas. Cuánto puedes leer hacia atrás no es por tanto un número fijo de
+horas: una ejecución que produce muchas señales consume ese margen más rápido, y también lo hacen
+otras ejecuciones que lo comparten. Dos consecuencias a tener en cuenta:
+
+- **`availableSinceMs`** en cada respuesta es el momento más antiguo todavía respondible. Pedir un
+  `sinceMs` anterior a eso no es un error: te sirven desde `availableSinceMs` en adelante, y el
+  campo te dice que eso es lo que pasó.
+- **Un cursor puede caducar**, y en una ejecución con mucho tráfico puede caducar en minutos.
+  Cuando la posición a la que apunta ya se descartó, la siguiente página responde `410` en vez de
+  servir en silencio una página recortada que parece completa:
+
+  ```json
+  {"code": 410, "message": "the cursor's position is no longer retained by the signal stream (it now starts at availableSinceMs=1757725212000)"}
+  ```
+
+  Trátalo como un resultado normal de paginar un sistema en vivo, no como un fallo: lee el
+  `availableSinceMs` que indica y vuelve a empezar desde ahí. Si estás paginando para mostrar un
+  historial largo, trae las páginas que necesites en una sola pasada en vez de mantener un cursor
+  durante el tiempo de reflexión de un usuario.

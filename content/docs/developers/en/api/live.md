@@ -107,8 +107,12 @@ separate REST call, open a WebSocket connection.
 The connection speaks the [Centrifugo](https://centrifugal.dev) v6 client protocol (JSON). Its
 machine-readable contract is [`asyncapi.yaml`](../asyncapi.yaml), next to the OpenAPI spec: the
 URL, every frame, the channel names, the `live.params` call and the error codes, with the signal
-payload shared with the REST schema `LiveSignal`. The easiest client is an official Centrifugo
-library — [`centrifuge`](https://github.com/centrifugal/centrifuge-js) (JavaScript/TypeScript),
+payload shared with the REST schema `LiveSignal`.
+
+The QTSurfer SDKs already wrap this connection — see
+[Clients and SDKs](/docs/developers/clients-and-sdks) — so you may not need to speak the protocol
+directly at all. Going direct, the easiest client is an official Centrifugo library —
+[`centrifuge`](https://github.com/centrifugal/centrifuge-js) (JavaScript/TypeScript),
 [`centrifuge-java`](https://github.com/centrifugal/centrifuge-java),
 [`centrifuge-python`](https://github.com/centrifugal/centrifuge-python) and
 [others](https://centrifugal.dev/docs/transports/client_sdk) — since it already does the pings,

@@ -108,9 +108,13 @@ por la misma conexión en lugar de una llamada REST aparte, abre una conexión W
 La conexión habla el protocolo cliente de [Centrifugo](https://centrifugal.dev) v6 (JSON). Su
 contrato legible por máquina es [`asyncapi.yaml`](../asyncapi.yaml), junto al spec OpenAPI: la URL,
 cada trama, los nombres de canal, la llamada `live.params` y los códigos de error, con el payload
-de la señal compartido con el esquema REST `LiveSignal`. El cliente más sencillo es una librería
-oficial de Centrifugo — [`centrifuge`](https://github.com/centrifugal/centrifuge-js)
-(JavaScript/TypeScript), [`centrifuge-java`](https://github.com/centrifugal/centrifuge-java),
+de la señal compartido con el esquema REST `LiveSignal`.
+
+Los SDKs de QTSurfer ya envuelven esta conexión — consulta
+[Clientes y SDKs](/docs/developers/clients-and-sdks) — así que puede que no necesites hablar el
+protocolo directamente. Yendo directo, el cliente más sencillo es una librería oficial de
+Centrifugo — [`centrifuge`](https://github.com/centrifugal/centrifuge-js) (JavaScript/TypeScript),
+[`centrifuge-java`](https://github.com/centrifugal/centrifuge-java),
 [`centrifuge-python`](https://github.com/centrifugal/centrifuge-python) y
 [otras](https://centrifugal.dev/docs/transports/client_sdk) — porque ya se encarga de los pings, la
 renovación del token y la reconexión que se describen abajo. Con una, solo aportas la URL, una

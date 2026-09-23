@@ -3,9 +3,9 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 2ab1bcbc32470544a42e33f402e79dfa2c1b61db
+upstreamCommit: 21e7ff9dc0d0ba845c504f222fd32f1e84776f53
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-22T23:26:54Z'
+lastUpdated: '2026-09-23T12:00:00Z'
 ---
 
 Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo, observa sus señales a
@@ -16,6 +16,7 @@ medida que ocurren, y cambia sus parámetros sin reiniciarla.
 | `POST` | `/strategy/{strategyId}/live` | Arrancar una estrategia en vivo |
 | `GET` | `/strategy/{strategyId}/live` | Leer la ejecución actual (o la última) de esta estrategia |
 | `DELETE` | `/strategy/{strategyId}/live` | Detenerla |
+| `GET` | `/live` | Listar tus propias ejecuciones |
 | `GET` | `/live/public` | Explorar ejecuciones que otros usuarios han hecho públicas |
 | `PATCH` | `/live/{runId}` | Cambiar visibilidad, nombre o descripción |
 | `PUT` | `/live/{runId}/params` | Cambiar parámetros mientras sigue en vivo |
@@ -56,6 +57,15 @@ varias cadencias todavía no está disponible. `instruments` puede ser `["*"]` p
 instrumentos que ofrezca el exchange/segmento, sujeto al límite de número de instrumentos de tu
 plan.
 
+## Listar tus ejecuciones
+
+`GET /live` (necesita un token Bearer) devuelve todas las ejecuciones que has arrancado — cualquier
+`stage`, cualquier estado `desired`, cualquier `visibility` — de más nueva a más antigua, paginado
+igual que `GET /live/public` (`cursor`/`limit`, `_links.next.href`). No filtra por `state`: una
+prueba `sandbox` o una ejecución que ya has detenido sigue apareciendo, a diferencia de
+`GET /live/public`, que no necesita cabecera `Authorization` pero solo lista ejecuciones ajenas —
+de cualquiera, la tuya incluida — que sean `public` y estén corriendo (`RUNNING`).
+
 ## Visibilidad
 
 Una ejecución es `private` por defecto — solo tú puedes leer su estado o recibir sus señales. Fijar
@@ -93,7 +103,22 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 
 Sondear `GET .../live` te dice el *estado* de la ejecución; no transmite su salida. Para recibir
 las señales de una ejecución a medida que ocurren, o para enviar una actualización de parámetros
-por la misma conexión en lugar de una llamada REST aparte, abre una conexión WebSocket:
+por la misma conexión en lugar de una llamada REST aparte, abre una conexión WebSocket.
+
+La conexión habla el protocolo cliente de [Centrifugo](https://centrifugal.dev) v6 (JSON). Su
+contrato legible por máquina es [`asyncapi.yaml`](../asyncapi.yaml), junto al spec OpenAPI: la URL,
+cada trama, los nombres de canal, la llamada `live.params` y los códigos de error, con el payload
+de la señal compartido con el esquema REST `LiveSignal`.
+
+Los SDKs de QTSurfer ya envuelven esta conexión — consulta
+[Clientes y SDKs](/docs/developers/clients-and-sdks) — así que puede que no necesites hablar el
+protocolo directamente. Yendo directo, el cliente más sencillo es una librería oficial de
+Centrifugo — [`centrifuge`](https://github.com/centrifugal/centrifuge-js) (JavaScript/TypeScript),
+[`centrifuge-java`](https://github.com/centrifugal/centrifuge-java),
+[`centrifuge-python`](https://github.com/centrifugal/centrifuge-python) y
+[otras](https://centrifugal.dev/docs/transports/client_sdk) — porque ya se encarga de los pings, la
+renovación del token y la reconexión que se describen abajo. Con una, solo aportas la URL, una
+función que genera un token, el nombre del canal y el método RPC.
 
 Las señales solo llegan a este canal para una ejecución arrancada con `relay: true` (campo propio
 de `POST .../live`, `false` por defecto) — y solo una vez alcanza la etapa `live`; una ejecución
@@ -103,17 +128,18 @@ todavía en `sandbox` nunca hace relay, sea lo que sea lo que se pidió al arran
 `relay: true` en algún momento.
 
 1. **Genera un token.** `POST /live/token` (JWT bearer, igual que cualquier otro endpoint) devuelve
-   un `token` de corta duración y su `expiresAtMs`. Genera uno nuevo antes de que expire el actual
-   o ante un fallo de conexión que parezca relacionado con la autenticación.
+   un `token` de corta duración y su `expiresAtMs`.
 2. **Conecta.** Abre un WebSocket a `wss://rt.qtsurfer.net/connection/websocket` y envía, como
    primer mensaje:
    ```json
    {"id": 1, "connect": {"token": "<el token del paso 1>"}}
    ```
-   Una conexión exitosa responde con tu propio id de `client`:
+   Una conexión exitosa responde con tu propio id de `client`, y cuánto le queda al token:
    ```json
-   {"id": 1, "connect": {"client": "<id-de-cliente>", "ping": 25000, "pong": true}}
+   {"id": 1, "connect": {"client": "<id-de-cliente>", "expires": true, "ttl": 600, "ping": 25, "pong": true}}
    ```
+   `ttl` y `ping` están en segundos. Un token que no se acepta cierra el socket con el código de
+   cierre `3500` (`invalid token`).
 3. **Suscríbete al canal de señales de la ejecución**, llamado `sig:<runId>` — por ejemplo
    `sig:6TzAPiPpsOWwBLdLBZCxwH`:
    ```json
@@ -121,8 +147,15 @@ todavía en `sandbox` nunca hace relay, sea lo que sea lo que se pidió al arran
    ```
    Puedes suscribirte al canal de cualquier ejecución de esta forma, pero la conexión solo se
    admite realmente en él si eres el dueño de esa ejecución o es `public` — el canal de una
-   ejecución privada ajena rechaza la suscripción. Cada señal llega entonces como un `push` en el
-   canal, con su `data` en la forma de abajo.
+   ejecución privada ajena rechaza la suscripción con
+   `{"id": 2, "error": {"code": 103, "message": "permission denied"}}`. Cada señal llega entonces
+   como una trama `push`, sin `id`; la señal en sí es su `pub.data`, en la forma de abajo:
+   ```json
+   {"push": {"channel": "sig:6TzAPiPpsOWwBLdLBZCxwH", "pub": {"data": {"v": 1, "signalId": "…", …}, "offset": 42}}}
+   ```
+   Si la ejecución se pone en privado mientras estás suscrito y no es tuya, el servidor te retira
+   con `{"push": {"channel": "sig:…", "unsubscribe": {"code": 2000, "reason": "server unsubscribe"}}}`,
+   y no te vuelve a suscribir.
 4. **Llama a `live.params`** (la forma WebSocket de `PUT /live/{runId}/params`, solo para el
    dueño):
    ```json
@@ -136,10 +169,31 @@ todavía en `sandbox` nunca hace relay, sea lo que sea lo que se pidió al arran
    ```json
    {"id": 3, "error": {"code": 404, "message": "no such run"}}
    ```
+5. **Mantén la conexión viva.** El servidor envía una trama vacía `{}` como ping; responde a cada
+   una con `{}` (eso es lo que pide `"pong": true` en la respuesta de conexión). Si no llega nada
+   durante bastante más de `ping` segundos, trata la conexión como muerta y reconecta.
+6. **Renueva el token antes de que se acabe el `ttl`**, sobre la misma conexión — genera uno nuevo
+   con `POST /live/token` y envíalo:
+   ```json
+   {"id": 4, "refresh": {"token": "<un token nuevo>"}}
+   ```
+   que responde `{"id": 4, "refresh": {"expires": true, "ttl": 600}}`. Tus suscripciones no se ven
+   afectadas. Una conexión cuyo token no se renueva a tiempo se cierra con el código de cierre
+   `3005` (`connection expired`); reconecta con un token nuevo.
+
+Algunos detalles del protocolo a conocer si escribes tu propio cliente: cada respuesta lleva el
+`id` del comando que contesta, las tramas que el servidor envía por su cuenta (pushes, pings) no
+llevan ninguno, y una trama WebSocket puede contener varias respuestas, un objeto JSON por línea.
+Una página de navegador servida desde el origen de otro sitio se rechaza en el *upgrade* del
+WebSocket (`403`); un cliente que no envía cabecera `Origin`, como un programa del lado del
+servidor o un SDK, no se ve afectado.
+
+Tras una desconexión, el canal no reproduce lo que te perdiste: léelo de vuelta con
+`GET /live/{runId}/signals` (más abajo), deduplicando por `signalId`.
 
 ### Forma de la señal
 
-Cada payload `push` en un canal `sig:<runId>`:
+Cada señal empujada en un canal `sig:<runId>` (el `pub.data` de la trama `push`):
 
 ```json
 {

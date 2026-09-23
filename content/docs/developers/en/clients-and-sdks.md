@@ -2,7 +2,7 @@
 title: Clients and SDKs
 description: Choose between QTSurfer workflow SDKs and low-level generated API clients.
 order: 6
-lastUpdated: '2026-08-28T22:05:50Z'
+lastUpdated: '2026-09-23T15:30:00Z'
 ---
 
 QTSurfer provides opinionated SDKs for common workflows and lower-level clients that map closely to
@@ -11,11 +11,14 @@ the HTTP API. Choose the highest-level library that still gives you the control 
 ## Workflow SDKs
 
 - [Java SDK](https://github.com/QTSurfer/sdk-java) · [documentation](https://qtsurfer.github.io/sdk-java/) — Java workflows,
-  authentication, and normalized errors.
+  authentication, normalized errors, and
+  [live execution](https://github.com/QTSurfer/sdk-java/blob/main/docs/live.md) over WebSocket.
 - [TypeScript SDK](https://github.com/QTSurfer/sdk-ts) · [documentation](https://qtsurfer.github.io/sdk-ts/) — workflow orchestration,
-  polling, cancellation, normalized errors, and a single-call backtest flow.
+  polling, cancellation, normalized errors, a single-call backtest flow, and
+  [live execution](https://github.com/QTSurfer/sdk-ts/blob/main/docs/live.md) over WebSocket.
 - [Python SDK](https://github.com/QTSurfer/sdk-python) · [documentation](https://qtsurfer.github.io/sdk-python/) — Python workflows,
-  authentication, token refresh, and normalized errors.
+  authentication, token refresh, normalized errors, and
+  [live execution](https://github.com/QTSurfer/sdk-python/blob/main/docs/live.md) over WebSocket.
 
 Use an SDK when you want authentication and multi-step operations handled as one workflow.
 

@@ -11,12 +11,14 @@ la API HTTP. Elige la biblioteca de mayor nivel que te proporcione el control qu
 ## SDKs de flujo
 
 - [SDK de Java](https://github.com/QTSurfer/sdk-java) · [documentación](https://qtsurfer.github.io/sdk-java/) — flujos Java,
-  autenticación y errores normalizados.
+  autenticación, errores normalizados, y
+  [ejecución en vivo](https://github.com/QTSurfer/sdk-java/blob/main/docs/live.md) por WebSocket.
 - [SDK de TypeScript](https://github.com/QTSurfer/sdk-ts) · [documentación](https://qtsurfer.github.io/sdk-ts/) — orquestación,
   polling, cancelación, errores normalizados, ejecución de backtests con una sola llamada, y
   [ejecución en vivo](https://github.com/QTSurfer/sdk-ts/blob/main/docs/live.md) por WebSocket.
 - [SDK de Python](https://github.com/QTSurfer/sdk-python) · [documentación](https://qtsurfer.github.io/sdk-python/) — flujos Python,
-  autenticación, renovación de tokens y errores normalizados.
+  autenticación, renovación de tokens, errores normalizados, y
+  [ejecución en vivo](https://github.com/QTSurfer/sdk-python/blob/main/docs/live.md) por WebSocket.
 
 Usa un SDK cuando quieras resolver la autenticación y las operaciones de varios pasos como un único
 flujo.

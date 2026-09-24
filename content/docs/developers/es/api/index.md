@@ -19,6 +19,7 @@ solicitud y respuesta, los requisitos de autenticación y los grupos de endpoint
 - [Backtests](/docs/developers/api/backtest_execute) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_execute.md)
 - [Barridos de parámetros](/docs/developers/api/backtest_sweep) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_sweep.md)
 - [Ejecución en vivo](/docs/developers/api/live) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/live.md)
+- [Paper trading](/docs/developers/api/live_paper) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/live_paper.md)
 - [Curvas de equity](/docs/developers/api/equity_curves) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/equity_curves.md)
 - [Conjuntos de datos](/docs/developers/api/datasets) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/datasets.md)
 - [Datos de mercado](/docs/developers/api/market_data) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/market_data.md)

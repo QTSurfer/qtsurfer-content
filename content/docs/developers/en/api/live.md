@@ -3,9 +3,9 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 21e7ff9dc0d0ba845c504f222fd32f1e84776f53
+upstreamCommit: 021eb3c41528e565f9d6ec7f084f0558d049fb4b
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-23T15:34:21Z'
+lastUpdated: '2026-09-24T09:00:00Z'
 ---
 
 Run a strategy continuously against a live market feed, watch its signals as they happen, and
@@ -21,6 +21,8 @@ change its parameters without restarting it.
 | `PATCH` | `/live/{runId}` | Change visibility, name, or description |
 | `PUT` | `/live/{runId}/params` | Change parameters while it stays live |
 | `GET` | `/live/{runId}/signals` | Read the signals it has already produced |
+| `GET` | `/live/{runId}/paper` | Read its paper trading — see [Paper trading](live_paper) |
+| `GET` | `/live/{runId}/paper/equity` | Page through its paper equity curve — see [Paper trading](live_paper) |
 | `POST` | `/live/token` | Mint a WebSocket connection token |
 
 ## Lifecycle: sandbox, then live
@@ -214,7 +216,7 @@ Each signal pushed on a `sig:<runId>` channel (the `pub.data` of the `push` fram
 | `signalId` | Stable id for this exact signal — dedupe on it if your connection ever reconnects mid-stream. |
 | `stage` | Always `live` on this channel — a run only relays once `relay` is in effect, which never happens in `sandbox` (see above). |
 | `paramsVersion` | The parameter set in force when this signal was produced. |
-| `type` | `hint`, `info`, `marker`, or `command`. |
+| `type` | `hint`, `info`, `marker`, or `command` — plus `paper` when reading a `mix` run's history (see [Paper trading](live_paper#output-separate-or-mix); paper items are never pushed on this channel). |
 | `kind` | `BUY`/`SELL` for a `hint`; the command name for a `command`; absent otherwise. |
 | `eventTsMs` | Market time the signal was produced. |
 | `emittedAtMs` | Time it was published — always ≥ `eventTsMs`. |
@@ -266,6 +268,12 @@ the channel applies to a subscription.
 Symbols match exactly, case included — pass them as this API reports them (as they appear in the
 run's own `sources`, or in a signal's `instrument.symbol`).
 
+### Filtering by type
+
+`type` narrows to one or more signal types, comma-separated: `hint`, `info`, `marker`, `command`,
+`paper`. It combines with `instrument` — `?type=hint&instrument=*/USDT` is every hint on a USDT pair.
+Both filters are carried over into `_links.next`, so following it keeps the same selection.
+
 ### The window moves, and cursors expire
 
 Signals are kept for a limited span, and the oldest are discarded continuously as new ones arrive.
@@ -287,3 +295,16 @@ consumes that span faster, and so do other runs sharing it. Two consequences wor
   `availableSinceMs` it names and start again from there. If you are paging to display a long
   history, fetch the pages you need in one pass rather than holding a cursor across a user's
   think-time.
+
+## Paper trading
+
+Start a run with a `paper` block and its hints are executed in simulation from its first tick, as a
+backtest would execute them — fills, closed trades, equity and the same KPIs a backtest reports:
+
+```json
+"paper": {"initialFunding": 1000, "feeRate": 0.001, "percentAmountToLock": 20}
+```
+
+Read it back with `GET /live/{runId}/paper` and `GET /live/{runId}/paper/equity`. Everything about it
+— the configuration, one account per quote currency, the equity curve, `mix` output and gaps — is in
+**[Paper trading on live runs](live_paper)**.

@@ -19,6 +19,7 @@ schemas, authentication requirements, and endpoint groups.
 - [Backtests](/docs/developers/api/backtest_execute) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_execute.md)
 - [Parameter sweeps](/docs/developers/api/backtest_sweep) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_sweep.md)
 - [Live execution](/docs/developers/api/live) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/live.md)
+- [Paper trading](/docs/developers/api/live_paper) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/live_paper.md)
 - [Equity curves](/docs/developers/api/equity_curves) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/equity_curves.md)
 - [Datasets](/docs/developers/api/datasets) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/datasets.md)
 - [Market data](/docs/developers/api/market_data) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/market_data.md)

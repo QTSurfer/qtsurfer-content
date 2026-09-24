@@ -3,9 +3,9 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 21e7ff9dc0d0ba845c504f222fd32f1e84776f53
+upstreamCommit: 021eb3c41528e565f9d6ec7f084f0558d049fb4b
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-23T15:34:21Z'
+lastUpdated: '2026-09-24T09:00:00Z'
 ---
 
 Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo, observa sus señales a
@@ -21,6 +21,8 @@ medida que ocurren, y cambia sus parámetros sin reiniciarla.
 | `PATCH` | `/live/{runId}` | Cambiar visibilidad, nombre o descripción |
 | `PUT` | `/live/{runId}/params` | Cambiar parámetros mientras sigue en vivo |
 | `GET` | `/live/{runId}/signals` | Leer las señales que ya ha producido |
+| `GET` | `/live/{runId}/paper` | Leer su paper trading — consulta [Paper trading](live_paper) |
+| `GET` | `/live/{runId}/paper/equity` | Paginar su curva de equity de paper trading — consulta [Paper trading](live_paper) |
 | `POST` | `/live/token` | Generar un token de conexión WebSocket |
 
 ## Ciclo de vida: sandbox, luego live
@@ -219,7 +221,7 @@ Cada señal empujada en un canal `sig:<runId>` (el `pub.data` de la trama `push`
 | `signalId` | Id estable de esta señal exacta — deduplica con él si tu conexión se reconecta a mitad de flujo. |
 | `stage` | Siempre `live` en este canal — una ejecución solo hace relay una vez `relay` está en efecto, lo que nunca pasa en `sandbox` (ver arriba). |
 | `paramsVersion` | El conjunto de parámetros vigente cuando se produjo esta señal. |
-| `type` | `hint`, `info`, `marker`, o `command`. |
+| `type` | `hint`, `info`, `marker`, o `command` — más `paper` al leer el histórico de una ejecución `mix` (consulta [Paper trading](live_paper#salida-separate-o-mix); los elementos paper nunca se empujan por este canal). |
 | `kind` | `BUY`/`SELL` para un `hint`; el nombre del comando para un `command`; ausente en otro caso. |
 | `eventTsMs` | Hora de mercado en que se produjo la señal. |
 | `emittedAtMs` | Hora en que se publicó — siempre ≥ `eventTsMs`. |
@@ -273,6 +275,12 @@ por cualquiera si la ejecución es `public` — la misma regla que aplica el can
 Los símbolos coinciden exactamente, mayúsculas incluidas — pásalos tal como los reporta esta API
 (como aparecen en `sources` de la propia ejecución, o en `instrument.symbol` de una señal).
 
+### Filtrar por tipo
+
+`type` reduce a uno o más tipos de señal, separados por comas: `hint`, `info`, `marker`, `command`,
+`paper`. Se combina con `instrument` — `?type=hint&instrument=*/USDT` son todos los hints de un par
+USDT. Ambos filtros se arrastran en `_links.next`, así que seguirlo mantiene la misma selección.
+
 ### La ventana se mueve, y los cursores caducan
 
 Las señales se guardan durante un margen limitado, y las más antiguas se descartan continuamente a
@@ -295,3 +303,17 @@ otras ejecuciones que lo comparten. Dos consecuencias a tener en cuenta:
   `availableSinceMs` que indica y vuelve a empezar desde ahí. Si estás paginando para mostrar un
   historial largo, trae las páginas que necesites en una sola pasada en vez de mantener un cursor
   durante el tiempo de reflexión de un usuario.
+
+## Paper trading
+
+Arranca una ejecución con un bloque `paper` y sus hints se ejecutan en simulación desde el primer
+tick, como los ejecutaría un backtest — fills, operaciones cerradas, equity y los mismos KPIs que
+reporta un backtest:
+
+```json
+"paper": {"initialFunding": 1000, "feeRate": 0.001, "percentAmountToLock": 20}
+```
+
+Léelo con `GET /live/{runId}/paper` y `GET /live/{runId}/paper/equity`. Todo sobre él — la
+configuración, una cuenta por moneda de cotización, la curva de equity, la salida `mix` y los
+huecos — está en **[Paper trading en ejecuciones en vivo](live_paper)**.

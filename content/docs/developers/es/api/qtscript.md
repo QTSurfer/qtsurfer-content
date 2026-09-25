@@ -3,9 +3,9 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 1234ca1a762e589f51b4679af889ca6cba5802cb
+upstreamCommit: d6ce0e11582208edffbd20fd64f850de296171a9
 upstreamPath: docs/qtscript.md
-lastUpdated: '2026-09-21T13:29:49Z'
+lastUpdated: '2026-09-25T09:00:00Z'
 ---
 
 QTScript es una forma compacta de escribir una estrategia: conservas la parte que es tuya —
@@ -98,6 +98,34 @@ Main m1 {
 }
 ```
 
+### En qué indicador está una ventana
+
+Dentro del cuerpo de cualquier ventana, `$indicator` es el nombre del indicador al que está enganchada
+esa ventana, como un `String`: `"ema12"` para una ventana escrita en la línea `ema(12)`, `"price"` en un
+`Main` (`"rate"` en funding). El `$` marca un nombre que aporta QTScript; los nombres que declaras tú no
+pueden empezar por uno. Una sección con nombre enganchada a varios indicadores ve, cada vez que se
+dispara, el indicador que la disparó.
+
+También es la forma en que un cuerpo llega a un indicador que la misma llamada al builder registró junto
+al que ocupa la ventana. `bollinger(20, 2)` registra tres bajo un mismo nombre: la banda media,
+`blgr20_2`, y las bandas exteriores, ese nombre seguido de `Upper` y `Lower`. Una ventana escrita en esa
+línea se engancha a la banda media, así que `actual` es el valor de la banda media, y
+`value($indicator + "Upper")` y `value($indicator + "Lower")` leen las otras dos:
+
+```
+setup:
+  bollinger(20, 2) window m1 {
+    if (price > value($indicator + "Upper")) emitSell(price);
+    if (price < value($indicator + "Lower")) emitBuy(price);
+  }
+```
+
+Una ventana que nombra un indicador que no está registrado, como `window noexiste m1 { ... }`, no se
+rechaza al registrar el fuente. Que el nombre exista puede depender de tus `param` (un `param rapida`
+usado como `ema(rapida)` registra un nombre distinto para cada valor) y de indicadores registrados desde
+Java, así que solo se descubre al [validar](strategy#comprobar-que-realmente-funciona) la estrategia,
+que entonces falla en la línea de la ventana: `QTScript line 4: unknown indicator 'noexiste'`.
+
 ## Dentro de un cuerpo
 
 Tu Java, más lo que ya está en ámbito — nada necesita importarse:
@@ -107,6 +135,7 @@ Tu Java, más lo que ya está en ámbito — nada necesita importarse:
 | `actual`, `prev` | el valor nuevo y el anterior de la ventana |
 | `price` (ticker) · `price open high low close volume` (kline) · `rate` (funding) | los valores actuales, como variables normales |
 | `value("nombre")` | el valor actual de cualquier otro indicador |
+| `$indicator` | el nombre del indicador en el que está esta ventana, como un `String` — [ver arriba](#en-qué-indicador-está-una-ventana) |
 | `store` | el estado por instrumento que comparten todas las ventanas de ese instrumento |
 | `emitBuy(price)`, `emitSell(price)`, `emitInfo(clave, valores…)`, `emitSignal(signal)` | emisión de señales |
 | cada `param` | legible por su nombre |

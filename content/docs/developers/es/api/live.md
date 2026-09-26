@@ -3,9 +3,9 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f1e035a68c4af3514d68c9cddff8c835fa89712a
+upstreamCommit: ae39d75f2a4b87d7b96bbb80fed456081e5281ba
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-26T17:40:02Z'
+lastUpdated: '2026-09-26T21:00:00Z'
 ---
 
 Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo, observa sus señales a
@@ -287,7 +287,7 @@ Cada señal empujada en un canal `sig:<runId>` (el `pub.data` de la trama `push`
 | `eventTsMs` | Hora de mercado en que se produjo la señal. |
 | `emittedAtMs` | Hora en que se publicó — siempre ≥ `eventTsMs`. |
 | `order` | Presente solo para un `hint`. |
-| `data` | El payload de forma libre propio de la señal. |
+| `data` | El payload de forma libre propio de la señal: lo que la estrategia puso ahí con `signal.set(...)`. Quien pueda leer la ejecución puede leerlo, así que en una ejecución `public` es público. Una señal cuyo `data` pese más de 8 KiB (8.192 bytes de su JSON) no se empuja por este canal; [la ruta de historial](#leer-las-señales-que-una-ejecución-ya-produjo) la devuelve entera. |
 | `regenerated` | `true` solo para una señal republicada para rellenar un hueco en el histórico registrado — siempre `false` para una señal que ves por primera vez. |
 | `digest` | Hash del contenido, para verificar que dos entregas independientes de la misma señal concuerdan. |
 

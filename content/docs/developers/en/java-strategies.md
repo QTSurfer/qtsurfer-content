@@ -3,12 +3,17 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 47cc75d5b0a11695ac0f8b5e80513780a3f671b8
+upstreamCommit: f19882e308b405b3bf2443d4e7f9eb81c3b826a1
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
-lastUpdated: '2026-09-05T11:15:20Z'
 ---
 
 A QTSurfer strategy is a plain Java class (no framework annotations required) that extends a strategy base class — most commonly `AbstractTickerStrategy` (see [Strategy base classes](#strategy-base-classes) for the kline, funding-rate, and multi-source siblings). It receives real-time market data, configures technical indicators, and emits buy/sell signals. The engine compiles strategies server-side — no local toolchain needed.
+
+> **Also available: QTScript (`.qtscript`), in beta** — a compact strategy language whose braced
+> bodies are plain Java, covered by the **`qtsurfer-qtscript-strategy`** skill. It suits a strategy
+> that is a handful of indicators and window bodies. Everything below stays the way to write a
+> strategy with the full engine API — `update()`, cross-instrument logic, custom indicators, helper
+> types — and is what QTScript expands into.
 
 ## Minimal template
 
@@ -313,15 +318,15 @@ skill documents (indicator builder, window listeners, `StateStore`, signal emiss
 `update(...)` payload differs. The examples here use `Ticker`, the most common source. Types live
 in `com.wualabs.qtsurfer.engine.core`.
 
-| Base class                    | Source                       | Handler                                  | Via `submit_backtest`           |
-| ----------------------------- | ---------------------------- | ---------------------------------------- | ------------------------------- |
-| `AbstractTickerStrategy`      | `Ticker` (record)            | `update(Ticker)`                         | ✅ primary, fully documented    |
-| `AbstractKlineStrategy`       | `Kline` (class)              | `update(Kline)`                          | ✅                              |
-| `AbstractFundingRateStrategy` | `FundingRate` (record)       | `update(FundingRate)`                    | ✅                              |
-| `AbstractMultiSourceStrategy` | Ticker + Kline + FundingRate | `onTicker` / `onKline` / `onFundingRate` | ⚠️ engine-only — not yet public |
+| Base class                    | Source                       | Handler                                  | Via `submit_backtest`                                        |
+| ----------------------------- | ---------------------------- | ---------------------------------------- | ------------------------------------------------------------ |
+| `AbstractTickerStrategy`      | `Ticker` (record)            | `update(Ticker)`                         | ✅ primary, fully documented                                 |
+| `AbstractKlineStrategy`       | `Kline` (class)              | `update(Kline)`                          | ✅                                                           |
+| `AbstractFundingRateStrategy` | `FundingRate` (record)       | `update(FundingRate)`                    | ⚠️ prepare only for now — a run or sweep is rejected (`400`) |
+| `AbstractMultiSourceStrategy` | Ticker + Kline + FundingRate | `onTicker` / `onKline` / `onFundingRate` | ⚠️ engine-only — not yet public                              |
 
-- **`AbstractKlineStrategy`** subscribes to candles for `getInterval()` (a `KlineInterval`). **OHLCV only** — order-book sizes, vwap, and percentage-change fields are absent on this path. `Kline` is a plain class, so use getters (`kline.getInstrument()`, `kline.getCloseTime()`), unlike the `Ticker` record.
-- **`AbstractFundingRateStrategy`** receives `update(FundingRate)` on each funding-rate update.
+- **`AbstractKlineStrategy`** receives candles. In a backtest the bar width is the `cadence` the data was prepared at — `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h` or `1d` — whatever `getInterval()` (a `KlineInterval`) returns, so one class runs at any of them. **OHLCV only** — order-book sizes, vwap, and percentage-change fields are absent on this path. `Kline` is a plain class, so use getters (`kline.getInstrument()`, `kline.getCloseTime()`), unlike the `Ticker` record.
+- **`AbstractFundingRateStrategy`** receives `update(FundingRate)` on each funding-rate update. Funding data can be prepared, but a backtest or a sweep over it is rejected with a `400` for now (`funding data can be prepared but not executed yet`) — it registers and compiles, and cannot yet be run through `submit_backtest`.
 - **`AbstractMultiSourceStrategy`** declares `getRequiredSources()` → `Set<MarketDataSource>` (`Ticker`, `KLine`, `FundingRate`) and dispatches each to `onTicker` / `onKline` / `onFundingRate`; when `KLine` is required, `getKlineInterval()` must be non-null. It compiles and registers in the engine but **is not yet runnable via the public `submit_backtest`** — don't ship multi-source strategies for backtesting until it is exposed.
 
 ## Cross-instrument (market-wide) strategies

@@ -3,9 +3,9 @@ title: Cuenta
 description: Consulta los límites de tu plan y tu uso de almacenamiento en vivo frente a ellos.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 924e69a1c9fbcda61c29810a89d3b0d279ca47e8
+upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
 upstreamPath: docs/account.md
-lastUpdated: '2026-09-16T18:18:21Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 Todas las rutas de cuenta requieren un JWT tipo bearer obtenido mediante
@@ -48,7 +48,7 @@ curl https://api.qtsurfer.net/v1/account \
 | `userId` | tu id de cuenta — la claim `sub` del JWT |
 | `tier` | tu plan de suscripción actual |
 | `maxDatasets` | número máximo de [conjuntos de datos](datasets) activos que permite tu plan |
-| `maxDatasetBytes` | tamaño máximo, en bytes, de una sola versión de un conjunto de datos |
+| `maxDatasetBytes` | tamaño máximo, en bytes, de una sola versión de un conjunto de datos **tal como se almacena** (los `bytes` de su versión lista: para una subida CSV, el fichero convertido, no el que subes). Consulta [Límites de tamaño](datasets#límites-de-tamaño) |
 | `maxTotalStorageBytes` | almacenamiento combinado máximo, en bytes, entre todos los conjuntos de datos, señales de ejecución de estrategia y estrategias registradas de tu cuenta — ver abajo |
 
 ## Obtener tu uso en vivo

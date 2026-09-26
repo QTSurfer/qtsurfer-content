@@ -3,9 +3,9 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 39bc9ea24549473a89e16f3da56f291c60e7dfaa
+upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
 upstreamPath: docs/backtest_execute.md
-lastUpdated: '2026-09-21T11:29:41Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 Prepara datos históricos, ejecuta una estrategia compilada contra ellos una vez, sondea el
@@ -21,6 +21,22 @@ parámetros en su lugar, consulta [`docs/backtest_sweep.md`](backtest_sweep).
 | `DELETE` | `/backtest/{exchangeId}/{type}/execute/{jobId}` | Cancelar una ejecución en curso |
 
 `{type}` es el [`DataSourceType`](/docs/api): `ticker`, `kline` o `funding`.
+
+## Dónde vive el estado de un job
+
+Los tres endpoints de sondeo de jobs responden "¿ha terminado?, ¿ha fallado?" en sitios distintos,
+porque cada uno devuelve su propio tipo de resultado. El estado en sí es el mismo vocabulario de
+[`JobState`](#respuesta--preparejobstate) (`New`, `Started`, `Completed`, `Aborted`, `Failed`) en
+los tres:
+
+| Sondeo | Lee el estado en | Notas |
+|---|---|---|
+| `GET .../prepare/{jobId}` | `status` | plano: la respuesta es un `PrepareJobState`, un `JobState` con el resumen de cobertura al lado |
+| `GET .../execute/{jobId}` | `state.status` | anidado: la respuesta es un `BacktestJobResult`, `{state, results}`; un `202` con cuerpo vacío significa que todavía no se puede leer |
+| `GET .../executeSweep/{requestId}/{sweepId}` | `state.status` | el barrido lleva además su propio `status` de primer nivel, pero en otro vocabulario (`RUNNING`, `COMPLETED`, `PARTIAL`, `CANCELLED`); lee `state` para los términos de los otros dos |
+
+Un sondeador que sirva a los tres puede leer `(resp.get("state") or resp)["status"]` (en Python):
+`state` cuando la respuesta lo tiene, el primer nivel cuando no.
 
 ## Fuentes de datos
 

@@ -3,9 +3,9 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 021eb3c41528e565f9d6ec7f084f0558d049fb4b
+upstreamCommit: f1e035a68c4af3514d68c9cddff8c835fa89712a
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-24T22:27:05Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 Run a strategy continuously against a live market feed, watch its signals as they happen, and
@@ -27,11 +27,44 @@ change its parameters without restarting it.
 
 ## Lifecycle: sandbox, then live
 
-Starting a run (`POST /strategy/{strategyId}/live`) never puts it in front of anything that reads
-its signals immediately. It begins in the `sandbox` stage — a short trial, comparing an
-independent second execution against the first for agreement — and is promoted to `live`
-automatically once it passes. Poll `stage` on `GET`/`PATCH` `.../live` to watch it move from
-`SANDBOX` to `LIVE`; there is no separate "promote" call.
+Starting a run (`POST /strategy/{strategyId}/live`) never puts it in front of anyone but you. It
+begins in the `sandbox` stage, a trial of **24 hours**. During it the platform runs an independent
+second execution of your strategy beside the first and checks four things: that the run is
+processing market data, that its memory use and per-tick time stay within the platform's allowance,
+that it does not hang or fail repeatedly, and that the two executions produce the same signals.
+Only you can read a sandbox run: over the WebSocket channel from its first signal if you asked for
+`relay`, and through the read routes either way (see [Visibility](#visibility)).
+
+A run that passes is promoted to `live` automatically when the 24 hours are up. There is no
+separate "promote" call and nothing for you to do while you wait. A run that does not pass is not
+promoted, and keeps running in the sandbox.
+
+What you can watch while it waits, on `GET`/`PATCH` `.../live`:
+
+- `stage` is `SANDBOX` until the promotion and `LIVE` after it.
+- `state` is the run's health right now (see [State of a run](#state-of-a-run)).
+- `gate` is **absent for the whole trial** and appears when it ends, holding the verdict. An
+  absent `gate` therefore means "the trial has not finished", never "nobody is evaluating the
+  run". Its `passed` field is the verdict; the rest is diagnostic detail whose shape may change.
+
+## State of a run
+
+`state` says what the run is doing. It is a string that may gain values, so read an unknown one as
+"running, with something to look at".
+
+| `state` | What it means |
+|---|---|
+| `STARTING` | Accepted; no runner has reported on it yet. |
+| `RUNNING` | Running normally. |
+| `LAGGING` | Running, but behind the market data: usual while it catches up after starting or after a platform restart. It clears by itself. |
+| `HUNG` | Your strategy is stuck inside one call for longer than the platform allows. It clears when that call returns. |
+| `DEGRADED` | The run's independent executions produced different signals from the same market data. The run keeps publishing. In the sandbox this counts against the trial: the run is not promoted. |
+| `FAILED` | The platform refused the run or could not start it. |
+| `STOPPED` | Stopped, by you or by the platform (`reason` says so when it was for exceeding its resource allowance). |
+
+`LAGGING`, `HUNG` and `DEGRADED` are flags on a run that is otherwise running: they come and go, and
+the run's signals keep flowing throughout. `desired` is what you last asked for (`RUNNING` or
+`STOPPED`), and `state` can trail it briefly.
 
 Only one run per strategy at a time. Starting again while one is `RUNNING` is `409` — stop it
 first with `DELETE`.
@@ -76,6 +109,23 @@ A run is `private` by default — only you can read its state or receive its sig
   strategy runs it;
 - its signal channel (see below) accepts a WebSocket subscription from anyone, not only you.
 
+`public` is what you ask for, and it takes effect when the run is promoted to `live`. Until then —
+while it is a `sandbox` trial — only you can read it, over the channel and through the read routes,
+and it is not listed in the catalogue; nothing you did needs repeating at promotion.
+
+Who can read what, by run:
+
+| The run | Subscribe to its channel, and read `.../signals`, `.../paper` | Listed in `GET /live/public` |
+|---|---|---|
+| Any run of yours | You, always | — |
+| `private` | Only you | No |
+| `public`, still in the `sandbox` | Only you (`public` takes effect at the promotion) | No |
+| `public`, promoted to `live` | Anyone | Yes, while it is running |
+
+`relay` is separate: it only decides whether a run's signals are *pushed* over the WebSocket
+channel (opt-in, in either stage) and never who may read them. `GET /live/{runId}/signals` serves
+a run's signals whether or not you asked for `relay`.
+
 Switching back to `private` also disconnects anyone else currently subscribed to that channel —
 best-effort, and it does not undo the visibility change if the disconnect itself fails.
 
@@ -86,6 +136,11 @@ change one while the run keeps running, call `PUT /live/{runId}/params` (or the 
 `live.params` WebSocket call below — both go through the same validation and land on the identical
 value at the identical moment). Every key must be one your strategy declares; an undeclared key is
 `400`.
+
+A `409` means this run's compiled strategy has no record of the parameters it declares, so they
+cannot be changed while it runs. A run keeps the compiled version it started with: register the
+strategy again (`POST /strategy` with the same source, which compiles it afresh) and start a new
+run.
 
 The response's `effectiveAtMs` is not "now" — it is a few seconds out, the earliest moment the new
 value is guaranteed to be applied. This margin exists so that if a run has more than one execution
@@ -122,10 +177,12 @@ token refresh and reconnection described below. With one, you only supply the UR
 that mints a token, the channel name and the RPC method.
 
 Signals only reach this channel for a run started with `relay: true` (`POST .../live`'s own field,
-default `false`) — and only once it reaches the `live` stage; a run still in `sandbox` never
-relays, whatever was requested at start. `GET`/`PATCH .../live` echo back what was requested as the
-run's own `relay` field, already folded with that stage rule — `true` there means signals are
-reaching the channel right now, not merely that `relay: true` was once passed.
+default `false`). They reach it from the run's first signal, in the `sandbox` stage too, where only
+you can subscribe to it; the same channel carries on unchanged once the run is promoted to `live`,
+on the same subscription: `stage` flips from `sandbox` to `live` and nothing needs redoing. The run
+takes a while to start in the `live` stage, so the channel can stay quiet for several minutes around
+the promotion; what the run produced meanwhile then arrives in order, and each signal arrives once.
+`GET`/`PATCH .../live` echo back what was requested as the run's own `relay` field.
 
 1. **Mint a token.** `POST /live/token` (JWT bearer, same as any other endpoint) returns a
    short-lived `token` and its `expiresAtMs`.
@@ -145,8 +202,9 @@ reaching the channel right now, not merely that `relay: true` was once passed.
    {"id": 2, "subscribe": {"channel": "sig:6TzAPiPpsOWwBLdLBZCxwH"}}
    ```
    You may subscribe to any run's channel this way, but the connection is only actually allowed
-   onto it if you own that run or it is `public` — a foreign private run's channel refuses the
-   subscription with `{"id": 2, "error": {"code": 103, "message": "permission denied"}}`. Each
+   onto it if you own that run, or it is `public` **and** has reached the `live` stage — a foreign
+   private run's channel, and a public run that is still in the `sandbox`, refuse the subscription
+   with `{"id": 2, "error": {"code": 103, "message": "permission denied"}}`. Each
    signal then arrives as a `push` frame, with no `id`; the signal itself is its `pub.data`, in the
    shape below:
    ```json
@@ -214,7 +272,7 @@ Each signal pushed on a `sig:<runId>` channel (the `pub.data` of the `push` fram
 | field | meaning |
 |---|---|
 | `signalId` | Stable id for this exact signal — dedupe on it if your connection ever reconnects mid-stream. |
-| `stage` | Always `live` on this channel — a run only relays once `relay` is in effect, which never happens in `sandbox` (see above). |
+| `stage` | `sandbox` or `live`: the stage the run was in when it produced the signal. Only you receive a `sandbox` signal on this channel; everyone allowed onto the channel receives `live` ones. |
 | `paramsVersion` | The parameter set in force when this signal was produced. |
 | `type` | `hint`, `info`, `marker`, or `command` — plus `paper` when reading a `mix` run's history (see [Paper trading](live_paper#output-separate-or-mix); paper items are never pushed on this channel). |
 | `kind` | `BUY`/`SELL` for a `hint`; the command name for a `command`; absent otherwise. |

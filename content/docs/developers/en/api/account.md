@@ -3,9 +3,9 @@ title: Account
 description: Check your tier's limits and your live storage usage against them.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 924e69a1c9fbcda61c29810a89d3b0d279ca47e8
+upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
 upstreamPath: docs/account.md
-lastUpdated: '2026-09-16T18:18:21Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 All account routes require a bearer JWT obtained from [authentication](https://github.com/QTSurfer/qtsurfer-api/blob/848593e88be3b80078c6f98d7cb582f22fd87853/README.md#api-quick-start).
@@ -46,7 +46,7 @@ curl https://api.qtsurfer.net/v1/account \
 | `userId` | your account id — the JWT `sub` claim |
 | `tier` | your current subscription tier |
 | `maxDatasets` | maximum number of active [datasets](datasets) your tier allows |
-| `maxDatasetBytes` | maximum size, in bytes, of a single dataset version |
+| `maxDatasetBytes` | maximum size, in bytes, of a single dataset version **as stored** (the `bytes` of its ready version: for a CSV upload, the converted file, not the file you upload). See [Size limits](datasets#size-limits) |
 | `maxTotalStorageBytes` | maximum combined storage, in bytes, across every dataset, strategy-execution signal, and registered strategy on your account — see below |
 
 ## Getting your live usage

@@ -3,9 +3,9 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d6ce0e11582208edffbd20fd64f850de296171a9
+upstreamCommit: c3c03cfc1d6648096638e93061ddcc9040321177
 upstreamPath: docs/qtscript.md
-lastUpdated: '2026-09-25T16:22:48Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 QTScript es una forma compacta de escribir una estrategia: conservas la parte que es tuya —
@@ -209,8 +209,19 @@ una estrategia `funding` se puede registrar y sus datos preparar, pero todavía 
 Los errores se reportan contra **tu** fichero, nunca contra el Java generado. Registrar un fuente
 con un error es un `400` cuyo mensaje lleva entradas `Line N, Column M:`, tanto para errores
 propios de QTScript (una sección desconocida, un periodo inválido, un parámetro duplicado, un
-patrón de instrumento mal formado) como para errores de Java dentro de un cuerpo. Un fallo mientras
-corre la estrategia se registra en el job de la misma forma, en la línea de la que viene el cuerpo:
+patrón de instrumento mal formado) como para errores de Java dentro de un cuerpo.
+
+**Un `200` de `POST /strategy` significa que el fuente se analizó y compiló, no que vaya a funcionar.**
+Registrar no monta la estrategia, así que lo que solo aparece al montarla lo halla
+[`validate`](strategy#comprobar-que-realmente-funciona), que lo reporta contra tu fichero de la misma
+forma. El caso a conocer es una ventana sobre un indicador que no está registrado,
+`window noexiste m1 { ... }`: se registra, y `validate` acaba `failed` en la línea de la ventana,
+`QTScript line 4: unknown indicator 'noexiste'` (consulta
+[En qué indicador está una ventana](#en-qué-indicador-está-una-ventana)). Llama a `validate` antes de
+ejecutar una estrategia que acabas de escribir.
+
+Un fallo mientras corre la estrategia se registra en el job de la misma forma, en la línea de la que
+viene el cuerpo:
 
 ```
 QTScript line 6: Index 2 out of bounds for length 1

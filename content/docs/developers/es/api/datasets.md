@@ -3,9 +3,9 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 71549af29534eec6649774f08042f93a3bdef299
+upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
 upstreamPath: docs/datasets.md
-lastUpdated: '2026-09-21T11:59:16Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 Haz backtest contra un CSV, un fichero parquet o un fichero lastra que subes en lugar de contra un exchange
@@ -156,10 +156,29 @@ curl -X POST https://api.qtsurfer.net/v1/datasets/$DATASET_ID/uploads/$UPLOAD_ID
 Errores: `404` no existe ese conjunto de datos para este usuario; `uploadId` no se emitió para
 este conjunto de datos (nunca se acuñó, o se acuñó para otro distinto); o todavía no se ha subido
 (`PUT`) nada a `upload.url` — un finalize sin nada que finalizar · `409` `uploadId` ya produjo una
-versión (el mensaje de error lo nombra) · `413` el fichero subido excede el límite de tamaño de tu
-plan para un conjunto de datos · `429` se alcanzó o se superaría el límite de almacenamiento total
+versión (el mensaje de error lo nombra) · `413` el fichero subido es muchas veces el límite de tamaño de tu
+plan para un conjunto de datos (consulta [Límites de tamaño](#límites-de-tamaño): el límite en sí se
+aplica al tamaño almacenado, que solo se conoce tras la conversión) · `429` se alcanzó o se superaría el límite de almacenamiento total
 de tu cuenta (`maxTotalStorageBytes` de [`GET /account`](account)) — elimina un conjunto de datos
 para liberar espacio, o mejora de plan.
+
+## Límites de tamaño
+
+`maxDatasetBytes` ([`GET /account`](account)) limita el tamaño **almacenado** de una versión de un
+conjunto de datos: los `bytes` que reporta su versión lista, que para una subida CSV es el fichero
+`lastra` convertido, no el fichero que subiste. **Estima a partir de las filas, no del tamaño del
+fichero.** El tamaño almacenado sigue a las filas y a las columnas, y un CSV puede salir más grande o
+más pequeño que el fichero. Medido con datos sintéticos de un segundo: unos 92 bytes por fila para un
+CSV `timestamp,close`, unos 55 para `timestamp,open,high,low,close,volume`. Los datos reales se
+comprimen de otra manera, así que toma estas cifras como un orden de magnitud y, para un fichero
+grande, sube primero un trozo pequeño y escala a partir de sus `bytes` y `rows`.
+
+El tamaño almacenado solo se conoce una vez convertido el fichero, así que ahí es donde decide el
+límite: `POST .../finalize` responde `202`, y una subida por encima del límite acaba `failed` cuando
+la [sondeas](#sondear-la-ingesta), con un error como `Dataset is 196976000 bytes, exceeds the tier's
+100000000 byte limit`. Sondea en lugar de dar por hecho que el `202` significa que se almacenó. Lo
+que `finalize` rechaza por sí mismo con `413` es un fichero muchas veces mayor que el límite, muy por
+encima de lo que la conversión podría dejar por debajo.
 
 ## Sondear la ingesta
 

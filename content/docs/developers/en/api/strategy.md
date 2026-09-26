@@ -3,9 +3,9 @@ title: Strategy API
 description: Compile, validate, inspect, retrieve, and delete Java or QTScript (beta) strategies through the REST API.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 1234ca1a762e589f51b4679af889ca6cba5802cb
+upstreamCommit: c3c03cfc1d6648096638e93061ddcc9040321177
 upstreamPath: docs/strategy.md
-lastUpdated: '2026-09-21T12:19:32Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 Compile a strategy (Java, or QTScript in beta), check it can actually run, list/inspect/delete
@@ -49,7 +49,9 @@ curl -X POST https://api.qtsurfer.net/v1/strategy \
 ```
 
 **This answers one question: is the source valid.** It compiles, registers, and hands back
-the id — nothing more. Whether the class can actually run is [`validate`](#checking-it-actually-runs);
+the id — nothing more. A `200` means the source parsed and compiled, not that it will run: what only
+shows once the strategy sets up its indicators (for QTScript, a window on an indicator that is not
+registered) is found by `validate`. Whether the class can actually run is [`validate`](#checking-it-actually-runs);
 everything known about a strategy, validation included, is read from [`GET
 /strategy/{strategyId}`](#getting-a-strategy).
 
@@ -114,6 +116,28 @@ appear here — a name absent from this list may still be valid.
 
 Errors: `400` not valid — the message carries the diagnostics, nothing is
 registered · `429` too many compilations in flight, retry later.
+
+## Request size limits
+
+Every endpoint that reads a request body caps it, and a strategy's source is the biggest body the
+API takes. A body over the cap is refused with `413` and the API's usual JSON error, before it is
+read or compiled, and the message names the cap:
+
+```json
+{"code": 413, "message": "The request body is larger than this endpoint accepts (32768 bytes at most)."}
+```
+
+| Request | Body cap |
+|---|---|
+| `POST /strategy` — the source | 32 KiB |
+| `POST /backtest/{exchangeId}/{type}/execute`, `POST /backtest/{exchangeId}/{type}/executeSweep/{requestId}` | 8 KiB |
+| `POST /strategy/{strategyId}/live` | 8 KiB |
+| `POST /backtest/{exchangeId}/{type}/prepare`, `PATCH /live/{runId}`, `PUT /live/{runId}/params` | 4 KiB |
+| `POST /datasets`, `POST /datasets/imports` | 1 KiB |
+
+A dataset's data does not travel in a request body: it goes to a presigned URL, see
+[Datasets](datasets). The caps are the same for everyone (they are not a plan limit), so a
+strategy source over 32 KiB cannot be registered: shorten it.
 
 ## Checking it actually runs
 

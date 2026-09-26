@@ -3,9 +3,9 @@ title: QTScript (beta)
 description: A compact language for writing strategies — every section, windows, what's in scope, and how it compiles the same as Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d6ce0e11582208edffbd20fd64f850de296171a9
+upstreamCommit: c3c03cfc1d6648096638e93061ddcc9040321177
 upstreamPath: docs/qtscript.md
-lastUpdated: '2026-09-25T16:22:48Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 QTScript is a compact way to write a strategy: you keep the part that is yours — indicators, windows,
@@ -205,8 +205,18 @@ strategy can be registered and its data prepared but not yet run.
 Errors are reported against **your** file, never the generated Java. Registering a source with a
 mistake is a `400` whose message carries `Line N, Column M:` entries, for QTScript's own errors (an
 unknown section, a bad period, a duplicate parameter, a malformed instrument pattern) and for Java
-errors from inside a body. A failure while the strategy runs is recorded on the job the same way,
-on the line the body came from:
+errors from inside a body.
+
+**A `200` from `POST /strategy` means the source parsed and compiled, not that it will run.**
+Registering does not set the strategy up, so what only shows when it does is found by
+[`validate`](strategy#checking-it-actually-runs), which reports it against your file the same way. The
+case to know is a window on an indicator that is not registered, `window nosuch m1 { ... }`: it
+registers, and `validate` ends `failed` on the window's line, `QTScript line 4: unknown indicator
+'nosuch'` (see [Which indicator a window is on](#which-indicator-a-window-is-on)). Call `validate`
+before you run a strategy you have just written.
+
+A failure while the strategy runs is recorded on the job the same way, on the line the body came
+from:
 
 ```
 QTScript line 6: Index 2 out of bounds for length 1

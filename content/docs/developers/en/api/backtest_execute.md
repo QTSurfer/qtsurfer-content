@@ -3,9 +3,9 @@ title: Backtests
 description: Prepare historical data, execute a strategy, poll its result, and inspect its equity curve.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 39bc9ea24549473a89e16f3da56f291c60e7dfaa
+upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
 upstreamPath: docs/backtest_execute.md
-lastUpdated: '2026-09-21T11:29:41Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 Prepare historical data, run a compiled strategy against it once, poll the result, and plot the
@@ -21,6 +21,21 @@ equity curve. For running the *same* strategy across a parameter grid instead, s
 | `DELETE` | `/backtest/{exchangeId}/{type}/execute/{jobId}` | Cancel a running execution |
 
 `{type}` is the [`DataSourceType`](/docs/api): `ticker`, `kline` or `funding`.
+
+## Where a job's status lives
+
+The three job-polling endpoints answer "is it done, did it fail" at different places, because each
+returns its own result type. The status itself is the same [`JobState`](#response--preparejobstate)
+vocabulary (`New`, `Started`, `Completed`, `Aborted`, `Failed`) in all three:
+
+| Poll | Read the status at | Notes |
+|---|---|---|
+| `GET .../prepare/{jobId}` | `status` | flat: the response is a `PrepareJobState`, a `JobState` with the coverage summary beside it |
+| `GET .../execute/{jobId}` | `state.status` | nested: the response is a `BacktestJobResult`, `{state, results}`; a `202` with an empty body means it is not readable yet |
+| `GET .../executeSweep/{requestId}/{sweepId}` | `state.status` | the sweep also carries its own top-level `status`, but in a different vocabulary (`RUNNING`, `COMPLETED`, `PARTIAL`, `CANCELLED`); read `state` for the terms of the other two |
+
+A poller that serves all three can read `(resp.get("state") or resp)["status"]` (in Python): `state`
+when the response has one, the top level when it does not.
 
 ## Data sources
 

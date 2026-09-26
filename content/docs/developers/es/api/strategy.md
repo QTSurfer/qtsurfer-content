@@ -3,9 +3,9 @@ title: API de estrategias
 description: Compila, valida, inspecciona, recupera y elimina estrategias Java o QTScript (beta) a través de la API REST.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 1234ca1a762e589f51b4679af889ca6cba5802cb
+upstreamCommit: c3c03cfc1d6648096638e93061ddcc9040321177
 upstreamPath: docs/strategy.md
-lastUpdated: '2026-09-21T12:19:32Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 ---
 
 Compila una estrategia (Java, o QTScript en beta), comprueba que realmente funciona,
@@ -49,7 +49,9 @@ curl -X POST https://api.qtsurfer.net/v1/strategy \
 ```
 
 **Esto responde a una única pregunta: si el fuente es válido.** Compila, registra y devuelve
-el id — nada más. Si la clase realmente funciona se comprueba con
+el id — nada más. Un `200` significa que el fuente se analizó y compiló, no que vaya a funcionar: lo
+que solo aparece cuando la estrategia monta sus indicadores (en QTScript, una ventana sobre un
+indicador que no está registrado) lo halla `validate`. Si la clase realmente funciona se comprueba con
 [`validate`](#comprobar-que-realmente-funciona); todo lo que se sabe de una estrategia, incluida su
 validación, se lee de [`GET /strategy/{strategyId}`](#obtener-una-estrategia).
 
@@ -118,6 +120,28 @@ aquí — un nombre ausente de esta lista puede seguir siendo válido.
 
 Errores: `400` no es válido — el mensaje lleva los diagnósticos, no se
 registra nada · `429` demasiadas compilaciones en curso, reintenta más tarde.
+
+## Límites de tamaño de la petición
+
+Todo endpoint que lee un cuerpo de petición lo limita, y el fuente de una estrategia es el cuerpo más
+grande que acepta la API. Un cuerpo por encima del límite se rechaza con `413` y el error JSON habitual
+de la API, antes de leerlo o compilarlo, y el mensaje nombra el límite:
+
+```json
+{"code": 413, "message": "The request body is larger than this endpoint accepts (32768 bytes at most)."}
+```
+
+| Petición | Límite del cuerpo |
+|---|---|
+| `POST /strategy` — el fuente | 32 KiB |
+| `POST /backtest/{exchangeId}/{type}/execute`, `POST /backtest/{exchangeId}/{type}/executeSweep/{requestId}` | 8 KiB |
+| `POST /strategy/{strategyId}/live` | 8 KiB |
+| `POST /backtest/{exchangeId}/{type}/prepare`, `PATCH /live/{runId}`, `PUT /live/{runId}/params` | 4 KiB |
+| `POST /datasets`, `POST /datasets/imports` | 1 KiB |
+
+Los datos de un conjunto de datos no viajan en un cuerpo de petición: van a una URL prefirmada,
+consulta [Conjuntos de datos](datasets). Los límites son los mismos para todos (no son un límite del
+plan), así que un fuente de estrategia de más de 32 KiB no se puede registrar: acórtalo.
 
 ## Comprobar que realmente funciona
 

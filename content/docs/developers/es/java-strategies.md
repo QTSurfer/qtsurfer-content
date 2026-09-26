@@ -2,9 +2,9 @@
 title: Estrategias en Java
 description: Construye estrategias QTSurfer con indicadores, window listeners, estado y señales.
 order: 1
-lastUpdated: '2026-09-17T23:06:52Z'
+lastUpdated: '2026-09-26T09:00:00Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 47cc75d5b0a11695ac0f8b5e80513780a3f671b8
+upstreamCommit: f19882e308b405b3bf2443d4e7f9eb81c3b826a1
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -13,6 +13,13 @@ una clase base de estrategia — la más habitual es `AbstractTickerStrategy` (c
 de estrategia](#clases-base-de-estrategia) para las variantes de kline, funding rate y multi-fuente).
 Recibe datos de mercado en tiempo real, configura indicadores técnicos y emite señales de compra o
 venta. El motor compila las estrategias en el servidor — no hace falta ninguna herramienta local.
+
+> **También disponible: QTScript (`.qtscript`), en beta** — un lenguaje compacto de estrategias
+> cuyos cuerpos entre llaves son Java tal cual, cubierto por la skill
+> **`qtsurfer-qtscript-strategy`**. Encaja con una estrategia que es un puñado de indicadores y
+> cuerpos de ventana. Todo lo que sigue continúa siendo la forma de escribir una estrategia con la
+> API completa del motor — `update()`, lógica entre instrumentos, indicadores personalizados,
+> tipos auxiliares — y es en lo que se expande QTScript.
 
 ## Plantilla mínima
 
@@ -342,15 +349,19 @@ usan `Ticker`, la fuente más habitual. Los tipos viven en `com.wualabs.qtsurfer
 | ----------------------------- | ----------------------------- | ----------------------------------------- | -------------------------------- |
 | `AbstractTickerStrategy`      | `Ticker` (record)            | `update(Ticker)`                         | ✅ principal, totalmente documentada |
 | `AbstractKlineStrategy`       | `Kline` (clase)               | `update(Kline)`                          | ✅                                |
-| `AbstractFundingRateStrategy` | `FundingRate` (record)       | `update(FundingRate)`                    | ✅                                |
+| `AbstractFundingRateStrategy` | `FundingRate` (record)       | `update(FundingRate)`                    | ⚠️ solo prepare por ahora — una ejecución o un barrido se rechaza (`400`) |
 | `AbstractMultiSourceStrategy` | Ticker + Kline + FundingRate | `onTicker` / `onKline` / `onFundingRate` | ⚠️ solo motor — aún no pública    |
 
-- **`AbstractKlineStrategy`** se suscribe a velas del `getInterval()` (un `KlineInterval`). **Solo
-  OHLCV** — los campos de tamaño del libro de órdenes, vwap y cambio porcentual no están disponibles
+- **`AbstractKlineStrategy`** recibe velas. En un backtest el ancho de la barra es la `cadence` con
+  la que se prepararon los datos — `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h` o `1d` —, sea lo que sea
+  lo que devuelva `getInterval()` (un `KlineInterval`), así que una misma clase corre a cualquiera de
+  ellos. **Solo OHLCV** — los campos de tamaño del libro de órdenes, vwap y cambio porcentual no están disponibles
   en esta vía. `Kline` es una clase simple, así que usa getters (`kline.getInstrument()`,
   `kline.getCloseTime()`), a diferencia del record `Ticker`.
 - **`AbstractFundingRateStrategy`** recibe `update(FundingRate)` en cada actualización de la tasa
-  de financiación.
+  de financiación. Los datos de funding se pueden preparar, pero un backtest o un barrido sobre ellos
+  se rechaza por ahora con un `400` (`funding data can be prepared but not executed yet`) — se
+  registra y compila, y todavía no se puede ejecutar mediante `submit_backtest`.
 - **`AbstractMultiSourceStrategy`** declara `getRequiredSources()` → `Set<MarketDataSource>`
   (`Ticker`, `KLine`, `FundingRate`) y despacha cada una a `onTicker` / `onKline` / `onFundingRate`;
   cuando se requiere `KLine`, `getKlineInterval()` no puede ser nulo. Compila y se registra en el

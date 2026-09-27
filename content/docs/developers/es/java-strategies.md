@@ -2,9 +2,9 @@
 title: Estrategias en Java
 description: Construye estrategias QTSurfer con indicadores, window listeners, estado y señales.
 order: 1
-lastUpdated: '2026-09-26T17:41:32Z'
+lastUpdated: '2026-09-27T11:00:00Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: f19882e308b405b3bf2443d4e7f9eb81c3b826a1
+upstreamCommit: 6608cefba45b16229d3bb9010e6a4620a812a6e3
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -300,6 +300,12 @@ existe dentro del ámbito del listener; en el nivel de estrategia usa
 `signal.set(...)` también acepta un estilo varargs de datos de mercado para el marcador de gráfico
 `_m`, por ejemplo
 `signal.set("_m", "position", "belowBar", "shape", "arrowUp", "color", "#26a69a", "text", "BUY")`.
+
+Todo lo que haces `set` en una señal es su `data`, y en una ejecución en vivo se publica con la señal:
+quien pueda leer la ejecución puede leerlo, así que en una ejecución `public` es público. No pongas ahí
+nada que no le enseñarías a un desconocido. Una señal cuyo `data` pese más de 8 KiB (8.192 bytes de su
+JSON) no se empuja por el canal WebSocket (`GET /live/{runId}/signals` la devuelve entera de todos
+modos), así que mantenlo a los pocos campos que necesita un lector.
 
 Los suscriptores leen los campos con `signal.get("key")` / `signal.has("key")` y
 `signal.getInstrument()`. Prefija el nombre de un campo con `_` para que quede fuera de los

@@ -2,9 +2,9 @@
 title: Estrategias en Java
 description: Construye estrategias QTSurfer con indicadores, window listeners, estado y señales.
 order: 1
-lastUpdated: '2026-09-27T10:45:42Z'
+lastUpdated: '2026-09-27T21:00:00Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 455beba97e62a69d4c10f3c4af9b0a39812689a8
+upstreamCommit: 0ba1465a39116a625473a8a21693044ea2c83b37
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -293,6 +293,10 @@ hecho de que se envió un comando alguna vez.
 
 Una ejecución cuya estrategia no implementa `CommandRequestHandler` responde todos los comandos con un
 `409` — implementar la interfaz es lo que hace que `POST /live/{runId}/commands` haga algo.
+
+Una estrategia QTScript también la implementa, mediante su propia sección `onCommand { }` (consulta la
+skill `qtsurfer-qtscript-strategy`) — la plataforma reconoce la clase generada como
+`CommandRequestHandler` de la misma forma que reconoce esta.
 
 ## Emisión de señales
 

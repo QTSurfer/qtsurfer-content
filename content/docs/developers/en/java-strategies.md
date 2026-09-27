@@ -3,9 +3,8 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 455beba97e62a69d4c10f3c4af9b0a39812689a8
+upstreamCommit: 0ba1465a39116a625473a8a21693044ea2c83b37
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
-lastUpdated: '2026-09-27T10:45:42Z'
 ---
 
 A QTSurfer strategy is a plain Java class (no framework annotations required) that extends a strategy base class — most commonly `AbstractTickerStrategy` (see [Strategy base classes](#strategy-base-classes) for the kline, funding-rate, and multi-source siblings). It receives real-time market data, configures technical indicators, and emits buy/sell signals. The engine compiles strategies server-side — no local toolchain needed.
@@ -268,6 +267,10 @@ Anything the strategy needs to remember across a restart belongs in a parameter 
 
 A run whose strategy does not implement `CommandRequestHandler` answers every command with a `409` —
 implementing the interface is what makes `POST /live/{runId}/commands` do anything at all.
+
+A QTScript strategy implements it too, through its own `onCommand { }` section (see the
+`qtsurfer-qtscript-strategy` skill) — the platform recognizes the generated class as
+`CommandRequestHandler` the same way it recognizes this one.
 
 ## Signal emission
 

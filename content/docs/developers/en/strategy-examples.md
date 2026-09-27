@@ -3,7 +3,7 @@ title: Strategy examples
 description: Use complete Java strategies that demonstrate the supported lifecycle.
 order: 4
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 78bb7ab10fc6453fea678742bb3b98eed7e7669f
+upstreamCommit: 6575ce1a4d7a7accfb1025466732497896824640
 upstreamPath: skills/qtsurfer-java-strategy/references/examples.md
 ---
 

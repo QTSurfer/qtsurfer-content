@@ -2,9 +2,9 @@
 title: Estrategias en Java
 description: Construye estrategias QTSurfer con indicadores, window listeners, estado y señales.
 order: 1
-lastUpdated: '2026-09-28T13:00:00Z'
+lastUpdated: '2026-09-28T14:00:00Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 78bb7ab10fc6453fea678742bb3b98eed7e7669f
+upstreamCommit: 6575ce1a4d7a7accfb1025466732497896824640
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -283,11 +283,16 @@ internos. Una `RuntimeException` que lance se captura y se cuenta, igual que una
 `Error` desmonta la ejecución.
 
 **Un comando es siempre una cadena simple, y es transitorio.** También puede llevar un objeto
-`properties` de tu elección — `request.get("properties")`, un `Map<String, Object>`, o `null` cuando
-el comando no llevaba ninguno — bajo su propio nombre, no `params`, que sigue siendo lo que fija una
-ejecución al arrancar y lo que cambia `PUT /live/{runId}/params`. Un comando, y sus propiedades, no se
-guardan como parte de la ejecución: una réplica que se reinicia reproduce solo el último tramo de datos
-de mercado, y un comando de antes de esa ventana simplemente no le llega.
+`properties` de tu elección, junto a `command` en el cuerpo de la petición — no `params`, que sigue
+siendo lo que fija una ejecución al arrancar y lo que cambia `PUT /live/{runId}/params`. Cada propiedad
+aterriza como una entrada de primer nivel en el propio mapa de `CommandRequest`, así que lee una
+directamente de `request` por su nombre — `request.get("<clave>")` — ninguna clave está prohibida, ya
+que el texto del comando se guarda aparte (`getCommand()` lo lee, sin verse afectado por nada de esto).
+Un valor conserva el tipo JSON con el que llegó, así que asignarlo a un campo `String` cuando quien
+llama envió un número o un objeto lanza un `ClassCastException` dentro de `handle`; el azúcar
+`$command.<clave>` de QTScript lee el mismo valor pero siempre lo ensancha a un `String`. Un comando, y
+sus propiedades, no se guardan como parte de la ejecución: una réplica que se reinicia reproduce solo el
+último tramo de datos de mercado, y un comando de antes de esa ventana simplemente no le llega.
 
 Un comando no lleva instrumento asociado como sí lo hace `update()`; cuando sus propias propiedades
 nombran uno, alcanza el store de ese instrumento con `getStateStore(String)`:
@@ -295,8 +300,7 @@ nombran uno, alcanza el store de ese instrumento con `getStateStore(String)`:
 ```java
 @Override
 public void handle(CommandRequest request) {
-    Map<String, Object> properties = request.get("properties");
-    String instrument = properties != null ? (String) properties.get("instrument") : null;
+    String instrument = request.get("instrument");
     if (instrument != null) {
         getStateStore(instrument).set("flattened");
     }

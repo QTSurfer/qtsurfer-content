@@ -3,9 +3,9 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
+upstreamCommit: da21123103897fcbaab79c18669eeb76ad0f8978
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-09-28T11:00:00Z'
+lastUpdated: '2026-09-28T14:00:00Z'
 ---
 
 Una estrategia de QTSurfer consume datos de mercado, actualiza indicadores y estado, y emite señales.
@@ -230,11 +230,17 @@ internos. Una `RuntimeException` que lance se captura y se cuenta, igual que una
 `Error` desmonta la ejecución.
 
 Un comando es siempre una cadena simple, y es transitorio. También puede llevar un objeto `properties`
-de tu elección — `request.get("properties")`, un `Map<String, Object>`, o `null` cuando el comando no
-llevaba ninguno — bajo su propio nombre, no `params`, que sigue siendo lo que fija una ejecución al
-arrancar y lo que cambia `PUT /live/{runId}/params`. Un comando, y sus propiedades, no se guardan como
-parte de la ejecución: una réplica que se reinicia reproduce solo el último tramo de datos de mercado,
-y un comando de antes de esa ventana simplemente no le llega.
+de tu elección, junto a `command` en el cuerpo de la petición — no `params`, que sigue siendo lo que
+fija una ejecución al arrancar y lo que cambia `PUT /live/{runId}/params`. Cada propiedad aterriza como
+una entrada de primer nivel en el propio mapa de `CommandRequest`, así que lee una directamente de
+`request` por su nombre — `request.get("<clave>")` — ninguna clave está prohibida, ya que el texto del
+comando se guarda aparte (`getCommand()` lo lee, sin verse afectado por nada de esto). Un valor conserva
+el tipo JSON con el que llegó, así que asignarlo a un campo `String` cuando quien llama envió un número
+o un objeto lanza un `ClassCastException` dentro de `handle`; un cuerpo `onCommand` de QTScript lee el
+mismo valor con `$command.<clave>` en su lugar, que siempre lo ensancha a un `String` (`null` para una
+clave ausente, nunca un fallo de conversión). Un comando, y sus propiedades, no se guardan como parte de
+la ejecución: una réplica que se reinicia reproduce solo el último tramo de datos de mercado, y un
+comando de antes de esa ventana simplemente no le llega.
 
 Un comando no lleva instrumento asociado como sí lo hace `update()`; cuando sus propias propiedades
 nombran uno, alcanza el store de ese instrumento con `getStateStore(String)`:
@@ -242,8 +248,7 @@ nombran uno, alcanza el store de ese instrumento con `getStateStore(String)`:
 ```java
 @Override
 public void handle(CommandRequest request) {
-    Map<String, Object> properties = request.get("properties");
-    String instrument = properties != null ? (String) properties.get("instrument") : null;
+    String instrument = request.get("instrument");
     if (instrument != null) {
         getStateStore(instrument).set("flattened");
     }

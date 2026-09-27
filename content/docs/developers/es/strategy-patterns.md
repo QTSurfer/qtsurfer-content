@@ -2,7 +2,7 @@
 title: Patrones de estrategia
 description: Aplica filtros, salidas, transiciones de estado y cálculos a nivel de mercado reutilizables.
 order: 3
-lastUpdated: '2026-09-27T10:45:42Z'
+lastUpdated: '2026-09-27T15:20:07Z'
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 0ba1465a39116a625473a8a21693044ea2c83b37
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md

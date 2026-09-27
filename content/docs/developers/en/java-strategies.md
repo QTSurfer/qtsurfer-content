@@ -3,7 +3,7 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 540e4b7008c6e96a9f2775f9443fa0f7cbdc602d
+upstreamCommit: 78bb7ab10fc6453fea678742bb3b98eed7e7669f
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -263,6 +263,20 @@ carried none — under its own name, not `params`, which stays what a run starts
 `PUT /live/{runId}/params` changes. A command, and its properties, are not stored as part of the run: a
 replica that restarts replays only the last stretch of market data, and a command from before that
 window simply never reaches it.
+
+A command has no instrument attached the way `update()` does; when its own properties name one, reach
+that instrument's store with `getStateStore(String)`:
+
+```java
+@Override
+public void handle(CommandRequest request) {
+    Map<String, Object> properties = request.get("properties");
+    String instrument = properties != null ? (String) properties.get("instrument") : null;
+    if (instrument != null) {
+        getStateStore(instrument).set("flattened");
+    }
+}
+```
 
 **Assigning a `@StrategyProperty` field from inside `handle` is not durable.** It changes this
 replica's in-memory value immediately, the same as any other field assignment, but nothing writes it to

@@ -2,9 +2,9 @@
 title: Estrategias en Java
 description: Construye estrategias QTSurfer con indicadores, window listeners, estado y señales.
 order: 1
-lastUpdated: '2026-09-27T10:13:51Z'
+lastUpdated: '2026-09-27T15:00:00Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 6608cefba45b16229d3bb9010e6a4620a812a6e3
+upstreamCommit: 455beba97e62a69d4c10f3c4af9b0a39812689a8
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -255,6 +255,45 @@ reporta como aviso en lugar de omitirse en silencio.
 de parámetros de un barrido — no se validan contra ellas, son solo un rango sugerido para
 prerrellenarla.
 
+## Recibir comandos
+
+El dueño de una ejecución en vivo puede indicarle un comando desde fuera — `POST /live/{runId}/commands`
+con `{"command": "<texto>"}` — mientras sigue corriendo, sin reiniciarla. Para actuar sobre uno,
+implementa `CommandRequestHandler`:
+
+```java
+import com.wualabs.qtsurfer.engine.strategy.event.request.CommandRequest;
+import com.wualabs.qtsurfer.engine.strategy.event.request.CommandRequestHandler;
+
+public class MyStrategy extends AbstractTickerStrategy implements CommandRequestHandler {
+
+    @Override
+    public void handle(CommandRequest request) {
+        if ("flatten".equals(request.getCommand())) {
+            // cierra la posición, cancela órdenes pendientes, lo que signifique "flatten" para esta estrategia
+        }
+    }
+}
+```
+
+`handle` corre en el mismo hilo que `update()`, justo antes del evento de mercado al que apunta el
+comando, así que ve el estado de la estrategia exactamente como estaba en ese momento y puede llamar a
+cualquier cosa que pueda llamar `update()` — leer indicadores, emitir una señal, cambiar campos
+internos. Una `RuntimeException` que lance se captura y se cuenta, igual que una de `update()`; un
+`Error` desmonta la ejecución.
+
+**Un comando es siempre una cadena simple, y es transitorio.** Todavía no hay un payload
+estructurado — una futura ampliación dejará que un comando lleve un mapa clave/valor junto a su texto,
+bajo su propio nombre (no `params`, que sigue siendo lo que fija una ejecución al arrancar y lo que
+cambia `PUT /live/{runId}/params`). Y a diferencia de un valor `@StrategyProperty`, un comando no se
+guarda como parte de la ejecución: una réplica que se reinicia reproduce solo el último tramo de datos
+de mercado, y un comando de antes de esa ventana simplemente no le llega. Todo lo que la estrategia
+necesite recordar entre reinicios va en un parámetro que fije desde dentro de `handle`, no en el
+hecho de que se envió un comando alguna vez.
+
+Una ejecución cuya estrategia no implementa `CommandRequestHandler` responde todos los comandos con un
+`409` — implementar la interfaz es lo que hace que `POST /live/{runId}/commands` haga algo.
+
 ## Emisión de señales
 
 Hay dos sobrecargas, y cuál está disponible depende de desde dónde llames — confundirlas falla al
@@ -434,3 +473,6 @@ diagnosticar cuando el motor sobre el que corrió queda registrado junto al resu
 - **Usar getters de JavaBean sobre `Ticker`** — `Ticker` es un record; usa `ticker.last()` en lugar
   de `ticker.getLast()`, `ticker.instrument()` en lugar de `ticker.getInstrument()`,
   `ticker.timestamp()` en lugar de `ticker.getTimestamp().getTime()`.
+- **Tratar un comando como estado guardado** — un comando es transitorio (consulta
+  [Recibir comandos](#recibir-comandos)): no se reproduce a una réplica entre reinicios. Todo lo que
+  deba sobrevivir a uno va en un parámetro, fijado desde dentro de `handle`, no en el comando en sí.

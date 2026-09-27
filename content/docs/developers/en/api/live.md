@@ -3,9 +3,9 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: ae39d75f2a4b87d7b96bbb80fed456081e5281ba
+upstreamCommit: 8b838e28227a95ea67e8e88d7b211c70e2ed4956
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-26T20:33:22Z'
+lastUpdated: '2026-09-27T18:00:00Z'
 ---
 
 Run a strategy continuously against a live market feed, watch its signals as they happen, and
@@ -20,6 +20,7 @@ change its parameters without restarting it.
 | `GET` | `/live/public` | Browse runs other users made public |
 | `PATCH` | `/live/{runId}` | Change visibility, name, or description |
 | `PUT` | `/live/{runId}/params` | Change parameters while it stays live |
+| `POST` | `/live/{runId}/commands` | Tell it a command while it stays live |
 | `GET` | `/live/{runId}/signals` | Read the signals it has already produced |
 | `GET` | `/live/{runId}/paper` | Read its paper trading — see [Paper trading](live_paper) |
 | `GET` | `/live/{runId}/paper/equity` | Page through its paper equity curve — see [Paper trading](live_paper) |
@@ -153,6 +154,33 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 
 200
 {"runId": "6TzAPiPpsOWwBLdLBZCxwH", "paramsVersion": 2, "effectiveAtMs": 1758330015000}
+```
+
+## Commands
+
+`POST /live/{runId}/commands` tells a running strategy something without restarting it, for a strategy whose Java
+implements the engine's `CommandRequestHandler` (see the [Java strategy skill](java-strategies#receiving-commands)). It takes `{"command": "<text>"}` — a
+plain string, nothing else in the body — and answers `202` with `commandId` and `effectiveAtMs`, the market position
+every execution behind the run applies it at.
+
+**A command is transient**, unlike a parameter: it is an event, not a stored value, and nothing about it is written
+to the run. A replica that restarts replays only its recent market history, so a command from before that window
+never reaches it — a peer that was already running when it arrived applies it, one that starts later does not.
+Anything the strategy needs to remember across a restart belongs in a parameter (`PUT /live/{runId}/params`), which
+does have a stored value.
+
+A `409` means one of three things, each its own message: the run is not running; this run's compiled strategy has
+no record of whether it handles commands (register the strategy again and start a new run, same as the `409` on
+`params`); or the strategy does not implement `CommandRequestHandler` at all. A `503` means the command could not be
+delivered right now and was **not** sent — there is no fallback path for an event the way there is for a parameter
+row, so retry the request itself.
+
+```
+POST /live/6TzAPiPpsOWwBLdLBZCxwH/commands
+{"command": "flatten"}
+
+202
+{"runId": "6TzAPiPpsOWwBLdLBZCxwH", "commandId": "0e3f2f1a-9c4b-4d3e-8a2f-6b7c5d4e3f21", "effectiveAtMs": 1758330015000}
 ```
 
 ## Receiving signals and updating parameters live: the WebSocket connection

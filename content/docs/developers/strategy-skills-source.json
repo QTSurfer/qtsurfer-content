@@ -1,7 +1,7 @@
 {
 	"repository": "https://github.com/QTSurfer/strategy-skills",
 	"ref": "main",
-	"commit": "f19882e308b405b3bf2443d4e7f9eb81c3b826a1",
+	"commit": "6608cefba45b16229d3bb9010e6a4620a812a6e3",
 	"path": "skills/qtsurfer-java-strategy",
 	"generatedPages": [
 		{ "sourcePath": "SKILL.md", "outputName": "java-strategies.md" },

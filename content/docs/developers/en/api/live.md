@@ -3,9 +3,9 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: bc8da62fd642e90b08e60e0e31cc83241a587409
+upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-28T09:00:00Z'
+lastUpdated: '2026-09-28T11:00:00Z'
 ---
 
 Run a strategy continuously against a live market feed, watch its signals as they happen, and
@@ -159,8 +159,9 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 ## Commands
 
 `POST /live/{runId}/commands` tells a running strategy something without restarting it, for a strategy that
-implements the engine's `CommandRequestHandler` — a Java strategy directly (see the [Java strategy skill](java-strategies#receiving-commands)), or a
-QTScript strategy through `onCommand { }` (see [QTScript](qtscript#handling-a-command)). It takes
+implements the engine's `CommandRequestHandler` — a Java strategy directly (see [Coding Java
+strategies](strategy_coding#receiving-commands)), or a QTScript strategy through `onCommand { }` (see
+[QTScript](qtscript#handling-a-command)). It takes
 `{"command": "<text>"}` — a plain string — and an optional `properties` object of your own choosing alongside
 it, which travels unchanged to the strategy's own handler; `command` and `properties` are the only keys the
 body may carry. It answers `202` with `commandId` and `effectiveAtMs`, the market position every execution

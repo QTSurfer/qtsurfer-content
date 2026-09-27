@@ -3,9 +3,9 @@ title: QTScript (beta)
 description: A compact language for writing strategies — every section, windows, what's in scope, and how it compiles the same as Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: bc8da62fd642e90b08e60e0e31cc83241a587409
+upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
 upstreamPath: docs/qtscript.md
-lastUpdated: '2026-09-28T09:00:00Z'
+lastUpdated: '2026-09-28T11:00:00Z'
 ---
 
 QTScript is a compact way to write a strategy: you keep the part that is yours — indicators, windows,
@@ -225,6 +225,9 @@ neither survives a restart: a `StateStore` is memory, gone on a restart the same
 [`PUT /live/{runId}/params`](live#runtime-parameters) writes something a restarted replica actually
 starts from. `getStateStore(...)` here is not about durability — it is how `onCommand` reaches the
 per-instrument state a window body already reads, since a command carries no instrument of its own.
+
+A Java strategy implements the same contract directly, through `CommandRequestHandler` — see [Coding Java
+strategies](strategy_coding#receiving-commands).
 
 ## Running it
 

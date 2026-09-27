@@ -3,9 +3,9 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: bc8da62fd642e90b08e60e0e31cc83241a587409
+upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-28T09:00:00Z'
+lastUpdated: '2026-09-28T11:00:00Z'
 ---
 
 Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo, observa sus señales a
@@ -163,9 +163,10 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 ## Comandos
 
 `POST /live/{runId}/commands` le dice algo a una estrategia en marcha sin reiniciarla, para una estrategia que
-implementa `CommandRequestHandler` del motor — una estrategia Java directamente (consulta la
-[skill de estrategias Java](java-strategies#recibir-comandos)), o una estrategia QTScript mediante `onCommand { }`
-(consulta [QTScript](qtscript#manejar-un-comando)). Acepta `{"command": "<texto>"}` — una cadena simple — y un
+implementa `CommandRequestHandler` del motor — una estrategia Java directamente (consulta
+[Programar estrategias en Java](strategy_coding#recibir-comandos)), o una estrategia QTScript mediante
+`onCommand { }` (consulta [QTScript](qtscript#manejar-un-comando)). Acepta `{"command": "<texto>"}` — una
+cadena simple — y un
 objeto `properties` opcional, de tu elección, que viaja sin cambios hasta el propio manejador de la estrategia;
 `command` y `properties` son las únicas claves que puede llevar el cuerpo. Responde `202` con `commandId` y
 `effectiveAtMs`, la posición de mercado en la que lo aplica cada ejecución detrás del run.

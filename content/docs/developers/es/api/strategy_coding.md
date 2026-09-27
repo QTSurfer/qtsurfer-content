@@ -3,14 +3,15 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: ae39d75f2a4b87d7b96bbb80fed456081e5281ba
+upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-09-26T20:33:22Z'
+lastUpdated: '2026-09-28T11:00:00Z'
 ---
 
-Una estrategia de QTSurfer consume datos de mercado, actualiza indicadores y estado, y emite
-señales. Esta guía se centra en la emisión de señales: el punto donde una observación se convierte
-en una instrucción de operar o en un dato para inspeccionar más tarde.
+Una estrategia de QTSurfer consume datos de mercado, actualiza indicadores y estado, y emite señales.
+Esta guía cubre la emisión de señales — el punto donde una observación se convierte en una instrucción
+de operar o en un dato para inspeccionar más tarde — y [recibir un comando](#recibir-comandos) desde
+fuera de una ejecución en vivo.
 
 Para la API completa de clases, usa el [Javadoc del motor][engine-javadoc], en particular el
 [paquete de señales de estrategia][signal-javadoc]. Para redactar con ayuda de un agente, instala
@@ -201,6 +202,70 @@ Usa la forma más larga `createInfoSignal()` cuando un evento necesite varios va
 nivel o metadatos de marcador. Las señales de información son útiles para explicar una decisión,
 pero nunca sustituyen al `emitBuy` o `emitSell` correspondiente cuando la estrategia tiene que
 operar.
+
+## Recibir comandos
+
+El dueño de una ejecución en vivo puede indicarle un comando desde fuera — `POST /live/{runId}/commands`
+— mientras sigue corriendo, sin reiniciarla. Para actuar sobre uno, implementa `CommandRequestHandler`:
+
+```java
+import com.wualabs.qtsurfer.engine.strategy.event.request.CommandRequest;
+import com.wualabs.qtsurfer.engine.strategy.event.request.CommandRequestHandler;
+
+public class MyStrategy extends AbstractTickerStrategy implements CommandRequestHandler {
+
+    @Override
+    public void handle(CommandRequest request) {
+        if ("flatten".equals(request.getCommand())) {
+            // cierra la posición, cancela órdenes pendientes, lo que signifique "flatten" para esta estrategia
+        }
+    }
+}
+```
+
+`handle` corre en el mismo hilo que `update()`, justo antes del evento de mercado al que apunta el
+comando, así que ve el estado de la estrategia exactamente como estaba en ese momento y puede llamar a
+cualquier cosa que pueda llamar `update()` — leer indicadores, emitir una señal, cambiar campos
+internos. Una `RuntimeException` que lance se captura y se cuenta, igual que una de `update()`; un
+`Error` desmonta la ejecución.
+
+Un comando es siempre una cadena simple, y es transitorio. También puede llevar un objeto `properties`
+de tu elección — `request.get("properties")`, un `Map<String, Object>`, o `null` cuando el comando no
+llevaba ninguno — bajo su propio nombre, no `params`, que sigue siendo lo que fija una ejecución al
+arrancar y lo que cambia `PUT /live/{runId}/params`. Un comando, y sus propiedades, no se guardan como
+parte de la ejecución: una réplica que se reinicia reproduce solo el último tramo de datos de mercado,
+y un comando de antes de esa ventana simplemente no le llega.
+
+Un comando no lleva instrumento asociado como sí lo hace `update()`; cuando sus propias propiedades
+nombran uno, alcanza el store de ese instrumento con `getStateStore(String)`:
+
+```java
+@Override
+public void handle(CommandRequest request) {
+    Map<String, Object> properties = request.get("properties");
+    String instrument = properties != null ? (String) properties.get("instrument") : null;
+    if (instrument != null) {
+        getStateStore(instrument).set("flattened");
+    }
+}
+```
+
+**Ni un campo `@StrategyProperty` ni un `StateStore` escrito desde dentro de `handle` son duraderos.**
+Ambos cambian de inmediato, en memoria, igual que cualquier otra asignación, pero ninguno se escribe en
+el conjunto de parámetros guardado de la ejecución — una réplica que se reinicia (o una que arranca
+después, y nunca corrió `handle` para ese comando) parte de lo último que fijó `PUT /live/{runId}/params`,
+no de lo que asignó un comando. La única escritura duradera es una llamada real a
+`PUT /live/{runId}/params`, desde fuera de la ejecución — una estrategia no puede llamar a su propia API
+REST desde dentro de `handle`.
+
+Una ejecución cuya estrategia no implementa `CommandRequestHandler` responde todos los comandos con un
+`409` — implementar la interfaz es lo que hace que `POST /live/{runId}/commands` haga algo.
+
+Una estrategia QTScript también la implementa, mediante su propia sección `onCommand { }` (consulta
+[QTScript](qtscript#manejar-un-comando)) — la plataforma reconoce la clase generada como
+`CommandRequestHandler` de la misma forma que reconoce esta.
+
+Consulta [Comandos](live#comandos) para la forma de la petición/respuesta y los códigos de error.
 
 ## Ver también
 

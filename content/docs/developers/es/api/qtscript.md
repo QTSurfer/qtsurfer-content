@@ -3,9 +3,9 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: bc8da62fd642e90b08e60e0e31cc83241a587409
+upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
 upstreamPath: docs/qtscript.md
-lastUpdated: '2026-09-28T09:00:00Z'
+lastUpdated: '2026-09-28T11:00:00Z'
 ---
 
 QTScript es una forma compacta de escribir una estrategia: conservas la parte que es tuya —
@@ -233,6 +233,9 @@ campo. Solo [`PUT /live/{runId}/params`](live#parámetros-en-tiempo-de-ejecució
 réplica reiniciada realmente parte. `getStateStore(...)` aquí no trata de durabilidad — es cómo `onCommand`
 alcanza el estado por instrumento que el cuerpo de una ventana ya lee, ya que un comando no lleva instrumento
 propio.
+
+Una estrategia Java implementa el mismo contrato directamente, mediante `CommandRequestHandler` — consulta
+[Programar estrategias en Java](strategy_coding#recibir-comandos).
 
 ## Ejecutarla
 

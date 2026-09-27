@@ -3,9 +3,9 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: cdfcf22e2c6915fe6d7a8904893a9cae5883cab7
+upstreamCommit: bc8da62fd642e90b08e60e0e31cc83241a587409
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-27T14:43:48Z'
+lastUpdated: '2026-09-28T09:00:00Z'
 ---
 
 Run a strategy continuously against a live market feed, watch its signals as they happen, and
@@ -161,8 +161,10 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 `POST /live/{runId}/commands` tells a running strategy something without restarting it, for a strategy that
 implements the engine's `CommandRequestHandler` — a Java strategy directly (see the [Java strategy skill](java-strategies#receiving-commands)), or a
 QTScript strategy through `onCommand { }` (see [QTScript](qtscript#handling-a-command)). It takes
-`{"command": "<text>"}` — a plain string, nothing else in the body — and answers `202` with `commandId` and
-`effectiveAtMs`, the market position every execution behind the run applies it at.
+`{"command": "<text>"}` — a plain string — and an optional `properties` object of your own choosing alongside
+it, which travels unchanged to the strategy's own handler; `command` and `properties` are the only keys the
+body may carry. It answers `202` with `commandId` and `effectiveAtMs`, the market position every execution
+behind the run applies it at.
 
 **A command is transient**, unlike a parameter: it is an event, not a stored value, and nothing about it is written
 to the run. A replica that restarts replays only its recent market history, so a command from before that window
@@ -178,7 +180,7 @@ row, so retry the request itself.
 
 ```
 POST /live/6TzAPiPpsOWwBLdLBZCxwH/commands
-{"command": "flatten"}
+{"command": "flatten", "properties": {"instrument": "BTC/USDT"}}
 
 202
 {"runId": "6TzAPiPpsOWwBLdLBZCxwH", "commandId": "0e3f2f1a-9c4b-4d3e-8a2f-6b7c5d4e3f21", "effectiveAtMs": 1758330015000}

@@ -3,9 +3,9 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: cdfcf22e2c6915fe6d7a8904893a9cae5883cab7
+upstreamCommit: bc8da62fd642e90b08e60e0e31cc83241a587409
 upstreamPath: docs/qtscript.md
-lastUpdated: '2026-09-27T14:43:48Z'
+lastUpdated: '2026-09-28T09:00:00Z'
 ---
 
 QTScript es una forma compacta de escribir una estrategia: conservas la parte que es tuya —
@@ -198,25 +198,41 @@ estrategia. No tiene periodo ni indicador: no es una ventana, corre una vez por 
 de mercado, y un fichero tiene como mucho una, igual que tiene como mucho un `init { }`.
 
 Dentro de su cuerpo, `$command` es el texto del comando, como un `String` — nada más de lo que tiene el cuerpo
-de una ventana (`actual`, `$indicator`, `value(...)`, `store`) está en ámbito, porque un comando no está atado
-a un tick de mercado. Cada `param` sigue siendo legible y asignable, así que `onCommand` es cómo una estrategia
-ya en marcha cambia su propio comportamiento a demanda:
+de una ventana (`actual`, `$indicator`, `value(...)`, el `store` ambiental) está en ámbito, porque un comando
+no está atado a un tick de mercado ni, a diferencia de una ventana, a un instrumento ya elegido por ti. Cada
+`param` sigue siendo legible y asignable.
+
+Un comando puede llevar un objeto `properties` de tu elección, junto a `command` en el cuerpo de la petición.
+Lee un valor de ahí con `$command.<clave>` — un `String`, `null` cuando el comando no llevaba esa clave.
+`$command.<clave>` solo se dispara cuando `<clave>` no es en sí misma una llamada, así que `$command.equals(...)`,
+`$command.startsWith(...)` y el resto se siguen leyendo como métodos normales de `String` sobre el propio
+`$command`.
+
+Al cuerpo de una ventana se le entrega el `store` de su instrumento; a `onCommand` no, ya que un comando no
+nombra ningún instrumento por sí mismo — pero `getStateStore("<símbolo>")` acepta uno directamente, así que
+un comando cuyas propias `properties` nombran un instrumento aún puede alcanzar el store de ese instrumento:
 
 ```
 strategy "Manual flatten"
 
-param cerrada = false "La fija un comando flatten"
-
 onCommand {
   if ("flatten".equals($command)) {
-    cerrada = true;
+    getStateStore($command.instrument).set("cerrada");
   }
 }
 ```
 
 Una estrategia sin `onCommand { }` no implementa `CommandRequestHandler` del motor, así que un comando enviado
-a una de sus ejecuciones se rechaza con `409` (consulta [Comandos](live#comandos)). `$command` no es visible
-fuera del cuerpo de `onCommand`, igual que `$indicator` no es visible fuera de una ventana.
+a una de sus ejecuciones se rechaza con `409` (consulta [Comandos](live#comandos)). `$command` y
+`$command.<clave>` no son visibles fuera del cuerpo de `onCommand`, igual que `$indicator` no es visible fuera
+de una ventana.
+
+Fijar un `param` o escribir en un `StateStore` desde dentro de `onCommand` surten efecto de inmediato, pero
+ninguno de los dos sobrevive a un reinicio: un `StateStore` es memoria, se pierde en un reinicio igual que un
+campo. Solo [`PUT /live/{runId}/params`](live#parámetros-en-tiempo-de-ejecución) escribe algo de lo que una
+réplica reiniciada realmente parte. `getStateStore(...)` aquí no trata de durabilidad — es cómo `onCommand`
+alcanza el estado por instrumento que el cuerpo de una ventana ya lee, ya que un comando no lleva instrumento
+propio.
 
 ## Ejecutarla
 

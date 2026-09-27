@@ -3,9 +3,9 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8b838e28227a95ea67e8e88d7b211c70e2ed4956
+upstreamCommit: cdfcf22e2c6915fe6d7a8904893a9cae5883cab7
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-27T11:05:35Z'
+lastUpdated: '2026-09-27T20:00:00Z'
 ---
 
 Run a strategy continuously against a live market feed, watch its signals as they happen, and
@@ -158,10 +158,11 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 
 ## Commands
 
-`POST /live/{runId}/commands` tells a running strategy something without restarting it, for a strategy whose Java
-implements the engine's `CommandRequestHandler` (see the [Java strategy skill](java-strategies#receiving-commands)). It takes `{"command": "<text>"}` — a
-plain string, nothing else in the body — and answers `202` with `commandId` and `effectiveAtMs`, the market position
-every execution behind the run applies it at.
+`POST /live/{runId}/commands` tells a running strategy something without restarting it, for a strategy that
+implements the engine's `CommandRequestHandler` — a Java strategy directly (see the [Java strategy skill](java-strategies#receiving-commands)), or a
+QTScript strategy through `onCommand { }` (see [QTScript](qtscript#handling-a-command)). It takes
+`{"command": "<text>"}` — a plain string, nothing else in the body — and answers `202` with `commandId` and
+`effectiveAtMs`, the market position every execution behind the run applies it at.
 
 **A command is transient**, unlike a parameter: it is an event, not a stored value, and nothing about it is written
 to the run. A replica that restarts replays only its recent market history, so a command from before that window

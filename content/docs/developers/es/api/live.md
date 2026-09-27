@@ -3,9 +3,9 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8b838e28227a95ea67e8e88d7b211c70e2ed4956
+upstreamCommit: cdfcf22e2c6915fe6d7a8904893a9cae5883cab7
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-27T11:05:35Z'
+lastUpdated: '2026-09-27T20:00:00Z'
 ---
 
 Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo, observa sus señales a
@@ -162,10 +162,12 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 
 ## Comandos
 
-`POST /live/{runId}/commands` le dice algo a una estrategia en marcha sin reiniciarla, para una estrategia cuyo Java
-implementa `CommandRequestHandler` del motor (consulta la [skill de estrategias Java](java-strategies#recibir-comandos)). Acepta
-`{"command": "<texto>"}` — una cadena simple, nada más en el cuerpo — y responde `202` con `commandId` y
-`effectiveAtMs`, la posición de mercado en la que lo aplica cada ejecución detrás del run.
+`POST /live/{runId}/commands` le dice algo a una estrategia en marcha sin reiniciarla, para una estrategia que
+implementa `CommandRequestHandler` del motor — una estrategia Java directamente (consulta la
+[skill de estrategias Java](java-strategies#recibir-comandos)), o una estrategia QTScript mediante `onCommand { }`
+(consulta [QTScript](qtscript#manejar-un-comando)). Acepta `{"command": "<texto>"}` — una cadena simple, nada más en
+el cuerpo — y responde `202` con `commandId` y `effectiveAtMs`, la posición de mercado en la que lo aplica cada
+ejecución detrás del run.
 
 **Un comando es transitorio**, a diferencia de un parámetro: es un evento, no un valor guardado, y nada de él se
 escribe en la ejecución. Una réplica que se reinicia reproduce solo su historial de mercado reciente, así que un

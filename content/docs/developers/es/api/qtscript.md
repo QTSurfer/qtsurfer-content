@@ -3,9 +3,9 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c3c03cfc1d6648096638e93061ddcc9040321177
+upstreamCommit: cdfcf22e2c6915fe6d7a8904893a9cae5883cab7
 upstreamPath: docs/qtscript.md
-lastUpdated: '2026-09-26T17:40:02Z'
+lastUpdated: '2026-09-27T20:00:00Z'
 ---
 
 QTScript es una forma compacta de escribir una estrategia: conservas la parte que es tuya —
@@ -69,6 +69,7 @@ vigila en una ventana de un minuto, emitiendo una señal en cada umbral.
 | `instruments` | Opcional. Qué mercados: pares (`BASE/QUOTE`, cualquiera de los dos lados puede ser `*`), expresiones regulares (`~"..."`, comparadas contra el símbolo completo), o un cuerpo Java para control total | `instruments */usdt` · `instruments btc/usdt, eth/*` |
 | `setup:` | Los indicadores, **una llamada al builder por línea** (el mismo catálogo que usa una estrategia Java). Las líneas bajo `setup:` van indentadas, y la primera línea que vuelve a la columna 0 cierra la sección | `ema(12)` · `bollinger(20, 2)` |
 | Ventanas | Donde va la lógica — consulta abajo | `rsi(14) window m1 { ... }` |
+| `onCommand { }` | Opcional, como mucho una por fichero. Corre cuando la ejecución recibe un [comando](live#comandos) — consulta abajo | `onCommand { if ("flatten".equals($command)) ... }` |
 
 ## Ventanas
 
@@ -188,6 +189,34 @@ setup:
     else              emitSell(close);
   }
 ```
+
+## Manejar un comando
+
+`onCommand { }` es una sección especial, como mucho una por fichero, que corre cuando la plataforma entrega un
+[comando](live#comandos) a una ejecución en vivo — `POST /live/{runId}/commands`, aplicado sin reiniciar la
+estrategia. No tiene periodo ni indicador: no es una ventana, corre una vez por comando, no una vez por evento
+de mercado, y un fichero tiene como mucho una, igual que tiene como mucho un `init { }`.
+
+Dentro de su cuerpo, `$command` es el texto del comando, como un `String` — nada más de lo que tiene el cuerpo
+de una ventana (`actual`, `$indicator`, `value(...)`, `store`) está en ámbito, porque un comando no está atado
+a un tick de mercado. Cada `param` sigue siendo legible y asignable, así que `onCommand` es cómo una estrategia
+ya en marcha cambia su propio comportamiento a demanda:
+
+```
+strategy "Manual flatten"
+
+param cerrada = false "La fija un comando flatten"
+
+onCommand {
+  if ("flatten".equals($command)) {
+    cerrada = true;
+  }
+}
+```
+
+Una estrategia sin `onCommand { }` no implementa `CommandRequestHandler` del motor, así que un comando enviado
+a una de sus ejecuciones se rechaza con `409` (consulta [Comandos](live#comandos)). `$command` no es visible
+fuera del cuerpo de `onCommand`, igual que `$indicator` no es visible fuera de una ventana.
 
 ## Ejecutarla
 

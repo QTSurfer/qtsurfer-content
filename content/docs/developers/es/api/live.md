@@ -3,9 +3,9 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: ae39d75f2a4b87d7b96bbb80fed456081e5281ba
+upstreamCommit: 8b838e28227a95ea67e8e88d7b211c70e2ed4956
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-26T20:33:22Z'
+lastUpdated: '2026-09-27T18:00:00Z'
 ---
 
 Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo, observa sus señales a
@@ -20,6 +20,7 @@ medida que ocurren, y cambia sus parámetros sin reiniciarla.
 | `GET` | `/live/public` | Explorar ejecuciones que otros usuarios han hecho públicas |
 | `PATCH` | `/live/{runId}` | Cambiar visibilidad, nombre o descripción |
 | `PUT` | `/live/{runId}/params` | Cambiar parámetros mientras sigue en vivo |
+| `POST` | `/live/{runId}/commands` | Indicarle un comando mientras sigue en vivo |
 | `GET` | `/live/{runId}/signals` | Leer las señales que ya ha producido |
 | `GET` | `/live/{runId}/paper` | Leer su paper trading — consulta [Paper trading](live_paper) |
 | `GET` | `/live/{runId}/paper/equity` | Paginar su curva de equity de paper trading — consulta [Paper trading](live_paper) |
@@ -157,6 +158,33 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 
 200
 {"runId": "6TzAPiPpsOWwBLdLBZCxwH", "paramsVersion": 2, "effectiveAtMs": 1758330015000}
+```
+
+## Comandos
+
+`POST /live/{runId}/commands` le dice algo a una estrategia en marcha sin reiniciarla, para una estrategia cuyo Java
+implementa `CommandRequestHandler` del motor (consulta la [skill de estrategias Java](java-strategies#recibir-comandos)). Acepta
+`{"command": "<texto>"}` — una cadena simple, nada más en el cuerpo — y responde `202` con `commandId` y
+`effectiveAtMs`, la posición de mercado en la que lo aplica cada ejecución detrás del run.
+
+**Un comando es transitorio**, a diferencia de un parámetro: es un evento, no un valor guardado, y nada de él se
+escribe en la ejecución. Una réplica que se reinicia reproduce solo su historial de mercado reciente, así que un
+comando de antes de esa ventana simplemente no le llega — un par que ya estaba corriendo cuando llegó lo aplica, uno
+que arranca después no. Todo lo que la estrategia necesite recordar entre reinicios va en un parámetro
+(`PUT /live/{runId}/params`), que sí tiene un valor guardado.
+
+Un `409` significa una de tres cosas, cada una con su propio mensaje: la ejecución no está corriendo; la estrategia
+compilada de esta ejecución no tiene registro de si maneja comandos (regístrala de nuevo y arranca una ejecución
+nueva, igual que el `409` de `params`); o la estrategia no implementa `CommandRequestHandler` en absoluto. Un `503`
+significa que el comando no se pudo entregar ahora mismo y **no** se envió — no hay una vía alternativa para un
+evento como sí la hay para una fila de parámetro, así que reintenta la petición misma.
+
+```
+POST /live/6TzAPiPpsOWwBLdLBZCxwH/commands
+{"command": "flatten"}
+
+202
+{"runId": "6TzAPiPpsOWwBLdLBZCxwH", "commandId": "0e3f2f1a-9c4b-4d3e-8a2f-6b7c5d4e3f21", "effectiveAtMs": 1758330015000}
 ```
 
 ## Recibir señales y actualizar parámetros en vivo: la conexión WebSocket

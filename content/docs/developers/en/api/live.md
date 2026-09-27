@@ -3,9 +3,9 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f1e035a68c4af3514d68c9cddff8c835fa89712a
+upstreamCommit: ae39d75f2a4b87d7b96bbb80fed456081e5281ba
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-26T17:40:02Z'
+lastUpdated: '2026-09-26T21:00:00Z'
 ---
 
 Run a strategy continuously against a live market feed, watch its signals as they happen, and
@@ -279,7 +279,7 @@ Each signal pushed on a `sig:<runId>` channel (the `pub.data` of the `push` fram
 | `eventTsMs` | Market time the signal was produced. |
 | `emittedAtMs` | Time it was published — always ≥ `eventTsMs`. |
 | `order` | Present only for a `hint`. |
-| `data` | The signal's own free-form payload. |
+| `data` | The signal's own free-form payload: what the strategy put there with `signal.set(...)`. Whoever may read the run may read it, so on a `public` run it is public. A signal whose `data` is over 8 KiB (8,192 bytes of its JSON) is not pushed on this channel; [the history route](#reading-signals-a-run-already-produced) returns it whole. |
 | `regenerated` | `true` only for a signal republished to fill a gap in the historical record — always `false` for a signal you are seeing for the first time. |
 | `digest` | Content hash, for verifying two independent deliveries of the same signal agree. |
 

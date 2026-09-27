@@ -3,9 +3,9 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 1234ca1a762e589f51b4679af889ca6cba5802cb
+upstreamCommit: ae39d75f2a4b87d7b96bbb80fed456081e5281ba
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-09-21T12:19:32Z'
+lastUpdated: '2026-09-26T21:00:00Z'
 ---
 
 A QTSurfer strategy consumes market data, updates indicators and state, and emits signals. This
@@ -172,6 +172,10 @@ signal.set("_m",
 The marker positions used by the standard visualization are `aboveBar`, `belowBar`, and `inBar`;
 the portable shapes are `circle`, `arrowUp`, `arrowDown`, and `square`. Prefixing a property with
 `_` reserves it as control metadata rather than a normal plotted series, as `_m` does here.
+
+Everything you `set` on a signal is its `data`, and it is published with the signal in a live run: whoever may read the run
+may read it, so on a `public` run it is public. A signal whose `data` is over 8 KiB (8,192 bytes of its JSON) is not pushed
+on the WebSocket channel; `GET /live/{runId}/signals` still returns it whole.
 
 For a single value, `emitInfo` is the shortest form:
 

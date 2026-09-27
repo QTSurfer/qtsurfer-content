@@ -3,9 +3,9 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 1234ca1a762e589f51b4679af889ca6cba5802cb
+upstreamCommit: ae39d75f2a4b87d7b96bbb80fed456081e5281ba
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-09-21T12:19:32Z'
+lastUpdated: '2026-09-26T21:00:00Z'
 ---
 
 Una estrategia de QTSurfer consume datos de mercado, actualiza indicadores y estado, y emite
@@ -175,6 +175,11 @@ Las posiciones de marcador que usa la visualización estándar son `aboveBar`, `
 las formas portables son `circle`, `arrowUp`, `arrowDown` y `square`. Prefijar una propiedad con
 `_` la reserva como metadato de control en lugar de una serie normal representada, tal como hace
 `_m` aquí.
+
+Todo lo que haces `set` en una señal es su `data`, y se publica con la señal en una ejecución en vivo: quien
+pueda leer la ejecución puede leerlo, así que en una ejecución `public` es público. Una señal cuyo `data` pese
+más de 8 KiB (8.192 bytes de su JSON) no se empuja por el canal WebSocket; `GET /live/{runId}/signals` la
+devuelve entera de todos modos.
 
 Para un único valor, `emitInfo` es la forma más corta:
 

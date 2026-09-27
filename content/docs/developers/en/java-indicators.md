@@ -3,9 +3,8 @@ title: Java indicators
 description: Configure, compose, and extend the QTSurfer real-time indicator pipeline.
 order: 2
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 6608cefba45b16229d3bb9010e6a4620a812a6e3
+upstreamCommit: 455beba97e62a69d4c10f3c4af9b0a39812689a8
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
-lastUpdated: '2026-09-27T10:13:51Z'
 ---
 
 All methods below are on `InstrumentGroupRTIndicator` and return `this` for chaining.

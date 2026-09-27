@@ -2,7 +2,7 @@
 title: Estrategias en Java
 description: Construye estrategias QTSurfer con indicadores, window listeners, estado y señales.
 order: 1
-lastUpdated: '2026-09-27T11:00:00Z'
+lastUpdated: '2026-09-27T10:13:51Z'
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 6608cefba45b16229d3bb9010e6a4620a812a6e3
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md

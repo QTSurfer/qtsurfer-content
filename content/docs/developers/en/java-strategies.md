@@ -3,9 +3,8 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 0ba1465a39116a625473a8a21693044ea2c83b37
+upstreamCommit: 6575ce1a4d7a7accfb1025466732497896824640
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
-lastUpdated: '2026-09-27T15:20:07Z'
 ---
 
 A QTSurfer strategy is a plain Java class (no framework annotations required) that extends a strategy base class — most commonly `AbstractTickerStrategy` (see [Strategy base classes](#strategy-base-classes) for the kline, funding-rate, and multi-source siblings). It receives real-time market data, configures technical indicators, and emits buy/sell signals. The engine compiles strategies server-side — no local toolchain needed.
@@ -258,13 +257,39 @@ public class MyStrategy extends AbstractTickerStrategy implements CommandRequest
 state exactly as it was at that point and can call anything `update()` can — read indicators, emit a signal, change internal
 fields. A `RuntimeException` it throws is caught and counted, the same as one from `update()`; an `Error` unwinds the run.
 
-**A command is always a plain string, and it is transient.** There is no structured payload yet — a
-later addition will let a command carry a key/value map alongside its text, under its own name (not
-`params`, which stays what a run starts with and `PUT /live/{runId}/params` changes). And unlike a
-`@StrategyProperty` value, a command is not stored as part of the run: a replica that restarts replays
-only the last stretch of market data, and a command from before that window simply never reaches it.
-Anything the strategy needs to remember across a restart belongs in a parameter it sets from inside
-`handle`, not in the fact that a command was once sent.
+**A command is always a plain string, and it is transient.** It may also carry a `properties` object
+of your own choosing, alongside `command` in the request body — not `params`, which stays what a run
+starts with and `PUT /live/{runId}/params` changes. Each property lands as a top-level entry on
+`CommandRequest`'s own map, so read one straight off `request` by name — `request.get("<key>")` — no
+key is off limits, since the command's own text is kept separately (`getCommand()` reads it,
+unaffected by any of it). A value keeps whatever JSON type it arrived as, so assigning it to a
+`String` field when the caller sent a number or an object throws a `ClassCastException` inside
+`handle`; QTScript's `$command.<key>` sugar reads the same value but always widens it to a `String`
+instead. A command, and its properties, are not stored as part of the run: a replica that restarts
+replays only the last stretch of market data, and a command from before that window simply never
+reaches it.
+
+A command has no instrument attached the way `update()` does; when its own properties name one, reach
+that instrument's store with `getStateStore(String)`:
+
+```java
+@Override
+public void handle(CommandRequest request) {
+    String instrument = request.get("instrument");
+    if (instrument != null) {
+        getStateStore(instrument).set("flattened");
+    }
+}
+```
+
+**Assigning a `@StrategyProperty` field from inside `handle` is not durable.** It changes this
+replica's in-memory value immediately, the same as any other field assignment, but nothing writes it to
+the run's stored parameter set — a replica that restarts (or one that starts later, and never ran
+`handle` for that command) starts from whatever `PUT /live/{runId}/params` last set, not from what a
+command assigned. `StateStore` is no more durable: it is memory too, gone on a restart the same as a
+field. Nothing a command does from inside `handle` survives a restart on its own — the only durable
+write is a real `PUT /live/{runId}/params` call, from outside the run (a strategy cannot call its own
+REST API from inside `handle`).
 
 A run whose strategy does not implement `CommandRequestHandler` answers every command with a `409` —
 implementing the interface is what makes `POST /live/{runId}/commands` do anything at all.

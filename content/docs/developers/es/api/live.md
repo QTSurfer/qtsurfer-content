@@ -3,9 +3,9 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: cdfcf22e2c6915fe6d7a8904893a9cae5883cab7
+upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
 upstreamPath: docs/live.md
-lastUpdated: '2026-09-27T14:43:48Z'
+lastUpdated: '2026-09-28T11:00:00Z'
 ---
 
 Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo, observa sus señales a
@@ -163,11 +163,13 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 ## Comandos
 
 `POST /live/{runId}/commands` le dice algo a una estrategia en marcha sin reiniciarla, para una estrategia que
-implementa `CommandRequestHandler` del motor — una estrategia Java directamente (consulta la
-[skill de estrategias Java](java-strategies#recibir-comandos)), o una estrategia QTScript mediante `onCommand { }`
-(consulta [QTScript](qtscript#manejar-un-comando)). Acepta `{"command": "<texto>"}` — una cadena simple, nada más en
-el cuerpo — y responde `202` con `commandId` y `effectiveAtMs`, la posición de mercado en la que lo aplica cada
-ejecución detrás del run.
+implementa `CommandRequestHandler` del motor — una estrategia Java directamente (consulta
+[Programar estrategias en Java](strategy_coding#recibir-comandos)), o una estrategia QTScript mediante
+`onCommand { }` (consulta [QTScript](qtscript#manejar-un-comando)). Acepta `{"command": "<texto>"}` — una
+cadena simple — y un
+objeto `properties` opcional, de tu elección, que viaja sin cambios hasta el propio manejador de la estrategia;
+`command` y `properties` son las únicas claves que puede llevar el cuerpo. Responde `202` con `commandId` y
+`effectiveAtMs`, la posición de mercado en la que lo aplica cada ejecución detrás del run.
 
 **Un comando es transitorio**, a diferencia de un parámetro: es un evento, no un valor guardado, y nada de él se
 escribe en la ejecución. Una réplica que se reinicia reproduce solo su historial de mercado reciente, así que un
@@ -183,7 +185,7 @@ evento como sí la hay para una fila de parámetro, así que reintenta la petici
 
 ```
 POST /live/6TzAPiPpsOWwBLdLBZCxwH/commands
-{"command": "flatten"}
+{"command": "flatten", "properties": {"instrument": "BTC/USDT"}}
 
 202
 {"runId": "6TzAPiPpsOWwBLdLBZCxwH", "commandId": "0e3f2f1a-9c4b-4d3e-8a2f-6b7c5d4e3f21", "effectiveAtMs": 1758330015000}

@@ -2,9 +2,9 @@
 title: Estrategias en Java
 description: Construye estrategias QTSurfer con indicadores, window listeners, estado y señales.
 order: 1
-lastUpdated: '2026-09-27T15:20:07Z'
+lastUpdated: '2026-09-28T14:00:00Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 0ba1465a39116a625473a8a21693044ea2c83b37
+upstreamCommit: 6575ce1a4d7a7accfb1025466732497896824640
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -282,14 +282,40 @@ cualquier cosa que pueda llamar `update()` — leer indicadores, emitir una señ
 internos. Una `RuntimeException` que lance se captura y se cuenta, igual que una de `update()`; un
 `Error` desmonta la ejecución.
 
-**Un comando es siempre una cadena simple, y es transitorio.** Todavía no hay un payload
-estructurado — una futura ampliación dejará que un comando lleve un mapa clave/valor junto a su texto,
-bajo su propio nombre (no `params`, que sigue siendo lo que fija una ejecución al arrancar y lo que
-cambia `PUT /live/{runId}/params`). Y a diferencia de un valor `@StrategyProperty`, un comando no se
-guarda como parte de la ejecución: una réplica que se reinicia reproduce solo el último tramo de datos
-de mercado, y un comando de antes de esa ventana simplemente no le llega. Todo lo que la estrategia
-necesite recordar entre reinicios va en un parámetro que fije desde dentro de `handle`, no en el
-hecho de que se envió un comando alguna vez.
+**Un comando es siempre una cadena simple, y es transitorio.** También puede llevar un objeto
+`properties` de tu elección, junto a `command` en el cuerpo de la petición — no `params`, que sigue
+siendo lo que fija una ejecución al arrancar y lo que cambia `PUT /live/{runId}/params`. Cada propiedad
+aterriza como una entrada de primer nivel en el propio mapa de `CommandRequest`, así que lee una
+directamente de `request` por su nombre — `request.get("<clave>")` — ninguna clave está prohibida, ya
+que el texto del comando se guarda aparte (`getCommand()` lo lee, sin verse afectado por nada de esto).
+Un valor conserva el tipo JSON con el que llegó, así que asignarlo a un campo `String` cuando quien
+llama envió un número o un objeto lanza un `ClassCastException` dentro de `handle`; el azúcar
+`$command.<clave>` de QTScript lee el mismo valor pero siempre lo ensancha a un `String`. Un comando, y
+sus propiedades, no se guardan como parte de la ejecución: una réplica que se reinicia reproduce solo el
+último tramo de datos de mercado, y un comando de antes de esa ventana simplemente no le llega.
+
+Un comando no lleva instrumento asociado como sí lo hace `update()`; cuando sus propias propiedades
+nombran uno, alcanza el store de ese instrumento con `getStateStore(String)`:
+
+```java
+@Override
+public void handle(CommandRequest request) {
+    String instrument = request.get("instrument");
+    if (instrument != null) {
+        getStateStore(instrument).set("flattened");
+    }
+}
+```
+
+**Asignar un campo `@StrategyProperty` desde dentro de `handle` no es duradero.** Cambia el valor en
+memoria de esta réplica de inmediato, igual que cualquier otra asignación de campo, pero nada lo
+escribe en el conjunto de parámetros guardado de la ejecución — una réplica que se reinicia (o una que
+arranca después, y nunca corrió `handle` para ese comando) parte de lo último que fijó
+`PUT /live/{runId}/params`, no de lo que asignó un comando. `StateStore` no es más duradero: también
+es memoria, se pierde en un reinicio igual que un campo. Nada de lo que hace un comando desde dentro de
+`handle` sobrevive a un reinicio por sí solo — la única escritura duradera es una llamada real a
+`PUT /live/{runId}/params`, desde fuera de la ejecución (una estrategia no puede llamar a su propia API
+REST desde dentro de `handle`).
 
 Una ejecución cuya estrategia no implementa `CommandRequestHandler` responde todos los comandos con un
 `409` — implementar la interfaz es lo que hace que `POST /live/{runId}/commands` haga algo.

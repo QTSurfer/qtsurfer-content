@@ -3,14 +3,14 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: ae39d75f2a4b87d7b96bbb80fed456081e5281ba
+upstreamCommit: da21123103897fcbaab79c18669eeb76ad0f8978
 upstreamPath: docs/strategy_coding.md
-lastUpdated: '2026-09-26T20:33:22Z'
+lastUpdated: '2026-09-28T14:00:00Z'
 ---
 
-A QTSurfer strategy consumes market data, updates indicators and state, and emits signals. This
-guide focuses on signal emission: the point where an observation becomes either an instruction to
-trade or data to inspect later.
+A QTSurfer strategy consumes market data, updates indicators and state, and emits signals. This guide
+covers signal emission — the point where an observation becomes either an instruction to trade or data
+to inspect later — and [receiving a command](#receiving-commands) from outside a live run.
 
 For the complete class API, use the [Engine Javadoc][engine-javadoc], particularly the [strategy
 signal package][signal-javadoc]. For agent-assisted authoring, install the maintained
@@ -196,6 +196,72 @@ shows the moving-average example above with its chart markers written that way.
 Use the longer `createInfoSignal()` form when one event needs several top-level values or marker
 metadata. Information signals are useful for explaining a decision, but they never replace the
 corresponding `emitBuy` or `emitSell` when the strategy is meant to trade.
+
+## Receiving commands
+
+A live run's owner can tell it a command from outside — `POST /live/{runId}/commands` — while it keeps
+running, without restarting it. To act on one, implement `CommandRequestHandler`:
+
+```java
+import com.wualabs.qtsurfer.engine.strategy.event.request.CommandRequest;
+import com.wualabs.qtsurfer.engine.strategy.event.request.CommandRequestHandler;
+
+public class MyStrategy extends AbstractTickerStrategy implements CommandRequestHandler {
+
+    @Override
+    public void handle(CommandRequest request) {
+        if ("flatten".equals(request.getCommand())) {
+            // close the position, cancel pending orders, whatever "flatten" means for this strategy
+        }
+    }
+}
+```
+
+`handle` runs on the same thread as `update()`, right before the market event the command targets, so it
+sees the strategy's state exactly as it was at that point and can call anything `update()` can — read
+indicators, emit a signal, change internal fields. A `RuntimeException` it throws is caught and counted,
+the same as one from `update()`; an `Error` unwinds the run.
+
+A command is always a plain string, and it is transient. It may also carry a `properties` object of your
+own choosing, alongside `command` in the request body — not `params`, which stays what a run starts with
+and `PUT /live/{runId}/params` changes. Each property lands as a top-level entry on `CommandRequest`'s own
+map, so read one straight off `request` by name — `request.get("<key>")` — no key is off limits, since the
+command's own text is kept separately (`getCommand()` reads it, unaffected by any of it). A
+value keeps whatever JSON type it arrived as, so assigning it to a `String` field when the caller sent a
+number or an object throws a `ClassCastException` inside `handle`; a QTScript `onCommand` body reads the
+same value with `$command.<key>` instead, which always widens it to a `String` (`null` for an absent key,
+never a cast failure). A command, and its properties, are not stored as part of the run: a replica that
+restarts replays only the last stretch of market data, and a command from before that window simply never
+reaches it.
+
+A command has no instrument attached the way `update()` does; when its own properties name one, reach that
+instrument's store with `getStateStore(String)`:
+
+```java
+@Override
+public void handle(CommandRequest request) {
+    String instrument = request.get("instrument");
+    if (instrument != null) {
+        getStateStore(instrument).set("flattened");
+    }
+}
+```
+
+**Neither a `@StrategyProperty` field nor a `StateStore` written from inside `handle` is durable.** Both
+change immediately, in memory, the same as any other assignment, but neither is written to the run's
+stored parameter set — a replica that restarts (or one that starts later, and never ran `handle` for that
+command) starts from whatever `PUT /live/{runId}/params` last set, not from what a command assigned. The
+only durable write is a real `PUT /live/{runId}/params` call, from outside the run — a strategy cannot
+call its own REST API from inside `handle`.
+
+A run whose strategy does not implement `CommandRequestHandler` answers every command with a `409` —
+implementing the interface is what makes `POST /live/{runId}/commands` do anything at all.
+
+A QTScript strategy implements it too, through its own `onCommand { }` section (see
+[QTScript](qtscript#handling-a-command)) — the platform recognizes the generated class as
+`CommandRequestHandler` the same way it recognizes this one.
+
+See [Commands](live#commands) for the request/response shape and error codes.
 
 ## See also
 

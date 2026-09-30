@@ -5,7 +5,7 @@ order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 980f8c3fda04438e24d5cb63f23bcd94f9abb7d4
 upstreamPath: docs/account.md
-lastUpdated: '2026-09-26T17:40:02Z'
+lastUpdated: '2026-09-30T11:20:35Z'
 ---
 
 All account routes require a bearer JWT obtained from [authentication](https://github.com/QTSurfer/qtsurfer-api/blob/848593e88be3b80078c6f98d7cb582f22fd87853/README.md#api-quick-start).

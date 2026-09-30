@@ -3,7 +3,7 @@ title: Datasets
 description: Upload historical ticker data and use it in the standard backtesting workflow.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
+upstreamCommit: 9a8e03675f67ce80ef43f33a5207b8b5387749c7
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-26T17:40:02Z'
 ---
@@ -384,6 +384,10 @@ every dataset on a screen that renders no chart isn't worth the exposure.
 ```bash
 curl https://api.qtsurfer.net/v1/datasets -H "Authorization: Bearer $TOKEN"
 ```
+
+`GET /datasets?includeDeleted=true` also lists the datasets you've deleted, each with the
+`deletedAt` it was deleted at — handy when keeping your own copy of the list in sync, so a
+deleted dataset shows up as deleted instead of just disappearing.
 
 ## Getting a dataset
 

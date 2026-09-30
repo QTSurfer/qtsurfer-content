@@ -3,7 +3,7 @@ title: API de estrategias
 description: Compila, valida, inspecciona, recupera y elimina estrategias Java o QTScript (beta) a través de la API REST.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c3c03cfc1d6648096638e93061ddcc9040321177
+upstreamCommit: 9a8e03675f67ce80ef43f33a5207b8b5387749c7
 upstreamPath: docs/strategy.md
 lastUpdated: '2026-09-26T17:40:02Z'
 ---
@@ -219,6 +219,10 @@ Cada entrada (`StrategySummary`) lleva la misma procedencia `compiledAt`/`requir
 `StrategyState`, pero **no** el estado de validación, de modo que listar sigue siendo barato sin
 importar cuántas estrategias tengas. Comprueba la validación de una en concreto con
 `GET /strategy/{strategyId}`.
+
+`GET /strategies?includeDeleted=true` lista también las estrategias que has eliminado, cada una con
+el `deletedAt` en que se eliminó — útil para mantener tu propia copia de la lista sincronizada, de
+modo que una estrategia eliminada aparezca como eliminada en lugar de limitarse a desaparecer.
 
 ```bash
 curl https://api.qtsurfer.net/v1/strategies -H "Authorization: Bearer $TOKEN"

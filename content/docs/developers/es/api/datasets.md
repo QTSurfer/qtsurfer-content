@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
+upstreamCommit: 9a8e03675f67ce80ef43f33a5207b8b5387749c7
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-26T17:40:02Z'
 ---
@@ -402,6 +402,10 @@ convención que `GET /strategies`.
 ```bash
 curl https://api.qtsurfer.net/v1/datasets -H "Authorization: Bearer $TOKEN"
 ```
+
+`GET /datasets?includeDeleted=true` lista también los conjuntos de datos que has eliminado, cada uno
+con el `deletedAt` en que se eliminó — útil para mantener tu propia copia de la lista sincronizada,
+de modo que un conjunto eliminado aparezca como eliminado en lugar de limitarse a desaparecer.
 
 ## Obtener un conjunto de datos
 

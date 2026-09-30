@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
+upstreamCommit: 9a8e03675f67ce80ef43f33a5207b8b5387749c7
 upstreamPath: docs/live.md
 lastUpdated: '2026-09-27T21:29:01Z'
 ---
@@ -62,7 +62,7 @@ desconocido como "en marcha, con algo que mirar".
 | `LAGGING` | En marcha, pero por detrás de los datos de mercado: habitual mientras se pone al día tras arrancar o tras un reinicio de la plataforma. Se despeja sola. |
 | `HUNG` | Tu estrategia está atascada dentro de una llamada durante más tiempo del que la plataforma permite. Se despeja cuando esa llamada devuelve. |
 | `DEGRADED` | Las ejecuciones independientes de la ejecución produjeron señales distintas a partir de los mismos datos de mercado. La ejecución sigue publicando. En el sandbox esto cuenta en contra de la prueba: la ejecución no se promueve. |
-| `FAILED` | La plataforma rechazó la ejecución o no pudo arrancarla. |
+| `FAILED` | La plataforma rechazó la ejecución, no pudo arrancarla, o la ejecución falló mientras corría. `reason` dice por qué (consulta [Por qué una ejecución falló o se detuvo](#por-qué-una-ejecución-falló-o-se-detuvo)). |
 | `STOPPED` | Detenida, por ti o por la plataforma (`reason` lo dice cuando fue por superar su margen de recursos). |
 
 `LAGGING`, `HUNG` y `DEGRADED` son indicadores de una ejecución que por lo demás está corriendo:
@@ -77,6 +77,38 @@ Un `DELETE` es una petición, no una parada instantánea: `desired` pasa a `STOP
 pero `state` puede seguir en `RUNNING` durante una ventana corta mientras la ejecución concluye.
 Volver a llamar a `DELETE` sobre una ejecución ya detenida no es un error.
 
+### Una ejecución fallida es definitiva, y sigue ocupando su plaza
+
+`FAILED` es definitivo para esa ejecución: no está procesando datos y nada la reinicia. Para volver a
+intentarlo, corrige lo que nombra `reason` y arranca una ejecución nueva. Lo habitual es que `desired`
+siga en `RUNNING` hasta que detengas tú la ejecución, y una ejecución cuenta como activa por su
+`desired`, no por su `state`: una ejecución `FAILED` sigue respondiendo `409` a un nuevo arranque de la
+misma estrategia y sigue contando para el límite de ejecuciones en vivo de tu plan. Llama a `DELETE`
+sobre ella y arranca de nuevo.
+
+La excepción es una ejecución que nunca puede correr por aquello con lo que se arrancó: cuando su
+estrategia no puede consumir su tipo de fuente, la plataforma la detiene ella misma (`desired` pasa a
+`STOPPED`, `state` se queda en `FAILED`, `reason` dice por qué), así que no ocupa plaza.
+
+### Por qué una ejecución falló o se detuvo
+
+`GET /strategy/{strategyId}/live`, y cada entrada de `GET /live`, llevan un `reason` cuando hay algo
+que decir. Está ausente en caso contrario, y nunca es una traza de pila ni un mensaje interno: es una
+frase de un conjunto fijo, así que un cliente puede compararla.
+
+| `reason` | Cuándo |
+|---|---|
+| `resource: ...` | La plataforma detuvo la ejecución por superar su margen de recursos; el texto dice qué límite. |
+| `The run could not start: its strategy cannot consume the source type it was started with.` | Una estrategia ticker arrancada con una fuente `kline`, o al revés. El arranque lo rechaza con un `400` (consulta [Fuentes](#fuentes)); solo puede aparecer en una ejecución creada antes de que existiera esa comprobación. |
+| `The run could not start: its definition was refused.` | La definición de la ejecución no es una que la plataforma pueda ejecutar. |
+| `The run could not start after several attempts.` | Un arranque que siguió fallando por un motivo que no era tuyo. Arranca de nuevo. |
+| `The run stopped because its strategy failed while processing data.` | El propio código de tu estrategia tumbó la ejecución. |
+| `The run stopped because it lost its data feed.` | El flujo de datos de mercado de la ejecución se cortó y la ejecución se quedó parada. |
+| `The run failed.` | Cualquier otra cosa. |
+
+El conjunto puede crecer. Lee una frase que no reconozcas como «la ejecución falló», y no la analices
+en busca de detalle: el texto es para personas.
+
 ## Fuentes
 
 `sources` acepta exactamente una entrada (las estrategias multi-fuente todavía no están
@@ -89,6 +121,12 @@ soportadas):
   ]
 }
 ```
+
+`type` tiene que coincidir con el tipo de estrategia: una estrategia ticker corre sobre una fuente
+`ticker` y una estrategia kline sobre una `kline`, y un arranque con la otra se rechaza con `400`,
+nombrando ambas. Una estrategia QTScript es una estrategia ticker salvo que su cabecera diga otra cosa
+(`strategy "Name" kline`); una Java es la de la clase base que extienda (`AbstractTickerStrategy` o
+`AbstractKlineStrategy`).
 
 `type` es `ticker` o `kline`. Ambos se conectan a la cadencia más ligera (más rápida) disponible
 para el exchange — hoy eso es 1 tick/segundo en todos los exchanges soportados; elegir entre

@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 39bc9ea24549473a89e16f3da56f291c60e7dfaa
+upstreamCommit: 980f8c3fda04438e24d5cb63f23bcd94f9abb7d4
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-09-21T11:29:41Z'
 ---
@@ -49,7 +49,7 @@ barrer:
 | Campo | Tipo | Por defecto | Notas |
 |---|---|---|---|
 | `params` | mapa de string → [`SweepAxis`](#params--mapa-de-sweepaxis) | — | obligatorio, ≥ 1 entrada — un eje por parámetro barrido |
-| `sampler` | `grid` \| `random` \| `lhs` | `grid` | |
+| `sampler` | `grid` \| `random` \| `lhs` | `grid` | `grid` ejecuta todas las combinaciones y está sujeto al límite de cuadrícula de tu plan, consulta [Qué tamaño puede tener una cuadrícula](#qué-tamaño-puede-tener-una-cuadrícula) |
 | `objective` | `sharpe` \| `sortino` \| `pnl` \| `maxdd` | `sharpe` | |
 | `samples` | entero ≥ 1 | — | número de muestras para `random`/`lhs`; se ignora con `grid` |
 | `seed` | int64 | — | semilla de reproducibilidad. Si se omite → el servidor genera una (`L64X128MixRandom` de Java) y devuelve el valor efectivo en `ExecuteSweepAccepted.seed` |
@@ -66,6 +66,22 @@ lista explícita:
 
 - **rango** — `from`, `to`, `step` (todos obligatorios, `step` > 0)
 - **enumerado** — `values` (≥ 1 elemento, cada uno `number` o `boolean`)
+
+##### Qué tamaño puede tener una cuadrícula
+
+Un barrido con el muestreador `grid` ejecuta todas las combinaciones de sus ejes, y el número de
+combinaciones es el producto de los tamaños de los ejes. Tu plan fija la cuadrícula completa más grande
+que puede ejecutar: `maxSweepCartesian` en [`GET /account`](account), 100 en el plan gratuito y mayor en
+los de pago. Una cuadrícula por encima de ese número se rechaza con `400`, y el mensaje pide el
+muestreador `random` o `lhs`. Esos dos ejecutan solo `samples` combinaciones, sea cual sea el tamaño del
+espacio del que muestrean, y no están sujetos al límite de cuadrícula del plan. Un techo de toda la
+plataforma sobre el número de combinaciones de un barrido se aplica a todos los planes y a todos los
+muestreadores.
+
+```json
+"sweep": {"sampler": "random", "samples": 200, "params": {"rsiPeriod": {"from": 2, "to": 40, "step": 1},
+                                                       "atrMultiplier": {"from": 0.5, "to": 5, "step": 0.1}}}
+```
 
 #### `baseConfig` — `SweepBaseConfig`
 

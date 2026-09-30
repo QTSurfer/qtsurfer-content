@@ -3,7 +3,7 @@ title: Cuenta
 description: Consulta los límites de tu plan y tu uso de almacenamiento en vivo frente a ellos.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
+upstreamCommit: 980f8c3fda04438e24d5cb63f23bcd94f9abb7d4
 upstreamPath: docs/account.md
 lastUpdated: '2026-09-26T17:40:02Z'
 ---
@@ -33,6 +33,10 @@ curl https://api.qtsurfer.net/v1/account \
 {
   "userId": "00000000-0000-0000-0000-000000000000",
   "tier": "free",
+  "maxExecute": 10,
+  "maxRangeDays": 7,
+  "maxSweepCartesian": 100,
+  "maxImportRangeHours": 6,
   "maxDatasets": 3,
   "maxDatasetBytes": 52428800,
   "maxTotalStorageBytes": 104857600,
@@ -47,6 +51,10 @@ curl https://api.qtsurfer.net/v1/account \
 |---|---|
 | `userId` | tu id de cuenta — la claim `sub` del JWT |
 | `tier` | tu plan de suscripción actual |
+| `maxExecute` | número máximo de ejecuciones de estrategia (y barridos) que puedes tener corriendo a la vez a través de la API. Arrancar una por encima de este número se responde con `429`, cuyo mensaje lleva el mismo número. El valor ya incluye el margen de API que tenga tu plan |
+| `maxRangeDays` | longitud máxima, en días, del rango de tiempo de un backtest sobre uno de tus propios [conjuntos de datos](datasets) |
+| `maxSweepCartesian` | cuadrícula completa más grande, en combinaciones de parámetros, que un [barrido](backtest_sweep#qué-tamaño-puede-tener-una-cuadrícula) puede ejecutar con el muestreador `grid`. Una cuadrícula mayor se rechaza con `400`; los muestreadores `random` y `lhs` no están sujetos a él |
+| `maxImportRangeHours` | longitud máxima, en horas, del rango de tiempo de una importación de un conjunto de datos desde un exchange. Consulta [Importar un conjunto de datos en lugar de subirlo](datasets#importar-un-conjunto-de-datos-en-lugar-de-subirlo) |
 | `maxDatasets` | número máximo de [conjuntos de datos](datasets) activos que permite tu plan |
 | `maxDatasetBytes` | tamaño máximo, en bytes, de una sola versión de un conjunto de datos **tal como se almacena** (los `bytes` de su versión lista: para una subida CSV, el fichero convertido, no el que subes). Consulta [Límites de tamaño](datasets#límites-de-tamaño) |
 | `maxTotalStorageBytes` | almacenamiento combinado máximo, en bytes, entre todos los conjuntos de datos, señales de ejecución de estrategia y estrategias registradas de tu cuenta — ver abajo |

@@ -3,7 +3,7 @@ title: Account
 description: Check your tier's limits and your live storage usage against them.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
+upstreamCommit: 980f8c3fda04438e24d5cb63f23bcd94f9abb7d4
 upstreamPath: docs/account.md
 lastUpdated: '2026-09-26T17:40:02Z'
 ---
@@ -31,6 +31,10 @@ curl https://api.qtsurfer.net/v1/account \
 {
   "userId": "00000000-0000-0000-0000-000000000000",
   "tier": "free",
+  "maxExecute": 10,
+  "maxRangeDays": 7,
+  "maxSweepCartesian": 100,
+  "maxImportRangeHours": 6,
   "maxDatasets": 3,
   "maxDatasetBytes": 52428800,
   "maxTotalStorageBytes": 104857600,
@@ -45,6 +49,10 @@ curl https://api.qtsurfer.net/v1/account \
 |---|---|
 | `userId` | your account id — the JWT `sub` claim |
 | `tier` | your current subscription tier |
+| `maxExecute` | maximum number of strategy executions (and sweeps) you can have running at the same time through the API. Starting one past this number is answered with `429`, whose message carries the same number. The value already includes any API allowance your plan has |
+| `maxRangeDays` | maximum length, in days, of the time range of a backtest on one of your own [datasets](datasets) |
+| `maxSweepCartesian` | largest full grid, in parameter combinations, a [sweep](backtest_sweep#how-large-a-grid-may-be) may run with the `grid` sampler. A larger grid is refused with `400`; the `random` and `lhs` samplers are not held to it |
+| `maxImportRangeHours` | maximum length, in hours, of the time range of one dataset import from an exchange. See [Importing a dataset instead of uploading one](datasets#importing-a-dataset-instead-of-uploading-one) |
 | `maxDatasets` | maximum number of active [datasets](datasets) your tier allows |
 | `maxDatasetBytes` | maximum size, in bytes, of a single dataset version **as stored** (the `bytes` of its ready version: for a CSV upload, the converted file, not the file you upload). See [Size limits](datasets#size-limits) |
 | `maxTotalStorageBytes` | maximum combined storage, in bytes, across every dataset, strategy-execution signal, and registered strategy on your account — see below |

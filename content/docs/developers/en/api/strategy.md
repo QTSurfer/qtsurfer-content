@@ -3,7 +3,7 @@ title: Strategy API
 description: Compile, validate, inspect, retrieve, and delete Java or QTScript (beta) strategies through the REST API.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c3c03cfc1d6648096638e93061ddcc9040321177
+upstreamCommit: 9a8e03675f67ce80ef43f33a5207b8b5387749c7
 upstreamPath: docs/strategy.md
 lastUpdated: '2026-09-26T17:40:02Z'
 ---
@@ -214,6 +214,10 @@ first. **Never a `404`** — an empty array if you have none.
 Each entry (`StrategySummary`) carries the same `compiledAt`/`requiredSources` provenance as
 `StrategyState`, but **not** validation state, so listing stays cheap regardless of how many
 strategies you have. Check a specific one's validation with `GET /strategy/{strategyId}`.
+
+`GET /strategies?includeDeleted=true` also lists the strategies you've deleted, each with the
+`deletedAt` it was deleted at — handy when keeping your own copy of the list in sync, so a
+deleted strategy shows up as deleted instead of just disappearing.
 
 ```bash
 curl https://api.qtsurfer.net/v1/strategies -H "Authorization: Bearer $TOKEN"

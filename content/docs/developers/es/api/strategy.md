@@ -5,7 +5,7 @@ order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 9a8e03675f67ce80ef43f33a5207b8b5387749c7
 upstreamPath: docs/strategy.md
-lastUpdated: '2026-09-26T17:40:02Z'
+lastUpdated: '2026-09-30T11:00:30Z'
 ---
 
 Compila una estrategia (Java, o QTScript en beta), comprueba que realmente funciona,

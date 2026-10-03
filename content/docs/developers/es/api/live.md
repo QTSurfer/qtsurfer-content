@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 5aac8f44f90ac79de094721064e5c85bd1340b30
+upstreamCommit: 380e46ea06c8edf9303805bf9f65f3d4f5a5137a
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-03T14:57:46Z'
 ---
@@ -110,6 +110,42 @@ frase de un conjunto fijo, así que un cliente puede compararla.
 
 El conjunto puede crecer. Lee una frase que no reconozcas como «la ejecución falló», y no la analices
 en busca de detalle: el texto es para personas.
+
+## Qué está haciendo una ejecución: `stats`
+
+Mientras una ejecución se está ejecutando, la plataforma guarda sus últimos contadores y los refresca más o
+menos una vez por minuto. `GET /strategy/{strategyId}/live` y `GET /live/{runId}` los devuelven como `stats`:
+
+```json
+"stats": {
+  "processed": 18233,
+  "opsPerSecond": 4.2,
+  "instrumentsSeen": 12,
+  "asOfMs": 1758330060000,
+  "progressedAtMs": 1758330060000,
+  "stale": false
+}
+```
+
+| Campo | Qué significa |
+|---|---|
+| `processed` | Actualizaciones de instrumentos que la ejecución ha aceptado desde que empezó a ejecutarse. Puede volver a empezar desde cero si la ejecución se reinicia. |
+| `opsPerSecond` | Actualizaciones aceptadas por segundo durante el último refresco. Es un promedio de alrededor de un minuto, así que no salta de una actualización a la siguiente. `0` cuando no llegó ninguna. |
+| `instrumentsSeen` | Instrumentos distintos de los que la ejecución ha recibido una actualización. |
+| `asOfMs` | Cuándo se escribieron por última vez estos contadores. |
+| `progressedAtMs` | El último refresco en el que `processed` había crecido. Ausente hasta que la ejecución ha procesado algo. |
+| `stale` | `true` cuando se supone que la ejecución está corriendo y sus contadores no se han refrescado durante varios intervalos de refresco. |
+
+Tres cosas que conviene saber:
+
+- **`stats` está ausente, no a cero, cuando todavía no hay nada**: una ejecución recién arrancada no tiene
+  ninguna instantánea. Arrancar (`POST`) y detener (`DELETE`) una ejecución no lo devuelven; léelo con uno de
+  los dos `GET` de arriba.
+- **`stale` solo dice que la plataforma dejó de actualizar los contadores.** Compáralo con `state`. Una
+  ejecución cuyo `processed` se queda plano *no* está obsoleta ni rota: una alimentada por una fuente que se
+  actualiza pocas veces (una tasa de financiación, por ejemplo) puede quedarse plana durante horas.
+  `progressedAtMs` es la forma de distinguir una ejecución así de una que se ha parado.
+- **Un refresco de `stats` no es un cambio de la ejecución.** No mueve `updatedAtMs`.
 
 ## Fuentes
 

@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9a8e03675f67ce80ef43f33a5207b8b5387749c7
+upstreamCommit: 5aac8f44f90ac79de094721064e5c85bd1340b30
 upstreamPath: docs/live.md
 lastUpdated: '2026-09-30T11:00:30Z'
 ---
@@ -17,6 +17,7 @@ medida que ocurren, y cambia sus parámetros sin reiniciarla.
 | `GET` | `/strategy/{strategyId}/live` | Leer la ejecución actual (o la última) de esta estrategia |
 | `DELETE` | `/strategy/{strategyId}/live` | Detenerla |
 | `GET` | `/live` | Listar tus propias ejecuciones |
+| `GET` | `/live/{runId}` | Leer una de tus ejecuciones por su id |
 | `GET` | `/live/public` | Explorar ejecuciones que otros usuarios han hecho públicas |
 | `PATCH` | `/live/{runId}` | Cambiar visibilidad, nombre o descripción |
 | `PUT` | `/live/{runId}/params` | Cambiar parámetros mientras sigue en vivo |
@@ -35,7 +36,8 @@ la ejecución procesa datos de mercado, que su consumo de memoria y su tiempo po
 dentro de lo que la plataforma permite, que no se cuelga ni falla repetidamente, y que las dos
 ejecuciones producen las mismas señales. Solo tú puedes leer una ejecución en sandbox: por el canal
 WebSocket desde su primera señal si pediste `relay`, y por las rutas de lectura en cualquier caso
-(consulta [Visibilidad](#visibilidad)).
+(consulta [Visibilidad](#visibilidad)) — y por una [URL de flujo](#un-flujo-websocket-plano-de-una-ejecución) si
+creas una para ella, que permite a quien se la des leer las señales de la ejecución desde el sandbox.
 
 Una ejecución que la supera se promueve a `live` automáticamente al cumplirse las 24 horas. No hay
 una llamada aparte de "promover" ni nada que hacer mientras esperas. Una ejecución que no la supera
@@ -143,6 +145,15 @@ prueba `sandbox` o una ejecución que ya has detenido sigue apareciendo, a difer
 `GET /live/public`, que no necesita cabecera `Authorization` pero solo lista ejecuciones ajenas —
 de cualquiera, la tuya incluida — que sean `public` y estén corriendo (`RUNNING`).
 
+## Leer una ejecución
+
+`GET /live/{runId}` (necesita un token Bearer) devuelve una de tus ejecuciones por su propio id, sea cual
+sea su `stage`, su estado `desired` o su `visibility` y por mucho tiempo que haga que la detuviste: el mismo
+estado que da `GET /strategy/{strategyId}/live`, más `updatedAtMs`, cuándo cambió la ejecución por última vez.
+Ese valor solo avanza, así que si mantienes tu propia copia de una ejecución, aplica una lectura solo si su
+`updatedAtMs` es mayor que el que ya tienes. Una ejecución que no es tuya, o que no existe, responde `404`; una
+ejecución que otra persona ha hecho pública se encuentra con `GET /live/public`, no aquí.
+
 ## Visibilidad
 
 Una ejecución es `private` por defecto — solo tú puedes leer su estado o recibir sus señales. Fijar
@@ -164,6 +175,10 @@ Quién puede leer qué, según la ejecución:
 | `private` | Solo tú | No |
 | `public`, todavía en el `sandbox` | Solo tú (`public` surte efecto en la promoción) | No |
 | `public`, promovida a `live` | Cualquiera | Sí, mientras está corriendo |
+
+Una [URL de flujo](#un-flujo-websocket-plano-de-una-ejecución) es aparte de todo esto: es un secreto que creas
+para una ejecución, y quien la tenga puede leer las señales de esa ejecución en cualquiera de las dos etapas,
+diga lo que diga su `visibility`. Tú decides quién la tiene.
 
 `relay` es aparte: solo decide si las señales de una ejecución se *empujan* por el canal WebSocket
 (opt-in, en cualquiera de las dos etapas) y nunca quién puede leerlas. `GET /live/{runId}/signals`
@@ -364,6 +379,104 @@ Cada señal empujada en un canal `sig:<runId>` (el `pub.data` de la trama `push`
 Quién es el dueño de la ejecución, qué estrategia o compilación produjo una señal, y la posición
 exacta de datos de mercado detrás de ella nunca se incluyen en este canal, sea la ejecución
 pública o privada.
+
+## Un flujo WebSocket plano de una ejecución
+
+La conexión de arriba es un protocolo: un token, una suscripción, tramas propias. Una **URL de flujo** es la
+alternativa sencilla. Es una sola dirección que abres como un WebSocket corriente — desde un script, desde una
+herramienta de línea de comandos como [`websocat`](https://github.com/vi/websocat), o desde un servicio tuyo que
+reenvía tus señales a otros — y cada señal de la ejecución llega como **una trama de texto JSON**. No hay token
+que generar, nada a lo que suscribirse y nada que enviar.
+
+Está pensada para tus propias pruebas, para clientes sencillos y para servicios que reenvían tus señales a muchas
+conexiones por su cuenta: esta dirección está limitada en cuántas conexiones acepta (consulta abajo), así que un
+servicio que atiende a muchos lectores mantiene una sola conexión y reparte las señales él mismo.
+
+Está disponible desde la etapa `sandbox`, de modo que puedes probarla antes de que la ejecución se promueva, en los
+planes que pueden difundir (los planes Pro y Elite: tu plan es el `tier` que devuelve [`GET /account`](account)).
+Cualquier otro plan se rechaza con `429`, nombrando el plan.
+
+### Conseguir una
+
+Pídela **al arrancar la ejecución**, con `stream: true` en `POST /strategy/{strategyId}/live`. Activa `relay`, y
+no se puede añadir a una ejecución más tarde. La respuesta lleva la dirección como `streamUrl`:
+
+```json
+{
+  "runId": "5t5oAmQ4PD0lQRoCU58uE0",
+  "stage": "SANDBOX",
+  "relay": true,
+  "streamUrl": "wss://…"
+}
+```
+
+`GET /strategy/{strategyId}/live` devuelve la misma `streamUrl` mientras la ejecución esté corriendo y tu plan lo
+permita. No está en ninguna otra respuesta: ni cuando la ejecución está detenida, ni en `GET /live/{runId}`, ni
+en el catálogo público. Usa la dirección exactamente como se devuelve; es opaca.
+
+**Trátala como una contraseña.** Cualquiera que la tenga puede leer las señales de la ejecución, también las del
+sandbox. No la pongas en un repositorio, un log, una captura de pantalla ni un chat compartido. Si puede haberse
+filtrado, [rótala](#rotar-y-revocar-la-url). Eres responsable de a quién se la das y de lo que se haga con las
+señales que reenvías.
+
+### Qué llega
+
+Cada trama de texto es exactamente una señal, el mismo objeto que el `pub.data` de un envío del canal
+`sig:<runId>` (consulta [Forma de la señal](#forma-de-la-señal)), `stage` incluido, de modo que quien recibe
+puede distinguir una prueba de sandbox de la real. No hay mensaje de conexión ni envoltorio alguno, y nada que
+responder: tu biblioteca de WebSocket responde a los pings que envía el servicio. Una señal cuyo `data` pese más
+de 8 KiB no se envía, igual que en el canal.
+
+```bash
+websocat "$STREAM_URL"
+```
+
+Todo lo que envíes se ignora, y una trama tuya de más de 1 KiB cierra la conexión.
+
+### Reconectar
+
+Las conexiones terminan (un reinicio del servicio, un fallo de red), así que un cliente reconecta. Para reanudar
+sin huecos, añade el `signalId` de la última señal que recibiste como parámetro de consulta,
+`?after=<signalId>`: el servicio envía las señales posteriores a esa, y sigue en vivo, cada señal una vez.
+
+Solo conserva las señales más recientes de una ejecución, **unos pocos minutos** y menos para una ejecución cuyas
+señales son grandes. Si la señal que nombras ya no se conserva, la conexión se cierra con `4001` antes de enviar
+ninguna trama: lee lo que te perdiste con [`GET /live/{runId}/signals`](#leer-las-señales-que-una-ejecución-ya-produjo)
+y vuelve a conectar sin `after`. Hagas lo que hagas, deduplica por `signalId`.
+
+### Límites, y por qué se cierra una conexión
+
+- Cuenta con **2** conexiones abiertas a la vez en una URL (la segunda cubre el solape mientras reconectas), y
+  **10** desde una misma dirección de cliente. Son los números para los que diseñar, no muros exactos: el servicio
+  cuenta las conexiones en más de un sitio, así que a veces se acepta una de más. Una conexión que se rechaza se
+  cierra con `1013` una vez abierta, o se deja fuera antes de abrirse, cuando falla el propio handshake (con
+  `429`, o con un error de pasarela como `502`).
+- Un lector que no sigue el ritmo se desconecta; nunca ralentiza a nadie más.
+- Una dirección de cliente que insiste en presentar URL que no funcionan se rechaza durante un tiempo (`429`).
+
+Una dirección que no es una URL de flujo válida, o una que ha dejado de funcionar, responde `404` al intento de
+conexión, sin decir nunca cuál de las dos; `503` significa que lo intentes de nuevo en un momento. Una vez abierta,
+una conexión puede cerrarse con:
+
+| Código | Significado | Qué hacer |
+|---|---|---|
+| `1008` | La URL ya no funciona: se rotó o se revocó, la ejecución se detuvo, o tu plan ya no te permite difundir. | No reintentes la misma URL. Lee `GET /strategy/{strategyId}/live` para la actual. |
+| `1013` | Demasiadas conexiones en esta URL o desde esta dirección, la conexión no pudo seguir el ritmo, o el servicio no pudo confirmar la URL por un momento. | Espera y reconecta, con `after`. |
+| `4001` | La señal de `after` ya no se conserva. | Lee el historial y conecta sin `after`. |
+| `1001` | El servicio se está reiniciando. | Reconecta enseguida, con `after`. |
+| `1009` | Enviaste una trama de más de 1 KiB. | No envíes tramas. |
+
+Si tu plan deja de permitirte difundir, la URL deja de mostrarse y las conexiones abiertas se cierran con `1008`,
+normalmente en menos de un minuto; si el plan vuelve a permitirte difundir, la misma URL vuelve a funcionar.
+
+### Rotar y revocar la URL
+
+- `POST /live/{runId}/stream` da a la ejecución una dirección **nueva** y retira la antigua: las conexiones en la
+  dirección antigua se cierran con `1008` en unos 15 segundos. Solo para una ejecución en marcha que se arrancó con
+  un flujo.
+- `DELETE /live/{runId}/stream` la revoca **para siempre**: las conexiones se cierran y la dirección responde
+  `404`. La ejecución sigue corriendo, y no se le puede volver a añadir un flujo: arranca la ejecución de nuevo con
+  `stream: true` para conseguir uno nuevo. Siempre está permitido, sea cual sea tu plan, y repetirlo no es un error.
 
 ## Leer las señales que una ejecución ya produjo
 

@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9a082cc9748ce7cdc8fb44a2521c38e3785a8b80
+upstreamCommit: f08a543f85d234da1263e0f24d51710d330bcaa5
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-03T16:06:09Z'
 ---
@@ -210,9 +210,10 @@ reproducir. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a 
   `PUT /live/{runId}/params` y no se puede añadir después: para cambiarlo, detén la ejecución y vuelve a
   arrancarla.
 - La ejecución devuelve el valor en vigor como `warmFrom` cuando la lees (la respuesta de arranque,
-  `GET /strategy/{strategyId}/live` y `GET /live/{runId}`): el que pediste o, si lo omitiste, el que eligió
-  la plataforma. Envía ese número para obtener la misma cantidad de calentamiento en otra ejecución. Es
-  `null` solo para una ejecución arrancada antes de que existiera este campo.
+  `GET /strategy/{strategyId}/live` y `GET /live/{runId}`; la respuesta al detener una ejecución no lo
+  incluye): el que pediste o, si lo omitiste, el que eligió la plataforma. Envía ese número para obtener la
+  misma cantidad de calentamiento en otra ejecución. Una ejecución arrancada antes de que existiera este
+  campo no lleva `warmFrom` en absoluto; nunca es `null`.
 
 ## Listar tus ejecuciones
 

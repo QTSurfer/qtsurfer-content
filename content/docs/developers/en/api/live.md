@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9a082cc9748ce7cdc8fb44a2521c38e3785a8b80
+upstreamCommit: f08a543f85d234da1263e0f24d51710d330bcaa5
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-03T16:06:09Z'
 ---
@@ -203,9 +203,9 @@ replay from. Set it in the body of `POST /strategy/{strategyId}/live`, next to `
 - It can be set **only when the run is started**. It is not one of the parameters `PUT /live/{runId}/params`
   accepts, and it cannot be added later: to change it, stop the run and start it again.
 - The run reports the value in effect back as `warmFrom` when you read it (the start response,
-  `GET /strategy/{strategyId}/live` and `GET /live/{runId}`): the one you asked for or, if you left it out, the
-  one the platform chose. Send that number to get the same amount of warm-up in another run. It is `null`
-  only for a run started before this field existed.
+  `GET /strategy/{strategyId}/live` and `GET /live/{runId}`; the response to stopping a run does not carry it): the one you asked for or, if you left it out, the
+  one the platform chose. Send that number to get the same amount of warm-up in another run. A run started
+  before this field existed has no `warmFrom` at all; it is never `null`.
 
 ## Listing your runs
 

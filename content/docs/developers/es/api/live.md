@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 380e46ea06c8edf9303805bf9f65f3d4f5a5137a
+upstreamCommit: 9a082cc9748ce7cdc8fb44a2521c38e3785a8b80
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-03T16:06:09Z'
 ---
@@ -171,6 +171,48 @@ para el exchange — hoy eso es 1 tick/segundo en todos los exchanges soportados
 varias cadencias todavía no está disponible. `instruments` puede ser `["*"]` para todos los
 instrumentos que ofrezca el exchange/segmento, sujeto al límite de número de instrumentos de tu
 plan.
+
+## Calentar la ejecución: `warmFrom`
+
+Una estrategia que lee una media, una ventana o cualquier otro indicador necesita algo de historia antes
+de que sus valores signifiquen algo: la media de los últimos 50 precios no tiene nada que promediar en su
+primer tick. Por eso una ejecución arranca **en caliente**. Antes de su primer tick en vivo reproduce el
+feed de mercado desde un momento poco anterior al arranque, y la estrategia ve ese tramo primero, como si
+llevara tiempo en marcha. Mientras se pone al día, la ejecución puede mostrar `LAGGING`, y su primera señal
+llega al canal y al flujo solo cuando se ha puesto al día. Las señales sobre el tiempo reproducido
+describen hechos anteriores al arranque, así que no se emiten.
+
+`warmFrom` es como eliges cuánto reproducir: el número de **segundos antes del arranque** desde los que
+reproducir. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a `sources`:
+
+```json
+{
+  "sources": [
+    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
+  ],
+  "warmFrom": 300
+}
+```
+
+| `warmFrom` | Qué ocurre |
+|---|---|
+| omitido | La plataforma reproduce desde el inicio del bloque de 15 minutos en curso: entre 0 y 900 segundos antes del arranque, según cuándo arranque (0 si arranca justo en un cuarto de hora). La primera barra de una ventana de 15 minutos sale entonces completa. |
+| `0` | Sin reproducción. La ejecución empieza en su arranque: entrega su primera señal en cuanto está en marcha, con indicadores que empiezan vacíos y una primera barra de ventana que puede ser parcial. |
+| `1` a `3600` | La estrategia ve esa cantidad de segundos del feed anteriores al arranque y después continúa en vivo. |
+
+- Es un entero de segundos de `0` a `3600` (una hora). Cualquier otro valor (un número negativo, uno
+  superior a `3600`, una fracción, texto) se rechaza con `400`.
+- Elígelo según lo que necesite la estrategia. Una estrategia con periodos de indicador largos debería
+  pedir al menos el tiempo que tarda en llenarse su indicador más lento: con `0`, sus primeros valores se
+  calculan sobre lo que haya llegado desde el arranque, y si se omite, la reproducción puede ser de solo
+  `0` segundos (una ejecución que arranca justo en un cuarto de hora) y nunca de más de `900`.
+- Solo se puede fijar **al arrancar la ejecución**. No es uno de los parámetros que acepta
+  `PUT /live/{runId}/params` y no se puede añadir después: para cambiarlo, detén la ejecución y vuelve a
+  arrancarla.
+- La ejecución devuelve el valor en vigor como `warmFrom` cuando la lees (la respuesta de arranque,
+  `GET /strategy/{strategyId}/live` y `GET /live/{runId}`): el que pediste o, si lo omitiste, el que eligió
+  la plataforma. Envía ese número para obtener la misma cantidad de calentamiento en otra ejecución. Es
+  `null` solo para una ejecución arrancada antes de que existiera este campo.
 
 ## Listar tus ejecuciones
 

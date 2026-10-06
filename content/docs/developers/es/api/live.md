@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f08a543f85d234da1263e0f24d51710d330bcaa5
+upstreamCommit: cf5b4fa4feac39929b055bbe9a420f8573279971
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-05T22:19:35Z'
 ---
@@ -168,9 +168,35 @@ nombrando ambas. Una estrategia QTScript es una estrategia ticker salvo que su c
 
 `type` es `ticker` o `kline`. Ambos se conectan a la cadencia más ligera (más rápida) disponible
 para el exchange — hoy eso es 1 tick/segundo en todos los exchanges soportados; elegir entre
-varias cadencias todavía no está disponible. `instruments` puede ser `["*"]` para todos los
-instrumentos que ofrezca el exchange/segmento, sujeto al límite de número de instrumentos de tu
-plan.
+varias cadencias todavía no está disponible.
+
+`instruments` se puede omitir. Una estrategia QTScript puede declarar qué instrumentos acepta con una línea
+`instruments` en su código. Cuando la compilación de la estrategia registra esa selección como una lista
+de pares, un arranque que omite `instruments`, o que envía `["*"]`, toma esa lista; en caso contrario la
+ejecución lee todos los instrumentos que ofrezca el exchange/segmento, sujeto al límite de número de
+instrumentos de tu plan:
+
+```json
+{
+  "sources": [
+    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker"}
+  ]
+}
+```
+
+Una lista de instrumentos se toma tal como se envía, y `[]` y `null` se rechazan con `400`.
+
+Escribe los instrumentos como `BASE/QUOTE`. No distinguen mayúsculas de minúsculas y se ignoran los
+espacios a su alrededor, así que `btc/usdt`, `BTC/USDT` y `" btc / usdt "` son el mismo instrumento.
+Cualquiera de los dos lados puede ser `*` para significar «cualquiera»: `*/USDT` es todo par cotizado en
+USDT y `BTC/*` es BTC contra cualquier moneda de cotización. Una entrada que no tenga esa forma (sin `/`, con un lado
+vacío, con un `.` o un espacio dentro de un lado, o con un `*` mezclado con otros caracteres de un lado)
+hace que la ejecución falle al arrancar. Frente al límite de tu plan, una lista con una entrada que lleve
+un `*` en un lado cuenta como `["*"]`, y solo la admiten los planes que incluyen el comodín; las demás
+entradas se cuentan una a una.
+
+Los instrumentos que la ejecución lee de verdad vuelven en sus `sources`: una ejecución arrancada sin
+`instruments` muestra la lista que obtuvo, que puede tener entradas como `*/USDT`.
 
 ## Calentar la ejecución: `warmFrom`
 

@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 1
 lastUpdated: '2026-09-27T23:18:45Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 6575ce1a4d7a7accfb1025466732497896824640
+upstreamCommit: aa726ec584fa46b083b263c800ffbc55156a25d7
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -75,6 +75,15 @@ public ExecutionMode getExecutionMode(Instrument instrument) {
 > salida de la estrategia / `acceptCurrency`. Para aceptar **todos** los instrumentos sin
 > condición, sobrescríbelo explícitamente devolviendo `true`.
 
+## Nivel del lenguaje
+
+El código de una estrategia es Java moderno corriente. Las lambdas, las referencias a método, `var`,
+los records, las expresiones `switch`, el pattern matching de `instanceof` y los bloques de texto
+compilan y se ejecutan, y también el `+` entre cadenas. Un window listener que solo necesita el
+`StateStore` y los dos valores puede ser una lambda (consulta el [patrón de window
+listener](#patrón-de-window-listener-recomendado)); los ejemplos de abajo usan la forma que se lea
+mejor.
+
 ## Configuración de indicadores
 
 Todos los indicadores se definen en `setupIndicators` mediante el builder fluido de
@@ -124,6 +133,29 @@ public void update(Ticker ticker) {
 
 `Ticker` es un record del motor — lee sus campos con métodos de acceso: `ticker.last()`,
 `ticker.bid()`, `ticker.ask()`, `ticker.instrument()`, `ticker.timestamp()`.
+
+**`updateIndicators(...)` por sí solo no publica nada.** Hace avanzar los indicadores de este
+instrumento, pero las series de indicadores y las marcas de compra/venta que un backtest conserva con
+`storeSignals` salen de las señales que emite `super.update(ticker)`. Una estrategia que sobrescribe
+`update()` y llama ella misma a `updateIndicators` opera con normalidad y deja vacías las señales
+guardadas (`signalCount: 0`). Para conservarlas, llama primero a `super.update(ticker)` — que ya hace
+`updateInstrument` y `updateIndicators` — y lee los indicadores con `getRTIndicator(instrument, name)`,
+que no los actualiza una segunda vez:
+
+```java
+@Override
+public void update(Ticker ticker) {
+    super.update(ticker);                      // hace avanzar los indicadores y publica sus señales
+    Instrument instrument = ticker.instrument();
+
+    var emaLenta = getRTIndicator(instrument, "emaLenta");
+    var emaRapida = getRTIndicator(instrument, "emaRapida");
+    if (emaLenta.isEmpty() || emaRapida.isEmpty() || !emaLenta.get().isReady()) return; // espera el calentamiento
+
+    if (emaRapida.get().getValue() > emaLenta.get().getValue()) emitBuy(instrument, ticker.last());
+    else                                                        emitSell(instrument, ticker.last());
+}
+```
 
 ## Patrón de window listener (recomendado)
 
@@ -180,6 +212,22 @@ mismo store que comparten todos los listeners de este instrumento (consulta [Ges
 estado](#gestión-de-estado) más abajo); `getPrevInstant()`/`getCurrInstant()` solo se resuelven
 cuando el listener está registrado en una ventana (mediante `.window(...)`, como arriba) — llamarlos
 en un listener enganchado a un indicador simple lanza una excepción.
+
+**Un listener que solo necesita el store puede ser una lambda.** `window(...)` recibe el
+`OnChangeListener` del motor, una interfaz funcional con el mismo `onChange(store, prev, actual)`;
+`prev` es el valor del indicador cuando se cerró la ventana anterior y `actual` su valor ahora.
+Extiende `AbstractWindowListener` solo cuando el listener necesite los helpers indicados arriba
+(`emitBuy(price)`, `getPrevInstant()`, …).
+
+```java
+indicators
+    .addPrice()
+    .ema("emaLarga", 1800)
+    .window("emaLarga", WindowTime.m1, (store, prev, actual) -> {
+        int subiendo = store.getState("minutosSubiendo", 0);
+        store.setState("minutosSubiendo", actual > prev ? subiendo + 1 : 0);   // minutos consecutivos en que subió la EMA
+    });
+```
 
 ## Gestión de estado
 
@@ -254,6 +302,10 @@ reporta como aviso en lugar de omitirse en silencio.
 `min`, `max` y `step` en la anotación son pistas de rango orientativas que puede leer la cuadrícula
 de parámetros de un barrido — no se validan contra ellas, son solo un rango sugerido para
 prerrellenarla.
+
+**Escribe `min`, `max` y `step` como decimales — `1.0`, no `1` — incluso en una propiedad entera.**
+Son elementos `double`, y un literal entero ahí se registra sin error: el rango se descarta de las
+propiedades declaradas, `validate` falla y un backtest de la estrategia falla sin decir por qué.
 
 ## Recibir comandos
 
@@ -495,8 +547,15 @@ diagnosticar cuando el motor sobre el que corrió queda registrado junto al resu
 - **Mutar indicadores en `update()`** — usa `getReadOnlyExisting()` en lugar de `getExisting()`
   para evitar cambios accidentales de estado.
 - **Un `setupIndicators` por clase de estrategia** — se llama una vez por instrumento, no por tick.
-- **Clase interna frente a lambda para listeners** — `AbstractWindowListener` da acceso a helpers;
-  prefiere una clase interna frente a una lambda cruda.
+- **Clase o lambda para un listener** — una lambda sirve cuando el listener solo usa el `StateStore`,
+  `prev` y `actual`; extiende `AbstractWindowListener` cuando necesita `emitBuy(price)`,
+  `getPrevInstant()` u otros helpers.
+- **Llamar a `updateIndicators(...)` en lugar de `super.update(ticker)`** — la estrategia opera, pero el
+  `storeSignals` de un backtest sale vacío. Llama a `super.update(ticker)` y lee los indicadores con
+  `getRTIndicator(...)` (consulta [Leer valores de indicadores fuera de un
+  listener](#leer-valores-de-indicadores-fuera-de-un-listener)).
+- **`min = 1` en `@StrategyProperty`** — escribe `1.0` (consulta [Propiedades
+  configurables](#propiedades-configurables)).
 - **`emitBuy(price)` fuera de un window listener** — esa sobrecarga de un solo argumento solo existe
   en `AbstractWindowListener`; en cualquier otro sitio (`update()`, métodos auxiliares) es
   `emitBuy(instrument, price)` (consulta [Emisión de señales](#emisión-de-señales)).

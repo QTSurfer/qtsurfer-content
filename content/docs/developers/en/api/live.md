@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f08a543f85d234da1263e0f24d51710d330bcaa5
+upstreamCommit: cf5b4fa4feac39929b055bbe9a420f8573279971
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-05T22:19:35Z'
 ---
@@ -163,9 +163,32 @@ a Java one is whichever base class it extends (`AbstractTickerStrategy` or `Abst
 
 `type` is `ticker` or `kline`. Both connect to the lightest (fastest) cadence available for the
 exchange — today that is 1 tick/second on every supported exchange; choosing among several
-cadences is not offered yet. `instruments`
-can be `["*"]` for every instrument the exchange/segment offers, subject to your plan's
-instrument-count limit.
+cadences is not offered yet.
+
+`instruments` can be left out. A QTScript strategy can declare which instruments it accepts with an `instruments`
+line in its source. When the compilation of the strategy records that selection as a list of pairs, a
+start that leaves `instruments` out, or sends `["*"]`, takes that list; otherwise the run reads every
+instrument the exchange/segment offers, subject to your plan's instrument-count limit:
+
+```json
+{
+  "sources": [
+    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker"}
+  ]
+}
+```
+
+A list of instruments is taken as sent, and `[]` and `null` are refused with `400`.
+
+Write instruments as `BASE/QUOTE`. They are not case-sensitive and spaces around them are ignored, so
+`btc/usdt`, `BTC/USDT` and `" btc / usdt "` are the same instrument. Either side can be `*` to mean any:
+`*/USDT` is every pair quoted in USDT and `BTC/*` is BTC against every quote. An entry that is not of that
+form (no `/`, an empty side, a `.` or a space inside a side, or a `*` mixed with other characters of a side)
+makes the run fail when it starts. Against your plan's limit, a list with an entry that has a `*` on a side
+counts like `["*"]`, and only plans that include the wildcard accept it; the other entries are counted one by one.
+
+The instruments the run actually reads come back in the run's `sources`: a run started without `instruments`
+shows the list it got, which can have entries like `*/USDT`.
 
 ## Warming up: `warmFrom`
 

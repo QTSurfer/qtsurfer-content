@@ -84,7 +84,9 @@ barrido es terminal, mientras que el `Partial` de un job no lo es.
   los resultados se escriben una sola vez, y el intervalo entre sondeos es la latencia que el
   cliente añade a su propia respuesta.
 - La cancelación es asíncrona. `DELETE` devuelve `cancelling`; el job informa de `Aborted` una vez
-  que el worker ha procesado la petición.
+  que el worker ha procesado la petición. Un barrido cancelado informa `CANCELLED` antes de que
+  terminen las ejecuciones que ya estaban en curso, así que sigue leyéndolo hasta que
+  `progress.pendingShards` sea `0` antes de dar por completas sus filas.
 
 ## Qué contiene un resultado
 

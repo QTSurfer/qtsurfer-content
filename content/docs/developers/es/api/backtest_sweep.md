@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 980f8c3fda04438e24d5cb63f23bcd94f9abb7d4
+upstreamCommit: c9bed1f30c64092a328babf9f6eb64cc8dd02172
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-09-30T11:20:35Z'
 ---
@@ -197,7 +197,7 @@ fallida, reintentándose, o aún sin empezar.
 |---|---|
 | `done`, `total` | filas/unidades completadas frente al total |
 | `aborted` | **ejecuciones** individuales que se ejecutaron y abortaron (a nivel de fila) |
-| `shardCount`, `pendingShards` | total de shards y los que aún quedan pendientes |
+| `shardCount`, `pendingShards` | total de shards y los que aún quedan pendientes. En un barrido cancelado, `pendingShards: 0` es lo que indica que las ejecuciones en curso han terminado — consulta [`CANCELLED` llega antes de que el barrido se haya drenado](#cancelled-llega-antes-de-que-el-barrido-se-haya-drenado) |
 | `failedShards` | shards/pliegues completos que fallaron y **no** se reintentarán — distinto de `aborted`, que cuenta ejecuciones malas, no unidades ausentes |
 | `retrying` | unidades cuyo último intento tuvo un error transitorio y están en cola para reintentar — todavía no es un fallo |
 | `notStarted` | unidades que no han reportado nada; si persiste junto a un `stalledSeconds` en aumento, merece investigarse |
@@ -414,6 +414,22 @@ legibles.
 ```
 
 Errores: `404` barrido no encontrado.
+
+### `CANCELLED` llega antes de que el barrido se haya drenado
+
+Cancelar es una solicitud, no una parada. El barrido informa `status: CANCELLED` (y `state.status:
+Aborted`) en cuanto se acepta la solicitud, mientras las ejecuciones que ya estaban en curso siguen hasta
+terminar. En esa ventana:
+
+- `progress.pendingShards` es mayor que `0`;
+- `progress.done` y la clasificación todavía pueden crecer después de que leas `CANCELLED` por primera vez;
+- las filas que llegan tarde son ejecuciones reales y terminadas, no parciales.
+
+Así que `CANCELLED` por sí solo no significa que la clasificación esté completa. Si guardas las filas, o
+tratas toda ejecución que no tienes como «no ejecutada», sigue leyendo hasta que `progress.pendingShards`
+sea `0`. La espera está acotada por lo que tarda una sola ejecución, así que dale un límite generoso en
+lugar de esperar indefinidamente. Un barrido que termina `PARTIAL` ya es terminal cuando lo informa; esto
+se aplica a `CANCELLED`.
 
 ## Visualizar a un ganador: curva de equity
 

@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: cf5b4fa4feac39929b055bbe9a420f8573279971
+upstreamCommit: 99a3c7739d0d29a5f554aa8704897e86a2e145bd
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-06T12:09:52Z'
 ---
@@ -441,8 +441,47 @@ Una página de navegador servida desde el origen de otro sitio se rechaza en el 
 WebSocket (`403`); un cliente que no envía cabecera `Origin`, como un programa del lado del
 servidor o un SDK, no se ve afectado.
 
-Tras una desconexión, el canal no reproduce lo que te perdiste: léelo de vuelta con
-`GET /live/{runId}/signals` (más abajo), deduplicando por `signalId`.
+Tras una desconexión, el canal no reproduce por sí solo lo que te perdiste: léelo de vuelta con `history`
+mientras la ejecución está en la etapa `sandbox` ([siguiente sección](#leer-señales-anteriores-por-la-conexión)),
+o con `GET /live/{runId}/signals` (más abajo) en cualquiera de las dos etapas, deduplicando por `signalId`.
+
+### Leer señales anteriores por la conexión
+
+Un cliente que se conecta tarde, o que estuvo desconectado un momento, puede leer por la misma conexión las
+señales que una ejecución en la etapa `sandbox` acaba de producir, sin una llamada REST. Envía `history` en un
+canal al que estés suscrito:
+```json
+{"id": 5, "history": {"channel": "sig:6TzAPiPpsOWwBLdLBZCxwH", "limit": 300}}
+```
+Responde con las señales, de la más antigua a la más reciente, cada una con el `offset` con el que se empujó,
+y con el `epoch` y el `offset` más reciente que guarda el canal:
+```json
+{"id": 5, "history": {"publications": [{"data": {"v": 1, "signalId": "…", …}, "offset": 41}, {"data": {"v": 1, "signalId": "…", …}, "offset": 42}], "epoch": "SQRGfEAq", "offset": 42}}
+```
+
+- **Qué contiene.** Solo las señales de la etapa `sandbox`: las 300 más recientes, sea cual sea su antigüedad,
+  hasta 5 minutos después de la última señal de `sandbox` de la ejecución, cuando se vacía. No se guarda nada
+  de la etapa `live`: una vez promovida la ejecución, el historial deja de crecer y se vacía 5 minutos después
+  de la última señal de `sandbox`. Para leer más atrás, o cualquier señal de `live`, usa
+  `GET /live/{runId}/signals` (más abajo).
+- **Nada se reproduce por sí solo.** Suscribirte, y volver a suscribirte tras una desconexión, nunca entrega
+  señales pasadas; `history` es la única forma de leerlas.
+- **Quién puede leerlo.** Una conexión suscrita al canal; mientras una ejecución está en la etapa `sandbox`,
+  ese es su propietario. Una conexión que no está suscrita recibe el error `103`.
+- **Cómo usarlo.** Suscríbete primero, para no perder nada, y luego llama a `history` con `limit` `300`. Las
+  señales empujadas entretanto y las de la respuesta se solapan: conserva una sola copia por `signalId`.
+- **Tras una desconexión.** Vuelve a suscribirte y llama a `history` con `since`: el `offset` de la última
+  señal que tienes y el `epoch` de una respuesta anterior de `history`:
+  ```json
+  {"id": 6, "history": {"channel": "sig:6TzAPiPpsOWwBLdLBZCxwH", "limit": 300, "since": {"offset": 42, "epoch": "SQRGfEAq"}}}
+  ```
+  La respuesta contiene solo las señales posteriores a esa posición. Un cliente que aún no ha llamado a
+  `history` no tiene `epoch`: llámalo una vez sin `since`.
+- **Cuando se pierde el historial.** Si la plataforma pierde el historial del canal (por ejemplo cuando se
+  reinicia el servicio en tiempo real), su `epoch` cambia, y un `since` con el antiguo responde
+  `{"id": 6, "error": {"code": 112, "message": "unrecoverable position"}}`. Vuelve a llamar a `history` sin
+  `since`; lo que se produjo antes de la pérdida solo está disponible en `GET /live/{runId}/signals`.
+- `limit` `0` no devuelve señales, solo la posición (`epoch` y `offset`).
 
 ### Forma de la señal
 

@@ -2,7 +2,7 @@
 title: Código abierto
 description: Índice de los proyectos de código abierto que QTSurfer publica en GitHub — clientes y SDK de la API, el servidor MCP y las skills de estrategia, el formato de datos Lastra y sus herramientas, el streaming de datos de mercado, un componente de gráficos, y el contrato y la documentación de la API.
 order: 9
-lastUpdated: '2026-10-07T17:36:06Z'
+lastUpdated: '2026-10-07T21:03:06Z'
 ---
 
 QTSurfer publica como código abierto las bibliotecas, los formatos y las herramientas que rodean a la

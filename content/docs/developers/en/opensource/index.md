@@ -46,7 +46,7 @@ clients are generated from the OpenAPI contract and map one to one onto its endp
 
 The hourly market-data segments QTSurfer serves are files you can keep, query, and convert. The
 Lastra format, its readers and writers, and the converters are open. See
-[Lastra and open tooling](/docs/developers/lastra-and-open-tooling) for the shortest path from a
+[Lastra](/docs/developers/opensource/lastra) for the shortest path from a
 downloaded segment to a DataFrame, a SQL query, or a Parquet file.
 
 - [lastra-java](https://github.com/QTSurfer/lastra-java) — the reference implementation of

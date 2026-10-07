@@ -50,7 +50,7 @@ ellos.
 
 Los segmentos horarios de datos de mercado que sirve QTSurfer son ficheros que puedes conservar,
 consultar y convertir. El formato Lastra, sus lectores y escritores, y los conversores son abiertos.
-Consulta [Lastra y herramientas abiertas](/docs/developers/lastra-and-open-tooling) para ver el camino
+Consulta [Lastra](/docs/developers/opensource/lastra) para ver el camino
 más corto desde un segmento descargado hasta un DataFrame, una consulta SQL o un fichero Parquet.
 
 - [lastra-java](https://github.com/QTSurfer/lastra-java) — la implementación de referencia de

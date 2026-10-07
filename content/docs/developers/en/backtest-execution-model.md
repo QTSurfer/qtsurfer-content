@@ -76,7 +76,9 @@ is not.
 - Polling is not rate-limited by the result itself, but a client should back off: results are
   written once, and the interval between polls is the latency a client adds to its own answer.
 - Cancellation is asynchronous. `DELETE` returns `cancelling`; the job reports `Aborted` once the
-  worker has processed the request.
+  worker has processed the request. A cancelled sweep reports `CANCELLED` before the runs already in
+  flight have finished, so read it until `progress.pendingShards` is `0` before treating its rows as
+  complete.
 
 ## What a result contains
 

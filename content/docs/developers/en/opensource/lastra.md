@@ -1,7 +1,7 @@
 ---
-title: Lastra and open tooling
-description: Read the market data QTSurfer serves outside the platform — the Lastra columnar format and its open-source readers for Python, DuckDB, TypeScript, and Java, converters to Parquet and CSV, and the streaming library behind the feed.
-order: 7
+title: Lastra
+description: Read the market data QTSurfer serves outside the platform — the Lastra columnar format, its readers for Python, DuckDB, TypeScript, and Java, and converters to Parquet and CSV.
+order: 9.1
 lastUpdated: '2026-09-03T22:06:47Z'
 ---
 
@@ -149,3 +149,4 @@ Arrow as a source and target.
 - [Datasets](/docs/developers/api/datasets) — uploading your own history as CSV.
 - Learn: [Historical market data](/learn/articles/historical-market-data) — tickers versus klines,
   cadence, coverage, and gaps.
+- [Open source](/docs/developers/opensource) — every QTSurfer open-source project, with links.

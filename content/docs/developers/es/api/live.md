@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 99a3c7739d0d29a5f554aa8704897e86a2e145bd
+upstreamCommit: ae756bb790013b2e58828b27b63d0b8ac7c17453
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-07T17:34:12Z'
 ---
@@ -43,14 +43,41 @@ Una ejecución que la supera se promueve a `live` automáticamente al cumplirse 
 una llamada aparte de "promover" ni nada que hacer mientras esperas. Una ejecución que no la supera
 no se promueve, y sigue corriendo en el sandbox.
 
+### Volver a arrancar no repite la prueba
+
+Una estrategia que ya ha pasado por la prueba no vuelve a pasar por ella. Si detienes una ejecución que
+fue promovida y arrancas la estrategia de nuevo, la ejecución nueva empieza en `live` de inmediato, sin
+esperar 24 horas. Vale cuando una ejecución tuya anterior de **la misma estrategia compilada** fue
+promovida y ninguna ejecución de esa compilación se detuvo por usar más recursos de los permitidos.
+Los parámetros, las fuentes y los instrumentos de la ejecución nueva pueden ser distintos de los de la
+anterior. Si vuelves a enviar la estrategia (`POST /strategy`), se compila de nuevo y la compilación
+nueva pasa por el sandbox como una primera ejecución.
+
+Qué cambia en una ejecución así:
+
+- `stage` es `LIVE` en la respuesta al arranque, y `gate` está presente desde el principio: el
+  veredicto de la ejecución anterior en la que se apoya, con `inheritedFrom` indicando cuál es.
+- Nada compara una segunda ejecución con ella, porque no hay prueba. La plataforma detiene una
+  ejecución `live` que usa más recursos de los permitidos, igual que a cualquier otra (consulta
+  [Estado de una ejecución](#estado-de-una-ejecución)).
+- Si es `public`, está en el catálogo y abierta a cualquiera desde su primera señal.
+- No tiene historial en la conexión: este se guarda solo para la etapa `sandbox` (consulta
+  [Leer señales anteriores por la conexión](#leer-señales-anteriores-por-la-conexión)). Sus señales
+  siguen siendo legibles con `GET /live/{runId}/signals`.
+
+Para obtener el sandbox de todos modos — para depurar una estrategia, o para volver a leer sus señales
+por la conexión — arráncala con `"sandbox": true`. En una estrategia que no ha pasado por la prueba el
+campo no cambia nada: siempre arranca en el sandbox.
+
 Lo que puedes observar mientras espera, en `GET`/`PATCH` `.../live`:
 
-- `stage` es `SANDBOX` hasta la promoción y `LIVE` después.
+- `stage` es `SANDBOX` hasta la promoción y `LIVE` después (`LIVE` desde el principio en una
+  estrategia que ya ha pasado por la prueba, consulta más arriba).
 - `state` es la salud de la ejecución ahora mismo (consulta [Estado de una ejecución](#estado-de-una-ejecución)).
 - `gate` está **ausente durante toda la prueba** y aparece cuando termina, con el veredicto. Un
   `gate` ausente significa por tanto "la prueba no ha terminado", nunca "nadie está evaluando la
   ejecución". Su campo `passed` es el veredicto; el resto es detalle de diagnóstico cuya forma puede
-  cambiar.
+  cambiar. Una ejecución que arrancó en `live` lo tiene desde el principio (consulta más arriba).
 
 ## Estado de una ejecución
 
@@ -268,7 +295,7 @@ Una ejecución es `private` por defecto — solo tú puedes leer su estado o rec
   estrategia la ejecuta;
 - su canal de señales (ver abajo) acepta una suscripción WebSocket de cualquiera, no solo de ti.
 
-`public` es lo que pides, y surte efecto cuando la ejecución se promueve a `live`. Hasta entonces —
+`public` es lo que pides, y surte efecto cuando la ejecución está en la etapa `live`: cuando se promueve, o de inmediato en una ejecución que arranca ahí. Hasta entonces —
 mientras es una prueba `sandbox` — solo tú puedes leerla, por el canal y por las rutas de lectura, y
 no aparece en el catálogo; nada de lo que hiciste hay que repetirlo en la promoción.
 
@@ -464,6 +491,8 @@ y con el `epoch` y el `offset` más reciente que guarda el canal:
   de la etapa `live`: una vez promovida la ejecución, el historial deja de crecer y se vacía 5 minutos después
   de la última señal de `sandbox`. Para leer más atrás, o cualquier señal de `live`, usa
   `GET /live/{runId}/signals` (más abajo).
+  Una ejecución que arranca en `live` (consulta [Volver a arrancar no repite la prueba](#volver-a-arrancar-no-repite-la-prueba))
+  nunca tiene historial aquí; arráncala con `"sandbox": true` si lo necesitas.
 - **Nada se reproduce por sí solo.** Suscribirte, y volver a suscribirte tras una desconexión, nunca entrega
   señales pasadas; `history` es la única forma de leerlas.
 - **Quién puede leerlo.** Una conexión suscrita al canal; mientras una ejecución está en la etapa `sandbox`,

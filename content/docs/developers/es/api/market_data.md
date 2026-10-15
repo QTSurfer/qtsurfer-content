@@ -3,7 +3,7 @@ title: Datos de mercado
 description: Descubre exchanges, instrumentos y datos históricos de mercado a través de la API REST.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: cd83df1b9540eb18ceee0b589e7a0adc8732c0e6
+upstreamCommit: 2b2052b6458381ee74c7795e378a9d6e6a41422a
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-10-15T06:30:42Z'
 ---
@@ -41,12 +41,35 @@ que listan sus pools. Usa cualquiera de las dos rutas de instrumentos con el id 
 | `GET /exchange/{exchangeId}/instruments` | Instrumentos en el segmento `spot` por defecto |
 | `GET /exchange/{exchangeId}/{segment}/instruments` | Instrumentos en un segmento explícito: `spot` o `futures`, o un protocolo de un exchange `dex` (`uniswap-v3`) |
 
-Una respuesta de instrumentos es un envoltorio HAL. Su array `data` contiene `id`, `base`,
+Una respuesta de instrumentos es un envoltorio HAL. Su array `data` contiene `id`, `symbol`, `base`,
 `quote`, el `lastPrice` y `volume24h` actuales, más ventanas independientes de
 `coverage.tickers` y `coverage.klines`. `meta.updatedAt` identifica cuándo se ensambló el
-catálogo; `meta.segment` identifica el segmento realmente servido. Trata la cobertura como estado
-vivo de la plataforma, no como una promesa de que cada marca de tiempo estará disponible para
-siempre.
+catálogo; `meta.segment` identifica el segmento realmente servido y `meta.venueType` el tipo de venue del
+exchange (`cex` aquí, `dex` en un listado de pools). Trata la cobertura como estado vivo de la
+plataforma, no como una promesa de que cada marca de tiempo estará disponible para siempre.
+
+Los dos tipos de listado, el de instrumentos y el de [pools](#pools-de-un-exchange-descentralizado), se
+pueden leer del mismo modo: los campos de la tabla significan lo mismo en cada uno, y el resto es propio de
+un solo tipo.
+
+| Campo | Significado | En |
+| --- | --- | --- |
+| `meta.venueType` | `cex` o `dex`, como lo lista `GET /exchanges` para el exchange | ambos |
+| `id` | Identificador que se usa en las demás rutas: el par de un instrumento (`BTC/USDT`), la dirección de una pool | ambos |
+| `symbol` | El nombre del instrumento o del par, tal como lo nombran las señales de una ejecución. Igual que `id` en un instrumento | ambos |
+| `base`, `quote` | Símbolo de cada lado | ambos |
+| `lastPrice` | Precio de una unidad de la base en la moneda de cotización; ausente cuando no hay | ambos |
+| `volume24h` | Volumen de las últimas 24 horas, en la moneda de cotización; ausente cuando no hay | ambos |
+| `coverage` | Rango temporal de los datos disponibles, por tipo de dato | solo instrumentos |
+| `settle` | Moneda de liquidación de un instrumento de futuros | solo instrumentos de futuros |
+| `baseAddress`, `quoteAddress`, `feePercent`, `tvlUsd`, `volume24hUsd`, `createdAt` | Direcciones de los tokens, nivel de comisión, liquidez y volumen en dólares, fecha de creación | solo pools |
+
+El `lastPrice` y el `volume24h` de un instrumento se refrescan cada pocos minutos; los de una pool son los
+de `meta.updatedAt`, que se refresca cada hora, así que el precio de una pool puede tener hasta una hora de
+antigüedad.
+
+Un campo sin dato se omite de la entrada, nunca se envía como `null`: lee un `lastPrice`, un `volume24h` o
+un `createdAt` ausentes como «no se conoce».
 
 ```bash
 curl https://api.qtsurfer.net/v1/exchange/binance/spot/instruments \
@@ -72,9 +95,10 @@ curl https://api.qtsurfer.net/v1/exchange/robinhood/uniswap-v3/instruments \
   "data": [
     {"id": "0x52e65b17fb6e5ba00ed806f37afcd2daa50271ca", "symbol": "WETH/USDG", "base": "WETH", "quote": "USDG",
      "baseAddress": "0x0bd7d308f8e1639fab988df18a8011f41eacad73", "quoteAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
-     "feePercent": 0.01, "tvlUsd": 19857902.02, "volume24hUsd": 273876056.45, "createdAt": "2026-07-02T20:51:08Z"}
+     "feePercent": 0.01, "lastPrice": 2411.285967, "volume24h": 274033077.4, "tvlUsd": 19857902.02,
+     "volume24hUsd": 273876056.45, "createdAt": "2026-07-02T20:51:08Z"}
   ],
-  "meta": {"updatedAt": "2026-10-14T22:32:34Z", "exchange": "robinhood", "segment": "uniswap-v3", "minTvlUsd": 10000, "limit": 50},
+  "meta": {"updatedAt": "2026-10-14T22:32:34Z", "exchange": "robinhood", "segment": "uniswap-v3", "venueType": "dex", "minTvlUsd": 10000, "limit": 50},
   "_links": {"self": {"href": "/v1/exchange/robinhood/uniswap-v3/instruments"}, "uniswap-v3": {"href": "/v1/exchange/robinhood/uniswap-v3/instruments"}}
 }
 ```
@@ -83,6 +107,11 @@ El `id` de una pool es su dirección, en minúsculas. `symbol` es el par tal com
 ejecución, que no siempre es el orden en que lo muestran otros sitios (la misma pool puede aparecer como
 `USDG / WETH` en otro lugar), así que identifica una pool por su dirección. Un protocolo puede tener varias
 pools del mismo par, una por nivel de comisión (`feePercent`).
+
+`lastPrice` es el precio de una unidad de la base en el token de cotización (`2411.285967` USDG por un WETH
+en el ejemplo) y `volume24h` es lo operado en las últimas 24 horas en ese token de cotización; `volume24hUsd`
+es el mismo volumen en dólares, y por él se ordena el listado. Cualquiera de los dos puede estar ausente. Son
+los de `meta.updatedAt`, con hasta una hora de antigüedad.
 
 El listado trae las 50 pools con más volumen en las últimas 24 horas (`volume24hUsd`) entre las que tienen al
 menos 10 000 dólares de liquidez (`tvlUsd`), y se actualiza cada hora (`meta.updatedAt`); `meta` indica ambos

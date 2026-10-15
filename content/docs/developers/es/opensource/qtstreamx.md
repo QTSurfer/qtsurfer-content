@@ -2,6 +2,7 @@
 title: QTStreamX
 description: Recibe en la JVM datos de mercado cripto normalizados — flujos WebSocket de exchanges y swaps de Uniswap tras un mismo conjunto de interfaces, con el códec, el cliente WebSocket y el transporte como módulos separados.
 order: 9.2
+lastUpdated: '2026-10-15T12:27:58Z'
 ---
 
 **QTStreamX** es la biblioteca de código abierto de QTSurfer para recibir datos de mercado en la JVM.

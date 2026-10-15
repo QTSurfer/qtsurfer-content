@@ -2,6 +2,7 @@
 title: QTStreamX
 description: Stream normalised crypto market data on the JVM — exchange WebSocket feeds and Uniswap swaps behind one set of interfaces, with the codec, WebSocket client, and transport as separate modules.
 order: 9.2
+lastUpdated: '2026-10-15T12:27:58Z'
 ---
 
 **QTStreamX** is QTSurfer's open-source library for streaming market data on the JVM. It connects to exchange

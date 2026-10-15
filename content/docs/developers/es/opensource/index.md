@@ -84,7 +84,8 @@ más corto desde un segmento descargado hasta un DataFrame, una consulta SQL o u
   la JVM. Los flujos WebSocket de los exchanges y los swaps de Uniswap en cadena quedan detrás de un
   mismo conjunto de interfaces y de un único modelo de registros (tickers, klines, tasas de
   financiación, operaciones), y el códec, el cliente WebSocket y el transporte son módulos separados
-  que puedes intercambiar.
+  que puedes intercambiar. Consulta la [página de qtstreamx](/docs/developers/opensource/qtstreamx)
+  para ver los módulos y una primera suscripción.
 
 ## Visualización
 

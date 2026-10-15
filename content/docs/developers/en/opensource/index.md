@@ -77,7 +77,8 @@ downloaded segment to a DataFrame, a SQL query, or a Parquet file.
 - [qtstreamx](https://github.com/QTSurfer/qtstreamx) — normalised market-data streaming for the JVM.
   Exchange WebSocket feeds and on-chain Uniswap swaps sit behind one set of interfaces and one
   record model (tickers, klines, funding rates, trades), and the codec, WebSocket client, and
-  transport are separate modules you can swap.
+  transport are separate modules you can swap. See the
+  [qtstreamx page](/docs/developers/opensource/qtstreamx) for the modules and a first subscription.
 
 ## Visualisation
 

@@ -3,7 +3,7 @@ title: Curvas de equity
 description: Transforma, retén, recupera y traza curvas de equity de backtests y barridos.
 order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b7fed4c6aa305679a46e27a5b432fbe3823428a7
+upstreamCommit: e1d7827c4b5fcb06cb679718c367d1cc64e6e92e
 upstreamPath: docs/equity_curves.md
 lastUpdated: '2026-09-08T13:58:26Z'
 ---

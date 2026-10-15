@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: da21123103897fcbaab79c18669eeb76ad0f8978
+upstreamCommit: 5f4d00241f67a315bb161db2e3be3990adf7fb8a
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-09-27T23:18:45Z'
 ---

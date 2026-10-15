@@ -3,7 +3,7 @@ title: Paper trading en ejecuciones en vivo
 description: Ejecuta en simulación las señales de una ejecución en vivo — configúralo, y lee sus cuentas, su curva de equity y sus KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 021eb3c41528e565f9d6ec7f084f0558d049fb4b
+upstreamCommit: 33717a74eb1457126287e31c61c21c9ee22264bf
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-09-24T22:27:05Z'
 ---
@@ -29,7 +29,7 @@ las dos.
 ```
 POST /v1/strategy/6bsh31ikwkuivhtgcoa6s4/live
 {
-  "sources": [{"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker",
+  "sources": [{"venueType": "cex", "exchange": "binance", "segment": "spot", "type": "ticker",
                "instruments": ["BTC/USDT", "ETH/USDT"]}],
   "paper": {"initialFunding": 1000, "feeRate": 0.001, "percentAmountToLock": 20}
 }

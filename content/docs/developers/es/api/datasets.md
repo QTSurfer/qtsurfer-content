@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9a8e03675f67ce80ef43f33a5207b8b5387749c7
+upstreamCommit: 837dbe43e38a61276adfaf0570b546175292948a
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-09-30T11:00:30Z'
 ---

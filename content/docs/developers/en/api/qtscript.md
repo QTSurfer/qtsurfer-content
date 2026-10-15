@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: A compact language for writing strategies — every section, windows, what's in scope, and how it compiles the same as Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b374d0a2740eb28fb1381d17a38e15d557facac7
+upstreamCommit: 3e0dfcd007da4ca601b493783c494b69ecd5cc7a
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-09-27T21:29:01Z'
 ---

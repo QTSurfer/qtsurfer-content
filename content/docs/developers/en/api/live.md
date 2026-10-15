@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: ae756bb790013b2e58828b27b63d0b8ac7c17453
+upstreamCommit: cd83df1b9540eb18ceee0b589e7a0adc8732c0e6
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-09T21:46:03Z'
 ---
@@ -113,9 +113,9 @@ run yourself, and a run counts as active by its `desired`, not its `state`: a `F
 answers `409` to a new start of the same strategy and still counts toward your plan's live-run
 limit. Call `DELETE` on it, then start again.
 
-The exception is a run that can never run because of what it was started with: when its strategy
-cannot consume its source type, the platform stops it itself (`desired` becomes `STOPPED`, `state`
-stays `FAILED`, `reason` says why), so it does not hold a place.
+The exception is a run that cannot run, and will not by waiting: when its strategy cannot consume its
+source type, or the pool of a `dex` run is not a pool or has no room to be followed, the platform stops it
+itself (`desired` becomes `STOPPED`, `state` stays `FAILED`, `reason` says why), so it does not hold a place.
 
 ### Why a run failed or stopped
 
@@ -131,6 +131,8 @@ one of a fixed set of sentences, so a client can match on it.
 | `The run could not start after several attempts.` | A start that kept failing for a reason that was not yours. Start again. |
 | `The run stopped because its strategy failed while processing data.` | Your strategy's own code brought the run down. |
 | `The run stopped because it lost its data feed.` | The run's market data stream broke and the run stalled. |
+| `The run could not start: its pool address is not a pool of that protocol on that chain.` | A `dex` run (see [DEX pools](#dex-pools)) names an address that is not a pool of its protocol on its chain, or whose tokens the platform cannot read. |
+| `The run could not start: the platform is following as many pools as it can right now. Try again later.` | A `dex` run names a pool the platform has no room to follow. |
 | `The run failed.` | Anything else. |
 
 The set may grow. Read an unrecognised sentence as "the run failed", and do not parse it for
@@ -179,10 +181,27 @@ Three things to know:
 ```json
 {
   "sources": [
-    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
+    {"venueType": "cex", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
   ]
 }
 ```
+
+`exchange` and `segment` are the ids `GET /exchanges` lists, in lower-case, and `venueType` is the one it
+gives the exchange: `cex` for a centralized exchange, `dex` for a decentralized one (`cx`, the spelling used
+before, is still read as `cex`). The segment has to be one of the exchange's `liveSegments`: the segments for
+which live data is published, `spot` for a centralized exchange today.
+
+The three have to go together in that list, and a start whose source does not is refused with `400`
+naming what the list has, before it takes a place: `sources[0].exchange 'coinbase' is not a cex exchange
+(binance, bybit); GET /exchanges lists them`, `sources[0].segment 'perp' is not one of [spot, futures] for
+the exchange 'binance'`, `sources[0].exchange 'robinhood' is a dex exchange, not a cex one`. Case and the
+spaces around a value do not matter, and the run reports `venueType`, `exchange`, `segment` and `type` back
+in lower case.
+
+A segment that the exchange offers but has no live data is refused the same way, saying which ones a live run
+reads: `futures` of a centralized exchange is its instrument catalogue's segment, so
+`sources[0].segment 'futures' has no live data on the exchange 'binance': a live run reads one of [spot]`. A run
+on a segment nobody publishes would otherwise start, look alive and never receive a bar.
 
 `type` has to match the kind of strategy: a ticker strategy runs on a `ticker` source and a kline
 strategy on a `kline` one, and a start with the other one is refused with `400`, naming both. A
@@ -201,7 +220,7 @@ instrument the exchange/segment offers, subject to your plan's instrument-count 
 ```json
 {
   "sources": [
-    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker"}
+    {"venueType": "cex", "exchange": "binance", "segment": "spot", "type": "ticker"}
   ]
 }
 ```
@@ -218,6 +237,70 @@ counts like `["*"]`, and only plans that include the wildcard accept it; the oth
 The instruments the run actually reads come back in the run's `sources`: a run started without `instruments`
 shows the list it got, which can have entries like `*/USDT`.
 
+### DEX pools
+
+A run can read one pool on a decentralized exchange instead of a centralized exchange's market. Set `venueType`
+to `dex`:
+
+```json
+{
+  "sources": [
+    {"venueType": "dex", "exchange": "robinhood", "segment": "uniswap-v3", "type": "kline", "instruments": ["0x52e65b17fb6e5ba00ed806f37afcd2daa50271ca"]}
+  ]
+}
+```
+
+| Field | For a `dex` source |
+|---|---|
+| `exchange` | The chain the pool is on: an exchange `GET /exchanges` lists with `venueType: dex`. `robinhood` (Robinhood Chain) is the only one today. |
+| `segment` | The protocol of the pool, one of that exchange's `segments`. `uniswap-v3` is the only one today. |
+| `type` | `kline` only. A `ticker` source is not available for a pool, and a ticker strategy cannot run on one. |
+| `instruments` | Exactly one entry: the pool's address, `0x` and 40 hexadecimal digits, not case-sensitive. It cannot be left out and `*` is not accepted. |
+
+To find pools to run, list the exchange's instruments: `GET /exchange/robinhood/uniswap-v3/instruments` returns
+the 50 pools with the most volume over the last 24 hours among those with at least 10,000 US dollars of
+liquidity, refreshed every hour. Each has its `id` (the address to put in `instruments`), its pair named the
+way the signals name it, its fee tier, liquidity and volume (see
+[Pools of a decentralized exchange](market_data#pools-of-a-decentralized-exchange)). The list is a place to
+start, not the whole market: a run can read any Uniswap V3 pool of the chain, listed or not.
+
+What the strategy receives:
+
+- One candle per second of the pool's trades, with the usual `open`, `high`, `low`, `close` and `volume`. A
+  second in which nothing traded still gets a candle: it repeats the previous close, with zero volume and zero
+  trades, so a strategy that counts bars is counting time even on a pool that trades rarely.
+- A candle is published once its second is over and late trades have had a moment to arrive: up to about three
+  seconds after the second ends. Signals therefore trail the market by up to that wait plus the strategy's own work.
+- A pool that has not traded since the platform started following it produces no candles until its first trade:
+  there is no price yet to repeat.
+- The signals of the run name the pair as the pool's tokens written `BASE/QUOTE`, such as `WETH/USDG`, in
+  their `instrument` (`exchange` is the chain and `segment` the protocol). The platform fixes the orientation of
+  a pool, so the same pool is always quoted the same way.
+
+Starting and warming up work as for any run (see [Warming up](#warming-up-warmfrom)). The platform follows a
+pool when a run asks for it and replays the history the run's `warmFrom` calls for before the first live
+candle, so a run on a pool nobody else is reading catches up at roughly six times the speed of the market:
+the default warm-up (up to 15 minutes) takes up to a few minutes, and `warmFrom: 3600` about ten. While it
+catches up the run can show `LAGGING`. A run that starts on a pool the platform is already following gets the
+history that exists for it, which is shorter than its `warmFrom` when the pool was started only a moment ago.
+
+A `dex` run whose pool cannot be served fails within seconds instead of waiting for candles that will not come,
+and the platform stops it, so it holds no place (see [Why a run failed or stopped](#why-a-run-failed-or-stopped)):
+
+- The address is not a pool of that protocol on that chain, or the platform cannot read its tokens: the
+  `reason` is `The run could not start: its pool address is not a pool of that protocol on that chain.` It takes
+  about fifteen seconds. Start the same address again right away and it can take up to half a minute.
+- The platform is following as many pools as it can: the `reason` is `The run could not start: the platform is
+  following as many pools as it can right now. Try again later.` It takes a few seconds. Starting again works
+  once there is room: a pool is released a few minutes after the last run reading it has stopped.
+
+A chain or a protocol that `GET /exchanges` does not list for a `dex` exchange is refused with `400` when the run
+is started. A source that passes that and still cannot be run is accepted and then fails within seconds too,
+with `The run could not start: its definition was refused.` as the `reason`: an instrument that is not an
+address, more than one, or a `ticker` type. A kline strategy is required, as for any `kline` source:
+starting a ticker strategy on a `dex` source is refused with `400`. A start that leaves `instruments` out, or
+sends `["*"]`, is refused with `429` on a plan without the wildcard; on any other the run fails as above.
+
 ## Warming up: `warmFrom`
 
 A strategy that reads an average, a window or any other indicator needs some history before its values
@@ -233,7 +316,7 @@ replay from. Set it in the body of `POST /strategy/{strategyId}/live`, next to `
 ```json
 {
   "sources": [
-    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
+    {"venueType": "cex", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
   ],
   "warmFrom": 300
 }

@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: ae756bb790013b2e58828b27b63d0b8ac7c17453
+upstreamCommit: cd83df1b9540eb18ceee0b589e7a0adc8732c0e6
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-09T21:46:03Z'
 ---
@@ -115,9 +115,10 @@ siga en `RUNNING` hasta que detengas tú la ejecución, y una ejecución cuenta 
 misma estrategia y sigue contando para el límite de ejecuciones en vivo de tu plan. Llama a `DELETE`
 sobre ella y arranca de nuevo.
 
-La excepción es una ejecución que nunca puede correr por aquello con lo que se arrancó: cuando su
-estrategia no puede consumir su tipo de fuente, la plataforma la detiene ella misma (`desired` pasa a
-`STOPPED`, `state` se queda en `FAILED`, `reason` dice por qué), así que no ocupa plaza.
+La excepción es una ejecución que no puede correr, y no podrá por mucho que esperes: cuando su estrategia
+no puede consumir su tipo de fuente, o la pool de una ejecución `dex` no es una pool o no tiene sitio para
+seguirla, la plataforma la detiene ella misma (`desired` pasa a `STOPPED`, `state` se queda en `FAILED`,
+`reason` dice por qué), así que no ocupa plaza.
 
 ### Por qué una ejecución falló o se detuvo
 
@@ -133,6 +134,8 @@ frase de un conjunto fijo, así que un cliente puede compararla.
 | `The run could not start after several attempts.` | Un arranque que siguió fallando por un motivo que no era tuyo. Arranca de nuevo. |
 | `The run stopped because its strategy failed while processing data.` | El propio código de tu estrategia tumbó la ejecución. |
 | `The run stopped because it lost its data feed.` | El flujo de datos de mercado de la ejecución se cortó y la ejecución se quedó parada. |
+| `The run could not start: its pool address is not a pool of that protocol on that chain.` | Una ejecución `dex` (consulta [Pools DEX](#pools-dex)) nombra una dirección que no es una pool de su protocolo en su cadena, o cuyos tokens la plataforma no puede leer. |
+| `The run could not start: the platform is following as many pools as it can right now. Try again later.` | Una ejecución `dex` nombra una pool para la que la plataforma no tiene sitio. |
 | `The run failed.` | Cualquier otra cosa. |
 
 El conjunto puede crecer. Lee una frase que no reconozcas como «la ejecución falló», y no la analices
@@ -182,10 +185,27 @@ soportadas):
 ```json
 {
   "sources": [
-    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
+    {"venueType": "cex", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
   ]
 }
 ```
+
+`exchange` y `segment` son los ids que lista `GET /exchanges`, en minúsculas, y `venueType` es el que ese
+endpoint da al exchange: `cex` para un exchange centralizado y `dex` para uno descentralizado (`cx`, la
+grafía que se usaba antes, se sigue leyendo como `cex`). El segmento tiene que ser uno de los `liveSegments`
+del exchange: los segmentos para los que se publican datos en vivo, hoy `spot` en un exchange centralizado.
+
+Los tres tienen que ir juntos en esa lista, y un arranque cuya fuente no lo cumple se rechaza con `400`
+indicando lo que la lista tiene, antes de que ocupe plaza: `sources[0].exchange 'coinbase' is not a cex exchange
+(binance, bybit); GET /exchanges lists them`, `sources[0].segment 'perp' is not one of [spot, futures] for
+the exchange 'binance'`, `sources[0].exchange 'robinhood' is a dex exchange, not a cex one`. Las mayúsculas y
+los espacios alrededor de un valor no importan, y la ejecución devuelve `venueType`, `exchange`, `segment` y
+`type` en minúsculas.
+
+Un segmento que el exchange ofrece pero sin datos en vivo se rechaza igual, diciendo cuáles lee una
+ejecución en vivo: `futures` de un exchange centralizado es el segmento de su catálogo de instrumentos, así que
+`sources[0].segment 'futures' has no live data on the exchange 'binance': a live run reads one of [spot]`.
+Una ejecución sobre un segmento que nadie publica arrancaría, parecería viva y nunca recibiría una barra.
 
 `type` tiene que coincidir con el tipo de estrategia: una estrategia ticker corre sobre una fuente
 `ticker` y una estrategia kline sobre una `kline`, y un arranque con la otra se rechaza con `400`,
@@ -206,7 +226,7 @@ instrumentos de tu plan:
 ```json
 {
   "sources": [
-    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker"}
+    {"venueType": "cex", "exchange": "binance", "segment": "spot", "type": "ticker"}
   ]
 }
 ```
@@ -225,6 +245,78 @@ entradas se cuentan una a una.
 Los instrumentos que la ejecución lee de verdad vuelven en sus `sources`: una ejecución arrancada sin
 `instruments` muestra la lista que obtuvo, que puede tener entradas como `*/USDT`.
 
+### Pools DEX
+
+Una ejecución puede leer una pool de un exchange descentralizado en lugar del mercado de un exchange
+centralizado. Fija `venueType` a `dex`:
+
+```json
+{
+  "sources": [
+    {"venueType": "dex", "exchange": "robinhood", "segment": "uniswap-v3", "type": "kline", "instruments": ["0x52e65b17fb6e5ba00ed806f37afcd2daa50271ca"]}
+  ]
+}
+```
+
+| Campo | En una fuente `dex` |
+|---|---|
+| `exchange` | La cadena en la que está la pool: un exchange que `GET /exchanges` lista con `venueType: dex`. Hoy `robinhood` (Robinhood Chain) es el único. |
+| `segment` | El protocolo de la pool, uno de los `segments` de ese exchange. Hoy `uniswap-v3` es el único. |
+| `type` | Solo `kline`. Una fuente `ticker` no está disponible para una pool, y una estrategia ticker no puede correr sobre una. |
+| `instruments` | Exactamente una entrada: la dirección de la pool, `0x` y 40 cifras hexadecimales, sin distinguir mayúsculas. No se puede omitir y no se acepta `*`. |
+
+Para encontrar pools que ejecutar, lista los instrumentos del exchange: `GET /exchange/robinhood/uniswap-v3/instruments`
+devuelve las 50 pools con más volumen en las últimas 24 horas entre las que tienen al menos 10 000 dólares
+de liquidez, actualizadas cada hora. Cada una trae su `id` (la dirección que va en `instruments`), su par
+nombrado como lo nombran las señales, su nivel de comisión, su liquidez y su volumen (consulta
+[Pools de un exchange descentralizado](market_data#pools-de-un-exchange-descentralizado)). La lista es un
+punto de partida, no todo el mercado: una ejecución puede leer cualquier pool de Uniswap V3 de la cadena,
+esté listada o no.
+
+Lo que recibe la estrategia:
+
+- Una vela por segundo de las operaciones de la pool, con los habituales `open`, `high`, `low`, `close` y
+  `volume`. Un segundo en el que no se operó también recibe vela: repite el cierre anterior, con volumen cero
+  y cero operaciones, de modo que una estrategia que cuenta barras está contando tiempo incluso en una pool
+  que opera poco.
+- Una vela se publica cuando su segundo ha terminado y las operaciones tardías han tenido un momento para
+  llegar: hasta unos tres segundos después de que acabe el segundo. Las señales llevan por tanto un retraso
+  sobre el mercado de hasta esa espera más el trabajo propio de la estrategia.
+- Una pool que no ha operado desde que la plataforma empezó a seguirla no produce velas hasta su primera
+  operación: aún no hay precio que repetir.
+- Las señales de la ejecución nombran el par como los tokens de la pool escritos `BASE/QUOTE`, como
+  `WETH/USDG`, en su `instrument` (`exchange` es la cadena y `segment` el protocolo). La plataforma fija la
+  orientación de una pool, así que la misma pool se cotiza siempre igual.
+
+El arranque y el calentamiento funcionan como en cualquier ejecución (consulta
+[Calentar la ejecución](#calentar-la-ejecución-warmfrom)). La plataforma sigue una pool cuando una
+ejecución lo pide y reproduce la historia que pide el `warmFrom` de la ejecución antes de la primera vela en
+vivo, así que una ejecución sobre una pool que nadie más lee se pone al día a unas seis veces la velocidad
+del mercado: el calentamiento por defecto (hasta 15 minutos) tarda hasta unos minutos, y `warmFrom: 3600` unos
+diez. Mientras se pone al día la ejecución puede mostrar `LAGGING`. Una ejecución que arranca sobre una pool
+que la plataforma ya sigue recibe la historia que existe para ella, que es más corta que su `warmFrom` cuando
+la pool se empezó a seguir hace un momento.
+
+Una ejecución `dex` cuya pool no se puede servir falla en cuestión de segundos en lugar de esperar velas que
+no van a llegar, y la plataforma la detiene, así que no ocupa plaza (consulta
+[Por qué una ejecución falló o se detuvo](#por-qué-una-ejecución-falló-o-se-detuvo)):
+
+- La dirección no es una pool de ese protocolo en esa cadena, o la plataforma no puede leer sus tokens: el
+  `reason` es `The run could not start: its pool address is not a pool of that protocol on that chain.` Tarda
+  unos quince segundos. Si arrancas la misma dirección de nuevo enseguida, puede tardar hasta medio minuto.
+- La plataforma sigue ya tantas pools como puede: el `reason` es `The run could not start: the platform is
+  following as many pools as it can right now. Try again later.` Tarda unos segundos. Arrancar de nuevo
+  funciona cuando hay sitio: una pool se libera unos minutos después de que se detenga la última ejecución
+  que la lee.
+
+Una cadena o un protocolo que `GET /exchanges` no lista para un exchange `dex` se rechaza con `400` al
+arrancar la ejecución. Una fuente que supera eso y aun así no se puede ejecutar se acepta y falla también en
+cuestión de segundos, con `The run could not start: its definition was refused.` como `reason`: un
+instrumento que no es una dirección, más de uno, o un tipo `ticker`. Se exige una estrategia kline, como en
+cualquier fuente `kline`: arrancar una estrategia ticker sobre una fuente `dex` se rechaza con `400`. Un
+arranque que omite `instruments`, o envía `["*"]`, se rechaza con `429` en un plan sin el comodín; en
+cualquier otro la ejecución falla como se ha descrito.
+
 ## Calentar la ejecución: `warmFrom`
 
 Una estrategia que lee una media, una ventana o cualquier otro indicador necesita algo de historia antes
@@ -241,7 +333,7 @@ reproducir. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a 
 ```json
 {
   "sources": [
-    {"venueType": "cx", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
+    {"venueType": "cex", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
   ],
   "warmFrom": 300
 }

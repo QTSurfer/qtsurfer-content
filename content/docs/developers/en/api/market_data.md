@@ -3,7 +3,7 @@ title: Market data
 description: Discover exchanges, instruments, and historical market data through the REST API.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9eded3b0fbcb360bcc888b1ad4f02cf9631706a0
+upstreamCommit: cd83df1b9540eb18ceee0b589e7a0adc8732c0e6
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-09-07T13:26:56Z'
 ---
@@ -14,12 +14,30 @@ backtest or create server-side state.
 
 ## Discover exchanges and instruments
 
-`GET /exchanges` lists the exchange ids currently available. Use an id with either instrument route:
+`GET /exchanges` lists the exchanges the platform knows, centralized and decentralized, each with its
+`venueType` and the `segments` it offers. Ids, venue types and segments are lower-case, written the same
+way wherever the API takes them:
+
+```json
+[
+  {"id": "binance", "name": "Binance", "venueType": "cex", "segments": ["spot", "futures"], "liveSegments": ["spot"]},
+  {"id": "bybit", "name": "Bybit", "venueType": "cex", "segments": ["spot", "futures"], "liveSegments": ["spot"]},
+  {"id": "robinhood", "name": "Robinhood Chain", "venueType": "dex", "segments": ["uniswap-v3"], "liveSegments": ["uniswap-v3"]}
+]
+```
+
+`venueType` is `cex` for a centralized exchange and `dex` for a decentralized one. The `segments` of a `cex`
+exchange are the market segments its instruments are listed under; `liveSegments` are the ones among them a
+live run can read, because live data is published for them (`spot` today). For a `dex` exchange both are the
+protocols whose pools a live run can read (see [DEX pools](live#dex-pools)). A `dex` exchange has no
+hourly files, datasets or backtests, so its id is `400` in every route that takes an `exchangeId` except the
+two instrument routes, which list its pools. Use either instrument route with the id of any exchange
+`GET /exchanges` lists:
 
 | Route | Meaning |
 | --- | --- |
 | `GET /exchange/{exchangeId}/instruments` | Instruments in the default `spot` segment |
-| `GET /exchange/{exchangeId}/{segment}/instruments` | Instruments in an explicit `spot` or `futures` segment |
+| `GET /exchange/{exchangeId}/{segment}/instruments` | Instruments in an explicit segment: `spot` or `futures`, or a protocol of a `dex` exchange (`uniswap-v3`) |
 
 An instrument response is a HAL envelope. Its `data` array contains `id`, `base`, `quote`, current
 `lastPrice` and `volume24h`, plus independent `coverage.tickers` and `coverage.klines` windows.
@@ -32,8 +50,40 @@ curl https://api.qtsurfer.net/v1/exchange/binance/spot/instruments \
   -H "Authorization: Bearer $QTSURFER_JWT"
 ```
 
-The response's `_links` provide `self`, `spot`, and `futures` discovery links. A missing exchange,
-unknown segment, or unavailable catalogue returns `404`.
+The response's `_links` provide `self`, `spot`, and `futures` discovery links. An exchange `GET /exchanges`
+does not list, and a segment the exchange does not have, return `400`; a catalogue that is not available
+returns `404`. The segment is written in lower-case.
+
+### Pools of a decentralized exchange
+
+For a `dex` exchange the instruments are its pools, and this is where to find the address to put in
+`instruments` of a [live run](live#dex-pools):
+
+```bash
+curl https://api.qtsurfer.net/v1/exchange/robinhood/uniswap-v3/instruments \
+  -H "Authorization: Bearer $QTSURFER_JWT"
+```
+
+```json
+{
+  "data": [
+    {"id": "0x52e65b17fb6e5ba00ed806f37afcd2daa50271ca", "symbol": "WETH/USDG", "base": "WETH", "quote": "USDG",
+     "baseAddress": "0x0bd7d308f8e1639fab988df18a8011f41eacad73", "quoteAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+     "feePercent": 0.01, "tvlUsd": 19857902.02, "volume24hUsd": 273876056.45, "createdAt": "2026-07-02T20:51:08Z"}
+  ],
+  "meta": {"updatedAt": "2026-10-14T22:32:34Z", "exchange": "robinhood", "segment": "uniswap-v3", "minTvlUsd": 10000, "limit": 50},
+  "_links": {"self": {"href": "/v1/exchange/robinhood/uniswap-v3/instruments"}, "uniswap-v3": {"href": "/v1/exchange/robinhood/uniswap-v3/instruments"}}
+}
+```
+
+A pool's `id` is its address, in lower case. `symbol` is the pair as the signals of a run name it, which is
+not always the order other sites show it in (the same pool can read `USDG / WETH` elsewhere), so identify a
+pool by its address. A protocol can have several pools of one pair, one per fee tier (`feePercent`).
+
+The listing has the 50 pools with the most volume over the last 24 hours (`volume24hUsd`) among those with at
+least 10,000 US dollars of liquidity (`tvlUsd`), and is refreshed every hour (`meta.updatedAt`); `meta`
+states both limits. It is a place to start, not the whole market: a live run can read any pool of the
+protocol, listed or not. `404` means the listing is not available at the moment.
 
 ## Download hourly segments
 

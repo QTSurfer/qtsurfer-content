@@ -5,7 +5,7 @@ order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 33717a74eb1457126287e31c61c21c9ee22264bf
 upstreamPath: docs/live_paper.md
-lastUpdated: '2026-09-24T22:27:05Z'
+lastUpdated: '2026-10-15T06:30:42Z'
 ---
 
 Start a [live run](live) with a `paper` block and its hints are executed in simulation from its

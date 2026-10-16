@@ -40,7 +40,8 @@ documento de formato de la implementación de referencia, [lastra-java](https://
 
 Las dos rutas horarias devuelven un fichero. `format=lastra` es el valor por defecto;
 `format=parquet` convierte el mismo segmento al vuelo. Consulta [Datos de
-mercado](/docs/developers/api/market_data) para las rutas y el parámetro `hour`.
+mercado](/docs/developers/api/market_data) para las rutas, el parámetro `hour` y las horas que
+sirven (los últimos 7 días).
 
 ```bash
 curl --fail --remote-name \
@@ -48,8 +49,9 @@ curl --fail --remote-name \
   -H "Authorization: Bearer $QTSURFER_JWT"
 ```
 
-Las klines son mucho más pequeñas que los tickers; pide el segmento de klines cuando baste con
-datos a nivel de barra.
+Usa en `hour` una hora de los últimos 7 días: la de arriba es solo un ejemplo, y las secciones
+siguientes leen un segmento guardado antes. Las klines son mucho más pequeñas que los tickers; pide
+el segmento de klines cuando baste con datos a nivel de barra.
 
 ## Python
 
@@ -61,7 +63,7 @@ from lastra import LastraReader
 
 with open("binance_BTC-USDT_tickers_2026-01-15T10.lastra", "rb") as f:
     r = LastraReader.from_stream(f)
-    ts = r.read_series_long("ts")          # numpy int64, epoch milliseconds
+    ts = r.read_series_long("ts")          # numpy int64, epoch microseconds
     close = r.read_series_double("close")  # numpy float64
 ```
 
@@ -80,9 +82,13 @@ LOAD lastra;
 
 SELECT ts, close
 FROM 'binance_BTC-USDT_tickers_2026-01-15T10.lastra'
-WHERE ts BETWEEN 1768471200000 AND 1768472100000
+WHERE ts BETWEEN 1768471200000000 AND 1768472100000000
 LIMIT 100;
 ```
+
+En un segmento descargado de la API, `ts` contiene microsegundos desde el epoch, por eso los
+límites de arriba tienen 16 dígitos. Los metadatos de la columna (`ts_unit`) y la cabecera de
+respuesta `X-Ts-Unit` declaran la unidad.
 
 `read_lastra('file.lastra')` es la función de tabla explícita detrás del *replacement scan*. Como
 DuckDB puede leer por HTTP, la misma consulta funciona contra un fichero remoto con peticiones por
@@ -152,7 +158,7 @@ Arrow como origen y destino.
 ## Páginas relacionadas
 
 - [Datos de mercado](/docs/developers/api/market_data) — las rutas que devuelven segmentos.
-- [Conjuntos de datos](/docs/developers/api/datasets) — subir tu propio histórico como CSV.
+- [Conjuntos de datos](/docs/developers/api/datasets) — subir tu propio histórico, o importar el de un exchange.
 - Learn: [Datos históricos de mercado](/learn/articles/historical-market-data) — tickers frente a
   klines, cadencia, cobertura y huecos.
 - [Código abierto](/docs/developers/opensource) — todos los proyectos de código abierto de QTSurfer, con enlaces.

@@ -3,9 +3,8 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: aa726ec584fa46b083b263c800ffbc55156a25d7
+upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
-lastUpdated: '2026-10-06T12:57:29Z'
 ---
 
 A QTSurfer strategy is a plain Java class (no framework annotations required) that extends a strategy base class — most commonly `AbstractTickerStrategy` (see [Strategy base classes](#strategy-base-classes) for the kline, funding-rate, and multi-source siblings). It receives real-time market data, configures technical indicators, and emits buy/sell signals. The engine compiles strategies server-side — no local toolchain needed.
@@ -445,7 +444,7 @@ in `com.wualabs.qtsurfer.engine.core`.
 | `AbstractFundingRateStrategy` | `FundingRate` (record)       | `update(FundingRate)`                    | ⚠️ prepare only for now — a run or sweep is rejected (`400`) |
 | `AbstractMultiSourceStrategy` | Ticker + Kline + FundingRate | `onTicker` / `onKline` / `onFundingRate` | ⚠️ engine-only — not yet public                              |
 
-- **`AbstractKlineStrategy`** receives candles. In a backtest the bar width is the `cadence` the data was prepared at — `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h` or `1d` — whatever `getInterval()` (a `KlineInterval`) returns, so one class runs at any of them. **OHLCV only** — order-book sizes, vwap, and percentage-change fields are absent on this path. `Kline` is a plain class, so use getters (`kline.getInstrument()`, `kline.getCloseTime()`), unlike the `Ticker` record.
+- **`AbstractKlineStrategy`** receives candles. In a backtest the bar width is the `cadence` the data was prepared at — `1s` up to `1q`, the same labels as for tickers (`5s`, `3m`, `8h` and `1w` among them) — whatever `getInterval()` (a `KlineInterval`) returns, so one class runs at any of them. **OHLCV only** — order-book sizes, vwap, and percentage-change fields are absent on this path. `Kline` is a plain class, so use getters (`kline.getInstrument()`, `kline.getCloseTime()`), unlike the `Ticker` record.
 - **`AbstractFundingRateStrategy`** receives `update(FundingRate)` on each funding-rate update. Funding data can be prepared, but a backtest or a sweep over it is rejected with a `400` for now (`funding data can be prepared but not executed yet`) — it registers and compiles, and cannot yet be run through `submit_backtest`.
 - **`AbstractMultiSourceStrategy`** declares `getRequiredSources()` → `Set<MarketDataSource>` (`Ticker`, `KLine`, `FundingRate`) and dispatches each to `onTicker` / `onKline` / `onFundingRate`; when `KLine` is required, `getKlineInterval()` must be non-null. It compiles and registers in the engine but **is not yet runnable via the public `submit_backtest`** — don't ship multi-source strategies for backtesting until it is exposed.
 

@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 837dbe43e38a61276adfaf0570b546175292948a
+upstreamCommit: 8a0c5fb016d4e91afe5d06067b7b08f473b29012
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-10-15T12:10:55Z'
 ---
@@ -204,7 +204,7 @@ puede caducar por sí mismo (ver el caso `404` más abajo).
 | `id` | el id de la versión — pásalo como `datasetVersionId` en la preparación para fijarla |
 | `bytes` | tamaño del fichero **almacenado** (`dataUrl`) — un `lastra` convertido para una subida CSV (descomprimida antes, si llegó como `.gz`/`.zip`), o el propio fichero parquet/lastra, sin convertir, para una subida parquet o lastra. No el tamaño de los bytes subidos originalmente (`PUT`) |
 | `rows` | número de filas de datos |
-| `cadence` | descubierta a partir de las propias marcas de tiempo de los datos: una cuadrícula fija (`1s`, `5s`, `15s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `1d`) cuando al menos la mitad de los intervalos entre filas caen en ese paso (se tolera un pequeño desajuste de reloj), o `rt` — datos nativos a la tasa en que se capturaron, cada fila con su propia marca de tiempo sin paso fijo (swaps on-chain por operación, ticks espaciados por bloque o de menos de un segundo, intervalos irregulares). Un conjunto de datos `rt` se puede remuestrear a cualquier cadencia fija al preparar |
+| `cadence` | descubierta a partir de las propias marcas de tiempo de los datos: una cuadrícula fija (`1s`, `5s`, `15s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`) cuando al menos la mitad de los intervalos entre filas caen en ese paso (se tolera un pequeño desajuste de reloj), o `rt` — datos nativos a la tasa en que se capturaron, cada fila con su propia marca de tiempo sin paso fijo (swaps on-chain por operación, ticks espaciados por bloque o de menos de un segundo, intervalos irregulares). Un conjunto de datos `rt` se puede remuestrear a cualquier cadencia fija al preparar |
 | `timestampUnit` | `iso` \| `s` \| `ms` \| `us` — la unidad en la que llegó la columna `timestamp` |
 | `gaps`, `largestGapSteps` | número de huecos a la cadencia descubierta, y el tamaño del mayor en pasos de esa cadencia. Siempre `0` para `rt` |
 | `dataUrl` | URL GET prefirmada al fichero almacenado — consulta `dataFormat`. Presente una vez `ready` |
@@ -239,9 +239,20 @@ subir (`PUT`) un fichero tú mismo, le pides a la API que vaya a buscar el hist�
 conjunto de datos y arranca la búsqueda en la misma llamada — no hay un paso de subida aparte, y el
 resultado acaba siendo una versión de conjunto de datos indistinguible de una subida una vez lista.
 
-`type` elige la fuente. `dex` — histórico sobre el propio mercado on-chain de un pool/par — es el
-único valor por ahora; otros tipos de fuente se sumarán a este mismo endpoint más adelante. Una
-importación `dex` tiene dos formas de datos, elegidas por la `cadence` de nivel superior:
+`type` elige el tipo de mercado del que viene el histórico, con los mismos dos valores que el
+`venueType` de [`GET /exchanges`](market_data): `dex` — histórico sobre el propio mercado on-chain
+de un pool/par — y `cex` — el histórico del mercado de un exchange centralizado, que conserva la
+plataforma. Cada uno tiene su propio bloque (`dex`, `cex`). Un exchange descentralizado de
+`GET /exchanges` (`robinhood`, por ejemplo) se importa con `type: dex`; como `exchange` de una
+importación `cex`, su id es `400`.
+
+Una importación `cex` cubre un instrumento a lo largo de un rango: la API lee ese rango del
+histórico del exchange, construye las barras de la `cadence` pedida a partir de los datos más finos
+que tiene y guarda el resultado como una versión de conjunto de datos, exactamente igual que en una
+subida. Consulta [Importar el histórico de un exchange](#importar-el-histórico-de-un-exchange) más
+abajo.
+
+Una importación `dex` tiene dos formas de datos, elegidas por la `cadence` de nivel superior:
 
 * Omitida/en blanco (por defecto) — histórico de swaps on-chain, reproducido directamente desde la
   propia cadena del pool/par, cada swap con su propia marca de tiempo (cadencia nativa por
@@ -254,8 +265,8 @@ importación `dex` tiene dos formas de datos, elegidas por la `cadence` de nivel
 | `name` | cadena | obligatorio, único entre tus conjuntos de datos. `409` si ya está en uso |
 | `instrument` | cadena | obligatorio, par spot llano — la etiqueta propia del conjunto de datos, independiente del orden de los tokens on-chain del pool |
 | `from`, `to` | cadena (fecha-hora) | obligatorio, ISO-8601 UTC. `from` inclusivo, `to` exclusivo, `from < to`. El rango total está limitado por tu plan |
-| `cadence` | cadena | opcional. Omitida/en blanco = cadencia nativa por operación (ver abajo). Uno de `1s` \| `1m` \| `5m` pide velas pre-agregadas a esa anchura en una red que las soporte (cualquier otro valor es `400`) — en una red que no las soporte, se ignora silenciosamente, ver abajo |
-| `type` | cadena | obligatorio, `"dex"` es el único valor por ahora |
+| `cadence` | cadena | opcional. Para `dex`: omitida/en blanco = cadencia nativa por operación (ver abajo); uno de `1s` \| `1m` \| `5m` pide velas pre-agregadas a esa anchura en una red que las soporte (cualquier otro valor es `400`) — en una red que no las soporte, se ignora silenciosamente, ver abajo. Para `cex`: consulta [Importar el histórico de un exchange](#importar-el-histórico-de-un-exchange) |
+| `type` | cadena | obligatorio, `"dex"` \| `"cex"` |
 | `dex.network` | cadena | obligatorio, uno de `ethereum` \| `robinhood` |
 | `dex.id` | cadena | obligatorio salvo que una `cadence` de velas realmente se resuelva (ver abajo) — una `cadence` de velas ignorada en una red sin velas sigue exigiendo este campo. `"uniswap"` es el único valor por ahora — qué protocolo DEX on-chain implementa `dex.contract` |
 | `dex.version` | cadena | obligatorio salvo que una `cadence` de velas realmente se resuelva (ver abajo). `"v2"` \| `"v3"` |
@@ -330,6 +341,56 @@ alcanzó el límite de almacenamiento total de tu cuenta (`maxTotalStorageBytes`
 /account`](account)) — elimina un conjunto de datos para liberar hueco o espacio, o mejora de
 plan.
 
+### Importar el histórico de un exchange
+
+`type: "cex"` importa un instrumento de un exchange centralizado a lo largo de un rango. Mismo
+endpoint, mismos campos `name`, `instrument`, `from`, `to` y `cadence`, mismos límites (el rango
+está limitado por el `maxImportRangeHours` de tu plan, [`GET /account`](account)) y el mismo sondeo
+de más abajo; solo cambia el bloque que dice qué importar:
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `cex.exchange` | cadena | obligatorio, el `id` de un exchange centralizado (`venueType` `cex`) de `GET /exchanges`, en minúsculas. El id de un exchange descentralizado es `400`: usa `type: dex` |
+| `cex.segment` | cadena | obligatorio, uno de los `segments` del exchange. `spot` es el único segmento que admite hoy una importación `cex`, lo que concuerda con que `instrument` sea un par spot llano |
+| `cex.dataType` | cadena | obligatorio, `"ticker"` \| `"klines"`. También es el `type` del conjunto de datos resultante |
+
+`cadence` es opcional y admite las mismas etiquetas que la cadencia de una preparación de backtest,
+tanto para tickers como para klines: `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`,
+`8h`, `12h`, `1d`, `1w` o `1q`. Cualquier otra etiqueta es `400`. Si se omite, el conjunto de datos
+se queda con la cadencia más fina que contienen **todas las partes** del rango. Las barras se
+construyen a partir de los datos más finos que contienen todas las partes del rango, así que un
+rango cuyo histórico cambia de cadencia a mitad (de `1m` a `1s`, por ejemplo) sale entero con la más
+gruesa: el conjunto de datos no tiene ningún hueco que sea solo un cambio de cadencia. Una `cadence`
+más fina que esa, o que no sea múltiplo exacto de ella, hace fallar la importación (`failed`, y
+`error` nombra la cadencia más fina que contiene el rango) en lugar de darte un conjunto de datos
+con una cadencia distinta de la que pediste.
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "btc-usdt-1s-sept",
+    "instrument": "BTC/USDT",
+    "from": "2026-09-01T00:00:00Z",
+    "to": "2026-09-01T06:00:00Z",
+    "cadence": "1s",
+    "type": "cex",
+    "cex": {
+      "exchange": "binance",
+      "segment": "spot",
+      "dataType": "klines"
+    }
+  }'
+# → 202 {"datasetId":"ds_3f9a1c2e7b0d4a5f","importId":"imp_01j9z...","jobId":"dataset-import:...","status":"fetching"}
+```
+
+Errores, además de los anteriores: `400` falta el bloque `cex`, `cex.exchange` no es un exchange
+centralizado de `GET /exchanges` (uno descentralizado incluido), `cex.segment` no es `spot`,
+`cex.dataType` no es `ticker` ni `klines`, o una `cadence` que no es ninguna de las etiquetas
+anteriores. Si el rango contiene datos, y si los contiene lo bastante finos para la `cadence`, se
+comprueba después, de forma asíncrona: ver `failed` abajo.
+
 ## Sondear una importación
 
 `GET /datasets/{datasetId}/imports/{importId}` — sondea tras `POST /datasets/imports` hasta que
@@ -343,7 +404,7 @@ subida.
 |---|---|
 | `status` | `fetching` (leyendo de la fuente, nada alojado todavía — el único estado que solo reporta una importación) → `ingesting` (buscado, alojado, el worker analiza/valida) → `ready` (`version` lleva el resultado) \| `failed` |
 | `jobId` | el id del job de búsqueda/ingesta, mientras `status` es `fetching` o `ingesting` |
-| `error` | motivo legible, presente cuando `status` es `failed` — un pool/par que no se resuelve, sin datos en el rango pedido, un rango más antiguo de lo que retiene la fuente, la búsqueda superando el límite de tiempo de tu plan, o cualquiera de los motivos del lado de ingesta que puede llevar `DatasetUploadState.error`, una vez que la búsqueda pasa el testigo a esa misma cadena. Se registra de forma duradera, igual que en la vía de subida |
+| `error` | motivo legible, presente cuando `status` es `failed` — un pool/par que no se resuelve, sin datos en el rango pedido, un rango más antiguo de lo que retiene la fuente, una `cadence` `cex` más fina que la que contiene el rango (el mensaje nombra la más fina), la búsqueda superando el límite de tiempo de tu plan, o cualquiera de los motivos del lado de ingesta que puede llevar `DatasetUploadState.error`, una vez que la búsqueda pasa el testigo a esa misma cadena. Se registra de forma duradera, igual que en la vía de subida |
 | `version` | una [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito), presente cuando `status` es `ready` o `failed` |
 
 ```bash
@@ -379,7 +440,7 @@ conjunto de datos.
 
 | Campo | Notas |
 |---|---|
-| `datasetId`, `name`, `type` (`"ticker"` \| `"klines"`), `instrument`, `createdAt`, `status` | siempre presentes. `type` es `"klines"` solo para una importación `dex` que pidió una `cadence` de velas; `"ticker"` para todo lo demás (subidas, e importaciones `dex` de cadencia nativa) |
+| `datasetId`, `name`, `type` (`"ticker"` \| `"klines"`), `instrument`, `createdAt`, `status` | siempre presentes. `type` es `"klines"` para una importación `dex` que pidió una `cadence` de velas y para una importación `cex` con `dataType: "klines"`; `"ticker"` para todo lo demás (subidas, importaciones `dex` de cadencia nativa e importaciones `cex` con `dataType: "ticker"`) |
 | `currentVersionId` | la versión finalizada e ingerida con éxito más reciente. **Ausente hasta que al menos una subida ha terminado de ingerirse** |
 | `status` | `ready` — `currentVersionId` está fijado y los campos de abajo lo describen; `failed` — el intento de subida o importación más reciente falló, no hay nada que leer todavía (consulta `error`); `pending` — nunca se intentó nada (recién creado, o una subida nunca se finalizó) |
 | `updatedAt` | cuándo cambió `currentVersionId` por última vez; ausente hasta que tiene un valor |

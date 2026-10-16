@@ -96,7 +96,9 @@ threshold rather than wait for hours that may never arrive.
 
 History is stored and served one UTC hour at a time. Each hourly segment can be downloaded as raw
 ticker events or as exchange-native klines, in QTSurfer's own **Lastra** columnar format or converted
-on demand to Parquet.
+on demand to Parquet. The hourly downloads cover the last 7 days, and the hour in progress is served
+provisionally, marked as such and replaced by the stored hour once there is one. Older history, or a
+range, is imported as a dataset of the exchange's history and downloaded like any other dataset.
 
 Lastra is open source. It is a columnar time-series file format with per-column codecs chosen for
 market data: ALP compression for decimal prices, delta-varint for regular timestamps, and ZSTD or

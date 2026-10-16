@@ -96,7 +96,7 @@ threshold rather than wait for hours that may never arrive.
 
 History is stored and served one UTC hour at a time. Each hourly segment can be downloaded as raw
 ticker events or as exchange-native klines, in QTSurfer's own **Lastra** columnar format or converted
-on demand to Parquet. The hourly downloads cover the last 7 days, and the hour in progress is served
+on demand to Parquet. The hourly downloads cover the last 7 days, and the hour in progress may be served
 provisionally, marked as such and replaced by the stored hour once there is one. Older history, or a
 range, is imported as a dataset of the exchange's history and downloaded like any other dataset.
 

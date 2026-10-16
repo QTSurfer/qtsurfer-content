@@ -3,7 +3,7 @@ title: Datos de mercado
 description: Descubre exchanges, instrumentos y datos históricos de mercado a través de la API REST.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8a0c5fb016d4e91afe5d06067b7b08f473b29012
+upstreamCommit: 4c99edbd203b0afd8a9d4e9c44270fb96b575a63
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-10-15T16:47:14Z'
 ---
@@ -128,15 +128,17 @@ Dos rutas devuelven bytes en lugar de JSON:
 | `GET /exchange/{exchangeId}/klines/{base}/{quote}` | Klines nativas del exchange agregadas de una hora UTC |
 
 Ambas requieren el parámetro de consulta `hour` en forma UTC `YYYY-MM-DDTHH`. Por ejemplo,
-`2026-01-15T10` cubre `[2026-01-15T10:00:00Z, 2026-01-15T11:00:00Z)`. El valor por defecto
-`format=lastra` es el formato columnar compacto propio de QTSurfer; `format=parquet` le pide al
+`2026-10-15T10` cubre `[2026-10-15T10:00:00Z, 2026-10-15T11:00:00Z)` (la hora tiene que estar
+dentro de los últimos 7 días, ver más abajo: lee el ejemplo como la forma del valor). El valor por
+defecto `format=lastra` es el formato columnar compacto propio de QTSurfer; `format=parquet` le pide al
 servicio que convierta el mismo segmento al vuelo. La respuesta es respectivamente
 `application/vnd.qtsurfer.lastra` o `application/vnd.apache.parquet`, y `Content-Disposition` aporta un
 nombre de fichero útil.
 
 ```bash
+# the hour has to be one of the last 7 days
 curl --fail --remote-name \
-  "https://api.qtsurfer.net/v1/exchange/binance/tickers/BTC/USDT?hour=2026-01-15T10&format=parquet" \
+  "https://api.qtsurfer.net/v1/exchange/binance/tickers/BTC/USDT?hour=2026-10-15T10&format=parquet" \
   -H "Authorization: Bearer $QTSURFER_JWT"
 ```
 
@@ -154,16 +156,18 @@ descarga cualquier conjunto de datos.
 
 ### La hora en curso y las últimas horas
 
-La hora en curso, y una hora que ya ha terminado pero todavía no está almacenada, se responden con
-lo recibido hasta ese momento: `200` con `X-Data-Status: provisional` y `X-Data-Through`, el
-instante de la última fila (una hora UTC ISO-8601, sea cual sea la unidad de `ts`). Las columnas, la
-unidad de tiempo y los formatos son los de cualquier otra hora. Una respuesta provisional todavía
+La hora en curso, y una hora que ya ha terminado pero todavía no está almacenada, pueden
+responderse con lo recibido hasta ese momento: `200` con `X-Data-Status: provisional` y
+`X-Data-Through`, el instante de la última fila (una hora UTC ISO-8601, sea cual sea la unidad de
+`ts`). No todos los despliegues del servicio dan respuestas provisionales: donde no las dan, esas
+horas son `404` con `NOT_YET_AVAILABLE` y un `Retry-After`, y un cliente que las necesite maneja
+ambos casos. Las columnas, la unidad de tiempo y los formatos son los de cualquier otra hora. Una respuesta provisional todavía
 puede crecer y la hora almacenada la sustituye en cuanto existe: úsala para la punta del mercado, no
 como registro de una hora. Tarda segundos en construirse, más cuanto más avanzada esté la hora, y el
 servicio limita cuántas construye a la vez, así que un `503` con `Retry-After` es una petición de
 volver a preguntar, no un fallo. Cuando no hay nada que dar, porque el instrumento aún no tiene
-filas en la hora o lo recibido no llega hasta el inicio de la hora, la respuesta es `404` con
-`NOT_YET_AVAILABLE`.
+filas en la hora o lo recibido no llega hasta el inicio de la hora, la respuesta es también `404`
+con `NOT_YET_AVAILABLE`.
 
 ### Marcas de tiempo
 
@@ -182,7 +186,7 @@ cliente se ramifica según `reason`, no según el texto de `message`.
 | --- | --- | --- | --- |
 | `400` | ninguno | `hour` ausente o no `YYYY-MM-DDTHH`, `format` desconocido, o una hora en el futuro | corrige la petición |
 | `400` | `OUTSIDE_WINDOW` | la hora es anterior a los últimos 7 días | envía `next`: la petición `POST /datasets/imports` que importa exactamente esa hora (añade un `name`) |
-| `404` | `NOT_YET_AVAILABLE` | la hora todavía no está almacenada y no hay nada provisional que dar para ella; lleva `Retry-After` | vuelve a preguntar pasados esos segundos |
+| `404` | `NOT_YET_AVAILABLE` | la hora todavía no está almacenada y no se dio una respuesta provisional para ella; lleva `Retry-After` | vuelve a preguntar pasados esos segundos |
 | `404` | `NO_DATA` | la hora está almacenada y no contiene nada para este instrumento | ninguna: no hay datos que obtener |
 | `503` | `TEMPORARILY_UNAVAILABLE` | se están limitando las lecturas (almacenadas o provisionales) y esta no se sirvió; lleva `Retry-After` | vuelve a preguntar pasados esos segundos |
 | `500` | ninguno | fallo inesperado; el mensaje no dice nada de su causa | reintenta más tarde |

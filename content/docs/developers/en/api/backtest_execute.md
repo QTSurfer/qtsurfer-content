@@ -3,7 +3,7 @@ title: Backtests
 description: Prepare historical data, execute a strategy, poll its result, and inspect its equity curve.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
+upstreamCommit: 8a0c5fb016d4e91afe5d06067b7b08f473b29012
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-09-26T17:40:02Z'
 ---
@@ -51,10 +51,10 @@ Sources that can be executed: ticker, kline`.
 
 ### Kline: you choose the bar width
 
-A kline run reads bars of exactly the `cadence` you prepared at — `1s` (the default), `1m`, `5m`,
-`15m`, `30m`, `1h`, `4h` or `1d` — whatever the strategy itself might suggest. The same strategy
-can therefore be run at several cadences by preparing the range once per cadence. Any other label
-(`5s`, `3m`, `8h`, ...) is `400` at prepare, and the message lists the accepted ones.
+A kline run reads bars of exactly the `cadence` you prepared at — `1s` (the default) up to `1q`, the
+same labels as for tickers (`5s`, `3m`, `8h`, `1w` among them) — whatever the strategy itself might
+suggest. The same strategy can therefore be run at several cadences by preparing the range once per
+cadence. A label that is not a whole number of seconds is `400` at prepare.
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/prepare \
@@ -87,7 +87,7 @@ Two shapes, chosen by the `exchangeId` path segment:
 | `instrument` | string | required **unless** `exchangeId` is the reserved value `user` |
 | `datasetId` | string | **only** for `exchangeId: user` — a dataset from `POST /datasets`, in place of `instrument` |
 | `datasetVersionId` | string | **only** for `exchangeId: user`, optional — pins a past version instead of the dataset's current one |
-| `cadence` | string | optional. Managed exchange, `ticker` or `funding`: one of `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — default `1s`. Managed exchange, `kline`: one of `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `1d` — default `1s`; any other label is `400`. `exchangeId: user`: default is the dataset version's own discovered cadence, served as-is; any cadence equal to or coarser than it and an exact multiple of it is accepted, even outside that list (e.g. `15s`), and an `rt` dataset resamples to any fixed cadence. Finer than the source, or not an exact multiple of it, is `400` |
+| `cadence` | string | optional. Managed exchange, `ticker` or `funding`: one of `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — default `1s`. Managed exchange, `kline`: the same labels — default `1s`; any other label is `400`. `exchangeId: user`: default is the dataset version's own discovered cadence, served as-is; any cadence equal to or coarser than it and an exact multiple of it is accepted, even outside that list (e.g. `15s`), and an `rt` dataset resamples to any fixed cadence. Finer than the source, or not an exact multiple of it, is `400` |
 
 `exchangeId: user` is reserved for your own uploaded data — see
 [`docs/datasets.md`](datasets).
@@ -206,16 +206,6 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
 # → 202 {"jobId": "4GmNN0i9..."}
 ```
 
-With a `baseConfig` override (capital and position size, instead of the platform defaults):
-
-```bash
-curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6","baseConfig":{"initialFunding":1000,"percentAmountToLock":10}}'
-# → 202 {"jobId": "7pQx91Ab..."}
-```
-
 Re-running a sweep leaderboard row for its curve, with `params`:
 
 ```bash
@@ -224,6 +214,16 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
   -H "Content-Type: application/json" \
   -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6","params":{"ema.fast.period":9,"ema.slow.period":21}}'
 # → 202 {"jobId": "9k2LpQi7..."}
+```
+
+With a `baseConfig` override (capital and position size, instead of the platform defaults):
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6","baseConfig":{"initialFunding":1000,"percentAmountToLock":10}}'
+# → 202 {"jobId": "7pQx91Ab..."}
 ```
 
 Errors: `400` invalid request, or a `type` that can't be executed yet (`funding`) · `404` prepare job

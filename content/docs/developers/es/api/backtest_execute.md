@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 5cf9a54eda871debd0efcb1f46ad5c99e1885f4a
+upstreamCommit: 8a0c5fb016d4e91afe5d06067b7b08f473b29012
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-09-26T17:40:02Z'
 ---
@@ -52,11 +52,11 @@ Sources that can be executed: ticker, kline`.
 
 ### Kline: tú eliges el ancho de la barra
 
-Una ejecución kline lee barras exactamente de la `cadence` con la que preparaste — `1s` (por
-defecto), `1m`, `5m`, `15m`, `30m`, `1h`, `4h` u `1d` — sea lo que sea que sugiera la propia
-estrategia. Por eso la misma estrategia se puede ejecutar a varias cadencias preparando el rango
-una vez por cadencia. Cualquier otra etiqueta (`5s`, `3m`, `8h`, ...) es `400` al preparar, y el
-mensaje enumera las aceptadas.
+Una ejecución kline lee barras exactamente de la `cadence` con la que preparaste — de `1s` (por
+defecto) hasta `1q`, las mismas etiquetas que para los tickers (entre ellas `5s`, `3m`, `8h` y
+`1w`) — sea lo que sea que sugiera la propia estrategia. Por eso la misma estrategia se puede
+ejecutar a varias cadencias preparando el rango una vez por cadencia. Una etiqueta que no sea un
+número entero de segundos es `400` al preparar.
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/prepare \
@@ -89,7 +89,7 @@ Dos formas, según el segmento de ruta `exchangeId`:
 | `instrument` | string | obligatorio **salvo** que `exchangeId` sea el valor reservado `user` |
 | `datasetId` | string | **solo** para `exchangeId: user` — un conjunto de datos de `POST /datasets`, en lugar de `instrument` |
 | `datasetVersionId` | string | **solo** para `exchangeId: user`, opcional — fija una versión pasada en lugar de la actual del conjunto de datos |
-| `cadence` | cadena | opcional. Exchange gestionado, `ticker` o `funding`: uno de `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — por defecto `1s`. Exchange gestionado, `kline`: uno de `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `1d` — por defecto `1s`; cualquier otra etiqueta es `400`. `exchangeId: user`: por defecto es la propia cadencia descubierta de la versión del conjunto de datos, servida tal cual; se acepta cualquier cadencia igual o más gruesa que ella y múltiplo exacto suyo, incluso fuera de esa lista (por ejemplo `15s`), y un conjunto de datos `rt` se remuestrea a cualquier cadencia fija. Más fina que el origen, o que no sea múltiplo exacto, es `400` |
+| `cadence` | cadena | opcional. Exchange gestionado, `ticker` o `funding`: uno de `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — por defecto `1s`. Exchange gestionado, `kline`: las mismas etiquetas — por defecto `1s`; cualquier otra etiqueta es `400`. `exchangeId: user`: por defecto es la propia cadencia descubierta de la versión del conjunto de datos, servida tal cual; se acepta cualquier cadencia igual o más gruesa que ella y múltiplo exacto suyo, incluso fuera de esa lista (por ejemplo `15s`), y un conjunto de datos `rt` se remuestrea a cualquier cadencia fija. Más fina que el origen, o que no sea múltiplo exacto, es `400` |
 
 `exchangeId: user` está reservado para tus propios datos subidos — consulta
 [`docs/datasets.md`](datasets).
@@ -215,6 +215,16 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
 # → 202 {"jobId": "4GmNN0i9..."}
 ```
 
+Reejecutar una fila de la clasificación de un barrido para obtener su curva, con `params`:
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6","params":{"ema.fast.period":9,"ema.slow.period":21}}'
+# → 202 {"jobId": "9k2LpQi7..."}
+```
+
 Con un `baseConfig` personalizado (capital y tamaño de posición, en vez de los valores por defecto
 de la plataforma):
 
@@ -224,16 +234,6 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
   -H "Content-Type: application/json" \
   -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6","baseConfig":{"initialFunding":1000,"percentAmountToLock":10}}'
 # → 202 {"jobId": "7pQx91Ab..."}
-```
-
-Reejecutar una fila de la clasificación de un barrido para obtener su curva, con `params`:
-
-```bash
-curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6","params":{"ema.fast.period":9,"ema.slow.period":21}}'
-# → 202 {"jobId": "9k2LpQi7..."}
 ```
 
 Errores: `400` petición inválida, o un `type` que aún no se puede ejecutar (`funding`) · `404`

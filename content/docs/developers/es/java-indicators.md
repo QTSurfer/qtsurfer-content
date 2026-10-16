@@ -4,7 +4,7 @@ description: Configura, compón y amplía el pipeline de indicadores en tiempo r
 order: 2
 lastUpdated: '2026-10-06T12:57:29Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: aa726ec584fa46b083b263c800ffbc55156a25d7
+upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 ---
 

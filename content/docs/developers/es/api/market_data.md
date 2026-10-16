@@ -3,7 +3,7 @@ title: Datos de mercado
 description: Descubre exchanges, instrumentos y datos históricos de mercado a través de la API REST.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 2b2052b6458381ee74c7795e378a9d6e6a41422a
+upstreamCommit: 4c99edbd203b0afd8a9d4e9c44270fb96b575a63
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-10-15T16:47:14Z'
 ---
@@ -128,22 +128,90 @@ Dos rutas devuelven bytes en lugar de JSON:
 | `GET /exchange/{exchangeId}/klines/{base}/{quote}` | Klines nativas del exchange agregadas de una hora UTC |
 
 Ambas requieren el parámetro de consulta `hour` en forma UTC `YYYY-MM-DDTHH`. Por ejemplo,
-`2026-01-15T10` cubre `[2026-01-15T10:00:00Z, 2026-01-15T11:00:00Z)`. El valor por defecto
-`format=lastra` es el formato columnar compacto propio de QTSurfer; `format=parquet` le pide al
+`2026-10-15T10` cubre `[2026-10-15T10:00:00Z, 2026-10-15T11:00:00Z)` (la hora tiene que estar
+dentro de los últimos 7 días, ver más abajo: lee el ejemplo como la forma del valor). El valor por
+defecto `format=lastra` es el formato columnar compacto propio de QTSurfer; `format=parquet` le pide al
 servicio que convierta el mismo segmento al vuelo. La respuesta es respectivamente
-`application/vnd.lastra` o `application/vnd.apache.parquet`, y `Content-Disposition` aporta un
+`application/vnd.qtsurfer.lastra` o `application/vnd.apache.parquet`, y `Content-Disposition` aporta un
 nombre de fichero útil.
 
 ```bash
+# the hour has to be one of the last 7 days
 curl --fail --remote-name \
-  "https://api.qtsurfer.net/v1/exchange/binance/tickers/BTC/USDT?hour=2026-01-15T10&format=parquet" \
+  "https://api.qtsurfer.net/v1/exchange/binance/tickers/BTC/USDT?hour=2026-10-15T10&format=parquet" \
   -H "Authorization: Bearer $QTSURFER_JWT"
 ```
 
 Usa un segmento de klines cuando baste con datos a nivel de barra; los tickers pueden ser mucho
-más grandes. Una hora o parámetro mal formados es `400`; una hora válida sin segmento almacenado
-es `404`. Los consumidores de descargas deberían transmitir la respuesta a disco o a un lector
+más grandes. Los consumidores de descargas deberían transmitir la respuesta a disco o a un lector
 compatible en lugar de acumular una hora entera en memoria.
+
+### Qué horas
+
+Los últimos 7 días: una hora que empezó como mucho 7 días antes de la petición y ya ha terminado.
+Las rutas dan una hora de un instrumento, rápido; no son la forma de obtener histórico más antiguo
+ni un rango. Para eso, [importa un conjunto de datos](datasets#importar-un-conjunto-de-datos-en-lugar-de-subirlo)
+con el histórico del exchange (`POST /datasets/imports` con `type: "cex"`) y descárgalo como se
+descarga cualquier conjunto de datos.
+
+### La hora en curso y las últimas horas
+
+La hora en curso, y una hora que ya ha terminado pero todavía no está almacenada, pueden
+responderse con lo recibido hasta ese momento: `200` con `X-Data-Status: provisional` y
+`X-Data-Through`, el instante de la última fila (una hora UTC ISO-8601, sea cual sea la unidad de
+`ts`). No todos los despliegues del servicio dan respuestas provisionales: donde no las dan, esas
+horas son `404` con `NOT_YET_AVAILABLE` y un `Retry-After`, y un cliente que las necesite maneja
+ambos casos. Las columnas, la unidad de tiempo y los formatos son los de cualquier otra hora. Una respuesta provisional todavía
+puede crecer y la hora almacenada la sustituye en cuanto existe: úsala para la punta del mercado, no
+como registro de una hora. Tarda segundos en construirse, más cuanto más avanzada esté la hora, y el
+servicio limita cuántas construye a la vez, así que un `503` con `Retry-After` es una petición de
+volver a preguntar, no un fallo. Cuando no hay nada que dar, porque el instrumento aún no tiene
+filas en la hora o lo recibido no llega hasta el inicio de la hora, la respuesta es también `404`
+con `NOT_YET_AVAILABLE`.
+
+### Marcas de tiempo
+
+En una respuesta Lastra la columna `ts` contiene **microsegundos** desde el epoch. Lo declaran los
+metadatos de la columna (`ts_unit: micros`) y también la cabecera de respuesta `X-Ts-Unit: micros`,
+de modo que un lector no tiene que adivinar la unidad por la magnitud. Una respuesta Parquet tiene
+su columna de marca de tiempo como `TIMESTAMP` en milisegundos.
+
+### Errores
+
+Una petición fallida responde con [`ResponseError`](/docs/api): `code` y `message` y, cuando la
+causa tiene un nombre estable, `reason`, y cuando hay una petición que permite superarla, `next`. Un
+cliente se ramifica según `reason`, no según el texto de `message`.
+
+| Estado | `reason` | Significado | Qué hacer |
+| --- | --- | --- | --- |
+| `400` | ninguno | `hour` ausente o no `YYYY-MM-DDTHH`, `format` desconocido, o una hora en el futuro | corrige la petición |
+| `400` | `OUTSIDE_WINDOW` | la hora es anterior a los últimos 7 días | envía `next`: la petición `POST /datasets/imports` que importa exactamente esa hora (añade un `name`) |
+| `404` | `NOT_YET_AVAILABLE` | la hora todavía no está almacenada y no se dio una respuesta provisional para ella; lleva `Retry-After` | vuelve a preguntar pasados esos segundos |
+| `404` | `NO_DATA` | la hora está almacenada y no contiene nada para este instrumento | ninguna: no hay datos que obtener |
+| `503` | `TEMPORARILY_UNAVAILABLE` | se están limitando las lecturas (almacenadas o provisionales) y esta no se sirvió; lleva `Retry-After` | vuelve a preguntar pasados esos segundos |
+| `500` | ninguno | fallo inesperado; el mensaje no dice nada de su causa | reintenta más tarde |
+
+```json
+{
+  "code": 400,
+  "message": "Hour older than 7 days: import it as a dataset",
+  "reason": "OUTSIDE_WINDOW",
+  "next": {
+    "method": "POST",
+    "path": "/datasets/imports",
+    "body": {
+      "type": "cex",
+      "instrument": "BTC/USDT",
+      "from": "2026-09-01T10:00:00Z",
+      "to": "2026-09-01T11:00:00Z",
+      "cex": { "exchange": "binance", "segment": "spot", "dataType": "klines" }
+    }
+  }
+}
+```
+
+`next.path` es relativa a la URL del servidor (la que ya termina en `/v1`). Lo que depende de ti y
+el servicio no puede conocer, como el `name` del conjunto de datos, se deja para que lo añadas tú.
 
 ## Guías relacionadas
 

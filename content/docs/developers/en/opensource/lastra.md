@@ -37,8 +37,8 @@ implementation, [lastra-java](https://github.com/QTSurfer/lastra-java).
 ## Getting a segment
 
 Both hourly routes return a file. `format=lastra` is the default; `format=parquet` converts the same
-segment on demand. See [Market data](/docs/developers/api/market_data) for the routes and the
-`hour` parameter.
+segment on demand. See [Market data](/docs/developers/api/market_data) for the routes, the
+`hour` parameter, and the hours they serve (the last 7 days).
 
 ```bash
 curl --fail --remote-name \
@@ -46,7 +46,9 @@ curl --fail --remote-name \
   -H "Authorization: Bearer $QTSURFER_JWT"
 ```
 
-Klines are much smaller than tickers; ask for the kline segment when bar-level data is enough.
+Use an `hour` from the last 7 days: the one above is only an example, and the sections below read a
+segment that was saved earlier. Klines are much smaller than tickers; ask for the kline segment when
+bar-level data is enough.
 
 ## Python
 
@@ -58,7 +60,7 @@ from lastra import LastraReader
 
 with open("binance_BTC-USDT_tickers_2026-01-15T10.lastra", "rb") as f:
     r = LastraReader.from_stream(f)
-    ts = r.read_series_long("ts")          # numpy int64, epoch milliseconds
+    ts = r.read_series_long("ts")          # numpy int64, epoch microseconds
     close = r.read_series_double("close")  # numpy float64
 ```
 
@@ -77,9 +79,13 @@ LOAD lastra;
 
 SELECT ts, close
 FROM 'binance_BTC-USDT_tickers_2026-01-15T10.lastra'
-WHERE ts BETWEEN 1768471200000 AND 1768472100000
+WHERE ts BETWEEN 1768471200000000 AND 1768472100000000
 LIMIT 100;
 ```
+
+In a segment downloaded from the API, `ts` holds microseconds since the epoch, which is why the
+bounds above have 16 digits. The column's `ts_unit` metadata and the `X-Ts-Unit` response header
+declare the unit.
 
 `read_lastra('file.lastra')` is the explicit table function behind the replacement scan.
 Because DuckDB can read over HTTP, the same query works against a remote file with range requests.
@@ -146,7 +152,7 @@ Arrow as a source and target.
 ## Related pages
 
 - [Market data](/docs/developers/api/market_data) — the routes that return segments.
-- [Datasets](/docs/developers/api/datasets) — uploading your own history as CSV.
+- [Datasets](/docs/developers/api/datasets) — uploading your own history, or importing an exchange's.
 - Learn: [Historical market data](/learn/articles/historical-market-data) — tickers versus klines,
   cadence, coverage, and gaps.
 - [Open source](/docs/developers/opensource) — every QTSurfer open-source project, with links.

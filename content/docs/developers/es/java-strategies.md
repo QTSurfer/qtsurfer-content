@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 1
 lastUpdated: '2026-10-06T12:57:29Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: aa726ec584fa46b083b263c800ffbc55156a25d7
+upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -480,11 +480,12 @@ usan `Ticker`, la fuente más habitual. Los tipos viven en `com.wualabs.qtsurfer
 | `AbstractMultiSourceStrategy` | Ticker + Kline + FundingRate | `onTicker` / `onKline` / `onFundingRate` | ⚠️ solo motor — aún no pública    |
 
 - **`AbstractKlineStrategy`** recibe velas. En un backtest el ancho de la barra es la `cadence` con
-  la que se prepararon los datos — `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h` o `1d` —, sea lo que sea
-  lo que devuelva `getInterval()` (un `KlineInterval`), así que una misma clase corre a cualquiera de
-  ellos. **Solo OHLCV** — los campos de tamaño del libro de órdenes, vwap y cambio porcentual no están disponibles
-  en esta vía. `Kline` es una clase simple, así que usa getters (`kline.getInstrument()`,
-  `kline.getCloseTime()`), a diferencia del record `Ticker`.
+  la que se prepararon los datos — de `1s` hasta `1q`, las mismas etiquetas que para los tickers
+  (entre ellas `5s`, `3m`, `8h` y `1w`) —, sea lo que sea lo que devuelva `getInterval()` (un
+  `KlineInterval`), así que una misma clase corre a cualquiera de ellos. **Solo OHLCV** — los campos
+  de tamaño del libro de órdenes, vwap y cambio porcentual no están disponibles en esta vía. `Kline`
+  es una clase simple, así que usa getters (`kline.getInstrument()`, `kline.getCloseTime()`), a
+  diferencia del record `Ticker`.
 - **`AbstractFundingRateStrategy`** recibe `update(FundingRate)` en cada actualización de la tasa
   de financiación. Los datos de funding se pueden preparar, pero un backtest o un barrido sobre ellos
   se rechaza por ahora con un `400` (`funding data can be prepared but not executed yet`) — se

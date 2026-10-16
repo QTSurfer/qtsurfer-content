@@ -5,6 +5,7 @@ order: 2
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
+lastUpdated: '2026-10-16T20:27:41Z'
 ---
 
 All methods below are on `InstrumentGroupRTIndicator` and return `this` for chaining.

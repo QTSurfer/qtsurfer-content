@@ -5,7 +5,7 @@ order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 4c99edbd203b0afd8a9d4e9c44270fb96b575a63
 upstreamPath: docs/market_data.md
-lastUpdated: '2026-10-15T16:47:14Z'
+lastUpdated: '2026-10-16T21:36:52Z'
 ---
 
 All market-data routes require a bearer JWT obtained from [authentication](https://github.com/QTSurfer/qtsurfer-api/blob/848593e88be3b80078c6f98d7cb582f22fd87853/README.md#api-quick-start).

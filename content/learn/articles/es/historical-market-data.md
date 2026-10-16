@@ -5,7 +5,7 @@ order: 13
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-09-16T17:59:09Z'
+lastUpdated: '2026-10-16T21:36:52Z'
 ---
 
 Un backtest solo es tan honesto como los datos que reproduce. Los **datos históricos de mercado** son

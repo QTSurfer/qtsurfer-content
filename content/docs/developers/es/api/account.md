@@ -3,13 +3,13 @@ title: Cuenta
 description: Consulta los límites de tu plan y tu uso de almacenamiento en vivo frente a ellos.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 980f8c3fda04438e24d5cb63f23bcd94f9abb7d4
+upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
 upstreamPath: docs/account.md
 lastUpdated: '2026-09-30T11:20:35Z'
 ---
 
 Todas las rutas de cuenta requieren un JWT tipo bearer obtenido mediante
-[autenticación](https://github.com/QTSurfer/qtsurfer-api/blob/848593e88be3b80078c6f98d7cb582f22fd87853/README.md#api-quick-start).
+[autenticación](auth).
 Dividido en dos endpoints a propósito: tu plan y sus límites no cambian a mitad de sesión y no
 cuesta nada consultarlos, mientras que el uso es una cifra en vivo que cambia con cada subida de
 conjunto de datos o ejecución de estrategia.
@@ -33,6 +33,7 @@ curl https://api.qtsurfer.net/v1/account \
 {
   "userId": "00000000-0000-0000-0000-000000000000",
   "tier": "free",
+  "scopes": { "backtests": ["read", "write", "execute"], "exchanges": ["read"] },
   "maxExecute": 10,
   "maxRangeDays": 7,
   "maxSweepCartesian": 100,
@@ -51,6 +52,7 @@ curl https://api.qtsurfer.net/v1/account \
 |---|---|
 | `userId` | tu id de cuenta — la claim `sub` del JWT |
 | `tier` | tu plan de suscripción actual |
+| `scopes` | lo que puede hacer tu clave de API: un mapa de un recurso a sus acciones, en minúsculas; `{}` para una clave sin ninguno. Es el mismo mapa que el `scopes` de la respuesta del token, sin pedir un token nuevo. Consulta [Autenticación y alcances](auth#alcances) |
 | `maxExecute` | número máximo de ejecuciones de estrategia (y barridos) que puedes tener corriendo a la vez a través de la API. Arrancar una por encima de este número se responde con `429`, cuyo mensaje lleva el mismo número. El valor ya incluye el margen de API que tenga tu plan |
 | `maxRangeDays` | longitud máxima, en días, del rango de tiempo de un backtest sobre uno de tus propios [conjuntos de datos](datasets) |
 | `maxSweepCartesian` | cuadrícula completa más grande, en combinaciones de parámetros, que un [barrido](backtest_sweep#qué-tamaño-puede-tener-una-cuadrícula) puede ejecutar con el muestreador `grid`. Una cuadrícula mayor se rechaza con `400`; los muestreadores `random` y `lhs` no están sujetos a él |

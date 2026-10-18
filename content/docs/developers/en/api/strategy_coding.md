@@ -3,7 +3,7 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 5f4d00241f67a315bb161db2e3be3990adf7fb8a
+upstreamCommit: ce38028bdd98e813240435b9eb9ae5463b263393
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-10-15T12:10:55Z'
 ---
@@ -268,7 +268,7 @@ See [Commands](live#commands) for the request/response shape and error codes.
 - [QTScript (beta)](qtscript) — the same strategies written with the ceremony left out.
 - [Strategies](strategy) — compile, validate, list and read back a strategy, in either language.
 
-[engine-javadoc]: https://qtsurfer.github.io/qtsurfer-engine-java-docs/
-[market-hint-javadoc]: https://qtsurfer.github.io/qtsurfer-engine-java-docs/com/wualabs/qtsurfer/engine/strategy/event/signal/MarketHintSignal.html
-[signal-javadoc]: https://qtsurfer.github.io/qtsurfer-engine-java-docs/com/wualabs/qtsurfer/engine/strategy/event/signal/package-summary.html
+[engine-javadoc]: https://www.qtsurfer.com/docs/developers/java-api
+[market-hint-javadoc]: https://www.qtsurfer.com/docs/developers/java-api/reference/latest/com/wualabs/qtsurfer/engine/strategy/event/signal/MarketHintSignal.html
+[signal-javadoc]: https://www.qtsurfer.com/docs/developers/java-api/reference/latest/com/wualabs/qtsurfer/engine/strategy/event/signal/package-summary.html
 [strategy-skill]: https://github.com/QTSurfer/strategy-skills

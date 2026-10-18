@@ -3,7 +3,7 @@ title: Authentication and scopes
 description: Exchange your API key for a token, and see what the scopes of your key allow.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
+upstreamCommit: f0ef58ee1f61cc1a7337f9fdad69114dfd7664fa
 upstreamPath: docs/auth.md
 lastUpdated: '2026-10-18T10:27:25Z'
 ---
@@ -55,9 +55,9 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
   `scopes` of [`GET /account`](account#getting-your-tier-and-limits), which needs no new token.
 - The token carries the scopes your key had when it was issued. Change the key's scopes and the
   change shows from the next token on, at most `expires_in` seconds later.
-- **Today the API reports the scopes of a key; it does not yet refuse an operation because a scope
-  is missing.** The tables below are what each operation will require once it does, so a key can be
-  given the scopes it needs ahead of time.
+- **An operation that needs a scope your key does not carry is refused** with `403` and the code
+  `insufficient_scope` ([below](#when-a-scope-is-missing)). The tables below say which scope each
+  operation requires.
 
 ### Resources and actions
 
@@ -114,3 +114,17 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
 
 **No scope:** `GET /account` and `GET /account/usage` need a valid token and nothing more;
 `GET /live/public` needs no token at all.
+
+### When a scope is missing
+
+```json
+{
+  "code": "insufficient_scope",
+  "message": "This API key does not have the scope datasets:write.",
+  "required": "datasets:write"
+}
+```
+
+The answer is `403` and `required` names the scope the operation needs, as `resource:action`. Give
+the key that scope in the web app, then ask for a new token: the scopes of a token are the ones the
+key had when it was issued, so a token you already hold keeps the old ones until it expires.

@@ -3,12 +3,12 @@ title: Account
 description: Check your tier's limits and your live storage usage against them.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 980f8c3fda04438e24d5cb63f23bcd94f9abb7d4
+upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
 upstreamPath: docs/account.md
 lastUpdated: '2026-09-30T11:20:35Z'
 ---
 
-All account routes require a bearer JWT obtained from [authentication](https://github.com/QTSurfer/qtsurfer-api/blob/848593e88be3b80078c6f98d7cb582f22fd87853/README.md#api-quick-start).
+All account routes require a bearer JWT obtained from [authentication](auth).
 Split into two endpoints on purpose: your tier and its limits never change mid-session and cost
 nothing to fetch, while usage is a live figure that changes on every dataset upload or strategy
 execution.
@@ -31,6 +31,7 @@ curl https://api.qtsurfer.net/v1/account \
 {
   "userId": "00000000-0000-0000-0000-000000000000",
   "tier": "free",
+  "scopes": { "backtests": ["read", "write", "execute"], "exchanges": ["read"] },
   "maxExecute": 10,
   "maxRangeDays": 7,
   "maxSweepCartesian": 100,
@@ -49,6 +50,7 @@ curl https://api.qtsurfer.net/v1/account \
 |---|---|
 | `userId` | your account id — the JWT `sub` claim |
 | `tier` | your current subscription tier |
+| `scopes` | what your API key may do: a map from a resource to its actions, in lower case; `{}` for a key with none. The same map as the `scopes` of the token answer, without asking for a new token. See [Authentication and scopes](auth#scopes) |
 | `maxExecute` | maximum number of strategy executions (and sweeps) you can have running at the same time through the API. Starting one past this number is answered with `429`, whose message carries the same number. The value already includes any API allowance your plan has |
 | `maxRangeDays` | maximum length, in days, of the time range of a backtest on one of your own [datasets](datasets) |
 | `maxSweepCartesian` | largest full grid, in parameter combinations, a [sweep](backtest_sweep#how-large-a-grid-may-be) may run with the `grid` sampler. A larger grid is refused with `400`; the `random` and `lhs` samplers are not held to it |

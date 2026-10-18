@@ -3,12 +3,12 @@ title: Market data
 description: Discover exchanges, instruments, and historical market data through the REST API.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 4c99edbd203b0afd8a9d4e9c44270fb96b575a63
+upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-10-16T21:36:52Z'
 ---
 
-All market-data routes require a bearer JWT obtained from [authentication](https://github.com/QTSurfer/qtsurfer-api/blob/848593e88be3b80078c6f98d7cb582f22fd87853/README.md#api-quick-start).
+All market-data routes require a bearer JWT obtained from [authentication](auth).
 They expose the exchange catalogue and historical data that QTSurfer manages; they do not submit a
 backtest or create server-side state.
 

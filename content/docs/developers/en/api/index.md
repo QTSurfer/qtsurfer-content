@@ -13,6 +13,7 @@ schemas, authentication requirements, and endpoint groups.
 
 ## Implementation guides
 
+- [Authentication and scopes](/docs/developers/api/auth) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/auth.md)
 - [Java strategy coding](/docs/developers/api/strategy_coding) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy_coding.md)
 - [QTScript (beta)](/docs/developers/api/qtscript) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/qtscript.md)
 - [Strategies](/docs/developers/api/strategy) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy.md)

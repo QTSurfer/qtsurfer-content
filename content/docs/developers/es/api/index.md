@@ -13,6 +13,7 @@ solicitud y respuesta, los requisitos de autenticación y los grupos de endpoint
 
 ## Guías de implementación
 
+- [Autenticación y alcances](/docs/developers/api/auth) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/auth.md)
 - [Programación de estrategias Java](/docs/developers/api/strategy_coding) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy_coding.md)
 - [QTScript (beta)](/docs/developers/api/qtscript) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/qtscript.md)
 - [Estrategias](/docs/developers/api/strategy) · [fuente](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy.md)

@@ -42,6 +42,11 @@ Si la clave falta o se rechaza, el servidor termina con un error claro antes de 
 herramienta, así que el fallo aparece en la lista de servidores del asistente en lugar de como un
 error de herramienta confuso más adelante.
 
+Crea la clave con los alcances que necesite tu trabajo. La API rechaza una operación cuyo alcance no
+lleva la clave (`403`, `insufficient_scope`), y una clave sin alcances se rechaza al canjearla por un
+token. [Autenticación y alcances](/docs/developers/api/auth) lista el alcance que exige cada
+operación.
+
 ## Conectar un asistente
 
 Claude Code lee `~/.claude.json`:

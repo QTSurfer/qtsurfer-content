@@ -3,7 +3,7 @@ title: Autenticación y alcances
 description: Cambia tu clave de API por un token y consulta qué permiten los alcances de tu clave.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
+upstreamCommit: f0ef58ee1f61cc1a7337f9fdad69114dfd7664fa
 upstreamPath: docs/auth.md
 lastUpdated: '2026-10-18T10:27:25Z'
 ---
@@ -58,9 +58,9 @@ minúsculas.
   `scopes` de [`GET /account`](account#obtener-tu-plan-y-sus-límites), que no necesita un token nuevo.
 - El token lleva los alcances que tenía tu clave cuando se emitió. Cambia los alcances de la clave y
   el cambio se ve desde el siguiente token, como mucho `expires_in` segundos después.
-- **Hoy la API informa de los alcances de una clave; todavía no rechaza una operación porque falte
-  un alcance.** Las tablas de abajo son lo que exigirá cada operación cuando lo haga, de modo que se
-  puede dar a una clave los alcances que necesita con antelación.
+- **Una operación que necesita un alcance que tu clave no lleva se rechaza** con `403` y el código
+  `insufficient_scope` ([más abajo](#cuando-falta-un-alcance)). Las tablas de abajo dicen qué alcance
+  exige cada operación.
 
 ### Recursos y acciones
 
@@ -117,3 +117,18 @@ una ejecución: un backtest, un barrido, una ejecución en vivo.
 
 **Sin alcance:** `GET /account` y `GET /account/usage` necesitan un token válido y nada más;
 `GET /live/public` no necesita ningún token.
+
+### Cuando falta un alcance
+
+```json
+{
+  "code": "insufficient_scope",
+  "message": "This API key does not have the scope datasets:write.",
+  "required": "datasets:write"
+}
+```
+
+La respuesta es `403` y `required` nombra el alcance que necesita la operación, como
+`resource:action`. Da ese alcance a la clave en la aplicación web y luego pide un token nuevo: los
+alcances de un token son los que tenía la clave cuando se emitió, así que un token que ya tienes
+conserva los antiguos hasta que caduca.

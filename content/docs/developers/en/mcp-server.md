@@ -40,6 +40,11 @@ key for a short-lived token and refreshes it for the lifetime of the process. If
 or rejected, the server exits with a clear error before exposing any tools, so the failure shows
 up in the assistant's server list rather than as a confusing tool error later.
 
+Create the key with the scopes the work needs. The API refuses an operation whose scope the key
+does not carry (`403`, `insufficient_scope`), and a key with no scopes is refused when it is
+exchanged for a token. [Authentication and scopes](/docs/developers/api/auth) lists the scope each
+operation requires.
+
 ## Connect an assistant
 
 Claude Code reads `~/.claude.json`:

@@ -5,6 +5,7 @@ order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
 upstreamPath: docs/auth.md
+lastUpdated: '2026-10-18T10:27:25Z'
 ---
 
 Todas las rutas, salvo `POST /auth/token` y el catálogo público `GET /live/public`, esperan un JWT

@@ -5,7 +5,7 @@ order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
 upstreamPath: docs/account.md
-lastUpdated: '2026-09-30T11:20:35Z'
+lastUpdated: '2026-10-18T10:27:25Z'
 ---
 
 Todas las rutas de cuenta requieren un JWT tipo bearer obtenido mediante

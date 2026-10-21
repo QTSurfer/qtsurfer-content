@@ -4,7 +4,7 @@ description: Aplica filtros, salidas, transiciones de estado y cálculos a nivel
 order: 3
 lastUpdated: '2026-10-16T20:27:41Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
+upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
 ---
 
@@ -249,5 +249,6 @@ Helpers de `AbstractTickerStrategy`:
 
 - `getInstruments()` — el conjunto de instrumentos que la estrategia está rastreando.
 - `getRTIndicator(instrument, name)` → `Optional<RTIndicator>` — el indicador con ese nombre de
-  cualquier instrumento (solo lectura, sin re-actualizar).
+  cualquier instrumento, el vivo: leerlo no lo actualiza de nuevo, y `.map(RTIndicator::ro)` da una vista de solo
+  lectura.
 - Llama siempre a `super.update(ticker)` **primero** — omítelo y los indicadores nunca avanzan.

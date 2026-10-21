@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 3e0dfcd007da4ca601b493783c494b69ecd5cc7a
+upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-10-15T12:10:55Z'
 ---
@@ -67,9 +67,29 @@ vigila en una ventana de un minuto, emitiendo una señal en cada umbral.
 | `param` | Un valor configurable. El tipo sale del literal (`9` → `int`, `0.5` → `double`, `true` → `boolean`, `"texto"` → `String`). **El nombre es la clave** que usan los `params` de una ejecución y un eje de barrido | `param rsiBajo = 30 "Sobrevendido"` |
 | `init { }` | Opcional. Java tal cual, se ejecuta una vez al construir la estrategia — setters del motor | `init { setPercentGain(0.5); }` |
 | `instruments` | Opcional. Qué mercados: pares (`BASE/QUOTE`, cualquiera de los dos lados puede ser `*`), expresiones regulares (`~"..."`, comparadas contra el símbolo completo), o un cuerpo Java para control total | `instruments */usdt` · `instruments btc/usdt, eth/*` |
-| `setup:` | Los indicadores, **una llamada al builder por línea** (el mismo catálogo que usa una estrategia Java). Las líneas bajo `setup:` van indentadas, y la primera línea que vuelve a la columna 0 cierra la sección | `ema(12)` · `bollinger(20, 2)` |
+| `setup:` | Los indicadores, **una llamada al builder por línea** (el catálogo libre del builder que usa una estrategia Java, [listado abajo](#qué-va-bajo-setup)). Las líneas bajo `setup:` van indentadas, y la primera línea que vuelve a la columna 0 cierra la sección | `ema(12)` · `bollinger(20, 2)` |
 | Ventanas | Donde va la lógica — consulta abajo | `rsi(14) window m1 { ... }` |
 | `onCommand { }` | Opcional, como mucho una por fichero. Corre cuando la ejecución recibe un [comando](live#comandos) — consulta abajo | `onCommand { if ("flatten".equals($command)) ... }` |
+
+### Qué va bajo `setup:`
+
+Cada línea es una llamada al builder de indicadores que una estrategia Java configura en `setupIndicators`,
+[`InstrumentGroupRTIndicator`](https://www.qtsurfer.com/docs/developers/java-api/reference/latest/com/wualabs/qtsurfer/engine/indicators/helpers/group/InstrumentGroupRTIndicator.html),
+escrita sin el punto. Estos son los nombres que funcionan:
+
+`add` `bollinger` `bollingerBandwidth` `cci` `clamp` `conditional` `diff` `distance` `distanceMa` `ema` `equal`
+`gain` `greatOrEqual` `greatThan` `lessOrEqual` `lessThan` `loss` `macd` `max` `min` `mul` `notEqual`
+`percentChange` `rateChange` `round` `rsi` `sma` `stochRsi` `sum`
+
+Los argumentos que admite cada uno están en el Javadoc del builder. Una llamada cuyos argumentos no encajan con
+ninguna de sus formas se rechaza indicando las que sí existen: `ema(1, 2, 3)` responde que sus formas son
+`ema(int)`, `ema(String, int)` y `ema(String, String, int)`. Los métodos del builder que reciben una función
+(`predicate`, `fun`, `decorate`, `periodCount`) solo se pueden escribir en Java.
+
+Un nombre que no está en la lista no es un indicador que puedas usar aquí, y la estrategia se rechaza con
+`unknown indicator '<nombre>'`: `atr`, `wma`, `adx` y `zscore` están entre los nombres que responden así. Lo mismo
+ocurre con `value("nombre")`, que lee un indicador dentro de un cuerpo `{ }` y no tiene sentido en una línea de
+`setup:`.
 
 ## Ventanas
 
@@ -98,6 +118,45 @@ Main m1 {
   if (actual > prev) emitBuy(price);
 }
 ```
+
+### La ventana te da el valor anterior
+
+Una ventana se dispara cuando cierra su periodo, así que `prev` es el valor que tenía el indicador cuando cerró la
+ventana **anterior** y `actual` es su valor ahora: el `close[1]` de otras herramientas. Un cruce, o cualquier otra
+cosa que compare un cierre con el anterior, no necesita guardar nada en el [store](#dentro-de-un-cuerpo); el valor
+anterior ya está en ámbito.
+
+Esto entra cuando el RSI vuelve a subir por encima de un nivel, una sola vez, en la ventana en la que ocurre:
+
+```
+strategy "RSI re-entry"
+
+param nivel = 30 "Nivel que hay que volver a superar"
+
+setup:
+  rsi(14) window m1 {
+    if (prev < nivel && actual >= nivel) emitBuy(price);
+  }
+```
+
+En una estrategia `kline`, una ventana sobre `close` te da el cierre de la barra anterior como `prev`, que es lo que
+necesita el rango verdadero junto a los `high` y `low` de la propia barra:
+
+```
+strategy "True range" kline
+
+setup:
+  window close m1 {
+    double trueRange = Math.max(high - low, Math.max(Math.abs(high - prev), Math.abs(low - prev)));
+    emitInfo("trueRange", trueRange);
+  }
+```
+
+La primera vez que se dispara una ventana no hay una ventana anterior con la que comparar: `prev` es el valor que
+tenía el indicador cuando se abrió esa primera ventana. Una regla que necesite dos cierres reales debe dejar pasar
+el primer disparo, y un indicador con periodo de calentamiento, como un RSI o una EMA, tampoco se ha asentado en
+sus primeras ventanas. Reserva el store para lo que una ventana no te puede dar: una marca, un contador, un valor de
+varias ventanas atrás.
 
 ### En qué indicador está una ventana
 
@@ -133,7 +192,7 @@ Tu Java, más lo que ya está en ámbito — nada necesita importarse:
 
 | En ámbito | Qué es |
 |---|---|
-| `actual`, `prev` | el valor nuevo y el anterior de la ventana |
+| `actual`, `prev` | el valor nuevo de la ventana y el que tenía cuando cerró la ventana anterior — [consulta arriba](#la-ventana-te-da-el-valor-anterior) |
 | `price` (ticker) · `price open high low close volume` (kline) · `rate` (funding) | los valores actuales, como variables normales |
 | `value("nombre")` | el valor actual de cualquier otro indicador |
 | `$indicator` | el nombre del indicador en el que está esta ventana, como un `String` — [ver arriba](#en-qué-indicador-está-una-ventana) |
@@ -236,6 +295,19 @@ propio.
 
 Una estrategia Java implementa el mismo contrato directamente, mediante `CommandRequestHandler` — consulta
 [Programar estrategias en Java](strategy_coding#recibir-comandos).
+
+## Dimensionado
+
+Una estrategia dice cuándo y en qué sentido, no cuánto. `emitBuy(price)` y `emitSell(price)` llevan un precio y nada
+más, y ninguna llamada pone una cantidad ni un nocional en una señal. El tamaño de cada entrada es un ajuste de la
+ejecución, `percentAmountToLock`: el porcentaje del saldo libre de la cuenta que bloquea una entrada, por encima de
+0 y hasta 100.
+
+Dónde se da depende de la ejecución: `baseConfig` en un [backtest](backtest_execute) o un
+[barrido](backtest_sweep), el bloque `paper` en una [ejecución en vivo en papel](live_paper). Si se omite, un
+backtest pone todo el saldo libre en cada entrada y la cuenta en papel de una ejecución en vivo bloquea el 10 %.
+Para ver cómo se comporta una estrategia con otro tamaño, vuelve a ejecutarla con otro `percentAmountToLock`; el
+fichero no cambia.
 
 ## Ejecutarla
 

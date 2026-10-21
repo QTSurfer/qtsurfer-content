@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: ce38028bdd98e813240435b9eb9ae5463b263393
+upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-10-18T18:11:36Z'
 ---
@@ -40,6 +40,10 @@ Estas familias de señales tienen efectos distintos:
 | `SellSignal` | Expresa una instrucción de venta y su configuración de orden | Sí |
 | `InfoStrategySignal` | Registra indicadores, diagnósticos o metadatos de visualización | No |
 
+Las tres están en `com.wualabs.qtsurfer.engine.strategy.event.signal`, y una estrategia que nombra una la importa
+desde ahí: `import com.wualabs.qtsurfer.engine.strategy.event.signal.InfoStrategySignal;`, igual que `BuySignal`
+más abajo. Si solo usas `emitBuy`, `emitSell` y `emitInfo`, que nunca nombran el tipo, no hace falta ningún import.
+
 Una señal de información etiquetada `BUY` sigue siendo solo información. A la inversa,
 `emitBuy(price)` emite una señal de compra ejecutable aunque no lleve metadatos de gráfico
 adjuntos.
@@ -49,6 +53,8 @@ señal de información en cada actualización de ventana para poder inspeccionar
 indicadores, pero solo emite una compra o venta cuando cruzan las medias móviles:
 
 ```java
+import com.wualabs.qtsurfer.engine.strategy.event.signal.InfoStrategySignal;
+
 InfoStrategySignal signal = createInfoSignal();
 signal.set("fast", fast);
 signal.set("slow", slow);
@@ -147,6 +153,19 @@ Los mismos campos se aplican de forma simétrica a una entrada en corto. Una con
 evalúa el motor de forma repetida y puede suprimir el stop hasta que una condición más amplia de la
 estrategia lo permita. Es lógica de estrategia en vivo, no datos de señal serializables.
 
+## Dimensionado
+
+Una estrategia dice cuándo y en qué sentido, no cuánto. `emitBuy(price)` y `emitSell(price)` llevan un precio y nada
+más, y ninguna llamada pone una cantidad ni un nocional en una señal. El tamaño de cada entrada es un ajuste de la
+ejecución, `percentAmountToLock`: el porcentaje del saldo libre de la cuenta que bloquea una entrada, por encima de
+0 y hasta 100.
+
+Dónde se da depende de la ejecución: `baseConfig` en un [backtest](backtest_execute) o un
+[barrido](backtest_sweep), el bloque `paper` en una [ejecución en vivo en papel](live_paper). Si se omite, un
+backtest pone todo el saldo libre en cada entrada y la cuenta en papel de una ejecución en vivo bloquea el 10 %.
+Para ver cómo se comporta una estrategia con otro tamaño, vuelve a ejecutarla con otro `percentAmountToLock`; la
+clase no cambia.
+
 ## Información y metadatos de gráfico
 
 `createInfoSignal()` es azúcar sintáctico local al listener: crea una `InfoStrategySignal` ya
@@ -154,6 +173,8 @@ vinculada a la estrategia y el instrumento actuales. Rellénala con `set` y emí
 lista:
 
 ```java
+import com.wualabs.qtsurfer.engine.strategy.event.signal.InfoStrategySignal;
+
 InfoStrategySignal signal = createInfoSignal();
 signal.set("price", price);
 signal.set("fast", fast);
@@ -202,6 +223,144 @@ Usa la forma más larga `createInfoSignal()` cuando un evento necesite varios va
 nivel o metadatos de marcador. Las señales de información son útiles para explicar una decisión,
 pero nunca sustituyen al `emitBuy` o `emitSell` correspondiente cuando la estrategia tiene que
 operar.
+
+## Listeners de ventana y el valor anterior
+
+Un listener de ventana se dispara una vez cuando cierra su periodo, y `onChange` recibe el valor del indicador en ese
+momento, `actual`, y el que tenía cuando cerró la ventana **anterior**, `prev`: el `close[1]` de otras herramientas.
+Un cruce, o cualquier otra cosa que compare un cierre con el anterior, no necesita guardar nada en el `StateStore`.
+
+Esto entra cuando el RSI vuelve a subir por encima de 30, una sola vez, en la ventana en la que ocurre:
+
+```java
+import com.wualabs.qtsurfer.engine.core.state.StateStore;
+import com.wualabs.qtsurfer.engine.indicators.helpers.WindowTimeRTIndicator.WindowTime;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.strategy.AbstractTickerStrategy;
+import com.wualabs.qtsurfer.engine.strategy.AbstractWindowListener;
+
+public class RsiReentry extends AbstractTickerStrategy {
+
+    @Override
+    protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
+        indicators
+            .addPrice()
+            .rsi(14)
+            .window("rsi14", WindowTime.m1, new Reentry(this, indicators));
+    }
+
+    private class Reentry extends AbstractWindowListener {
+
+        public Reentry(AbstractTickerStrategy strategy, InstrumentGroupRTIndicator indicators) {
+            super(strategy, indicators);
+        }
+
+        @Override
+        public void onChange(StateStore store, double prev, double actual) {
+            if (prev < 30 && actual >= 30) emitBuy(indicators.getValue("price"));
+        }
+    }
+}
+```
+
+En una estrategia kline, una ventana sobre `close` te da el cierre de la barra anterior como `prev`, que es lo que
+necesita el rango verdadero junto a los `high` y `low` de la propia barra. Los campos de la barra también son
+indicadores, y se registran a partir de un `KlineValueSource`:
+
+```java
+import com.wualabs.qtsurfer.engine.core.KlineInterval;
+import com.wualabs.qtsurfer.engine.core.state.StateStore;
+import com.wualabs.qtsurfer.engine.indicators.core.KlineValueSource;
+import com.wualabs.qtsurfer.engine.indicators.helpers.WindowTimeRTIndicator.WindowTime;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.strategy.AbstractKlineStrategy;
+import com.wualabs.qtsurfer.engine.strategy.AbstractWindowListener;
+
+public class TrueRange extends AbstractKlineStrategy {
+
+    @Override
+    public KlineInterval getInterval() {
+        return KlineInterval.s1;
+    }
+
+    @Override
+    protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
+        indicators
+            .add("high", KlineValueSource.High)
+            .add("low", KlineValueSource.Low)
+            .add("close", KlineValueSource.Close)
+            .window("close", WindowTime.m1, new Range(this, indicators));
+    }
+
+    private class Range extends AbstractWindowListener {
+
+        public Range(AbstractKlineStrategy strategy, InstrumentGroupRTIndicator indicators) {
+            super(strategy, indicators);
+        }
+
+        @Override
+        public void onChange(StateStore store, double prev, double actual) {
+            double high = indicators.getValue("high");
+            double low = indicators.getValue("low");
+            double trueRange = Math.max(high - low, Math.max(Math.abs(high - prev), Math.abs(low - prev)));
+            emitInfo("trueRange", trueRange);
+        }
+    }
+}
+```
+
+Una estrategia kline en Java tiene que sobrescribir `getInterval()`: la clase base lo deja abstracto, y una fuente
+sin él se rechaza. En un backtest el ancho de barra no es lo que devuelve, sino el `cadence` con el que se
+prepararon los datos, así que `KlineInterval.s1` sirve para cualquier ejecución; a una estrategia `kline` de
+[QTScript](qtscript#velas) se le escribe este método.
+
+La primera vez que se dispara una ventana no hay una ventana anterior con la que comparar: `prev` es el valor que
+tenía el indicador cuando se abrió esa primera ventana. Una regla que necesite dos cierres reales debe dejar pasar
+el primer disparo, y un indicador con periodo de calentamiento, como un RSI o una EMA, tampoco se ha asentado en sus
+primeras ventanas. Reserva el `StateStore` para lo que una ventana no te puede dar: una marca, un contador, un valor
+de varias ventanas atrás. Un listener que solo necesita el store, `prev` y `actual` puede ser una lambda; uno que
+emite una señal extiende `AbstractWindowListener`, como arriba.
+
+## Leer indicadores desde update()
+
+Una estrategia que sobrescribe `update()` en lugar de usar ventanas avanza ella misma los indicadores con
+`updateIndicators(instrument, source)`. Devuelve el mapa de indicadores del instrumento, un
+`InstrumentMapRTIndicator`, no un indicador: escribe `var`, o este tipo, y lee cada indicador de él por su nombre.
+
+```java
+import com.wualabs.qtsurfer.engine.core.Ticker;
+import com.wualabs.qtsurfer.engine.core.instrument.Instrument;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentMapRTIndicator;
+
+@Override
+public void update(Ticker ticker) {
+    Instrument instrument = ticker.instrument();
+    updateInstrument(instrument, ticker.timestamp());
+    InstrumentMapRTIndicator indicators = updateIndicators(instrument, ticker);
+
+    if (!indicators.getReadOnlyExisting("emaSlow").isReady()) return;   // espera al calentamiento
+
+    double fast = indicators.getValue("emaFast");
+    double slow = indicators.getValue("emaSlow");
+    // ...
+}
+```
+
+`getReadOnlyExisting(name)` devuelve una vista de solo lectura: lee el valor del indicador vivo e ignora
+`update(...)`, sin dar error, así que nada en `update()` puede cambiar por accidente el valor de un indicador
+compartido, que es lo que quiere una estrategia que solo lee valores. `getExisting(name)` devuelve el indicador vivo:
+un `update` o un `reset` sobre él cambia la serie para todos los que la leen, y nada lo avisa. Las dos lanzan una
+excepción si no hay ningún indicador con ese nombre. No escribas el tipo del mapa como `RichRTIndicator`, la interfaz
+para escribir un indicador propio: el mapa no la implementa, y el compilador responde `incompatible types`. El
+`cannot find symbol` para `getExisting` que le sigue es una consecuencia, y la respuesta lo dice debajo.
+`RTIndicator` sí compila, porque el mapa lo es, pero oculta `getExisting` y `getReadOnlyExisting`, que solo tiene el
+mapa.
+
+`updateIndicators` por sí solo no publica señales: una estrategia que lo llama desde su propio `update()` opera con
+normalidad y deja vacías las señales que guarda un backtest. Para conservarlas, llama primero a
+`super.update(ticker)`, que ya hace `updateInstrument` y `updateIndicators`, y lee los indicadores con
+`getRTIndicator(instrument, name)`. Devuelve el indicador vivo dentro de un `Optional`, no una vista de solo lectura;
+`.map(RTIndicator::ro)` da la vista.
 
 ## Recibir comandos
 

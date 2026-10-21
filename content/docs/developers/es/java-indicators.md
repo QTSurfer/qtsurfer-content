@@ -4,7 +4,7 @@ description: Configura, compón y amplía el pipeline de indicadores en tiempo r
 order: 2
 lastUpdated: '2026-10-16T20:27:41Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
+upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 ---
 
@@ -151,11 +151,16 @@ servidor** (`averages.pro`, `trend.pro`, `momentum.pro`, `volatility.pro`, `volu
 `statistics.pro`, …) — el segmento de paquete `pro` es siempre la marca del nivel de pago. Las
 clases pro no se distribuyen en el port OSS/TypeScript del motor. Son instancias `RTIndicator`
 normales — añade cualquiera de ellas por clase con `.add("name", new XxxRTIndicator(...))`, y
-léelas con `indicators.getValue("name")`:
+léelas con `indicators.getValue("name")`.
+
+**Una clase `pro` no puede importarla una estrategia que se envía.** El compilador que ejecuta la plataforma no ve
+el nivel de pago: `import com.wualabs.qtsurfer.engine.indicators.statistics.pro.ZScoreRTIndicator;` se rechaza con
+un `400` y `package … does not exist`. El ejemplo de abajo muestra la forma de la llamada; sus líneas del nivel
+gratuito (`sma`, `StandardDeviationRTIndicator`) compilan, y la de `ZScoreRTIndicator` no.
 
 ```java
 import com.wualabs.qtsurfer.engine.indicators.statistics.StandardDeviationRTIndicator;
-import com.wualabs.qtsurfer.engine.indicators.statistics.pro.ZScoreRTIndicator;
+import com.wualabs.qtsurfer.engine.indicators.statistics.pro.ZScoreRTIndicator;   // pro: rechazado al enviar
 
 indicators
     .addPrice()                                                      // "price"
@@ -163,7 +168,7 @@ indicators
     .add("desv",    new StandardDeviationRTIndicator(20))             // constructor (int periods)
     .add("desvDe",  new StandardDeviationRTIndicator(                 // constructor (RTIndicator, int periods)
             indicators.getReadOnlyExisting("media"), 20))
-    .add("zscore", new ZScoreRTIndicator(/* ver la clase para el constructor */));
+    .add("zscore", new ZScoreRTIndicator(/* ver la clase para el constructor */));   // pro: rechazado al enviar
 ```
 
 Los constructores varían según la clase — la mayoría acepta `(int periods)` y/o `(RTIndicator

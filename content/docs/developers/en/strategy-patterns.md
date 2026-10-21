@@ -3,7 +3,7 @@ title: Strategy patterns
 description: Apply reusable filters, exits, state transitions, and market-wide calculations.
 order: 3
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
+upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
 lastUpdated: '2026-10-16T20:27:41Z'
 ---
@@ -232,5 +232,5 @@ public void update(Ticker ticker) {
 Helpers on `AbstractTickerStrategy`:
 
 - `getInstruments()` — the set of instruments the strategy is tracking.
-- `getRTIndicator(instrument, name)` → `Optional<RTIndicator>` — any instrument's named indicator (read-only, no re-update).
+- `getRTIndicator(instrument, name)` → `Optional<RTIndicator>` — any instrument's named indicator, the live one: reading it does not update it again, and `.map(RTIndicator::ro)` gives a read-only view.
 - Always call `super.update(ticker)` **first** — skip it and the indicators never advance.

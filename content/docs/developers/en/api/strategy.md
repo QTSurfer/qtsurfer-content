@@ -3,7 +3,7 @@ title: Strategy API
 description: Compile, validate, inspect, retrieve, and delete Java or QTScript (beta) strategies through the REST API.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 837dbe43e38a61276adfaf0570b546175292948a
+upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
 upstreamPath: docs/strategy.md
 lastUpdated: '2026-10-15T12:10:55Z'
 ---
@@ -116,6 +116,11 @@ appear here — a name absent from this list may still be valid.
 
 Errors: `400` not valid — the message carries the diagnostics, nothing is
 registered · `429` too many compilations in flight, retry later.
+
+For a Java source the diagnostics are the compiler's own, each one beginning with `Line N, Column M:` of the file
+you sent. The type error comes first. A `cannot find symbol` that follows an `incompatible types` on the same
+variable stays in the answer after it, with a note under it, `this follows from the type error on line N, not from a
+missing member`, which names the declaration to correct: fix the first error and the second one goes with it.
 
 ## Request size limits
 

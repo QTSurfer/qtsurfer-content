@@ -3,7 +3,7 @@ title: Strategy examples
 description: Use complete Java strategies that demonstrate the supported lifecycle.
 order: 4
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
+upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
 upstreamPath: skills/qtsurfer-java-strategy/references/examples.md
 lastUpdated: '2026-10-16T20:27:41Z'
 ---
@@ -33,7 +33,7 @@ public class EmaCrossoverStrategy extends AbstractTickerStrategy {
         updateInstrument(inst, ticker.timestamp());
         var ind = updateIndicators(inst, ticker);
 
-        if (!ind.getExisting("slow").isReady()) return;
+        if (!ind.getReadOnlyExisting("slow").isReady()) return;
 
         boolean currentFastAbove = ind.getValue("fast") > ind.getValue("slow");
         if (fastAboveSlow == null) { fastAboveSlow = currentFastAbove; return; }
@@ -153,7 +153,7 @@ public class BollingerReversionStrategy extends AbstractTickerStrategy {
 
         @Override
         public void onChange(StateStore store, double prev, double actual) {
-            if (!indicators.getExisting("bb").isReady()) return;
+            if (!indicators.getReadOnlyExisting("bb").isReady()) return;
 
             double upper = indicators.getValue("bbUpper");
             double lower = indicators.getValue("bbLower");
@@ -218,7 +218,7 @@ public class ConfigurableEmaStrategy extends AbstractTickerStrategy {
 
         @Override
         public void onChange(StateStore store, double prev, double actual) {
-            if (!indicators.getExisting("slow").isReady()) return;
+            if (!indicators.getReadOnlyExisting("slow").isReady()) return;
             double slow = indicators.getValue("slow");
             CrossDetector.Cross result = cross.check(actual, slow);
             if (result.above()) emitBuy(actual);

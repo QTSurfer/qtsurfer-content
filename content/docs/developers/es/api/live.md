@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: cd83df1b9540eb18ceee0b589e7a0adc8732c0e6
+upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-15T06:30:42Z'
 ---
@@ -510,7 +510,10 @@ lo que se pidió.
    {"id": 1, "connect": {"client": "<id-de-cliente>", "expires": true, "ttl": 600, "ping": 25, "pong": true}}
    ```
    `ttl` y `ping` están en segundos. Un token que no se acepta cierra el socket con el código de
-   cierre `3500` (`invalid token`).
+   cierre `3500` (`invalid token`). Desde un cliente que no es un navegador ni Node, una biblioteca WebSocket de
+   Python por ejemplo, esta dirección puede rechazarse en el borde de la red con un `403`, y un `User-Agent` o un
+   `Origin` propios no lo cambian. Ese cliente lee la ejecución con una
+   [URL de flujo](#un-flujo-websocket-plano-de-una-ejecución) en su lugar.
 3. **Suscríbete al canal de señales de la ejecución**, llamado `sig:<runId>` — por ejemplo
    `sig:6TzAPiPpsOWwBLdLBZCxwH`:
    ```json
@@ -652,6 +655,10 @@ alternativa sencilla. Es una sola dirección que abres como un WebSocket corrien
 herramienta de línea de comandos como [`websocat`](https://github.com/vi/websocat), o desde un servicio tuyo que
 reenvía tus señales a otros — y cada señal de la ejecución llega como **una trama de texto JSON**. No hay token
 que generar, nada a lo que suscribirse y nada que enviar.
+
+También es la vía de entrada para un cliente que no es un navegador ni Node. La conexión con token, de arriba,
+puede rechazarse a un cliente así, una biblioteca WebSocket de Python por ejemplo, en el borde de la red; una URL
+de flujo no lleva clave ni token y se acepta desde cualquier cliente.
 
 Está pensada para tus propias pruebas, para clientes sencillos y para servicios que reenvían tus señales a muchas
 conexiones por su cuenta: esta dirección está limitada en cuántas conexiones acepta (consulta abajo), así que un

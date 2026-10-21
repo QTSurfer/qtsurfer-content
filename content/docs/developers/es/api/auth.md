@@ -3,7 +3,7 @@ title: Autenticación y alcances
 description: Cambia tu clave de API por un token y consulta qué permiten los alcances de tu clave.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f0ef58ee1f61cc1a7337f9fdad69114dfd7664fa
+upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
 upstreamPath: docs/auth.md
 lastUpdated: '2026-10-18T11:21:12Z'
 ---
@@ -37,6 +37,12 @@ curl -X POST https://api.qtsurfer.net/v1/auth/token \
 | `expires_in` | segundos hasta que el token caduca. Pide uno nuevo antes, o ante un `401` |
 | `scopes` | lo que puede hacer tu clave, [más abajo](#alcances) |
 | `tier` | el plan de suscripción para el que se emitió el token; fija tus límites, consulta [Cuenta](account) |
+
+Envía un `User-Agent` propio. Una petición que lleva el valor por defecto de algunas bibliotecas HTTP, entre ellas
+`urllib` de Python, se rechaza en el borde de la red antes de llegar a la API, con un `403` cuyo cuerpo es el texto
+plano `error code: 1010` y no el JSON con el que responde la API. No es un problema de tu clave: pon una cabecera
+`User-Agent`, basta con el nombre de tu herramienta, y vuelve a enviar la petición. `curl` y los navegadores ya
+envían una.
 
 Una clave desconocida, revocada o caducada se responde con `401`; el cuerpo es `AuthTokenError` en
 la referencia de la API. Donde un despliegue exige alcances, una clave que no lleva ninguno se

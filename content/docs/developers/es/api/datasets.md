@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8a0c5fb016d4e91afe5d06067b7b08f473b29012
+upstreamCommit: 29bdcb1f5a27e1db419fec6cc2e069322538bf2c
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-10-16T20:27:41Z'
 ---
@@ -511,3 +511,30 @@ instrumento y el rango se recuperan de `prepareJobId` en cualquier caso. Consult
 incluidos los campos `datasetId`/`datasetVersionId` de `PrepareRequest` y la forma de cobertura
 respaldada por conjunto de datos en `PrepareJobState` (`cadence`/`gaps`/`largestGapSteps` en lugar
 de los `totalHours`/`hoursWithData`/`hoursWithoutData` recorridos por hora).
+
+### Qué conjuntos de datos se ejecutan con cada `{type}`
+
+El `{type}` de la ruta dice con qué se alimenta la estrategia; el `type` del propio conjunto de datos dice lo
+que contiene. Tanto las ejecuciones `ticker` como las `kline` aceptan un conjunto de datos, y un conjunto de
+datos de velas se puede ejecutar de cualquiera de las dos maneras:
+
+| `{type}` de la ejecución | conjunto de datos de `type` `ticker` | conjunto de datos de `type` `klines` |
+|---|---|---|
+| `ticker` | sí | sí |
+| `kline` | `400` al preparar | sí |
+
+Una ejecución `kline` sobre un conjunto de datos lee las filas del propio conjunto como las barras: no se
+construye ningún ticker a partir de ellas. Por defecto cada fila es una barra, con la `cadence` propia del
+conjunto de datos. Una `cadence` más gruesa que sea un múltiplo exacto de ella agrega las filas en barras más
+anchas, y una barra que el rango cubre solo en parte se descarta en lugar de emitirse corta. `execute`,
+`executeSweep` y walk-forward la aceptan.
+
+Una preparación `kline` sobre un conjunto de datos que no es `klines` se rechaza con un `400` que nombra el
+tipo del conjunto de datos, antes de encolar nada, y dice que se prepare como datos de ticker. Una ejecución
+`ticker` sobre un conjunto de datos `klines` se acepta: cada barra se lee como una muestra, sin libro de
+órdenes.
+
+El `type` es lo que lee esta tabla. Un fichero que subes es `type: ticker`, así que se ejecuta como datos de
+ticker; un conjunto de datos de velas procede de una
+[importación](#importar-un-conjunto-de-datos-en-lugar-de-subirlo) de las velas de un exchange (o de una
+importación `dex` que pide una `cadence` de velas).

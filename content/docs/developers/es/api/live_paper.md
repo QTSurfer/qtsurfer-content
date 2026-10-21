@@ -3,7 +3,7 @@ title: Paper trading en ejecuciones en vivo
 description: Ejecuta en simulación las señales de una ejecución en vivo — configúralo, y lee sus cuentas, su curva de equity y sus KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 33717a74eb1457126287e31c61c21c9ee22264bf
+upstreamCommit: 8e607eb526c19f506e2984ca452ac6fe3a50bc4d
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-10-15T06:30:42Z'
 ---
@@ -17,7 +17,7 @@ backtest. No se envía nada a un exchange. Sin el bloque, la ejecución no tiene
 |---|---|---|
 | `POST` | `/strategy/{strategyId}/live` | Arrancar una ejecución — con un bloque `paper` para hacerle paper trading |
 | `GET` | `/live/{runId}/paper` | Cada cuenta paper: equity, posiciones abiertas, KPIs |
-| `GET` | `/live/{runId}/paper/equity` | Paginar la curva de equity |
+| `GET` | `/live/{runId}/paper/equity` | La curva de equity de una cuenta, con la forma de cualquier [curva de equity](equity_curves) |
 | `GET` | `/live/{runId}/signals?type=paper` | Elementos paper intercalados en las señales de la ejecución (solo con `output: mix`) |
 
 Ambas rutas paper siguen la misma regla de acceso que las señales de una ejecución: su dueño, o
@@ -150,16 +150,22 @@ calcularlos.
 
 ## La curva de equity
 
-`GET /live/{runId}/paper/equity` pagina la curva completa de una cuenta, de la más antigua a la más
-reciente. Se conserva durante toda la vida de la ejecución, así que, a diferencia de las señales, no
-hay una ventana móvil. La curva es por **cuenta**, no por par: BTC/USDT y ETH/USDT comparten una.
-Cada punto es de uno de estos tipos:
+`GET /v1/live/{runId}/paper/equity` devuelve la curva completa de una cuenta, de la más antigua a la más
+reciente, con la misma forma que cualquier otra [curva de equity](equity_curves) de la API: `{points, meta}`
+o, con `outMode=SHORT`, `{timestamps, equities, meta}`, moldeada por los mismos parámetros de consulta
+`outMode`, `resample` y `differential` y descrita por el mismo `meta`. A su lado vienen la `currency` de la
+cuenta y sus `gaps`. La curva se conserva durante toda la vida de la ejecución, así que, a diferencia de las
+señales, no hay una ventana móvil. Es por **cuenta**, no por par: BTC/USDT y ETH/USDT comparten una.
 
-| `kind` | cuándo | `equity` |
+Es una sola serie de equity corriente, hecha de dos tipos de punto:
+
+| punto | cuándo | `equity` |
 |---|---|---|
-| `equity` | tras cada operación cerrada, de cualquier par | capital más PnL realizado |
-| `mark` | una vez por minuto de tiempo de mercado, mientras haya alguna posición abierta | capital más PnL realizado más las posiciones abiertas a precio de mercado |
-| `gap` | posiciones abiertas perdidas en un reinicio | ausente |
+| operación cerrada | tras cada operación cerrada, de cualquier par | capital más PnL realizado |
+| marca | una vez por minuto de tiempo de mercado, mientras haya alguna posición abierta | capital más PnL realizado más las posiciones abiertas a precio de mercado |
+
+Donde la ejecución se reinició con posiciones abiertas, esas posiciones se pierden (consulta [Huecos](#huecos))
+y la curva no tiene valor ahí: ese momento figura en `gaps`, junto a la curva, y no es un punto de ella.
 
 Para la ejecución de arriba, desde su inicio:
 
@@ -167,57 +173,116 @@ Para la ejecución de arriba, desde su inicio:
 |---|---|---|
 | 01:00:10 | BTC/USDT comprado (200 USDT) | — |
 | 01:00:25 | ETH/USDT comprado (160 USDT) | — |
-| 01:01:00 | un minuto con ambos abiertos, −0.38 no realizado | `mark` 999.62 |
-| 01:01:18 | BTC/USDT vendido, −0.41 | `equity` 999.59 |
-| 01:02:00 | un minuto con ETH/USDT abierto, +0.85 no realizado | `mark` 1000.44 |
-| 01:02:31 | ETH/USDT vendido, +0.72 | `equity` 1000.31 |
+| 01:01:00 | un minuto con ambos abiertos, −0.38 no realizado | marca 999.62 |
+| 01:01:18 | BTC/USDT vendido, −0.41 | operación cerrada 999.59 |
+| 01:02:00 | un minuto con ETH/USDT abierto, +0.85 no realizado | marca 1000.44 |
+| 01:02:31 | ETH/USDT vendido, +0.72 | operación cerrada 1000.31 |
 | 01:03:00 | nada abierto | — |
 | 01:03:40 | BTC/USDT comprado otra vez (200.06 USDT) | — |
-| 01:04:00 | un minuto con BTC/USDT abierto, −0.12 no realizado | `mark` 1000.19 |
+| 01:04:00 | un minuto con BTC/USDT abierto, −0.12 no realizado | marca 1000.19 |
+
+```
+GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity
+
+200
+{
+  "currency": "USDT",
+  "points": [
+    {"timestamp": 1758330060000, "equity": 999.62},
+    {"timestamp": 1758330078000, "equity": 999.59},
+    {"timestamp": 1758330120000, "equity": 1000.44},
+    {"timestamp": 1758330151000, "equity": 1000.31},
+    {"timestamp": 1758330240000, "equity": 1000.19}
+  ],
+  "gaps": [],
+  "meta": {"inputPointCount": 5, "outputPointCount": 5, "resampled": false, "differential": false, "outMode": "ARRAY"}
+}
+```
+
+Las formas compactas son las que tiene cualquier curva. La misma curva, codificada en deltas en arrays
+paralelos (el primer valor sigue siendo absoluto, consulta
+[decodificar datos diferenciales](equity_curves#decodificar-datos-diferenciales)):
+
+```
+GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?outMode=SHORT&differential=true
+
+200
+{
+  "currency": "USDT",
+  "timestamps": [1758330060000, 18000, 42000, 31000, 89000],
+  "equities": [999.62, -0.03, 0.85, -0.13, -0.12],
+  "gaps": [],
+  "meta": {"inputPointCount": 5, "outputPointCount": 5, "resampled": false, "differential": true, "outMode": "SHORT"}
+}
+```
+
+Una ejecución larga tiene una curva larga. `resample` la acota (`?resample=500` son como mucho 500 puntos,
+conservando el primero, el último y los extremos), y por encima de un tamaño fijado en el servidor la forma se
+compacta se haya pedido lo que se haya pedido, como en cualquier curva: lee `meta.outMode`. `sinceMs` empieza
+desde un momento de mercado dado, inclusive, de modo que un cliente que ya tiene una curva lea solo lo nuevo.
+Una curva demasiado larga para leerla en una sola petición responde `400`; acótala con `sinceMs`, o pagínala.
+
+**Leer la curva cruda por páginas.** El servidor compacta una curva larga y, por encima de un tamaño mayor, la
+remuestrea, así que la respuesta de la curva entera no sirve para tomar todos los puntos. Para tomarlos todos,
+pide páginas: da `limit` (hasta 1000, 100 por defecto) y la respuesta es una página de la curva cruda, de la más
+antigua a la más reciente, con `_links.next` mientras haya más.
 
 ```
 GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?limit=3
 
 200
 {
+  "currency": "USDT",
   "points": [
-    {"currency": "USDT", "kind": "mark",   "eventTsMs": 1758330060000, "equity": 999.62},
-    {"currency": "USDT", "kind": "equity", "eventTsMs": 1758330078000, "equity": 999.59},
-    {"currency": "USDT", "kind": "mark",   "eventTsMs": 1758330120000, "equity": 1000.44}
+    {"timestamp": 1758330060000, "equity": 999.62},
+    {"timestamp": 1758330078000, "equity": 999.59},
+    {"timestamp": 1758330120000, "equity": 1000.44}
   ],
-  "_links": {"next": {"href": "/v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?cursor=eyJ0cyI6MTc1ODMzMDEyMDAwMCwiaWQiOiI…&limit=3"}}
+  "gaps": [],
+  "meta": {"inputPointCount": 3, "outputPointCount": 3, "resampled": false, "differential": false, "outMode": "ARRAY"},
+  "_links": {"next": {"href": "/v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?cursor=eyJ0cyI6MTc1ODMzMDEyMDAwMCwiaWQiOiI…&limit=3&currency=USDT"}}
 }
 ```
 
-Siguiendo `_links.next`:
+Sigue `_links.next` tal cual (el cursor es opaco); una página sin `_links` es la última:
 
 ```
 200
 {
+  "currency": "USDT",
   "points": [
-    {"currency": "USDT", "kind": "equity", "eventTsMs": 1758330151000, "equity": 1000.31},
-    {"currency": "USDT", "kind": "mark",   "eventTsMs": 1758330240000, "equity": 1000.19}
-  ]
+    {"timestamp": 1758330151000, "equity": 1000.31},
+    {"timestamp": 1758330240000, "equity": 1000.19}
+  ],
+  "gaps": [],
+  "meta": {"inputPointCount": 2, "outputPointCount": 2, "resampled": false, "differential": false, "outMode": "ARRAY"}
 }
 ```
 
-Sin `_links.next`: esa era la última página. El cursor es opaco — usa el `href` tal cual. `sinceMs`
-empieza desde un momento de mercado dado en vez de desde el principio; `limit` es 100 por defecto y
-su tope es 1000.
+Una página tiene la misma forma que la curva entera, así que `outMode` y `differential` se le aplican y el
+enlace siguiente los conserva; cada página se decodifica por sí sola, con su propio primer valor absoluto. Una
+página contiene como mucho `limit` entradas y un [hueco](#huecos) cuenta como una, así que una página con un
+hueco tiene un punto menos, y el momento del hueco está en los `gaps` de esa página. `resample` no se puede
+combinar con la paginación (`400`): una curva remuestreada es una sola respuesta, una paginada es la curva
+cruda. Un cursor nunca pierde ni repite una entrada, ni siquiera entre dos entradas del mismo milisegundo.
 
-**Varias cuentas.** Sin `currency`, los puntos de todas las cuentas llegan intercalados por tiempo,
-cada uno con su moneda. Para una ejecución sobre BTC/USDT y ETH/BTC, `?currency=BTC` reduce a la
-cuenta BTC:
+**Varias cuentas.** Cada cuenta tiene su propia curva, que nunca se suma a otra. `currency` la elige, y solo se
+puede omitir cuando la ejecución tiene una única cuenta (o todavía ninguna, lo que da una curva vacía). Con
+varias cuentas y sin `currency`, la petición es un `400` que las enumera. Para una ejecución sobre BTC/USDT y
+ETH/BTC, `?currency=BTC` es la cuenta BTC:
 
 ```
 GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?currency=BTC
 
 200
 {
+  "currency": "BTC",
   "points": [
-    {"currency": "BTC", "kind": "mark",   "eventTsMs": 1758330060000, "equity": 999.9981},
-    {"currency": "BTC", "kind": "equity", "eventTsMs": 1758330097000, "equity": 1000.0012}
-  ]
+    {"timestamp": 1758330060000, "equity": 999.9981},
+    {"timestamp": 1758330097000, "equity": 1000.0012}
+  ],
+  "gaps": [],
+  "meta": {"inputPointCount": 2, "outputPointCount": 2, "resampled": false, "differential": false, "outMode": "ARRAY"}
 }
 ```
 
@@ -282,11 +347,11 @@ reinicio, y cualquier orden pendiente, no se pueden trasladar: cada posición ab
 un `gap`, con lo que mantenía, y deja de contarse.
 
 ```json
-{"currency": "USDT", "kind": "gap", "eventTsMs": 1758333600000}
+"gaps": [1758333600000]
 ```
 
-En la curva un hueco no tiene `equity`, y el `gaps` de la cuenta los cuenta. En una ejecución `mix`,
-la señal correspondiente nombra el par y lo que se mantenía:
+Un hueco no es un punto de la curva: la curva enumera su momento en `gaps`, y el `gaps` de la cuenta los
+cuenta. En una ejecución `mix`, la señal correspondiente nombra el par y lo que se mantenía:
 
 ```json
 {"type": "paper", "kind": "gap", "instrument": {"exchange": "binance", "segment": "spot", "symbol": "ETH/USDT"},

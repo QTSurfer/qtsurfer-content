@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
+upstreamCommit: 8e607eb526c19f506e2984ca452ac6fe3a50bc4d
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-21T12:09:30Z'
 ---
@@ -24,7 +24,7 @@ medida que ocurren, y cambia sus parámetros sin reiniciarla.
 | `POST` | `/live/{runId}/commands` | Indicarle un comando mientras sigue en vivo |
 | `GET` | `/live/{runId}/signals` | Leer las señales que ya ha producido |
 | `GET` | `/live/{runId}/paper` | Leer su paper trading — consulta [Paper trading](live_paper) |
-| `GET` | `/live/{runId}/paper/equity` | Paginar su curva de equity de paper trading — consulta [Paper trading](live_paper) |
+| `GET` | `/live/{runId}/paper/equity` | Leer la curva de equity de una cuenta de paper trading, con la forma de cualquier [curva de equity](equity_curves) — consulta [Paper trading](live_paper) |
 | `POST` | `/live/token` | Generar un token de conexión WebSocket |
 
 ## Ciclo de vida: sandbox, luego live

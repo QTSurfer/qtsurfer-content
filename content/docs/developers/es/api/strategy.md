@@ -3,7 +3,7 @@ title: API de estrategias
 description: Compila, valida, inspecciona, recupera y elimina estrategias Java o QTScript (beta) a través de la API REST.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 837dbe43e38a61276adfaf0570b546175292948a
+upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
 upstreamPath: docs/strategy.md
 lastUpdated: '2026-10-15T12:10:55Z'
 ---
@@ -120,6 +120,12 @@ aquí — un nombre ausente de esta lista puede seguir siendo válido.
 
 Errores: `400` no es válido — el mensaje lleva los diagnósticos, no se
 registra nada · `429` demasiadas compilaciones en curso, reintenta más tarde.
+
+Para una fuente Java, los diagnósticos son los del propio compilador, y cada uno empieza por `Line N, Column M:` del
+fichero que enviaste. El error de tipo va primero. Un `cannot find symbol` que sigue a un `incompatible types` sobre
+la misma variable se queda en la respuesta, después de él, con una nota debajo, `this follows from the type error on
+line N, not from a missing member`, que señala la declaración que hay que corregir: corrige el primer error y el
+segundo desaparece.
 
 ## Límites de tamaño de la petición
 

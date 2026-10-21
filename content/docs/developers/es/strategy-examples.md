@@ -4,7 +4,7 @@ description: Usa estrategias Java completas que muestran el ciclo de vida admiti
 order: 4
 lastUpdated: '2026-10-16T20:27:41Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: f1fc9245fc8de3a7e149b339933c59645dd59ea9
+upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
 upstreamPath: skills/qtsurfer-java-strategy/references/examples.md
 ---
 
@@ -33,7 +33,7 @@ public class EmaCrossoverStrategy extends AbstractTickerStrategy {
         updateInstrument(instr, ticker.timestamp());
         var ind = updateIndicators(instr, ticker);
 
-        if (!ind.getExisting("lenta").isReady()) return;
+        if (!ind.getReadOnlyExisting("lenta").isReady()) return;
 
         boolean rapidaSobreActual = ind.getValue("rapida") > ind.getValue("lenta");
         if (rapidaSobreLenta == null) { rapidaSobreLenta = rapidaSobreActual; return; }
@@ -153,7 +153,7 @@ public class BollingerReversionStrategy extends AbstractTickerStrategy {
 
         @Override
         public void onChange(StateStore store, double prev, double actual) {
-            if (!indicators.getExisting("bb").isReady()) return;
+            if (!indicators.getReadOnlyExisting("bb").isReady()) return;
 
             double superior = indicators.getValue("bbUpper");
             double inferior = indicators.getValue("bbLower");
@@ -218,7 +218,7 @@ public class ConfigurableEmaStrategy extends AbstractTickerStrategy {
 
         @Override
         public void onChange(StateStore store, double prev, double actual) {
-            if (!indicators.getExisting("lenta").isReady()) return;
+            if (!indicators.getReadOnlyExisting("lenta").isReady()) return;
             double lenta = indicators.getValue("lenta");
             CrossDetector.Cross resultado = cruce.check(actual, lenta);
             if (resultado.above()) emitBuy(actual);

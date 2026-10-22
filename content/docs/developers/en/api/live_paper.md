@@ -3,7 +3,7 @@ title: Paper trading on live runs
 description: Execute a live run's signals in simulation — configure it, read its accounts, equity curve and KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: e1224d410f43ddf65a397a1c0de828036cc50434
+upstreamCommit: c86f02ce5ec438734ce62a5738863345aeedc59f
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-10-15T06:30:42Z'
 ---
@@ -434,6 +434,24 @@ two instruments that close almost together can be stamped slightly out of it, so
 two differ by one trade. The account's gaps are not attributed to an instrument, so `gaps` is empty
 here.
 
+```
+GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?instrument=BTC/USDT
+
+200
+{
+  "currency": "USDT",
+  "instrument": "BTC/USDT",
+  "measure": "realisedPnl",
+  "points": [
+    {"timestamp": 1758330078000, "equity": 10.0},
+    {"timestamp": 1758330190000, "equity": 6.0},
+    {"timestamp": 1758330310000, "equity": 12.0}
+  ],
+  "gaps": [],
+  "meta": {"inputPointCount": 3, "outputPointCount": 3, "resampled": false, "differential": false, "outMode": "ARRAY"}
+}
+```
+
 **With an account per instrument**, `?instrument=ETH/USDT` does not ask for a part of a shared account:
 it SELECTS the account that instrument is, and the answer is that account's own curve, its `equity` (it
 already includes its marks), with the `instrument` beside the `currency` and the account's own `gaps`.
@@ -485,24 +503,6 @@ GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?instrument=ETH/USDT&measure=tot
 
 The first two points are closed trades (−1.0, then −2.0 more); the position opened at 01:00:25 is worth
 −0.4 at the 01:01:00 mark (−3.0 − 0.4) and +0.85 at the 01:02:00 mark (−3.0 + 0.85).
-
-```
-GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?instrument=BTC/USDT
-
-200
-{
-  "currency": "USDT",
-  "instrument": "BTC/USDT",
-  "measure": "realisedPnl",
-  "points": [
-    {"timestamp": 1758330078000, "equity": 10.0},
-    {"timestamp": 1758330190000, "equity": 6.0},
-    {"timestamp": 1758330310000, "equity": 12.0}
-  ],
-  "gaps": [],
-  "meta": {"inputPointCount": 3, "outputPointCount": 3, "resampled": false, "differential": false, "outMode": "ARRAY"}
-}
-```
 
 ## Output: `separate` or `mix`
 

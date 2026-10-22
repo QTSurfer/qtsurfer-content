@@ -3,7 +3,7 @@ title: Paper trading en ejecuciones en vivo
 description: Ejecuta en simulación las señales de una ejecución en vivo — configúralo, y lee sus cuentas, su curva de equity y sus KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: e1224d410f43ddf65a397a1c0de828036cc50434
+upstreamCommit: c86f02ce5ec438734ce62a5738863345aeedc59f
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-10-15T06:30:42Z'
 ---
@@ -435,6 +435,24 @@ curva de la cuenta se registra en ese orden y esta se sirve por hora del evento,
 casi a la vez pueden quedar marcados ligeramente fuera de él, así que en esos puntos las dos difieren en una
 operación. Los huecos de la cuenta no se atribuyen a un instrumento, así que aquí `gaps` está vacío.
 
+```
+GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?instrument=BTC/USDT
+
+200
+{
+  "currency": "USDT",
+  "instrument": "BTC/USDT",
+  "measure": "realisedPnl",
+  "points": [
+    {"timestamp": 1758330078000, "equity": 10.0},
+    {"timestamp": 1758330190000, "equity": 6.0},
+    {"timestamp": 1758330310000, "equity": 12.0}
+  ],
+  "gaps": [],
+  "meta": {"inputPointCount": 3, "outputPointCount": 3, "resampled": false, "differential": false, "outMode": "ARRAY"}
+}
+```
+
 **Con una cuenta por instrumento**, `?instrument=ETH/USDT` no pide una parte de una cuenta compartida: SELECCIONA la
 cuenta que es ese instrumento, y la respuesta es la curva propia de esa cuenta, su `equity` (ya incluye sus marcas),
 con el `instrument` junto a la `currency` y los `gaps` propios de la cuenta. En su lugar se puede dar `currency` solo
@@ -485,24 +503,6 @@ GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?instrument=ETH/USDT&measure=tot
 
 Los dos primeros puntos son operaciones cerradas (−1.0, y luego −2.0 más); la posición abierta a las 01:00:25 vale
 −0.4 en la marca de las 01:01:00 (−3.0 − 0.4) y +0.85 en la de las 01:02:00 (−3.0 + 0.85).
-
-```
-GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?instrument=BTC/USDT
-
-200
-{
-  "currency": "USDT",
-  "instrument": "BTC/USDT",
-  "measure": "realisedPnl",
-  "points": [
-    {"timestamp": 1758330078000, "equity": 10.0},
-    {"timestamp": 1758330190000, "equity": 6.0},
-    {"timestamp": 1758330310000, "equity": 12.0}
-  ],
-  "gaps": [],
-  "meta": {"inputPointCount": 3, "outputPointCount": 3, "resampled": false, "differential": false, "outMode": "ARRAY"}
-}
-```
 
 ## Salida: `separate` o `mix`
 

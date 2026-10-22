@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
+upstreamCommit: 8e607eb526c19f506e2984ca452ac6fe3a50bc4d
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-21T12:09:30Z'
 ---
@@ -24,7 +24,7 @@ change its parameters without restarting it.
 | `POST` | `/live/{runId}/commands` | Tell it a command while it stays live |
 | `GET` | `/live/{runId}/signals` | Read the signals it has already produced |
 | `GET` | `/live/{runId}/paper` | Read its paper trading — see [Paper trading](live_paper) |
-| `GET` | `/live/{runId}/paper/equity` | Page through its paper equity curve — see [Paper trading](live_paper) |
+| `GET` | `/live/{runId}/paper/equity` | Read one paper account's equity curve, in the shape of every [equity curve](equity_curves) — see [Paper trading](live_paper) |
 | `POST` | `/live/token` | Mint a WebSocket connection token |
 
 ## Lifecycle: sandbox, then live

@@ -3,24 +3,28 @@ title: Curvas de equity
 description: Transforma, retén, recupera y traza curvas de equity de backtests y barridos.
 order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: e1d7827c4b5fcb06cb679718c367d1cc64e6e92e
+upstreamCommit: e1224d410f43ddf65a397a1c0de828036cc50434
 upstreamPath: docs/equity_curves.md
 lastUpdated: '2026-10-15T12:10:55Z'
 ---
 
-Una curva de equity describe el valor de la cuenta a lo largo de un backtest. QTSurfer devuelve el
-mismo contrato `EquityCurveResult` tanto para un backtest simple como para un ensayo retenido de
-un barrido, con reglas de entrega distintas:
+Una curva de equity describe el valor de la cuenta a lo largo de un backtest, o de una cuenta de paper
+trading en vivo. QTSurfer devuelve el mismo contrato `EquityCurveResult` para un backtest simple, para un
+ensayo retenido de un barrido y para la cuenta de paper trading de una ejecución en vivo, con reglas de
+entrega distintas:
 
 - Un backtest simple devuelve la curva en línea dentro de `results.equityCurve` y fija su
   transformación cuando se envía la ejecución.
 - Una fila de barrido con curva retenida lleva `equityCurve.url`. En la vista de materialización
   (`?order=natural`) puede además traer la curva en línea; obtén su URL para elegir otra
   transformación en el momento de la lectura.
+- Una ejecución en vivo arrancada con un bloque `paper` sirve la curva de cada cuenta bajo demanda desde
+  `GET /live/{runId}/paper/equity`, que acepta los mismos parámetros de transformación en cada lectura.
+  Consulta [Cuentas de paper trading en vivo](#cuentas-de-paper-trading-en-vivo).
 
-El primer punto es un ancla en la marca de tiempo `from` del backtest con el capital inicial.
-Cada punto posterior es una muestra por cada rendimiento emitido. `equity` es el valor de la
-cuenta (`initialCapital + cumulativePnl`), no un porcentaje. Para representar la rentabilidad en
+En la curva de un backtest o de un barrido, el primer punto es un ancla en la marca de tiempo `from` del
+backtest con el capital inicial. Cada punto posterior es una muestra por cada rendimiento emitido. `equity` es
+el valor de la cuenta (`initialCapital + cumulativePnl`), no un porcentaje. Para representar la rentabilidad en
 porcentaje, normaliza cada valor como `(equity / initialEquity - 1) * 100`.
 
 ![Curva de equity ilustrativa normalizada al capital inicial, que asciende hasta un +18,3 % con un drawdown intermedio](/img/docs/equity-curve.svg)
@@ -229,3 +233,61 @@ fila y el mismo `prepareJobId`, sin necesidad de recompilar. Es una ejecución i
 una repetición del ensayo del barrido, pero las dos vías están fijadas para coincidir en todas las
 métricas de la clasificación para un mismo vector. Trata una diferencia como un fallo que merece
 reportarse.
+
+## Cuentas de paper trading en vivo
+
+Una ejecución en vivo arrancada con un [bloque `paper`](live_paper) tiene una cuenta simulada por moneda de
+cotización, y `GET /live/{runId}/paper/equity` sirve la curva de una cuenta con esta misma forma, con los mismos
+parámetros de consulta `outMode`, `resample` y `differential`, el mismo `meta` y la misma guarda de tamaño. Lo
+que cambia es que la curva es en vivo y lo que viaja a su lado:
+
+- **Crece mientras la ejecución corre, y no tiene punto ancla.** El primer punto es el primer valor que registró
+  la cuenta. Nada se fija al enviar: un parámetro omitido en la petición significa `ARRAY`, sin remuestreo y sin
+  codificación diferencial.
+- **Es una sola serie de equity corriente.** El valor tras cada operación cerrada y, cada minuto de tiempo de
+  mercado mientras haya posiciones abiertas, el valor marcado a mercado.
+- **`currency` y `gaps` vienen junto a la curva.** `currency` es la cuenta (las cuentas nunca se suman; se puede
+  omitir solo cuando la ejecución tiene una única cuenta). `gaps` enumera, como milisegundos de época, los
+  momentos en que se perdieron posiciones abiertas porque la ejecución se reinició con ellas abiertas. Un hueco
+  no es un punto de la curva y `meta` no lo cuenta.
+- **La curva propia de un instrumento.** `?instrument=BTC/USDT` responde el PnL realizado acumulado de ese
+  instrumento desde 0, con un punto en cada una de sus operaciones cerradas, con esta misma forma y las mismas
+  opciones. `measure` dice qué son los valores: `equity` para la curva de una cuenta, `realisedPnl` para la de un
+  instrumento, y con `&measure=totalPnl` el PnL realizado más el valor no realizado de su posición abierta en cada
+  marca. Consulta [Por instrumento](live_paper#por-instrumento).
+- **Con una cuenta por instrumento,** `?instrument=ETH/USDT` selecciona la cuenta que es ese instrumento, y la
+  respuesta es su propia curva `equity` con esta misma forma (`measure: equity`, con los `gaps` de la cuenta), no
+  una parte de una cuenta compartida. Consulta [Una cuenta por instrumento](live_paper#una-cuenta-por-instrumento).
+- **`sinceMs` empieza desde un momento de mercado, inclusive,** de modo que un cliente que ya tiene la curva
+  lea solo lo nuevo. Una curva demasiado larga para leerla en una sola petición responde `400`: acótala con
+  `sinceMs`, o pagínala.
+- **`limit` pagina la curva cruda.** El servidor compacta una curva larga y remuestrea una muy larga, así que
+  para leer todos los puntos da `limit` (o `cursor`): la respuesta es una página de la curva cruda, con la misma
+  forma, con `_links.next` mientras haya más. `resample` no se puede combinar con ello. Consulta
+  [Leer la curva cruda por páginas](live_paper#la-curva-de-equity).
+
+```bash
+curl "https://api.qtsurfer.net/v1/live/$RUN_ID/paper/equity?currency=USDT&outMode=SHORT&resample=500&differential=true" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{
+  "currency": "USDT",
+  "measure": "equity",
+  "timestamps": [1758330060000, 18000, 42000],
+  "equities": [999.62, -0.03, 0.85],
+  "gaps": [],
+  "meta": {
+    "inputPointCount": 3,
+    "outputPointCount": 3,
+    "resampled": false,
+    "differential": true,
+    "outMode": "SHORT"
+  }
+}
+```
+
+Lee la forma a partir de `meta.outMode`, como en cualquier curva. Las cuentas de la ejecución, sus KPIs y su
+último equity están en `GET /live/{runId}/paper`; el recorrido de una ejecución de paper trading está en
+[Paper trading en ejecuciones en vivo](live_paper#la-curva-de-equity).

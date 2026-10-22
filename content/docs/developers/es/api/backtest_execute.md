@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8a0c5fb016d4e91afe5d06067b7b08f473b29012
+upstreamCommit: a77af5626880963724d9ff228c5a51411c21fdef
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-10-16T20:27:41Z'
 ---
@@ -71,6 +71,17 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/execute \
   -d '{"prepareJobId":"5ikYAMIO...","strategyId":"2ul144qe9tlwzu5anhwvc6"}'
 ```
 
+### Kline sobre tus propios datos
+
+Con `exchangeId: user`, una ejecución `kline` lee las barras de un conjunto de datos cuyo `type` es `klines`:
+sus filas son las barras, con la cadencia propia del conjunto de datos salvo que prepares a un múltiplo
+exacto más grueso de ella. Eso incluye un fichero que subiste, si contiene velas (`open`, `high`, `low` y
+`close` en todas las filas y sin libro de órdenes): su `type` se lee de los datos cuando se ha ingerido, consulta
+[Qué es el `type`](datasets#qué-es-el-type). Un conjunto de datos de `type` `ticker` no tiene barras que dar, así
+que su preparación `kline` es `400`, y nombra el tipo del conjunto de datos; ese mismo conjunto de datos
+preparado como `ticker` se ejecuta como siempre. Consulta
+[qué conjuntos de datos se ejecutan con cada `{type}`](datasets#qué-conjuntos-de-datos-se-ejecutan-con-cada-type).
+
 ## Preparar datos
 
 `POST .../prepare`
@@ -107,8 +118,8 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/prepare \
 Errores: `400` petición inválida, `from` anterior a la ventana de retención, `to` en el futuro, una
 `cadence` de `kline` que no es una cadencia de kline, o
 (para `exchangeId: user`) la subida del conjunto de datos no ha terminado de ingerirse /
-`cadence` más fina que la cadencia descubierta del conjunto de datos / el rango excede el límite de
-tu plan · `404` exchange/tipo no encontrado, o (para `exchangeId: user`) `datasetId`/
+`cadence` más fina que la cadencia descubierta del conjunto de datos / una preparación `kline` sobre un
+conjunto de datos que no es `klines` / el rango excede el límite de tu plan · `404` exchange/tipo no encontrado, o (para `exchangeId: user`) `datasetId`/
 `datasetVersionId` no existe o no es tuyo · `429` cola global al límite o demasiados backtests
 activos — no aplica a `exchangeId: user`, que lee un fichero ya ingerido en lugar de reclamar
 capacidad de worker.

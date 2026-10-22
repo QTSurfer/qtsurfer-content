@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8a0c5fb016d4e91afe5d06067b7b08f473b29012
+upstreamCommit: a77af5626880963724d9ff228c5a51411c21fdef
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-10-16T20:27:41Z'
 ---
@@ -25,8 +25,9 @@ costumbre pero con el `exchangeId: user` reservado.
 | `POST` | `/datasets/imports` | Crear un conjunto de datos buscando el histórico en lugar de subirlo |
 | `GET` | `/datasets/{datasetId}/imports/{importId}` | Sondear el estado de búsqueda/ingesta |
 
-v1 es solo datos de ticker — `type` es siempre `"ticker"`. `instrument` debe ser un par spot llano
-(`BASE/QUOTE`, exactamente una `/`); las formas de derivados (`BTC/USDT:USDT`) se rechazan.
+Un conjunto de datos contiene un instrumento, y su `type` — `ticker` o `klines` — dice qué son sus filas: se
+lee de los datos cuando una subida o una importación se ha ingerido, consulta [Qué es el `type`](#qué-es-el-type). `instrument` debe ser
+un par spot llano (`BASE/QUOTE`, exactamente una `/`); las formas de derivados (`BTC/USDT:USDT`) se rechazan.
 
 ## Crear un conjunto de datos
 
@@ -66,6 +67,10 @@ ciclo de vida como `createdAt`, `currentVersionId`, el rango y la cadencia se ob
 `uploadId` es lo que pasas a [finalizar](#finalizar-una-subida-disparar-la-ingesta); `upload.url`
 es el destino prefirmado — sube (`PUT`) el fichero en bruto ahí directamente, sin cabecera
 `Authorization`.
+
+El `"type": "ticker"` de esta respuesta es provisional: el conjunto de datos aún no tiene datos. Una vez
+ingerida la subida, su `type` es lo que contiene el fichero ([Qué es el `type`](#qué-es-el-type)), así que un fichero de velas es `klines`
+cuando lo lees de nuevo.
 
 ¿Perdiste esta respuesta? No se pierde nada — llama a [`POST .../uploads`](#abrir-una-nueva-sesión-de-subida)
 sobre el id de este conjunto de datos y recuperas exactamente la misma sesión de subida, siempre
@@ -258,7 +263,8 @@ Una importación `dex` tiene dos formas de datos, elegidas por la `cadence` de n
   propia cadena del pool/par, cada swap con su propia marca de tiempo (cadencia nativa por
   operación).
 * `1s` \| `1m` \| `5m` — velas pre-agregadas a esa anchura en lugar de operaciones en bruto. El
-  `type` del conjunto de datos resultante es `klines`, no `ticker`.
+  `type` del conjunto de datos resultante es `klines`, no `ticker` ([Qué es el `type`](#qué-es-el-type): las velas no llevan libro). Los
+  swaps reproducidos como barras de una anchura, también sin libro, salen igualmente como `klines`.
 
 | Campo | Tipo | Notas |
 |---|---|---|
@@ -352,7 +358,7 @@ de más abajo; solo cambia el bloque que dice qué importar:
 |---|---|---|
 | `cex.exchange` | cadena | obligatorio, el `id` de un exchange centralizado (`venueType` `cex`) de `GET /exchanges`, en minúsculas. El id de un exchange descentralizado es `400`: usa `type: dex` |
 | `cex.segment` | cadena | obligatorio, uno de los `segments` del exchange. `spot` es el único segmento que admite hoy una importación `cex`, lo que concuerda con que `instrument` sea un par spot llano |
-| `cex.dataType` | cadena | obligatorio, `"ticker"` \| `"klines"`. También es el `type` del conjunto de datos resultante |
+| `cex.dataType` | cadena | obligatorio, `"ticker"` \| `"klines"`. Lo que se trae, y por tanto el `type` del conjunto de datos resultante ([Qué es el `type`](#qué-es-el-type): los tickers llevan el libro, las klines no) |
 
 `cadence` es opcional y admite las mismas etiquetas que la cadencia de una preparación de backtest,
 tanto para tickers como para klines: `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`,
@@ -429,6 +435,40 @@ curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/imports/$IMPORT_ID \
 Errores: `404` no existe ese conjunto de datos para este usuario, o realmente no se sabe nada de
 este `importId`.
 
+## Qué es el `type`
+
+El `type` de un conjunto de datos dice qué son sus filas. Se decide cuando una versión pasa a `ready`, y es el
+`type` de la versión **actual**. Una importación que ya sabe qué trajo lo dice, y no se adivina nada: una
+importación `cex` es su `dataType`, y una importación `dex` que pidió velas es `klines`. Todo lo demás (una
+subida de CSV, Lastra o Parquet, una importación `dex` de swaps on-chain) se lee de las filas:
+
+| Las filas | `type` |
+|---|---|
+| llevan un libro de órdenes (`bid`, `bidSize`, `ask` o `askSize`) en alguna fila | `ticker` |
+| no tienen libro, y llevan `open`, `high`, `low` y `close` en todas las filas | `klines` |
+| cualquier otra cosa: solo un `close` (un fichero de `timestamp,close` es un precio), o solo algunas de las cuatro columnas OHLC, o solo algunas filas | `ticker` |
+
+Dos comprobaciones más evitan que un ticker pase por velas. En un ticker, la apertura, el máximo, el mínimo y el
+volumen son las cifras móviles de 24 horas del exchange, no las de un intervalo. Un fichero sin libro sigue
+siendo `ticker` si se cumple alguna de estas dos condiciones:
+
+* **El máximo y el mínimo casi nunca cambian.** Al menos 100 filas en las que cambian entre menos de 1 de cada
+  200 filas consecutivas. Un fichero donde todas las filas tienen el mismo precio (`high` igual a `low`, un
+  instrumento que nadie negoció) sigue siendo de velas. Esta comprobación no distingue las cifras de 24 horas de
+  barras con una cadencia gruesa (una hora o más).
+* **Las aperturas no siguen a los cierres.** Una barra abre donde cerró la anterior (dentro del 0,01 % de él);
+  la apertura de una ventana de 24 horas no. Al menos 20 filas, de las que menos de 1 de cada 20 abren en el
+  cierre que tienen antes.
+
+Solo las filas de una subida y de una importación `dex` de swaps pasan por estas comprobaciones. No deciden nada
+para una importación que declara su `type`.
+
+Hasta que la primera versión es `ready`, el `type` es solo la etiqueta de la forma en que se creó el conjunto de
+datos (`ticker` para una subida, `klines` para una importación que pidió velas). Una subida posterior de otro
+tipo de datos cambia el `type` del conjunto de datos; cada versión conserva el suyo, y un backtest que fija
+`datasetVersionId` se juzga por el de esa versión. Los conjuntos de datos almacenados antes de esta regla
+conservan el `type` que tenían.
+
 ## Forma del conjunto de datos
 
 Tanto [`GET /datasets`](#listar-tus-conjuntos-de-datos) como [`GET
@@ -440,7 +480,7 @@ conjunto de datos.
 
 | Campo | Notas |
 |---|---|
-| `datasetId`, `name`, `type` (`"ticker"` \| `"klines"`), `instrument`, `createdAt`, `status` | siempre presentes. `type` es `"klines"` para una importación `dex` que pidió una `cadence` de velas y para una importación `cex` con `dataType: "klines"`; `"ticker"` para todo lo demás (subidas, importaciones `dex` de cadencia nativa e importaciones `cex` con `dataType: "ticker"`) |
+| `datasetId`, `name`, `type` (`"ticker"` \| `"klines"`), `instrument`, `createdAt`, `status` | siempre presentes. `type` dice qué son las filas de la versión actual, decidido cuando la versión pasó a `ready` ([Qué es el `type`](#qué-es-el-type)): `"klines"` para velas (una subida con `open`, `high`, `low` y `close` en todas las filas y sin libro; una importación `dex` que pidió una `cadence` de velas; una importación `cex` con `dataType: "klines"`), `"ticker"` para un libro o un precio suelto. Antes de que la primera versión sea `ready` es solo la etiqueta de la forma en que se creó el conjunto de datos |
 | `currentVersionId` | la versión finalizada e ingerida con éxito más reciente. **Ausente hasta que al menos una subida ha terminado de ingerirse** |
 | `status` | `ready` — `currentVersionId` está fijado y los campos de abajo lo describen; `failed` — el intento de subida o importación más reciente falló, no hay nada que leer todavía (consulta `error`); `pending` — nunca se intentó nada (recién creado, o una subida nunca se finalizó) |
 | `updatedAt` | cuándo cambió `currentVersionId` por última vez; ausente hasta que tiene un valor |
@@ -511,3 +551,38 @@ instrumento y el rango se recuperan de `prepareJobId` en cualquier caso. Consult
 incluidos los campos `datasetId`/`datasetVersionId` de `PrepareRequest` y la forma de cobertura
 respaldada por conjunto de datos en `PrepareJobState` (`cadence`/`gaps`/`largestGapSteps` en lugar
 de los `totalHours`/`hoursWithData`/`hoursWithoutData` recorridos por hora).
+
+### Qué conjuntos de datos se ejecutan con cada `{type}`
+
+El `{type}` de la ruta dice con qué se alimenta la estrategia; el `type` del propio conjunto de datos dice lo
+que contiene. Tanto las ejecuciones `ticker` como las `kline` aceptan un conjunto de datos, y un conjunto de
+datos de velas se puede ejecutar de cualquiera de las dos maneras:
+
+| `{type}` de la ejecución | conjunto de datos de `type` `ticker` | conjunto de datos de `type` `klines` |
+|---|---|---|
+| `ticker` | sí | sí |
+| `kline` | `400` al preparar | sí |
+
+Una ejecución `kline` sobre un conjunto de datos lee las filas del propio conjunto como las barras: no se
+construye ningún ticker a partir de ellas. Por defecto cada fila es una barra, con la `cadence` propia del
+conjunto de datos. Una `cadence` más gruesa que sea un múltiplo exacto de ella agrega las filas en barras más
+anchas, y una barra que el rango cubre solo en parte se descarta en lugar de emitirse corta. `execute`,
+`executeSweep` y walk-forward la aceptan.
+
+La barra a la que pertenece una fila es su marca de tiempo truncada a la cadencia del conjunto de datos, así que
+un fichero marcado en la apertura de cada barra y otro marcado en su cierre (el último milisegundo de la barra)
+dan las mismas barras. Una marca de tiempo fuera de la rejilla de la cadencia (un fichero de un minuto marcado
+en el :20 de cada minuto) se trunca sobre ella, y la primera barra, que entonces abre antes de tu `from`, se
+descarta como cualquier barra que el rango cubre solo en parte.
+
+Una preparación `kline` sobre un conjunto de datos que no es `klines` se rechaza con un `400` que nombra el
+tipo del conjunto de datos, antes de encolar nada, y dice que se prepare como datos de ticker. Una ejecución
+`ticker` sobre un conjunto de datos `klines` se acepta: cada barra se lee como una muestra, sin libro de
+órdenes.
+
+El `type` que lee esta tabla es el de la versión que leerá la ejecución: la actual, o la que fija un
+`datasetVersionId` ([Qué es el `type`](#qué-es-el-type)). Por tanto, un fichero que subes es `klines` una vez ingerido si contiene velas
+(`open`, `high`, `low` y `close` en todas las filas, cada apertura en el cierre anterior, sin libro), y se
+ejecuta como barras; un fichero con libro, o solo con un precio, es `ticker`. Un conjunto de datos de velas
+también procede de una [importación](#importar-un-conjunto-de-datos-en-lugar-de-subirlo) de las velas de un
+exchange (o de una importación `dex` que pide una `cadence` de velas).

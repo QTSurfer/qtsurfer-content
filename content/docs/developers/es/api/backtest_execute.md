@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 29bdcb1f5a27e1db419fec6cc2e069322538bf2c
+upstreamCommit: a77af5626880963724d9ff228c5a51411c21fdef
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-10-16T20:27:41Z'
 ---
@@ -75,9 +75,11 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/execute \
 
 Con `exchangeId: user`, una ejecución `kline` lee las barras de un conjunto de datos cuyo `type` es `klines`:
 sus filas son las barras, con la cadencia propia del conjunto de datos salvo que prepares a un múltiplo
-exacto más grueso de ella. Un conjunto de datos de `type` `ticker` no tiene barras que dar, así que su
-preparación `kline` es `400`, y nombra el tipo del conjunto de datos; ese mismo conjunto de datos preparado
-como `ticker` se ejecuta como siempre. Consulta
+exacto más grueso de ella. Eso incluye un fichero que subiste, si contiene velas (`open`, `high`, `low` y
+`close` en todas las filas y sin libro de órdenes): su `type` se lee de los datos cuando se ha ingerido, consulta
+[Qué es el `type`](datasets#qué-es-el-type). Un conjunto de datos de `type` `ticker` no tiene barras que dar, así
+que su preparación `kline` es `400`, y nombra el tipo del conjunto de datos; ese mismo conjunto de datos
+preparado como `ticker` se ejecuta como siempre. Consulta
 [qué conjuntos de datos se ejecutan con cada `{type}`](datasets#qué-conjuntos-de-datos-se-ejecutan-con-cada-type).
 
 ## Preparar datos

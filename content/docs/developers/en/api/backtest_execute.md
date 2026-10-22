@@ -3,7 +3,7 @@ title: Backtests
 description: Prepare historical data, execute a strategy, poll its result, and inspect its equity curve.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 29bdcb1f5a27e1db419fec6cc2e069322538bf2c
+upstreamCommit: a77af5626880963724d9ff228c5a51411c21fdef
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-10-16T20:27:41Z'
 ---
@@ -72,10 +72,12 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/execute \
 ### Kline over your own data
 
 With `exchangeId: user`, a `kline` run reads the bars of a dataset whose `type` is `klines`: its rows
-are the bars, at the dataset's own cadence unless you prepare at a coarser exact multiple of it. A
-dataset of `type` `ticker` has no bars to give, so its `kline` prepare is `400`, naming the
-dataset's type; the same dataset prepared as `ticker` runs as always. See [which datasets run under
-which `{type}`](datasets#which-datasets-run-under-which-type).
+are the bars, at the dataset's own cadence unless you prepare at a coarser exact multiple of it. That
+includes a file you uploaded, if it holds candles (`open`, `high`, `low` and `close` on every row and
+no order book): its `type` is read from the data when it has been ingested, see [What `type`
+is](datasets#what-type-is). A dataset of `type` `ticker` has no bars to give, so its `kline`
+prepare is `400`, naming the dataset's type; the same dataset prepared as `ticker` runs as always.
+See [which datasets run under which `{type}`](datasets#which-datasets-run-under-which-type).
 
 ## Preparing data
 

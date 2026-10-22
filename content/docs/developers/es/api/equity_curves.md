@@ -3,7 +3,7 @@ title: Curvas de equity
 description: Transforma, retén, recupera y traza curvas de equity de backtests y barridos.
 order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8e607eb526c19f506e2984ca452ac6fe3a50bc4d
+upstreamCommit: 895e3bd7f70a1dfe800c97fdf3c83f9204e3a700
 upstreamPath: docs/equity_curves.md
 lastUpdated: '2026-10-15T12:10:55Z'
 ---
@@ -250,6 +250,10 @@ que cambia es que la curva es en vivo y lo que viaja a su lado:
   omitir solo cuando la ejecución tiene una única cuenta). `gaps` enumera, como milisegundos de época, los
   momentos en que se perdieron posiciones abiertas porque la ejecución se reinició con ellas abiertas. Un hueco
   no es un punto de la curva y `meta` no lo cuenta.
+- **La curva propia de un instrumento.** `?instrument=BTC/USDT` responde el PnL realizado acumulado de ese
+  instrumento desde 0, con un punto en cada una de sus operaciones cerradas, con esta misma forma y las mismas
+  opciones. `measure` dice qué son los valores: `equity` para la curva de una cuenta, `realisedPnl` para la de un
+  instrumento. Consulta [Por instrumento](live_paper#por-instrumento).
 - **`sinceMs` empieza desde un momento de mercado, inclusive,** de modo que un cliente que ya tiene la curva
   lea solo lo nuevo. Una curva demasiado larga para leerla en una sola petición responde `400`: acótala con
   `sinceMs`, o pagínala.
@@ -266,6 +270,7 @@ curl "https://api.qtsurfer.net/v1/live/$RUN_ID/paper/equity?currency=USDT&outMod
 ```json
 {
   "currency": "USDT",
+  "measure": "equity",
   "timestamps": [1758330060000, 18000, 42000],
   "equities": [999.62, -0.03, 0.85],
   "gaps": [],

@@ -3,7 +3,7 @@ title: Paper trading en ejecuciones en vivo
 description: Ejecuta en simulación las señales de una ejecución en vivo — configúralo, y lee sus cuentas, su curva de equity y sus KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8e607eb526c19f506e2984ca452ac6fe3a50bc4d
+upstreamCommit: 895e3bd7f70a1dfe800c97fdf3c83f9204e3a700
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-10-15T06:30:42Z'
 ---
@@ -148,6 +148,54 @@ Los KPIs usan las unidades del backtest: `winRate` y `cagr` son ratios (`0.15` =
 `sortinoRatio` son por operación, no anualizados, y `null` hasta que hay operaciones suficientes para
 calcularlos.
 
+### Por instrumento
+
+Una cuenta la comparten todos los instrumentos de su moneda de cotización, así que cada cuenta también dice qué
+realizó **por instrumento**: `instruments`, una entrada por cada instrumento que ha cerrado alguna operación o
+mantiene una posición ahora, en orden de instrumento. Para una ejecución con BTC/USDT y ETH/USDT en una cuenta de
+1000 USDT:
+
+```
+"instruments": [
+  {
+    "instrument": "BTC/USDT", "trades": 3, "wins": 2, "losses": 1,
+    "realisedPnl": 12.0, "contributionPct": 1.2,
+    "kpi": {
+      "totalTrades": 3, "winCount": 2, "lossCount": 1, "winRate": 0.6667,
+      "pnlTotal": 12.0, "pnlTotalPercent": 1.2,
+      "sharpeRatio": 0.6794, "sortinoRatio": 1.7321, "cagr": 0.012,
+      "maxDrawdown": 4.0, "maxDrawdownPercent": 0.396
+    }
+  },
+  {
+    "instrument": "ETH/USDT", "trades": 2, "wins": 0, "losses": 2,
+    "realisedPnl": -3.0, "contributionPct": -0.3,
+    "openPosition": {"base": 0.05948, "cost": 160.0},
+    "kpi": {
+      "totalTrades": 2, "winCount": 0, "lossCount": 2, "winRate": 0.0,
+      "pnlTotal": -3.0, "pnlTotalPercent": -0.3,
+      "sharpeRatio": -1.0, "sortinoRatio": -0.7071, "cagr": -0.003,
+      "maxDrawdown": 3.0, "maxDrawdownPercent": 0.3
+    }
+  }
+]
+```
+
+| campo | significado |
+|---|---|
+| `instrument` | El par. |
+| `trades`, `wins`, `losses` | Sus operaciones cerradas. Una operación gana si su PnL es mayor que cero, así que una operación con un PnL exactamente cero cuenta como pérdida. |
+| `realisedPnl` | Suma del PnL de sus operaciones cerradas, en la moneda de la cuenta. Los `realisedPnl` de los instrumentos suman el de la cuenta. |
+| `contributionPct` | `realisedPnl` como porcentaje del `initialFunding` de la cuenta (escala 0–100), de modo que las contribuciones de los instrumentos suman la rentabilidad realizada de la cuenta. |
+| `openPosition` | Lo que mantiene ahora (`base` en el activo base, `cost` en la moneda de la cuenta); ausente cuando no mantiene nada. Un instrumento que mantiene una posición pero aún no ha cerrado ninguna operación figura en la lista, sin `kpi`. |
+| `kpi` | Los KPIs de las operaciones cerradas de ese instrumento solas, con el `initialFunding` de la cuenta como capital, de modo que su `pnlTotalPercent` es igual a su `contributionPct`. Mismas unidades que las de la cuenta; ausente hasta su primera operación cerrada. |
+
+**Qué es el desglose, y qué no.** Es exacto para lo que se realizó. No es cómo le habría ido al instrumento por su
+cuenta: sus entradas dependieron de lo que los demás ya habían bloqueado de la misma cuenta (con
+`percentAmountToLock: 20`, una segunda entrada bloquea el 20 % de lo que dejó libre la primera), así que otra
+combinación de instrumentos lo habría dimensionado de otra manera. Responde qué instrumento suma a la cuenta y
+cuál resta.
+
 ## La curva de equity
 
 `GET /v1/live/{runId}/paper/equity` devuelve la curva completa de una cuenta, de la más antigua a la más
@@ -187,6 +235,7 @@ GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity
 200
 {
   "currency": "USDT",
+  "measure": "equity",
   "points": [
     {"timestamp": 1758330060000, "equity": 999.62},
     {"timestamp": 1758330078000, "equity": 999.59},
@@ -209,6 +258,7 @@ GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?outMode=SHORT&differential=true
 200
 {
   "currency": "USDT",
+  "measure": "equity",
   "timestamps": [1758330060000, 18000, 42000, 31000, 89000],
   "equities": [999.62, -0.03, 0.85, -0.13, -0.12],
   "gaps": [],
@@ -233,6 +283,7 @@ GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?limit=3
 200
 {
   "currency": "USDT",
+  "measure": "equity",
   "points": [
     {"timestamp": 1758330060000, "equity": 999.62},
     {"timestamp": 1758330078000, "equity": 999.59},
@@ -250,6 +301,7 @@ Sigue `_links.next` tal cual (el cursor es opaco); una página sin `_links` es l
 200
 {
   "currency": "USDT",
+  "measure": "equity",
   "points": [
     {"timestamp": 1758330151000, "equity": 1000.31},
     {"timestamp": 1758330240000, "equity": 1000.19}
@@ -277,12 +329,43 @@ GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?currency=BTC
 200
 {
   "currency": "BTC",
+  "measure": "equity",
   "points": [
     {"timestamp": 1758330060000, "equity": 999.9981},
     {"timestamp": 1758330097000, "equity": 1000.0012}
   ],
   "gaps": [],
   "meta": {"inputPointCount": 2, "outputPointCount": 2, "resampled": false, "differential": false, "outMode": "ARRAY"}
+}
+```
+
+**La curva de un instrumento.** Para el desglose de arriba (consulta [Por instrumento](#por-instrumento)),
+`?instrument=BTC/USDT` responde el **PnL realizado acumulado** de ese instrumento, desde 0: un punto en cada una
+de sus operaciones cerradas. Es la misma forma de curva, con las mismas opciones y la misma paginación, y la
+respuesta dice qué son sus valores en `measure`: `equity` en la curva de una cuenta, `realisedPnl` en la de un
+instrumento (la forma llama `equity` a sus valores en ambos casos). Un instrumento pertenece a la cuenta de su
+moneda de cotización, así que no hace falta dar `currency`, y dar una distinta es un `400`. Los últimos valores
+de las curvas de todos los instrumentos de una cuenta suman el `realisedPnl` de la cuenta. Entre medias solo
+siguen la parte realizada de la propia curva de la cuenta hasta el orden en que se procesaron las operaciones: la
+curva de la cuenta se registra en ese orden y esta se sirve por hora del evento, y dos instrumentos que cierran
+casi a la vez pueden quedar marcados ligeramente fuera de él, así que en esos puntos las dos difieren en una
+operación. Los huecos de la cuenta no se atribuyen a un instrumento, así que aquí `gaps` está vacío.
+
+```
+GET /v1/live/6TzAPiPpsOWwBLdLBZCxwH/paper/equity?instrument=BTC/USDT
+
+200
+{
+  "currency": "USDT",
+  "instrument": "BTC/USDT",
+  "measure": "realisedPnl",
+  "points": [
+    {"timestamp": 1758330078000, "equity": 10.0},
+    {"timestamp": 1758330190000, "equity": 6.0},
+    {"timestamp": 1758330310000, "equity": 12.0}
+  ],
+  "gaps": [],
+  "meta": {"inputPointCount": 3, "outputPointCount": 3, "resampled": false, "differential": false, "outMode": "ARRAY"}
 }
 ```
 

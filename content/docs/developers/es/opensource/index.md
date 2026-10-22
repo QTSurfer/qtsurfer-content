@@ -99,8 +99,8 @@ más corto desde un segmento descargado hasta un DataFrame, una consulta SQL o u
 
 - [qtsurfer-api](https://github.com/QTSurfer/qtsurfer-api) — la especificación OpenAPI, el contrato
   AsyncAPI del WebSocket de ejecución en vivo y las guías en Markdown en las que se basa la
-  [sección de la API](/docs/developers/api) de esta documentación. La referencia interactiva está
-  publicada en [qtsurfer.github.io](https://qtsurfer.github.io).
+  [sección de la API](/docs/developers/api) de esta documentación. La [referencia de la API](/docs/api)
+  de este sitio se genera a partir del documento OpenAPI.
 - [qtsurfer-engine-java-docs](https://github.com/QTSurfer/qtsurfer-engine-java-docs) — la referencia
   publicada de la API de Java para los tipos que usa quien escribe una estrategia: las clases base de
   estrategia, el modelo de datos de mercado, el catálogo de indicadores y los modelos de comisiones,

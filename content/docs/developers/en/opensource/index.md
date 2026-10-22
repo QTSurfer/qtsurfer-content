@@ -92,8 +92,8 @@ downloaded segment to a DataFrame, a SQL query, or a Parquet file.
 
 - [qtsurfer-api](https://github.com/QTSurfer/qtsurfer-api) — the OpenAPI specification, the
   AsyncAPI contract of the live-execution WebSocket, and the Markdown guides behind the
-  [API section](/docs/developers/api) of these docs. The interactive reference is published at
-  [qtsurfer.github.io](https://qtsurfer.github.io).
+  [API section](/docs/developers/api) of these docs. The [API reference](/docs/api) of this site is
+  rendered from the OpenAPI document.
 - [qtsurfer-engine-java-docs](https://github.com/QTSurfer/qtsurfer-engine-java-docs) — the published
   Java API reference for the types a strategy author uses: strategy base classes, the market-data
   model, the indicator catalogue, and the fee, slippage, and fill models. It is browsable on this

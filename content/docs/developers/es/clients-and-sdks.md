@@ -21,7 +21,8 @@ La documentación de referencia generada de todos los clientes está reunida en 
   [ejecución en vivo](https://github.com/QTSurfer/sdk-ts/blob/main/docs/live.md) por WebSocket.
 - [SDK de Python](https://github.com/QTSurfer/sdk-python) · [documentación](https://www.qtsurfer.com/reference/sdk-python/latest/index.html) — flujos Python,
   autenticación, renovación de tokens, errores normalizados, y
-  [ejecución en vivo](https://github.com/QTSurfer/sdk-python/blob/main/docs/live.md) por WebSocket.
+  [ejecución en vivo](https://github.com/QTSurfer/sdk-python/blob/main/docs/live.md) por REST: ciclo de vida, señales
+  retenidas y equity del paper; aún sin cliente WebSocket gestionado.
 
 Usa un SDK cuando quieras resolver la autenticación y las operaciones de varios pasos como un único
 flujo.

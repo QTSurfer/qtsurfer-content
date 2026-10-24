@@ -50,6 +50,13 @@ prepare ──► poll ──────┘
 6. **Result** carries the job state, the yield metrics, the equity curve, engine notices, and,
    when requested, a pointer to the stored signals.
 
+**A backtest runs on one instrument: the one the prepare named, or the one of the dataset.** The strategy receives the ticks
+of that instrument and of no other: `getInstruments()` lists only it, so another instrument that the strategy accepts never
+receives ticks and has no indicators. A strategy that trades only another instrument ends `Completed`, not in error, with no
+trades and no metrics. A strategy whose logic spans several instruments, such as reading the indicators of the others or a
+triangular arbitrage with one leg on each pair, cannot be tested in a backtest the way it runs live. A live run is different:
+its source accepts several instruments.
+
 A sweep replaces step 4 with many runs over the same prepared session and adds its own polling and
 result shape; everything before it is identical.
 

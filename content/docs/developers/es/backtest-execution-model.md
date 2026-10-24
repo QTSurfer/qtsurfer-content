@@ -55,6 +55,13 @@ prepare ──► poll ──────┘
 6. **Resultado** lleva el estado del job, las métricas de rendimiento, la curva de equity, los
    avisos del motor y, si se solicitó, un puntero a las señales almacenadas.
 
+**Un backtest corre sobre un instrumento: el que nombró la preparación, o el del conjunto de datos.** La estrategia recibe
+los ticks de ese instrumento y de ningún otro: `getInstruments()` solo lo lista, así que otro instrumento que la estrategia
+acepte nunca recibe ticks ni tiene indicadores. Una estrategia que opera solo otro instrumento termina `Completed`, no en
+error, sin operaciones ni métricas. Una estrategia cuya lógica abarca varios instrumentos, como leer los indicadores de los
+demás o un arbitraje triangular con una pata en cada par, no puede probarse en un backtest tal como corre en vivo. Una
+ejecución en vivo es distinta: su fuente admite varios instrumentos.
+
 Un barrido sustituye el paso 4 por muchas ejecuciones sobre la misma sesión preparada y añade su
 propio sondeo y forma de resultado; todo lo anterior es idéntico.
 

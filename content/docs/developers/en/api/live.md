@@ -5,7 +5,7 @@ order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 6978b2621e1e9bcb3abf4ec68de17d3abdd89524
 upstreamPath: docs/live.md
-lastUpdated: '2026-10-21T19:13:05Z'
+lastUpdated: '2026-10-24T13:19:10Z'
 ---
 
 Run a strategy continuously against a live market feed, watch its signals as they happen, and

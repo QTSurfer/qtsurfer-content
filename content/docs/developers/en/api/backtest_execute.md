@@ -3,7 +3,7 @@ title: Backtests
 description: Prepare historical data, execute a strategy, poll its result, and inspect its equity curve.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: a77af5626880963724d9ff228c5a51411c21fdef
+upstreamCommit: 6a96a05c1dfd2bd7f8c14ec8f328cb977cd04408
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-10-22T11:15:56Z'
 ---
@@ -179,6 +179,14 @@ dataset-backed prepare. Same `(prepareJobId, strategyId, storeSignals, equityCur
 params)` → same `jobId` (idempotent) — a request that omits `equityCurve`, `baseConfig` or `params`
 dedupes exactly as it did before those fields existed. Two different `params` vectors over one
 prepare are two different jobs, and `9` and `9.0` are the same one.
+
+**A backtest runs over one instrument**: the one the prepare named, or the dataset's own. The strategy
+is fed that instrument's ticks and no other: `getInstruments()` lists only it, so another instrument
+the strategy accepts never ticks and has no indicators. A strategy that trades only some other
+instrument still ends `Completed`, not as an error, with no trades and no metrics. A strategy whose
+logic spans several instruments, reading the others' indicators or a triangular arbitrage with a leg
+on each pair, cannot be backtested the way it runs live. A live run is different: its source takes
+several instruments.
 
 Optionally takes `params`: strategy properties for this one run, applied without recompiling.
 Use this to re-run a sweep row as an ordinary backtest result with a chosen parameter vector — for

@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6978b2621e1e9bcb3abf4ec68de17d3abdd89524
+upstreamCommit: 6a96a05c1dfd2bd7f8c14ec8f328cb977cd04408
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-24T13:19:10Z'
 ---
@@ -496,10 +496,12 @@ machine-readable contract is [`asyncapi.yaml`](../asyncapi.yaml), next to the Op
 URL, every frame, the channel names, the `live.params` call and the error codes, with the signal
 payload shared with the REST schema `LiveSignal`.
 
-The QTSurfer SDKs already wrap this connection — see
-[Clients and SDKs](/docs/developers/clients-and-sdks) — so you may not need to speak the protocol
-directly at all. Going direct, the easiest client is an official Centrifugo library —
-[`centrifuge`](https://github.com/centrifugal/centrifuge-js) (JavaScript/TypeScript),
+The Java and TypeScript SDKs already wrap this connection (`connectLive`) — see
+[Clients and SDKs](/docs/developers/clients-and-sdks) — so with one of them
+you may not need to speak the protocol directly at all. The Python SDK does not: it covers the REST
+side of a live run, retained signals included, and a Python program receives signals as they happen
+through a [stream URL](#a-plain-websocket-stream-of-a-run). Going direct, the easiest client is an official Centrifugo
+library — [`centrifuge`](https://github.com/centrifugal/centrifuge-js) (JavaScript/TypeScript),
 [`centrifuge-java`](https://github.com/centrifugal/centrifuge-java),
 [`centrifuge-python`](https://github.com/centrifugal/centrifuge-python) and
 [others](https://centrifugal.dev/docs/transports/client_sdk) — since it already does the pings,

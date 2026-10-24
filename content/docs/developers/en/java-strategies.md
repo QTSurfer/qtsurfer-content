@@ -3,7 +3,7 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
+upstreamCommit: 7391528533013690b484b1879138bcfec84ab3d6
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 lastUpdated: '2026-10-21T12:09:30Z'
 ---
@@ -552,6 +552,13 @@ compute something _across_ instruments (a market-wide percentile, a relative-str
 basket signal), override `update(Ticker)` and read other instruments' indicators via
 `getInstruments()` / `getRTIndicator(...)`. See
 [strategy patterns](/docs/developers/strategy-patterns) → "Cross-instrument (market-wide) strategies".
+
+**In a backtest the strategy sees only one instrument.** A backtest runs over the instrument it was
+prepared for and feeds the strategy that instrument's ticks alone: `getInstruments()` lists only it,
+so another instrument the strategy accepts never ticks and has no indicators. A strategy that trades
+only some other instrument still ends `Completed`, with no trades and no metrics, and a
+cross-instrument strategy (a market-wide statistic, a triangular arbitrage with a leg on each pair)
+cannot be backtested the way it runs live. A live run takes several instruments.
 
 ## Engine version
 

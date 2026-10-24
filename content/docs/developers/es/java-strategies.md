@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 1
 lastUpdated: '2026-10-21T12:09:30Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
+upstreamCommit: 7391528533013690b484b1879138bcfec84ab3d6
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -603,6 +603,13 @@ ranking de fuerza relativa, una señal de cesta), sobrescribe `update(Ticker)` y
 de otros instrumentos con `getInstruments()` / `getRTIndicator(...)`. Consulta [patrones de
 estrategia](/docs/developers/strategy-patterns) → «Estrategias entre instrumentos (a nivel de
 mercado)».
+
+**En un backtest la estrategia ve un solo instrumento.** Un backtest corre sobre el instrumento para el que se
+preparó y alimenta a la estrategia solo con los ticks de ese instrumento: `getInstruments()` lo lista únicamente a él, así
+que otro instrumento que la estrategia acepte nunca recibe ticks ni tiene indicadores. Una estrategia que opera solo otro
+instrumento termina igualmente `Completed`, sin operaciones ni métricas, y una estrategia entre instrumentos (una
+estadística de todo el mercado, un arbitraje triangular con una pata en cada par) no puede probarse en backtest tal como
+corre en vivo. Una ejecución en vivo admite varios instrumentos.
 
 ## Versión del motor
 

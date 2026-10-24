@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8e607eb526c19f506e2984ca452ac6fe3a50bc4d
+upstreamCommit: 6978b2621e1e9bcb3abf4ec68de17d3abdd89524
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-21T19:13:05Z'
 ---
@@ -30,7 +30,8 @@ medida que ocurren, y cambia sus parámetros sin reiniciarla.
 ## Ciclo de vida: sandbox, luego live
 
 Arrancar una ejecución (`POST /strategy/{strategyId}/live`) nunca la pone delante de nadie más que
-de ti. Empieza en la etapa `sandbox`, una prueba de **24 horas**. Durante ella la plataforma ejecuta
+de ti. Empieza en la etapa `sandbox`, una prueba cuya duración depende de tu plan: cada plan tiene una más corta, y la más larga que tiene
+una ejecución es de **24 horas** ([Cuánto dura el sandbox](#cuánto-dura-el-sandbox-sandboxminutes)). Durante ella la plataforma ejecuta
 una segunda ejecución independiente de tu estrategia junto a la primera y comprueba cuatro cosas: que
 la ejecución procesa datos de mercado, que su consumo de memoria y su tiempo por tick se mantienen
 dentro de lo que la plataforma permite, que no se cuelga ni falla repetidamente, y que las dos
@@ -39,7 +40,7 @@ WebSocket desde su primera señal si pediste `relay`, y por las rutas de lectura
 (consulta [Visibilidad](#visibilidad)) — y por una [URL de flujo](#un-flujo-websocket-plano-de-una-ejecución) si
 creas una para ella, que permite a quien se la des leer las señales de la ejecución desde el sandbox.
 
-Una ejecución que la supera se promueve a `live` automáticamente al cumplirse las 24 horas. No hay
+Una ejecución que la supera se promueve a `live` automáticamente cuando termina su prueba. No hay
 una llamada aparte de "promover" ni nada que hacer mientras esperas. Una ejecución que no la supera
 no se promueve, y sigue corriendo en el sandbox.
 
@@ -47,7 +48,7 @@ no se promueve, y sigue corriendo en el sandbox.
 
 Una estrategia que ya ha pasado por la prueba no vuelve a pasar por ella. Si detienes una ejecución que
 fue promovida y arrancas la estrategia de nuevo, la ejecución nueva empieza en `live` de inmediato, sin
-esperar 24 horas. Vale cuando una ejecución tuya anterior de **la misma estrategia compilada** fue
+espera. Vale cuando una ejecución tuya anterior de **la misma estrategia compilada** fue
 promovida y ninguna ejecución de esa compilación se detuvo por usar más recursos de los permitidos.
 Los parámetros, las fuentes y los instrumentos de la ejecución nueva pueden ser distintos de los de la
 anterior. Si vuelves a enviar la estrategia (`POST /strategy`), se compila de nuevo y la compilación
@@ -359,6 +360,43 @@ reproducir. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a 
   incluye): el que pediste o, si lo omitiste, el que eligió la plataforma. Envía ese número para obtener la
   misma cantidad de calentamiento en otra ejecución. Una ejecución arrancada antes de que existiera este
   campo no lleva `warmFrom` en absoluto; nunca es `null`.
+
+## Cuánto dura el sandbox: `sandboxMinutes`
+
+Toda ejecución empieza con una prueba en la etapa `sandbox` (consulta [Ciclo de vida](#ciclo-de-vida-sandbox-luego-live)). Cuánto dura
+depende de tu plan: cada plan tiene una **prueba más corta**, desde una hora hasta un día entero, y la más larga que tiene una
+ejecución es de **24 horas**. Una ejecución que no pide nada recibe la prueba más corta que da su plan.
+
+`sandboxMinutes` es como pides una más larga. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a `sources`:
+
+```json
+{
+  "sources": [
+    {"venueType": "cex", "exchange": "binance", "segment": "spot", "type": "ticker", "instruments": ["BTC/USDT"]}
+  ],
+  "sandboxMinutes": 480
+}
+```
+
+| `sandboxMinutes` | Qué ocurre |
+|---|---|
+| omitido | La prueba más corta que da tu plan. |
+| desde la más corta de tu plan hasta `1440` | La ejecución se prueba al menos esos minutos. |
+| menos que la más corta de tu plan | `429`: el mensaje nombra tu plan y el número. Reintentar con el mismo valor no ayudará. |
+
+- Es un entero de minutos de `5` a `1440`. Cualquier otro valor (texto, una fracción, `null`, un número fuera del rango) se
+  rechaza con `400`.
+- Es un **mínimo**, no el momento de la promoción. Una prueba tampoco ha terminado hasta que la plataforma ha alimentado a la
+  ejecución con suficiente feed de mercado para juzgarla, aproximadamente una actualización por cada segundo de la prueba. Una
+  ejecución sobre un instrumento tranquilo, con pocas actualizaciones, puede quedarse en el sandbox más allá de
+  `sandboxMinutes`, hasta las 24 horas, y entonces se juzga con lo que ha recibido.
+- Solo se puede fijar **al arrancar la ejecución**. No es uno de los parámetros que acepta `PUT /live/{runId}/params`: para
+  cambiarlo, detén la ejecución y vuelve a arrancarla.
+- La ejecución devuelve el valor en vigor como `sandboxMinutes` cuando la lees (la respuesta de arranque,
+  `GET /strategy/{strategyId}/live` y `GET /live/{runId}`; la respuesta al detener una ejecución no lo incluye). Una ejecución
+  que no tiene prueba no lleva `sandboxMinutes` en absoluto (nunca `null`): una arrancada antes de que existiera este campo, y una
+  que [empieza directamente en `live`](#volver-a-arrancar-no-repite-la-prueba) porque la estrategia ya ha pasado por la prueba.
+  `"sandbox": true` pide la prueba, y entonces se aplica el mismo tiempo.
 
 ## Listar tus ejecuciones
 

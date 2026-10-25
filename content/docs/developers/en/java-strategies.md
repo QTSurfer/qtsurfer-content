@@ -3,7 +3,7 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 7391528533013690b484b1879138bcfec84ab3d6
+upstreamCommit: a8a7c2d9fb0a460373bce64c7b8e19d4242ebfe0
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 lastUpdated: '2026-10-25T11:28:16Z'
 ---
@@ -88,6 +88,10 @@ protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
 ```
 
 See [the indicator catalogue](/docs/developers/java-indicators) for the full indicator catalogue.
+
+The pro indicators (ADX, ATR, SuperTrend, Ichimoku, VWAP and the rest) are on the same builder through
+`Pro.on(indicators)`, and come with the Pro and Elite plans; "The pro indicators" in the catalogue has the call, an
+example that compiles and what a plan without them is refused with (`402`).
 
 ### WindowTime values
 

@@ -3,7 +3,7 @@ title: Strategy API
 description: Compile, validate, inspect, retrieve, and delete Java or QTScript (beta) strategies through the REST API.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
+upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/strategy.md
 lastUpdated: '2026-10-21T12:09:30Z'
 ---
@@ -44,9 +44,15 @@ curl -X POST https://api.qtsurfer.net/v1/strategy \
     {"name": "rsi.period", "description": "RSI period", "defaultValue": "14",
      "reflected": true, "min": 2, "max": 50, "step": 1},
     {"name": "enabled", "description": "Enabled", "reflected": true}
-  ]
+  ],
+  "requires": []
 }
 ```
+
+`requires` lists what the strategy needs from your plan: `["indicators.pro"]` when it uses the
+[pro indicators](qtscript#the-pro-indicators-uses) and `[]` when it needs nothing more. Registering is accepted on every plan;
+what a plan without the pro indicators cannot do is run the strategy, see
+[the pro indicators and your plan](qtscript#the-pro-indicators-and-your-plan).
 
 **This answers one question: is the source valid.** It compiles, registers, and hands back
 the id — nothing more. A `200` means the source parsed and compiled, not that it will run: what only
@@ -168,7 +174,8 @@ curl -X POST https://api.qtsurfer.net/v1/strategy/2ul144qe9tlwzu5anhwvc6/validat
 # → 202 {"strategyId": "2ul144qe9tlwzu5anhwvc6", "validation": "pending"}
 ```
 
-Errors: `404` no such registered strategy for this user.
+Errors: `404` no such registered strategy for this user · `402` the strategy uses the pro indicators and your plan does not
+include them, see [the pro indicators and your plan](qtscript#the-pro-indicators-and-your-plan).
 
 ## Getting a strategy
 

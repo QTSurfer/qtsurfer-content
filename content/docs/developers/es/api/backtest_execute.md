@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6a96a05c1dfd2bd7f8c14ec8f328cb977cd04408
+upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-10-25T11:28:16Z'
 ---
@@ -255,7 +255,8 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
 ```
 
 Errores: `400` petición inválida, o un `type` que aún no se puede ejecutar (`funding`) · `404`
-job de preparación no encontrado o expirado · `429` limitado por tasa.
+job de preparación no encontrado o expirado · `402` la estrategia usa los indicadores pro y tu plan no los incluye,
+consulta [los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan) · `429` limitado por tasa.
 
 ## Sondear el resultado
 

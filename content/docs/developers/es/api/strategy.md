@@ -3,7 +3,7 @@ title: API de estrategias
 description: Compila, valida, inspecciona, recupera y elimina estrategias Java o QTScript (beta) a través de la API REST.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
+upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/strategy.md
 lastUpdated: '2026-10-21T12:09:30Z'
 ---
@@ -44,9 +44,15 @@ curl -X POST https://api.qtsurfer.net/v1/strategy \
     {"name": "rsi.period", "description": "RSI period", "defaultValue": "14",
      "reflected": true, "min": 2, "max": 50, "step": 1},
     {"name": "enabled", "description": "Enabled", "reflected": true}
-  ]
+  ],
+  "requires": []
 }
 ```
+
+`requires` lista lo que la estrategia necesita de tu plan: `["indicators.pro"]` cuando usa los
+[indicadores pro](qtscript#los-indicadores-pro-uses) y `[]` cuando no necesita nada más. Registrar se acepta en
+cualquier plan; lo que un plan sin los indicadores pro no puede hacer es ejecutar la estrategia, consulta
+[los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan).
 
 **Esto responde a una única pregunta: si el fuente es válido.** Compila, registra y devuelve
 el id — nada más. Un `200` significa que el fuente se analizó y compiló, no que vaya a funcionar: lo
@@ -173,7 +179,8 @@ curl -X POST https://api.qtsurfer.net/v1/strategy/2ul144qe9tlwzu5anhwvc6/validat
 # → 202 {"strategyId": "2ul144qe9tlwzu5anhwvc6", "validation": "pending"}
 ```
 
-Errores: `404` no existe esa estrategia registrada para este usuario.
+Errores: `404` no existe esa estrategia registrada para este usuario · `402` la estrategia usa los indicadores pro y tu
+plan no los incluye, consulta [los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan).
 
 ## Obtener una estrategia
 

@@ -3,7 +3,7 @@ title: Parameter sweeps
 description: Run parameter grids, rank trials, and validate results with walk-forward folds.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c9bed1f30c64092a328babf9f6eb64cc8dd02172
+upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-10-07T17:34:12Z'
 ---
@@ -136,7 +136,8 @@ duplicate — prepare and execute requests are idempotent, keyed on their body.
 
 Errors: `400` invalid spec, a `type` that can't be swept yet (`funding`), or the expanded grid
 exceeds the server limit · `404` `requestId`
-not found or expired · `429` sweep queue or per-user concurrency limit reached.
+not found or expired · `402` the strategy uses the pro indicators and your plan does not include them, see
+[the pro indicators and your plan](qtscript#the-pro-indicators-and-your-plan) · `429` sweep queue or per-user concurrency limit reached.
 
 ## Polling progress and the leaderboard
 

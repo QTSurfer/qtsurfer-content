@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
+upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-10-21T12:09:30Z'
 ---
@@ -67,6 +67,7 @@ vigila en una ventana de un minuto, emitiendo una señal en cada umbral.
 | `param` | Un valor configurable. El tipo sale del literal (`9` → `int`, `0.5` → `double`, `true` → `boolean`, `"texto"` → `String`). **El nombre es la clave** que usan los `params` de una ejecución y un eje de barrido | `param rsiBajo = 30 "Sobrevendido"` |
 | `init { }` | Opcional. Java tal cual, se ejecuta una vez al construir la estrategia — setters del motor | `init { setPercentGain(0.5); }` |
 | `instruments` | Opcional. Qué mercados: pares (`BASE/QUOTE`, cualquiera de los dos lados puede ser `*`), expresiones regulares (`~"..."`, comparadas contra el símbolo completo), o un cuerpo Java para control total | `instruments */usdt` · `instruments btc/usdt, eth/*` |
+| `uses` | Opcional. Trae los [indicadores pro](#los-indicadores-pro-uses) al fichero, de modo que `setup:` pueda llamarlos por su nombre sin más. Varias líneas `uses` se suman | `uses pro.*` · `uses pro.adx, pro.ichimoku` |
 | `setup:` | Los indicadores, **una llamada al builder por línea** (el catálogo libre del builder que usa una estrategia Java, [listado abajo](#qué-va-bajo-setup)). Las líneas bajo `setup:` van indentadas, y la primera línea que vuelve a la columna 0 cierra la sección | `ema(12)` · `bollinger(20, 2)` |
 | Ventanas | Donde va la lógica — consulta abajo | `rsi(14) window m1 { ... }` |
 | `onCommand { }` | Opcional, como mucho una por fichero. Corre cuando la ejecución recibe un [comando](live#comandos) — consulta abajo | `onCommand { if ("flatten".equals($command)) ... }` |
@@ -81,15 +82,174 @@ escrita sin el punto. Estos son los nombres que funcionan:
 `gain` `greatOrEqual` `greatThan` `lessOrEqual` `lessThan` `loss` `macd` `max` `min` `mul` `notEqual`
 `percentChange` `rateChange` `round` `rsi` `sma` `stochRsi` `sum`
 
-Los argumentos que admite cada uno están en el Javadoc del builder. Una llamada cuyos argumentos no encajan con
+Estas son las formas de cada nombre que una línea de QTScript puede escribir: un `String` es el nombre de un indicador,
+o bien uno que lee o bien el que registra, y un `Number` es un número entero o un decimal. Qué significa cada argumento
+está en el Javadoc del builder.
+
+| Indicador | Las formas que QTScript puede escribir |
+|---|---|
+| `add` | `add(String, String)` · `add(String, String, String)` |
+| `bollinger` | `bollinger()` · `bollinger(int)` · `bollinger(int, Number)` · `bollinger(String, int, Number)` |
+| `bollingerBandwidth` | `bollingerBandwidth(String)` |
+| `cci` | `cci(int)` · `cci(String, int)` |
+| `clamp` | `clamp(String, Number, Number)` · `clamp(String, String, Number, Number)` |
+| `diff` | `diff(String, String)` · `diff(String, String, String)` |
+| `distance` | `distance(String, String)` · `distance(String, String, String)` |
+| `distanceMa` | `distanceMa(String)` · `distanceMa(String, String)` |
+| `ema` | `ema(int)` · `ema(String, int)` · `ema(String, String, int)` |
+| `equal` | `equal(String, String, Number)` · `equal(String, String, Number, String)` · `equal(String, String, Number, String, String)` |
+| `gain` | `gain(String)` · `gain(String, String)` · `gain(String, String, boolean)` |
+| `greatOrEqual` | `greatOrEqual(String, String, Number)` · `greatOrEqual(String, String, Number, String)` · `greatOrEqual(String, String, Number, String, String)` |
+| `greatThan` | `greatThan(String, String, Number)` · `greatThan(String, String, Number, String)` · `greatThan(String, String, Number, String, String)` |
+| `lessOrEqual` | `lessOrEqual(String, String, Number)` · `lessOrEqual(String, String, Number, String)` · `lessOrEqual(String, String, Number, String, String)` |
+| `lessThan` | `lessThan(String, String, Number)` · `lessThan(String, String, Number, String)` · `lessThan(String, String, Number, String, String)` |
+| `loss` | `loss(String)` · `loss(String, String)` · `loss(String, String, boolean)` |
+| `macd` | `macd()` · `macd(String)` · `macd(String, int, int)` · `macd(String, String, int, int)` |
+| `max` | `max(String)` · `max(String, String)` |
+| `min` | `min(String)` · `min(String, String)` |
+| `mul` | `mul(String, Number)` · `mul(String, String)` · `mul(String, String, Number)` · `mul(String, String, String)` |
+| `notEqual` | `notEqual(String, String, Number)` · `notEqual(String, String, Number, String)` · `notEqual(String, String, Number, String, String)` |
+| `percentChange` | `percentChange(String)` · `percentChange(String, String)` |
+| `rateChange` | `rateChange(String)` · `rateChange(String, String, boolean)` |
+| `round` | `round(String, int)` · `round(String, String, int)` |
+| `rsi` | `rsi(int)` · `rsi(int, boolean)` · `rsi(String, int, boolean)` |
+| `sma` | `sma(int)` · `sma(String, int)` · `sma(String, String, int)` · `sma(String, int, boolean)` |
+| `stochRsi` | `stochRsi(int)` · `stochRsi(String, int)` |
+| `sum` | `sum(String)` · `sum(String, String)` |
+
+Una llamada cuyos argumentos no encajan con
 ninguna de sus formas se rechaza indicando las que sí existen: `ema(1, 2, 3)` responde que sus formas son
 `ema(int)`, `ema(String, int)` y `ema(String, String, int)`. Los métodos del builder que reciben una función
 (`predicate`, `fun`, `decorate`, `periodCount`) solo se pueden escribir en Java.
 
-Un nombre que no está en la lista no es un indicador que puedas usar aquí, y la estrategia se rechaza con
-`unknown indicator '<nombre>'`: `atr`, `wma`, `adx` y `zscore` están entre los nombres que responden así. Lo mismo
+Un nombre que no está en la lista, y que ninguna línea `uses` trae ([siguiente sección](#los-indicadores-pro-uses)), no
+es un indicador que puedas usar aquí, y la estrategia se rechaza con `unknown indicator '<nombre>'`: `wma` y `zscore`
+están entre los nombres que responden así, y también `atr` y `adx` salvo que el fichero los traiga con `uses`. Lo mismo
 ocurre con `value("nombre")`, que lee un indicador dentro de un cuerpo `{ }` y no tiene sentido en una línea de
 `setup:`.
+
+### Los indicadores pro: `uses`
+
+Los indicadores pro no están en la lista de arriba. Un fichero los trae con una línea `uses`, y luego los llama en `setup:`
+por su nombre sin más, como cualquier otro indicador.
+
+- `uses pro.*` trae los trece. `uses pro.adx, pro.ichimoku` trae solo esos. Varias líneas `uses` se suman. Escríbelas junto
+  a `param` e `instruments`, antes de `setup:`.
+- Solo los nombres que trae una línea `uses` son pro. Con `uses pro.atr`, una llamada a `adx(14)` sigue siendo `unknown
+  indicator 'adx'`, indicado en la línea de la llamada. Los nombres propios del builder (`ema`, `rsi` y el resto de la
+  lista de arriba) nunca son pro.
+- `pro` es el único conjunto que existe. `uses` es una palabra reservada: un fichero no puede tener un `param` ni una
+  sección llamados `uses`.
+- Los indicadores pro leen barras enteras, así que úsalos en una estrategia [`kline`](#velas). En una estrategia `ticker`
+  los valores no son los de la barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor
+  que lo dice.
+- Una línea pro es una línea `setup:` normal: una llamada por línea, con una ventana detrás como de costumbre.
+- Los backtests, los barridos (con walk-forward incluido), [`validate`](strategy#comprobar-que-realmente-funciona) y las
+  ejecuciones en vivo ejecutan los indicadores pro.
+
+| Indicador | Formas | Registra, con los argumentos por defecto | También registra |
+|---|---|---|---|
+| `atr` | `atr()` · `atr(int)` · `atr(String, int)` | `atr14` | |
+| `adx` | `adx()` · `adx(int)` · `adx(String, int)` | `adx14` | `adx14PlusDI` · `adx14MinusDI` |
+| `superTrend` | `superTrend()` · `superTrend(int, double)` · `superTrend(String)` · `superTrend(String, int, double)` | `st10_3` | `st10_3Upper` · `st10_3Lower` |
+| `ichimoku` | `ichimoku()` · `ichimoku(int, int, int)` · `ichimoku(String)` · `ichimoku(String, int, int, int)` | `ichi9_26_52`, la línea Tenkan | `ichi9_26_52Kijun` · `ichi9_26_52SenkouA` · `ichi9_26_52SenkouB` · `ichi9_26_52Chikou` |
+| `obv` | `obv()` · `obv(String)` | `obv` | |
+| `vwap` | `vwap()` · `vwap(String)` | `vwap` | |
+| `mfi` | `mfi()` · `mfi(int)` · `mfi(String, int)` | `mfi14` | |
+| `cmf` | `cmf()` · `cmf(int)` · `cmf(String, int)` | `cmf20` | |
+| `kurtosis` | `kurtosis(int)` · `kurtosis(String, int)` | `kurt20` (el periodo es obligatorio; lee el cierre) | |
+| `parkinson` | `parkinson(int)` · `parkinson(String, int)` · `parkinson(String, int, double)` | `park20` | |
+| `garmanKlass` | `garmanKlass(int)` · `garmanKlass(String, int)` · `garmanKlass(String, int, double)` | `gk20` | |
+| `rogersSatchell` | `rogersSatchell(int)` · `rogersSatchell(String, int)` · `rogersSatchell(String, int, double)` | `rs20` | |
+| `yangZhang` | `yangZhang(int)` · `yangZhang(String, int)` · `yangZhang(String, int, double)` | `yz20` | |
+
+El `double` de los cuatro estimadores de volatilidad es el factor de anualización. Con otros argumentos el nombre sigue el
+mismo patrón: `atr(20)` registra `atr20`, `kurtosis(30)` registra `kurt30`, `ichimoku(7, 22, 44)` registra
+`ichi7_22_44`, y `superTrend(10, 2.5)` registra `st10_2.5` (un multiplicador entero pierde el decimal: `superTrend(7, 3)`
+registra `st7_3`). Con un nombre como primer argumento el indicador se registra con ese nombre, y los demás indicadores
+que registra lo toman como prefijo: `adx("trend", 14)` registra `trend`, `trendPlusDI` y `trendMinusDI`.
+
+Algunos registran más de un indicador bajo un mismo nombre, como hace `bollinger` (consulta
+[En qué indicador está una ventana](#en-qué-indicador-está-una-ventana)). Una ventana escrita en una línea así se engancha
+al principal, de modo que `actual` es su valor, y el cuerpo lee los demás con `value($indicator + "<sufijo>")`, con los
+sufijos de la última columna. `$indicator` es el nombre al que está enganchada la ventana, así que también funciona cuando
+diste al indicador un nombre propio. El principal de `adx` es el ADX, el de `superTrend` es la línea SuperTrend y el de
+`ichimoku` es la línea Tenkan.
+
+Esto lee el ADX con las dos líneas direccionales a su lado:
+
+```
+strategy "ADX trend" kline
+uses pro.adx, pro.atr
+
+param adxLevel = 25 "ADX level"
+
+setup:
+  ema(20)
+  atr(14)
+  adx(14) window m1 {
+    if (actual > adxLevel && value("adx14PlusDI") > value("adx14MinusDI")) emitBuy(close);
+    if (actual > adxLevel && value("adx14PlusDI") < value("adx14MinusDI")) emitSell(close);
+  }
+```
+
+Y este trae todos y usa bandas y una nube:
+
+```
+strategy "Cloud and bands" kline
+uses pro.*
+
+setup:
+  superTrend(10, 3) window m5 {
+    if (close > value($indicator + "Upper")) emitSell(close);
+    if (close < value($indicator + "Lower")) emitBuy(close);
+  }
+  ichimoku() window m5 {
+    if (close > value($indicator + "SenkouA") && close > value($indicator + "SenkouB")) emitBuy(close);
+  }
+  vwap()
+  yangZhang(20)
+```
+
+Un fichero que trae solo `atr` y luego llama a `adx(14)` no compila. La línea de la llamada se rechaza con
+`unknown indicator 'adx'`:
+
+```
+uses pro.atr
+
+setup:
+  adx(14)
+```
+
+Una línea `uses` mal formada se rechaza, contra tu fichero como los demás errores de QTScript, con uno de estos mensajes:
+
+- `uses needs the indicators to bring in: uses pro.* or uses pro.adx, pro.ichimoku`, cuando nada sigue a `uses`.
+- `expected pro.* or pro.<indicator>, found 'pro'`, para `uses pro`.
+- `unknown set 'ta': the only set is pro`, para un conjunto que no existe.
+- `unknown pro indicator 'zscore': the pro indicators are adx, atr, cmf, garmanKlass, ichimoku, kurtosis, mfi, obv, parkinson,
+  rogersSatchell, superTrend, vwap, yangZhang`, para un miembro que no existe.
+- `expected pro.* or pro.<indicator> here`, para una coma sin nada detrás, como en `uses pro.adx,`.
+- `expected pro.* or pro.<indicator>, found 'pro.adx pro.atr'`, para dos miembros sin coma entre ellos.
+
+### Los indicadores pro y tu plan
+
+Los indicadores pro vienen con los planes Pro y Elite (tu plan es el `tier` que devuelve [`GET /account`](account)).
+Registrar una estrategia que los usa se acepta en cualquier plan; lo que un plan sin ellos no puede hacer es ejecutarla.
+
+- **`POST /strategy` dice lo que necesita la estrategia.** La respuesta lleva `requires`, una lista: `["indicators.pro"]`
+  cuando la estrategia usa los indicadores pro y `[]` cuando no. [`GET /strategy/{strategyId}`](strategy#obtener-una-estrategia)
+  no lo muestra.
+- **Un plan que no los incluye se rechaza con `402 Payment Required`**, sin cabecera `Retry-After`, ya que esperar no cambia
+  el plan. Es la respuesta al validar la estrategia, al lanzar un backtest con ella, al lanzar un barrido con ella
+  (walk-forward incluido) y al lanzar una ejecución en vivo con ella. El mensaje nombra el primer indicador pro que pide la
+  estrategia, la línea de tu fichero y tu plan (en el plan Basic termina en `your plan: basic`). El cuerpo es el error
+  habitual, con `retryable` en `false`, de modo que un cliente que reintenta según `retryable` no reintenta este. Cuando la
+  plataforma tiene una página donde cambiar de plan, el cuerpo lleva además su dirección como `upgradeUrl`; ningún otro
+  error la lleva:
+
+```json
+{"code": 402, "message": "strategy uses pro indicators (pro.adx, QTScript line 7); your plan: free", "retryable": false, "upgradeUrl": "https://example.com/upgrade"}
+```
 
 ## Ventanas
 

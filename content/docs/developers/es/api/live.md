@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6a96a05c1dfd2bd7f8c14ec8f328cb977cd04408
+upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-25T11:28:16Z'
 ---
@@ -43,6 +43,10 @@ creas una para ella, que permite a quien se la des leer las señales de la ejecu
 Una ejecución que la supera se promueve a `live` automáticamente cuando termina su prueba. No hay
 una llamada aparte de "promover" ni nada que hacer mientras esperas. Una ejecución que no la supera
 no se promueve, y sigue corriendo en el sandbox.
+
+Arrancar una ejecución necesita un plan que incluya ejecuciones en vivo. Un plan que no, el Free, se rechaza con `402`:
+`Live runs are not included in tier free. Upgrade your plan to run strategies live.` Una estrategia que usa los
+indicadores pro en un plan que no los incluye también se rechaza con `402`, consulta [los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan).
 
 ### Volver a arrancar no repite la prueba
 
@@ -315,7 +319,7 @@ arrancar la ejecución. Una fuente que supera eso y aun así no se puede ejecuta
 cuestión de segundos, con `The run could not start: its definition was refused.` como `reason`: un
 instrumento que no es una dirección, más de uno, o un tipo `ticker`. Se exige una estrategia kline, como en
 cualquier fuente `kline`: arrancar una estrategia ticker sobre una fuente `dex` se rechaza con `400`. Un
-arranque que omite `instruments`, o envía `["*"]`, se rechaza con `429` en un plan sin el comodín; en
+arranque que omite `instruments`, o envía `["*"]`, se rechaza con `402` en un plan sin el comodín; en
 cualquier otro la ejecución falla como se ha descrito.
 
 ## Calentar la ejecución: `warmFrom`
@@ -706,7 +710,7 @@ servicio que atiende a muchos lectores mantiene una sola conexión y reparte las
 
 Está disponible desde la etapa `sandbox`, de modo que puedes probarla antes de que la ejecución se promueva, en los
 planes que pueden difundir (los planes Pro y Elite: tu plan es el `tier` que devuelve [`GET /account`](account)).
-Cualquier otro plan se rechaza con `429`, nombrando el plan.
+Cualquier otro plan se rechaza con `402`, nombrando el plan.
 
 ### Conseguir una
 

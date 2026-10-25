@@ -4,7 +4,7 @@ description: Configura, compón y amplía el pipeline de indicadores en tiempo r
 order: 2
 lastUpdated: '2026-10-25T11:28:16Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 7391528533013690b484b1879138bcfec84ab3d6
+upstreamCommit: a8a7c2d9fb0a460373bce64c7b8e19d4242ebfe0
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 ---
 
@@ -141,26 +141,97 @@ indicators.getReadOnly("ema9").ifPresent(fuente ->
 `.ro()` es un método por defecto del propio `RTIndicator` — disponible en cualquier instancia de
 indicador sin pasar por el grupo. Úsalo cuando ya tienes una referencia al objeto indicador.
 
+## Los indicadores pro
+
+Los indicadores pro vienen con los planes Pro y Elite. En Java son los métodos de `Pro`,
+en `com.wualabs.qtsurfer.engine.indicators.pro`: `Pro.on(indicators)` recibe el grupo de indicadores que recibe
+`setupIndicators`, y cada llamada registra un indicador pro con los mismos nombres, formas e ids que lista la
+tabla bajo "The pro indicators: `uses`" de la skill `qtsurfer-qtscript-strategy` (`atr`, `adx`, `cmf`,
+`garmanKlass`, `ichimoku`, `kurtosis`, `mfi`, `obv`, `parkinson`, `rogersSatchell`, `superTrend`, `vwap`, `yangZhang`). `Pro.on(indicators).adx(14)` registra `adx14` y, a su lado,
+`adx14PlusDI` y `adx14MinusDI`. Una ventana va sobre el principal (`adx14`), y el listener lee los demás por nombre.
+
+Leen barras enteras, así que úsalos en una estrategia kline. Esta compra cuando el ADX dice que hay tendencia y la línea
+plus está por encima de la minus, y vende cuando está por debajo:
+
+```java
+import com.wualabs.qtsurfer.engine.core.KlineInterval;
+import com.wualabs.qtsurfer.engine.core.state.StateStore;
+import com.wualabs.qtsurfer.engine.indicators.core.KlineValueSource;
+import com.wualabs.qtsurfer.engine.indicators.helpers.WindowTimeRTIndicator.WindowTime;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.indicators.pro.Pro;
+import com.wualabs.qtsurfer.engine.strategy.AbstractKlineStrategy;
+import com.wualabs.qtsurfer.engine.strategy.AbstractWindowListener;
+
+public class AdxTrend extends AbstractKlineStrategy {
+
+  @Override
+  public KlineInterval getInterval() {
+    return KlineInterval.s1;
+  }
+
+  @Override
+  protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
+    indicators.addPrice();
+    indicators.add("open", KlineValueSource.Open);
+    indicators.add("high", KlineValueSource.High);
+    indicators.add("low", KlineValueSource.Low);
+    indicators.add("close", KlineValueSource.Close);
+    indicators.add("volume", KlineValueSource.Volume);
+    Pro.on(indicators).adx(14);
+    indicators.window("adx14", WindowTime.m1, new TrendListener(this, indicators));
+  }
+
+  private class TrendListener extends AbstractWindowListener {
+
+    TrendListener(AbstractKlineStrategy strategy, InstrumentGroupRTIndicator indicators) {
+      super(strategy, indicators);
+    }
+
+    @Override
+    public void onChange(StateStore store, double prev, double actual) {
+      double close = indicators.getValue("close");
+      double plus = indicators.getValue("adx14PlusDI");
+      double minus = indicators.getValue("adx14MinusDI");
+      if (actual > 20 && plus > minus) emitBuy(close);
+      if (actual > 20 && plus < minus) emitSell(close);
+    }
+  }
+}
+```
+
+En una estrategia `ticker`, un indicador pro no se rechaza, pero sus valores no son los de la barra y no significan nada, y
+validar o ejecutar la estrategia devuelve un aviso del motor que lo dice.
+
+Registrar una estrategia que los usa se acepta en cualquier plan, y la respuesta de `POST /strategy` lleva
+`requires: ["indicators.pro"]`. Ejecutarla en un plan que no los incluye se rechaza con `402`, al validarla, al lanzar un
+backtest o un barrido con ella y al lanzar una ejecución en vivo con ella. El mensaje nombra la primera llamada que hace la
+estrategia y la línea de tu fuente, aquí `strategy uses pro indicators (Pro.adx, line 25); your plan: free`. La comprobación
+lee la estrategia compilada, así que cualquier otra mención de una clase del paquete pro cuenta igual, y entonces el mensaje
+nombra la clase. El estado, el cuerpo y el `upgradeUrl` son los que describe
+"The pro indicators and your plan" en la skill `qtsurfer-qtscript-strategy`.
+
 ## Catálogo de indicadores avanzado (estadística y pro)
 
 Más allá de los métodos del builder fluido de arriba, el motor incluye unas 150 clases de
 indicadores en dos niveles, un subpaquete por categoría: `com.wualabs.qtsurfer.engine.indicators.<category>`
 para el nivel **gratuito** (`averages`, `momentum`, `distance`, `bollinger`, `statistics`, …) y
-`com.wualabs.qtsurfer.engine.indicators.<category>.pro` para el nivel **de pago, privado en el
-servidor** (`averages.pro`, `trend.pro`, `momentum.pro`, `volatility.pro`, `volume.pro`,
-`statistics.pro`, …) — el segmento de paquete `pro` es siempre la marca del nivel de pago. Las
-clases pro no se distribuyen en el port OSS/TypeScript del motor. Son instancias `RTIndicator`
+`com.wualabs.qtsurfer.engine.indicators.<category>.pro` para el nivel **pro**
+(`averages.pro`, `trend.pro`, `momentum.pro`, `volatility.pro`, `volume.pro`,
+`statistics.pro`, …) — el segmento de paquete `pro` es siempre la marca del nivel pro. Las
+clases pro vienen con los planes Pro y Elite, y no se distribuyen en el port OSS/TypeScript del motor. Son instancias `RTIndicator`
 normales — añade cualquiera de ellas por clase con `.add("name", new XxxRTIndicator(...))`, y
 léelas con `indicators.getValue("name")`.
 
-**Una clase `pro` no puede importarla una estrategia que se envía.** El compilador que ejecuta la plataforma no ve
-el nivel de pago: `import com.wualabs.qtsurfer.engine.indicators.statistics.pro.ZScoreRTIndicator;` se rechaza con
-un `400` y `package … does not exist`. El ejemplo de abajo muestra la forma de la llamada; sus líneas del nivel
-gratuito (`sma`, `StandardDeviationRTIndicator`) compilan, y la de `ZScoreRTIndicator` no.
+**Una estrategia enviada puede usar una clase `pro`.** `import com.wualabs.qtsurfer.engine.indicators.statistics.pro.ZScoreRTIndicator;`
+compila, y la estrategia se registra en cualquier plan; lo que un plan sin los indicadores pro no puede hacer es
+ejecutarla (consulta «Los indicadores pro» más arriba). La comprobación lee la estrategia compilada, así que cualquier
+mención de una clase `pro` cuenta: un import que el código usa, un cast, un campo, una firma. El ejemplo de abajo
+muestra la forma de la llamada; su última línea es pro, las demás son gratuitas.
 
 ```java
 import com.wualabs.qtsurfer.engine.indicators.statistics.StandardDeviationRTIndicator;
-import com.wualabs.qtsurfer.engine.indicators.statistics.pro.ZScoreRTIndicator;   // pro: rechazado al enviar
+import com.wualabs.qtsurfer.engine.indicators.statistics.pro.ZScoreRTIndicator;   // pro: necesita el plan Pro o Elite para ejecutarse
 
 indicators
     .addPrice()                                                      // "price"
@@ -168,7 +239,7 @@ indicators
     .add("desv",    new StandardDeviationRTIndicator(20))             // constructor (int periods)
     .add("desvDe",  new StandardDeviationRTIndicator(                 // constructor (RTIndicator, int periods)
             indicators.getReadOnlyExisting("media"), 20))
-    .add("zscore", new ZScoreRTIndicator(/* ver la clase para el constructor */));   // pro: rechazado al enviar
+    .add("zscore", new ZScoreRTIndicator(/* ver la clase para el constructor */));   // pro: necesita el plan Pro o Elite para ejecutarse
 ```
 
 Los constructores varían según la clase — la mayoría acepta `(int periods)` y/o `(RTIndicator

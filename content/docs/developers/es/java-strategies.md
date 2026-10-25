@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 1
 lastUpdated: '2026-10-25T11:28:16Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 7391528533013690b484b1879138bcfec84ab3d6
+upstreamCommit: a8a7c2d9fb0a460373bce64c7b8e19d4242ebfe0
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -103,6 +103,10 @@ protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
 ```
 
 Consulta [el catálogo de indicadores](/docs/developers/java-indicators) para verlo completo.
+
+Los indicadores pro (ADX, ATR, SuperTrend, Ichimoku, VWAP y el resto) están en el mismo builder mediante
+`Pro.on(indicators)`, y vienen con los planes Pro y Elite; «Los indicadores pro» del catálogo tiene la llamada, un
+ejemplo que compila y con qué se rechaza un plan que no los incluye (`402`).
 
 ### Valores de `WindowTime`
 

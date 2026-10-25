@@ -8,7 +8,8 @@ lastUpdated: '2026-10-22T22:43:24Z'
 QTSurfer publica como código abierto las bibliotecas, los formatos y las herramientas que rodean a la
 plataforma, en la [organización QTSurfer de GitHub](https://github.com/QTSurfer). Esta página los
 indexa: para qué sirve cada proyecto, dónde encontrarlo y qué página de esta documentación lo cubre
-con más detalle. El código se publica bajo la licencia Apache-2.0; la prosa de la documentación de
+con más detalle. El código se publica bajo la licencia Apache-2.0, salvo el motor TypeScript, que tiene sus propios
+términos (consulta [Motor TypeScript](#motor-typescript)); la prosa de la documentación de
 `qtsurfer-content` es CC BY 4.0. El README de cada repositorio indica sus propios términos y es la
 referencia para ellos.
 
@@ -94,6 +95,19 @@ más corto desde un segmento descargado hasta un DataFrame, una consulta SQL o u
   DuckDB-WASM, y dibuja con Apache ECharts o con TradingView Lightweight Charts, con marcadores y
   eventos superpuestos. En npm como `@qtsurfer/svelte-timeseries`, con una
   [demo en vivo](https://qtsurfer.github.io/svelte-timeseries).
+
+## Motor TypeScript
+
+- [engine-ts](https://github.com/QTSurfer/engine-ts) — el port a TypeScript del motor de trading de QTSurfer:
+  indicadores de streaming en tiempo real, un framework de estrategias y un pipeline de backtest, para el
+  navegador y Node.js. En npm como `@qtsurfer/core` (tipos compartidos), `@qtsurfer/indicators` y
+  `@qtsurfer/strategy`. Sus indicadores dan los mismos resultados numéricos que el motor Java. A diferencia
+  de los demás proyectos de esta página no es Apache-2.0: tiene doble licencia, la GNU AGPL v3 con la
+  Excepción de Estrategias de QTSurfer, de modo que las estrategias que escribas con él quedan bajo los
+  términos que elijas, o una licencia comercial de Wualabs.
+  [`LICENSING.md`](https://github.com/QTSurfer/engine-ts/blob/main/LICENSING.md) explica qué permite cada
+  una. [`indicators.md`](https://github.com/QTSurfer/engine-ts/blob/main/indicators.md) enumera qué
+  indicadores del motor Java tiene el port y cuáles de ellos puede escribir una línea `setup:` de QTScript.
 
 ## Contrato y documentación de la API
 

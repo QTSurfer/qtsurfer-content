@@ -8,7 +8,8 @@ lastUpdated: '2026-10-22T22:43:24Z'
 QTSurfer publishes the libraries, formats, and tools around the platform as open source under the
 [QTSurfer organisation on GitHub](https://github.com/QTSurfer). This page indexes them: what each
 project is for, where to find it, and which page of these docs covers it in more depth. Code is
-published under the Apache-2.0 licence; the documentation prose in `qtsurfer-content` is CC BY 4.0.
+published under the Apache-2.0 licence, except the TypeScript engine, which has its own terms (see
+[TypeScript engine](#typescript-engine)); the documentation prose in `qtsurfer-content` is CC BY 4.0.
 Each repository's README states its own terms, and is the authority for them.
 
 ## Clients and SDKs
@@ -87,6 +88,18 @@ downloaded segment to a DataFrame, a SQL query, or a Parquet file.
   DuckDB-WASM, and renders with either Apache ECharts or TradingView Lightweight Charts, with
   markers and events overlaid. On npm as `@qtsurfer/svelte-timeseries`, with a
   [live demo](https://qtsurfer.github.io/svelte-timeseries).
+
+## TypeScript engine
+
+- [engine-ts](https://github.com/QTSurfer/engine-ts) — the TypeScript port of the QTSurfer trading engine:
+  real-time streaming indicators, a strategy framework and a backtest pipeline, for the browser and
+  Node.js. On npm as `@qtsurfer/core` (shared types), `@qtsurfer/indicators` and `@qtsurfer/strategy`. Its
+  indicators give the same numeric results as the Java engine. Unlike the other projects here it is not
+  Apache-2.0: it is dual-licensed, under the GNU AGPL v3 with the QTSurfer Strategy Exception, so the
+  strategies you write with it stay under terms of your choice, or under a commercial licence from
+  Wualabs. [`LICENSING.md`](https://github.com/QTSurfer/engine-ts/blob/main/LICENSING.md) says what each one
+  allows. [`indicators.md`](https://github.com/QTSurfer/engine-ts/blob/main/indicators.md) lists which
+  indicators of the Java engine the port has and which of them a QTScript `setup:` line can write.
 
 ## API contract and documentation
 

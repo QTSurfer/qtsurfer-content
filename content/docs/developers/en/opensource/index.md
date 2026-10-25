@@ -2,7 +2,7 @@
 title: Open source
 description: Index of the open-source projects QTSurfer publishes on GitHub — API clients and SDKs, the MCP server and strategy skills, the Lastra data format and its tooling, market-data streaming, a charting component, and the API contract and documentation.
 order: 9
-lastUpdated: '2026-10-22T22:43:24Z'
+lastUpdated: '2026-10-25T18:04:56Z'
 ---
 
 QTSurfer publishes the libraries, formats, and tools around the platform as open source under the

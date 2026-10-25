@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 5.1
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
+upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-10-21T12:09:30Z'
 ---
@@ -430,6 +430,75 @@ Una estrategia QTScript también la implementa, mediante su propia sección `onC
 `CommandRequestHandler` de la misma forma que reconoce esta.
 
 Consulta [Comandos](live#comandos) para la forma de la petición/respuesta y los códigos de error.
+
+## Los indicadores pro
+
+Los [indicadores pro](qtscript#los-indicadores-pro-uses) vienen con los planes Pro y Elite. En Java son los métodos de `Pro`,
+en `com.wualabs.qtsurfer.engine.indicators.pro`: `Pro.on(indicators)` recibe el grupo de indicadores que recibe
+`setupIndicators`, y cada llamada registra un indicador pro con los mismos nombres, formas e ids que lista la
+[tabla de QTScript](qtscript#los-indicadores-pro-uses). `Pro.on(indicators).adx(14)` registra `adx14` y, a su lado,
+`adx14PlusDI` y `adx14MinusDI`. Una ventana va sobre el principal (`adx14`), y el listener lee los demás por nombre.
+
+Leen barras enteras, así que úsalos en una estrategia kline. Esta compra cuando el ADX dice que hay tendencia y la línea
+plus está por encima de la minus, y vende cuando está por debajo:
+
+```java
+import com.wualabs.qtsurfer.engine.core.KlineInterval;
+import com.wualabs.qtsurfer.engine.core.state.StateStore;
+import com.wualabs.qtsurfer.engine.indicators.core.KlineValueSource;
+import com.wualabs.qtsurfer.engine.indicators.helpers.WindowTimeRTIndicator.WindowTime;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.indicators.pro.Pro;
+import com.wualabs.qtsurfer.engine.strategy.AbstractKlineStrategy;
+import com.wualabs.qtsurfer.engine.strategy.AbstractWindowListener;
+
+public class AdxTrend extends AbstractKlineStrategy {
+
+  @Override
+  public KlineInterval getInterval() {
+    return KlineInterval.s1;
+  }
+
+  @Override
+  protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
+    indicators.addPrice();
+    indicators.add("open", KlineValueSource.Open);
+    indicators.add("high", KlineValueSource.High);
+    indicators.add("low", KlineValueSource.Low);
+    indicators.add("close", KlineValueSource.Close);
+    indicators.add("volume", KlineValueSource.Volume);
+    Pro.on(indicators).adx(14);
+    indicators.window("adx14", WindowTime.m1, new TrendListener(this, indicators));
+  }
+
+  private class TrendListener extends AbstractWindowListener {
+
+    TrendListener(AbstractKlineStrategy strategy, InstrumentGroupRTIndicator indicators) {
+      super(strategy, indicators);
+    }
+
+    @Override
+    public void onChange(StateStore store, double prev, double actual) {
+      double close = indicators.getValue("close");
+      double plus = indicators.getValue("adx14PlusDI");
+      double minus = indicators.getValue("adx14MinusDI");
+      if (actual > 20 && plus > minus) emitBuy(close);
+      if (actual > 20 && plus < minus) emitSell(close);
+    }
+  }
+}
+```
+
+En una estrategia `ticker`, un indicador pro no se rechaza, pero sus valores no son los de la barra y no significan nada, y
+validar o ejecutar la estrategia devuelve un aviso del motor que lo dice.
+
+Registrar una estrategia que los usa se acepta en cualquier plan, y la respuesta de `POST /strategy` lleva
+`requires: ["indicators.pro"]`. Ejecutarla en un plan que no los incluye se rechaza con `402`, al validarla, al lanzar un
+backtest o un barrido con ella y al lanzar una ejecución en vivo con ella. El mensaje nombra la primera llamada que hace la
+estrategia y la línea de tu fuente, aquí `strategy uses pro indicators (Pro.adx, line 25); your plan: free`. La comprobación
+lee la estrategia compilada, así que cualquier otra mención de una clase del paquete pro cuenta igual, y entonces el mensaje
+nombra la clase. El estado, el cuerpo y el `upgradeUrl` son los que describe
+[la guía de QTScript](qtscript#los-indicadores-pro-y-tu-plan).
 
 ## Ver también
 

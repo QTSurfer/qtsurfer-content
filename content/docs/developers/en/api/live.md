@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6a96a05c1dfd2bd7f8c14ec8f328cb977cd04408
+upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-25T11:28:16Z'
 ---
@@ -43,6 +43,10 @@ to read the run's signals from the sandbox on.
 A run that passes is promoted to `live` automatically when its trial is over. There is no
 separate "promote" call and nothing for you to do while you wait. A run that does not pass is not
 promoted, and keeps running in the sandbox.
+
+Starting a run needs a plan that includes live runs. A plan that does not, the Free plan, is refused with `402`: `Live runs
+are not included in tier free. Upgrade your plan to run strategies live.` A strategy that uses the pro indicators on a plan
+that does not include them is refused with `402` too, see [the pro indicators and your plan](qtscript#the-pro-indicators-and-your-plan).
 
 ### Starting again does not repeat the trial
 
@@ -300,7 +304,7 @@ is started. A source that passes that and still cannot be run is accepted and th
 with `The run could not start: its definition was refused.` as the `reason`: an instrument that is not an
 address, more than one, or a `ticker` type. A kline strategy is required, as for any `kline` source:
 starting a ticker strategy on a `dex` source is refused with `400`. A start that leaves `instruments` out, or
-sends `["*"]`, is refused with `429` on a plan without the wildcard; on any other the run fails as above.
+sends `["*"]`, is refused with `402` on a plan without the wildcard; on any other the run fails as above.
 
 ## Warming up: `warmFrom`
 
@@ -679,7 +683,7 @@ that serves many readers holds one connection and fans the signals out itself.
 
 It is available from the `sandbox` stage on, so you can try it before the run is promoted, on the plans that
 may broadcast (the Pro and Elite plans: your plan is the `tier` that [`GET /account`](account) returns).
-Any other plan is refused with `429`, naming the plan.
+Any other plan is refused with `402`, naming the plan.
 
 ### Getting one
 

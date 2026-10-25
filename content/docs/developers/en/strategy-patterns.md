@@ -3,7 +3,7 @@ title: Strategy patterns
 description: Apply reusable filters, exits, state transitions, and market-wide calculations.
 order: 3
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
+upstreamCommit: 7391528533013690b484b1879138bcfec84ab3d6
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
 lastUpdated: '2026-10-21T12:09:30Z'
 ---
@@ -234,3 +234,10 @@ Helpers on `AbstractTickerStrategy`:
 - `getInstruments()` — the set of instruments the strategy is tracking.
 - `getRTIndicator(instrument, name)` → `Optional<RTIndicator>` — any instrument's named indicator, the live one: reading it does not update it again, and `.map(RTIndicator::ro)` gives a read-only view.
 - Always call `super.update(ticker)` **first** — skip it and the indicators never advance.
+
+**In a backtest the strategy sees only one instrument.** A backtest runs over the instrument it was
+prepared for and feeds the strategy that instrument's ticks alone: `getInstruments()` lists only it,
+so another instrument the strategy accepts never ticks and has no indicators. A strategy that trades
+only some other instrument still ends `Completed`, with no trades and no metrics, and a
+cross-instrument strategy (a market-wide statistic, a triangular arbitrage with a leg on each pair)
+cannot be backtested the way it runs live. A live run takes several instruments.

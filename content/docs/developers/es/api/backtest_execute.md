@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: a77af5626880963724d9ff228c5a51411c21fdef
+upstreamCommit: 6a96a05c1dfd2bd7f8c14ec8f328cb977cd04408
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-10-22T11:15:56Z'
 ---
@@ -185,6 +185,13 @@ Funciona igual para una preparación respaldada por un conjunto de datos. El mis
 (idempotente) — una petición que omite `equityCurve`, `baseConfig` o `params` deduplica exactamente
 igual que antes de que esos campos existieran. Dos vectores de `params` distintos sobre la misma
 preparación son dos jobs distintos, y `9` y `9.0` son el mismo.
+
+**Un backtest corre sobre un instrumento**: el que nombró la preparación, o el propio del conjunto de datos. La
+estrategia recibe los ticks de ese instrumento y de ningún otro: `getInstruments()` solo lo lista, así que otro
+instrumento que la estrategia acepte nunca recibe ticks ni tiene indicadores. Una estrategia que opera solo otro
+instrumento termina igualmente `Completed`, no como error, sin operaciones ni métricas. Una estrategia cuya lógica abarca
+varios instrumentos, leyendo los indicadores de los demás o con un arbitraje triangular con una pata en cada par, no puede
+probarse en backtest tal como corre en vivo. Una ejecución en vivo es distinta: su fuente admite varios instrumentos.
 
 Acepta opcionalmente `params`: propiedades de estrategia para esta única ejecución, aplicadas sin
 recompilar. Úsalo para volver a ejecutar una fila de un barrido como un resultado de backtest

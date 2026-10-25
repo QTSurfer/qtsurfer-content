@@ -4,7 +4,7 @@ description: Aplica filtros, salidas, transiciones de estado y cálculos a nivel
 order: 3
 lastUpdated: '2026-10-21T12:09:30Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 03d8ffc992a1d9aedd7b39b519f55b4f9d12a89c
+upstreamCommit: 7391528533013690b484b1879138bcfec84ab3d6
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
 ---
 
@@ -252,3 +252,10 @@ Helpers de `AbstractTickerStrategy`:
   cualquier instrumento, el vivo: leerlo no lo actualiza de nuevo, y `.map(RTIndicator::ro)` da una vista de solo
   lectura.
 - Llama siempre a `super.update(ticker)` **primero** — omítelo y los indicadores nunca avanzan.
+
+**En un backtest la estrategia ve un solo instrumento.** Un backtest corre sobre el instrumento para el que se
+preparó y alimenta a la estrategia solo con los ticks de ese instrumento: `getInstruments()` lo lista únicamente a él, así
+que otro instrumento que la estrategia acepte nunca recibe ticks ni tiene indicadores. Una estrategia que opera solo otro
+instrumento termina igualmente `Completed`, sin operaciones ni métricas, y una estrategia entre instrumentos (una
+estadística de todo el mercado, un arbitraje triangular con una pata en cada par) no puede probarse en backtest tal como
+corre en vivo. Una ejecución en vivo admite varios instrumentos.

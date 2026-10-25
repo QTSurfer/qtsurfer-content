@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6978b2621e1e9bcb3abf4ec68de17d3abdd89524
+upstreamCommit: 6a96a05c1dfd2bd7f8c14ec8f328cb977cd04408
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-24T13:19:10Z'
 ---
@@ -517,9 +517,11 @@ contrato legible por máquina es [`asyncapi.yaml`](../asyncapi.yaml), junto al s
 cada trama, los nombres de canal, la llamada `live.params` y los códigos de error, con el payload
 de la señal compartido con el esquema REST `LiveSignal`.
 
-Los SDKs de QTSurfer ya envuelven esta conexión — consulta
-[Clientes y SDKs](/docs/developers/clients-and-sdks) — así que puede que no necesites hablar el
-protocolo directamente. Yendo directo, el cliente más sencillo es una librería oficial de
+Los SDKs de Java y TypeScript ya envuelven esta conexión (`connectLive`) — consulta
+[Clientes y SDKs](/docs/developers/clients-and-sdks) — así que con uno de ellos puede que no necesites hablar el
+protocolo directamente. El SDK de Python no: cubre la parte REST de una ejecución en vivo, señales retenidas incluidas, y
+un programa en Python recibe las señales según ocurren mediante una
+[URL de flujo](#un-flujo-websocket-plano-de-una-ejecución). Yendo directo, el cliente más sencillo es una librería oficial de
 Centrifugo — [`centrifuge`](https://github.com/centrifugal/centrifuge-js) (JavaScript/TypeScript),
 [`centrifuge-java`](https://github.com/centrifugal/centrifuge-java),
 [`centrifuge-python`](https://github.com/centrifugal/centrifuge-python) y

@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
+upstreamCommit: 513b2ae06a252512a616ca7eebe599457ee31e86
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-10-25T23:05:17Z'
 ---
@@ -78,7 +78,7 @@ Cada línea es una llamada al builder de indicadores que una estrategia Java con
 [`InstrumentGroupRTIndicator`](https://www.qtsurfer.com/docs/developers/java-api/reference/latest/com/wualabs/qtsurfer/engine/indicators/helpers/group/InstrumentGroupRTIndicator.html),
 escrita sin el punto. Estos son los nombres que funcionan:
 
-`add` `bollinger` `bollingerBandwidth` `cci` `clamp` `conditional` `diff` `distance` `distanceMa` `ema` `equal`
+`add` `bollinger` `bollingerBandwidth` `cci` `clamp` `diff` `distance` `distanceMa` `ema` `equal`
 `gain` `greatOrEqual` `greatThan` `lessOrEqual` `lessThan` `loss` `macd` `max` `min` `mul` `notEqual`
 `percentChange` `rateChange` `round` `rsi` `sma` `stochRsi` `sum`
 
@@ -120,7 +120,9 @@ está en el Javadoc del builder.
 Una llamada cuyos argumentos no encajan con
 ninguna de sus formas se rechaza indicando las que sí existen: `ema(1, 2, 3)` responde que sus formas son
 `ema(int)`, `ema(String, int)` y `ema(String, String, int)`. Los métodos del builder que reciben una función
-(`predicate`, `fun`, `decorate`, `periodCount`) solo se pueden escribir en Java.
+(`predicate`, `fun`, `decorate`, `periodCount`) y `conditional`, que recibe una función e indicadores como objetos, solo se
+pueden escribir en Java. Para comparar un indicador con un número, usa `equal`, `notEqual`, `greatThan`, `greatOrEqual`,
+`lessThan` o `lessOrEqual`.
 
 Un nombre que no está en la lista, y que ninguna línea `uses` trae ([siguiente sección](#los-indicadores-pro-uses)), no
 es un indicador que puedas usar aquí, y la estrategia se rechaza con `unknown indicator '<nombre>'`: `wma` y `zscore`

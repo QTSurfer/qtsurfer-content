@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: a77af5626880963724d9ff228c5a51411c21fdef
+upstreamCommit: 513b2ae06a252512a616ca7eebe599457ee31e86
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-10-22T11:15:56Z'
 ---
@@ -257,40 +257,44 @@ que tiene y guarda el resultado como una versión de conjunto de datos, exactame
 subida. Consulta [Importar el histórico de un exchange](#importar-el-histórico-de-un-exchange) más
 abajo.
 
-Una importación `dex` tiene dos formas de datos, elegidas por la `cadence` de nivel superior:
+**Una importación está sujeta a las cadencias de tu plan,** las mismas que la preparación de los datos de un exchange
+([Cadencias por plan](backtest_execute#cadencias-por-plan)). Una `cadence` que tu plan no incluye es
+`402`; una petición que no indica ninguna recibe la de por defecto del plan; cualquier otra cadencia que tu plan incluya
+se puede pedir, y el `202` dice la `cadence` a la que se construye el conjunto de datos. Una **subida** no está sujeta a esto: se guarda a
+la cadencia detectada en ella, sea cual sea, y se prepara a ella sea cual sea tu plan.
 
-* Omitida/en blanco (por defecto) — histórico de swaps on-chain, reproducido directamente desde la
-  propia cadena del pool/par, cada swap con su propia marca de tiempo (cadencia nativa por
-  operación).
-* `1s` \| `1m` \| `5m` — velas pre-agregadas a esa anchura en lugar de operaciones en bruto. El
-  `type` del conjunto de datos resultante es `klines`, no `ticker` ([Qué es el `type`](#qué-es-el-type): las velas no llevan libro). Los
-  swaps reproducidos como barras de una anchura, también sin libro, salen igualmente como `klines`.
+Una importación `dex` tiene dos formas de datos:
+
+* Velas a la `cadence` que pides, o a la de por defecto del plan si no pides ninguna. El `type` del conjunto de datos resultante es `klines`, no `ticker` ([Qué es
+  el `type`](#qué-es-el-type): las velas no llevan libro), y `dex.id` / `dex.version` no hacen falta.
+  Los swaps reproducidos como barras de una anchura, también sin libro, salen igualmente como `klines`.
+* Histórico de swaps on-chain, reproducido directamente desde la propia cadena del pool/par, cada swap con su
+  propia marca de tiempo (cadencia nativa por operación) — **solo en un plan que incluya la tasa nativa de una fuente,
+  y cuando se omite `cadence`**.
 
 | Campo | Tipo | Notas |
 |---|---|---|
 | `name` | cadena | obligatorio, único entre tus conjuntos de datos. `409` si ya está en uso |
 | `instrument` | cadena | obligatorio, par spot llano — la etiqueta propia del conjunto de datos, independiente del orden de los tokens on-chain del pool |
 | `from`, `to` | cadena (fecha-hora) | obligatorio, ISO-8601 UTC. `from` inclusivo, `to` exclusivo, `from < to`. El rango total está limitado por tu plan |
-| `cadence` | cadena | opcional. Para `dex`: omitida/en blanco = cadencia nativa por operación (ver abajo); uno de `1s` \| `1m` \| `5m` pide velas pre-agregadas a esa anchura en una red que las soporte (cualquier otro valor es `400`) — en una red que no las soporte, se ignora silenciosamente, ver abajo. Para `cex`: consulta [Importar el histórico de un exchange](#importar-el-histórico-de-un-exchange) |
+| `cadence` | cadena | opcional, las mismas etiquetas que una preparación (de `1s` a `1q`; cualquier otro valor es `400`); una que tu plan no incluye es `402`. Para `dex`: velas a esa anchura en una red que las soporte; omitida/en blanco = la de por defecto del plan, o la cadencia nativa por operación en un plan que incluye la tasa nativa (ver abajo). Para `cex`: consulta [Importar el histórico de un exchange](#importar-el-histórico-de-un-exchange) |
 | `type` | cadena | obligatorio, `"dex"` \| `"cex"` |
 | `dex.network` | cadena | obligatorio, uno de `ethereum` \| `robinhood` |
-| `dex.id` | cadena | obligatorio salvo que una `cadence` de velas realmente se resuelva (ver abajo) — una `cadence` de velas ignorada en una red sin velas sigue exigiendo este campo. `"uniswap"` es el único valor por ahora — qué protocolo DEX on-chain implementa `dex.contract` |
-| `dex.version` | cadena | obligatorio salvo que una `cadence` de velas realmente se resuelva (ver abajo). `"v2"` \| `"v3"` |
+| `dex.id` | cadena | obligatorio solo para la importación por operación (sin `cadence`, en un plan que incluye la tasa nativa); se ignora cuando se construyen velas. `"uniswap"` es el único valor por ahora — qué protocolo DEX on-chain implementa `dex.contract` |
+| `dex.version` | cadena | obligatorio solo para la importación por operación (sin `cadence`, en un plan que incluye la tasa nativa); se ignora cuando se construyen velas. `"v2"` \| `"v3"` |
 | `dex.contract` | cadena | obligatorio, la dirección del contrato del pool (v3) o par (v2) |
 | `dex.factory` | cadena | opcional — omite para autodescubrirla on-chain a partir de `contract`; indícala solo si ya la conoces o el pool/par pertenece a una factory no canónica. En cualquier caso el pool/par se valida contra la factory que se use antes de buscar nada. Se ignora si una `cadence` de velas realmente se resuelve (ver abajo) |
 
-**La cadencia on-chain es nativa, no se remuestrea.** Una importación `dex` normal (sin `cadence`)
-mantiene la propia cadencia de eventos por operación de la fuente — cada swap en la marca de tiempo
+**La cadencia on-chain es nativa, no se remuestrea.** Una importación `dex` normal (sin `cadence`) en un plan que
+incluye la tasa nativa de una fuente mantiene la propia cadencia de eventos por operación de la fuente — cada swap en la marca de tiempo
 en la que ocurrió, así que la `cadence` de la versión resultante es `rt` salvo que los swaps caigan
 por casualidad en una cuadrícula fija — en lugar de agruparlos en velas; remuestrea a una cadencia
-más gruesa después, como un paso aparte, si necesitas una a partir de datos on-chain. Pedir
-`cadence: "1s"`/`"1m"`/`"5m"` en su lugar te da velas pre-agregadas a esa anchura directamente —
-pero solo en una red que realmente tenga una fuente de velas detrás. En cualquier otra red, una
-`cadence` de velas se ignora silenciosamente y la importación sigue como si `cadence` nunca se
-hubiera enviado (nativa, `dex.id`/`dex.version` obligatorios) — no falla, ni de forma síncrona ni
-asíncrona. Qué redes soportan velas hoy no forma parte de este contrato y puede cambiar; si
-necesitas saberlo antes de importar, pide la cadencia nativa y comprueba la propia `cadence` de la
-versión resultante en lugar de asumirlo.
+más gruesa después, como un paso aparte, si necesitas una a partir de datos on-chain. Cualquier otro plan recibe en su lugar velas
+a la suya de por defecto, y lo mismo una importación que pide una `cadence`: las barras se construyen a esa anchura directamente —
+pero solo en una red que realmente tenga una fuente de velas detrás. En cualquier otra red, un plan que no incluye datos por operación no
+puede ser atendido y la petición es `402`; en un plan que sí los incluye, la `cadence` se ignora y la importación
+sigue como si nunca se hubiera enviado (nativa, `dex.id`/`dex.version` obligatorios). Qué redes soportan velas hoy
+no forma parte de este contrato y puede cambiar.
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
@@ -339,9 +343,10 @@ Errores: `400` petición inválida, `instrument` no es un par spot llano, `from 
 presente pero no uno de sus valores soportados, el rango excede el límite de importación de tu
 plan, la estimación aproximada de tamaño del rango excede el límite de filas de tu plan,
 `dex.network`/`dex.id` no es uno de sus valores soportados, `dex.contract`/`dex.factory` fallan la
-validación básica de forma, o (cuando se omite `cadence`) falta `dex.id`/`dex.version` (si el
+validación básica de forma, o (cuando se omite `cadence` en un plan que incluye la tasa nativa) falta `dex.id`/`dex.version` (si el
 pool/par realmente se resuelve, y para una `cadence` de velas si esa combinación se puede servir en
-la red pedida, se comprueba después, de forma asíncrona — ver `failed` abajo) · `409` nombre de
+la red pedida, se comprueba después, de forma asíncrona — ver `failed` abajo) · `402` `cadence` no es una de las de tu plan, o datos por operación que tu
+plan no incluye · `409` nombre de
 conjunto de datos ya en uso · `429` se alcanzó el límite de conjuntos de datos de tu plan, o ya se
 alcanzó el límite de almacenamiento total de tu cuenta (`maxTotalStorageBytes` de [`GET
 /account`](account)) — elimina un conjunto de datos para liberar hueco o espacio, o mejora de
@@ -362,9 +367,10 @@ de más abajo; solo cambia el bloque que dice qué importar:
 
 `cadence` es opcional y admite las mismas etiquetas que la cadencia de una preparación de backtest,
 tanto para tickers como para klines: `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`,
-`8h`, `12h`, `1d`, `1w` o `1q`. Cualquier otra etiqueta es `400`. Si se omite, el conjunto de datos
-se queda con la cadencia más fina que contienen **todas las partes** del rango. Las barras se
-construyen a partir de los datos más finos que contienen todas las partes del rango, así que un
+`8h`, `12h`, `1d`, `1w` o `1q`. Cualquier otra etiqueta es `400`, y una que tu plan no incluye es `402`.
+Si se omite, el conjunto de datos recibe la de por defecto del plan; un plan que incluye la tasa nativa de una fuente
+recibe en su lugar la cadencia más fina que contienen **todas las partes** del rango. Las barras se
+construyen a partir de los datos más finos que contienen todas las partes del rango, así que, cuando decide el rango, un
 rango cuyo histórico cambia de cadencia a mitad (de `1m` a `1s`, por ejemplo) sale entero con la más
 gruesa: el conjunto de datos no tiene ningún hueco que sea solo un cambio de cadencia. Una `cadence`
 más fina que esa, o que no sea múltiplo exacto de ella, hace fallar la importación (`failed`, y

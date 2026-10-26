@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
+upstreamCommit: 513b2ae06a252512a616ca7eebe599457ee31e86
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-10-25T23:05:17Z'
 ---
@@ -52,8 +52,8 @@ Sources that can be executed: ticker, kline`.
 
 ### Kline: tú eliges el ancho de la barra
 
-Una ejecución kline lee barras exactamente de la `cadence` con la que preparaste — de `1s` (por
-defecto) hasta `1q`, las mismas etiquetas que para los tickers (entre ellas `5s`, `3m`, `8h` y
+Una ejecución kline lee barras exactamente de la `cadence` con la que preparaste — desde la más fina que incluye tu plan
+(la de por defecto) hasta `1q`, las mismas etiquetas que para los tickers (entre ellas `5s`, `3m`, `8h` y
 `1w`) — sea lo que sea que sugiera la propia estrategia. Por eso la misma estrategia se puede
 ejecutar a varias cadencias preparando el rango una vez por cadencia. Una etiqueta que no sea un
 número entero de segundos es `400` al preparar.
@@ -62,8 +62,8 @@ número entero de segundos es `400` al preparar.
 curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/prepare \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"instrument":"BTC/USDT","from":"2026-03-14T10:00:00Z","to":"2026-03-14T16:00:00Z","cadence":"1m"}'
-# → 202 {"jobId": "5ikYAMIO..."}
+  -d '{"instrument":"BTC/USDT","from":"2026-03-14T10:00:00Z","to":"2026-03-14T16:00:00Z","cadence":"5m"}'
+# → 202 {"jobId": "5ikYAMIO...", "cadence": "5m"}
 
 curl -X POST https://api.qtsurfer.net/v1/backtest/binance/kline/execute \
   -H "Authorization: Bearer $TOKEN" \
@@ -100,10 +100,33 @@ Dos formas, según el segmento de ruta `exchangeId`:
 | `instrument` | string | obligatorio **salvo** que `exchangeId` sea el valor reservado `user` |
 | `datasetId` | string | **solo** para `exchangeId: user` — un conjunto de datos de `POST /datasets`, en lugar de `instrument` |
 | `datasetVersionId` | string | **solo** para `exchangeId: user`, opcional — fija una versión pasada en lugar de la actual del conjunto de datos |
-| `cadence` | cadena | opcional. Exchange gestionado, `ticker` o `funding`: uno de `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — por defecto `1s`. Exchange gestionado, `kline`: las mismas etiquetas — por defecto `1s`; cualquier otra etiqueta es `400`. `exchangeId: user`: por defecto es la propia cadencia descubierta de la versión del conjunto de datos, servida tal cual; se acepta cualquier cadencia igual o más gruesa que ella y múltiplo exacto suyo, incluso fuera de esa lista (por ejemplo `15s`), y un conjunto de datos `rt` se remuestrea a cualquier cadencia fija. Más fina que el origen, o que no sea múltiplo exacto, es `400` |
+| `cadence` | cadena | opcional. Exchange gestionado, `ticker` o `funding`: uno de `1s`, `5s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `8h`, `12h`, `1d`, `1w`, `1q` — por defecto la más fina que incluye tu plan ([Cadencias por plan](#cadencias-por-plan)). Exchange gestionado, `kline`: las mismas etiquetas — el mismo defecto; cualquier otra etiqueta es `400`, y una que tu plan no incluye es `402`. `exchangeId: user`: por defecto es la propia cadencia descubierta de la versión del conjunto de datos, servida tal cual; se acepta cualquier cadencia igual o más gruesa que ella y múltiplo exacto suyo, incluso fuera de esa lista (por ejemplo `15s`), y un conjunto de datos `rt` se remuestrea a cualquier cadencia fija. Más fina que el origen, o que no sea múltiplo exacto, es `400` |
 
 `exchangeId: user` está reservado para tus propios datos subidos — consulta
 [`docs/datasets.md`](datasets).
+
+### Cadencias por plan
+
+Los datos que la plataforma guarda de un exchange se preparan, y se importan (consulta
+[`docs/datasets.md`](datasets)), a las cadencias que incluye tu plan. **Esta tabla es el único
+sitio que las lista;** el resto del contrato remite a ella.
+
+| Plan | Cadencias | Por defecto |
+|---|---|---|
+| free | `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h` | `3m` |
+| basic | esas, y `8h`, `12h`, `1d` | `3m` |
+| pro | esas, y `1m`, `1w` | `1m` |
+| elite | esas, y `1s`, `5s`, `1q`, y la tasa nativa de una fuente | `1s` |
+
+Un plan incluye un conjunto, no «todo lo que es más grueso que la más fina»: `1d` no está en un plan free. Una petición
+que no indica `cadence` recibe la de por defecto del plan, su cadencia más fina, y el `202` dice cuál
+(`{"jobId": "…", "cadence": "3m"}`). Indicar una que tu plan no incluye es `402`, y el mensaje
+la nombra y dice qué incluye el plan. La tasa nativa de una fuente (los swaps por operación de un pool, la
+cadencia más fina que contiene un rango de un exchange) es solo para los planes cuya fila lo dice: una
+importación de ella que no indica cadencia recibe esa, no la de por defecto ([`docs/datasets.md`](datasets)).
+
+Tus propios datos no están sujetos a esta tabla: un conjunto de datos que subiste se prepara (`exchangeId: user`) a su
+propia cadencia, o a cualquier otra más gruesa que sea múltiplo exacto de ella, sea cual sea el plan.
 
 ### Ejemplo
 
@@ -112,14 +135,15 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/prepare \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"instrument":"BTC/USDT","from":"2026-03-14","to":"2026-03-15"}'
-# → 202 {"jobId": "5ikYAMIO..."}
+# → 202 {"jobId": "5ikYAMIO...", "cadence": "3m"}   (un plan free: sin cadencia indicada, así que la más fina)
 ```
 
 Errores: `400` petición inválida, `from` anterior a la ventana de retención, `to` en el futuro, una
 `cadence` de `kline` que no es una cadencia de kline, o
 (para `exchangeId: user`) la subida del conjunto de datos no ha terminado de ingerirse /
 `cadence` más fina que la cadencia descubierta del conjunto de datos / una preparación `kline` sobre un
-conjunto de datos que no es `klines` / el rango excede el límite de tu plan · `404` exchange/tipo no encontrado, o (para `exchangeId: user`) `datasetId`/
+conjunto de datos que no es `klines` / el rango excede el límite de tu plan · `402` `cadence` no es una de las de tu plan ([Cadencias por plan](#cadencias-por-plan)) —
+no aplica a `exchangeId: user` · `404` exchange/tipo no encontrado, o (para `exchangeId: user`) `datasetId`/
 `datasetVersionId` no existe o no es tuyo · `429` cola global al límite o demasiados backtests
 activos — no aplica a `exchangeId: user`, que lee un fichero ya ingerido en lugar de reclamar
 capacidad de worker.

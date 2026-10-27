@@ -1,6 +1,6 @@
 ---
 title: Servidor MCP
-description: Ejecuta QTSurfer desde un asistente de IA — instala el servidor Model Context Protocol, conéctalo a Claude Code o Codex con una clave de API, y usa sus herramientas para datos de mercado, conjuntos de datos, backtests y barridos.
+description: Ejecuta QTSurfer desde un asistente de IA — instala el servidor Model Context Protocol, conéctalo a Claude Code o Codex con una clave de API, y usa sus herramientas para datos de mercado, conjuntos de datos, estrategias, backtests, barridos y ejecuciones en vivo.
 order: 8
 lastUpdated: '2026-10-18T11:21:12Z'
 ---
@@ -81,11 +81,13 @@ otro cliente MCP que admita servidores stdio se configura de la misma forma.
 
 | Área | Herramientas | Qué hacen |
 |---|---|---|
-| Datos de mercado | `list_exchanges`, `list_instruments`, `download_tickers`, `download_klines` | Descubrir exchanges e instrumentos con sus ventanas de cobertura; transmitir un segmento de una hora UTC a un fichero local. |
-| Conjuntos de datos | `upload_dataset`, `list_datasets`, `get_dataset`, `get_dataset_upload`, `finalize_dataset_upload`, `delete_dataset` | Crear o versionar un conjunto de datos a partir de un CSV local, sondear su ingesta y gestionarlo. |
-| Estrategias | `list_strategies`, `get_strategy_code`, `delete_strategy` | Inspeccionar y liberar las estrategias registradas en la cuenta. |
+| Cuenta | `get_account`, `get_account_usage` | Leer los límites del plan, los permisos de la clave de API y el uso actual de almacenamiento. |
+| Datos de mercado | `list_exchanges`, `list_instruments`, `list_pools`, `download_tickers`, `download_klines` | Descubrir exchanges y sus segmentos, instrumentos con sus ventanas de cobertura y pools DEX; transmitir un segmento de una hora UTC a un fichero local. |
+| Conjuntos de datos | `upload_dataset`, `import_dataset`, `get_dataset_import`, `list_datasets`, `get_dataset`, `get_dataset_upload`, `finalize_dataset_upload`, `delete_dataset` | Crear o versionar un conjunto de datos a partir de un fichero CSV o Parquet local, o importar en uno el histórico de un exchange o de un pool; sondear su ingesta o su importación y gestionarlo. |
+| Estrategias | `compile_strategy`, `list_strategies`, `get_strategy_code`, `delete_strategy` | Registrar el código fuente y leer las propiedades que declara y las capacidades del plan que requiere; inspeccionar y liberar las estrategias registradas en la cuenta. |
 | Backtests | `submit_backtest`, `get_job_status`, `get_equity_curve`, `list_jobs` | Compilar código fuente Java y ejecutarlo contra un instrumento o un conjunto de datos listo; leer métricas y una curva de equity submuestreada. |
 | Barridos | `submit_sweep`, `get_sweep_status`, `get_sweep_sensitivity`, `get_sweep_run_equity_curve`, `cancel_sweep` | Ejecutar una cuadrícula de parámetros, opcionalmente validada con walk-forward; leer la clasificación ordenada por meseta, las marginales de sensibilidad y las curvas retenidas. |
+| En vivo | `start_live`, `get_live`, `get_live_run`, `list_live`, `list_public_live`, `update_live`, `update_live_params`, `send_live_command`, `get_live_signals`, `rotate_live_stream`, `revoke_live_stream`, `stop_live` | Arrancar la ejecución en vivo de una estrategia, seguir su estado, cambiar sus metadatos y parámetros, enviarle un comando, leer sus señales retenidas, gestionar su flujo de señales y detenerla. |
 
 `submit_backtest` recibe el código fuente Java completo de la clase de estrategia como
 `strategyCode`; la compilación ocurre en la plataforma. Para una ejecución sobre un conjunto de
@@ -99,6 +101,23 @@ ratio de Sharpe deflactado, el barrido informa de una probabilidad de sobreajust
 los pliegues walk-forward se puntúan fuera de muestra, y las marginales de sensibilidad dicen si
 un eje movió el objetivo en absoluto. Consulta [Barridos de
 parámetros](/docs/developers/api/backtest_sweep) para la semántica.
+
+`compile_strategy` registra el código fuente e informa de las propiedades que declara y de las
+capacidades del plan que requiere, como `indicators.pro`. Registrar se acepta en cualquier plan;
+ejecutar una estrategia cuyos requisitos el plan no incluye se rechaza con `402`, que lleva una
+dirección para mejorar el plan cuando la plataforma tiene una y no puede salir bien al reintentar
+hasta que el plan cambie
+([los indicadores pro y tu plan](/docs/developers/api/qtscript#los-indicadores-pro-y-tu-plan)).
+
+`import_dataset` trae a un conjunto de datos el histórico de un exchange o de un pool, y
+`get_dataset_import` lo sondea. La importación informa de la cadencia en efecto, que es la de por
+defecto del plan cuando no se pide ninguna
+([Cadencias por plan](/docs/developers/api/backtest_execute#cadencias-por-plan)).
+
+Las herramientas en vivo manejan las mismas ejecuciones que la [API en vivo](/docs/developers/api/live).
+La primera ejecución de una estrategia arranca en una prueba de sandbox antes de pasar a vivo, y
+`sandboxMinutes` pide una más larga; `stream=true` pide una dirección secreta de WebSocket plano para
+las señales, que hay que tratar como una contraseña.
 
 ## Ficheros locales: subidas y descargas
 

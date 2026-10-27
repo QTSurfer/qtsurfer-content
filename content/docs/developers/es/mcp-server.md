@@ -2,7 +2,7 @@
 title: Servidor MCP
 description: Ejecuta QTSurfer desde un asistente de IA — instala el servidor Model Context Protocol, conéctalo a Claude Code o Codex con una clave de API, y usa sus herramientas para datos de mercado, conjuntos de datos, estrategias, backtests, barridos y ejecuciones en vivo.
 order: 8
-lastUpdated: '2026-10-18T11:21:12Z'
+lastUpdated: '2026-10-27T14:53:20Z'
 ---
 
 El servidor MCP de QTSurfer expone el backtesting y los datos de mercado como herramientas sobre

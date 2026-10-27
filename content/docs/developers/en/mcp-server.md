@@ -2,7 +2,7 @@
 title: MCP server
 description: Run QTSurfer from an AI assistant — install the Model Context Protocol server, connect it to Claude Code or Codex with an API key, and use its tools for market data, datasets, strategies, backtests, sweeps, and live runs.
 order: 8
-lastUpdated: '2026-10-18T11:21:12Z'
+lastUpdated: '2026-10-27T14:53:20Z'
 ---
 
 The QTSurfer MCP server exposes backtesting and market data as tools over the

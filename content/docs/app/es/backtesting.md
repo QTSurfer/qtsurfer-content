@@ -27,9 +27,9 @@ Elige el exchange cuyos datos e instrumentos usará el backtest.
 ### 2. Datos
 
 Elige qué datos de mercado alimentan la simulación y con qué granularidad (la
-**cadencia** — desde ticks crudos hasta velas diarias; la cadencia en tiempo real usa cada
-actualización e ignora cualquier multiplicador). Mayor resolución es más fiel, a costa de
-una corrida más lenta.
+**cadencia** — desde segundos hasta velas trimestrales; las cadencias que puedes elegir
+dependen de tu plan, y la cadencia en tiempo real usa cada actualización e ignora cualquier
+multiplicador). Mayor resolución es más fiel, a costa de una corrida más lenta.
 
 ### 3. Estrategia
 

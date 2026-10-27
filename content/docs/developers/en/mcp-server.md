@@ -1,6 +1,6 @@
 ---
 title: MCP server
-description: Run QTSurfer from an AI assistant — install the Model Context Protocol server, connect it to Claude Code or Codex with an API key, and use its tools for market data, datasets, backtests, and sweeps.
+description: Run QTSurfer from an AI assistant — install the Model Context Protocol server, connect it to Claude Code or Codex with an API key, and use its tools for market data, datasets, strategies, backtests, sweeps, and live runs.
 order: 8
 lastUpdated: '2026-10-18T11:21:12Z'
 ---
@@ -79,11 +79,13 @@ MCP client that supports stdio servers is configured the same way.
 
 | Area | Tools | What they do |
 |---|---|---|
-| Market data | `list_exchanges`, `list_instruments`, `download_tickers`, `download_klines` | Discover exchanges and instruments with their coverage windows; stream one UTC-hour segment to a local file. |
-| Datasets | `upload_dataset`, `list_datasets`, `get_dataset`, `get_dataset_upload`, `finalize_dataset_upload`, `delete_dataset` | Create or version a dataset from a local CSV, poll its ingest, and manage it. |
-| Strategies | `list_strategies`, `get_strategy_code`, `delete_strategy` | Inspect and release the strategies registered under the account. |
+| Account | `get_account`, `get_account_usage` | Read the plan's limits, the scopes of the API key, and the current use of storage. |
+| Market data | `list_exchanges`, `list_instruments`, `list_pools`, `download_tickers`, `download_klines` | Discover exchanges and their segments, instruments with their coverage windows, and DEX pools; stream one UTC-hour segment to a local file. |
+| Datasets | `upload_dataset`, `import_dataset`, `get_dataset_import`, `list_datasets`, `get_dataset`, `get_dataset_upload`, `finalize_dataset_upload`, `delete_dataset` | Create or version a dataset from a local CSV or Parquet file, or import the history of an exchange or a pool into one; poll its ingest or its import, and manage it. |
+| Strategies | `compile_strategy`, `list_strategies`, `get_strategy_code`, `delete_strategy` | Register source and read the properties it declares and the plan capabilities it requires; inspect and release the strategies registered under the account. |
 | Backtests | `submit_backtest`, `get_job_status`, `get_equity_curve`, `list_jobs` | Compile Java source and run it against an instrument or a ready dataset; read metrics and a downsampled equity curve. |
 | Sweeps | `submit_sweep`, `get_sweep_status`, `get_sweep_sensitivity`, `get_sweep_run_equity_curve`, `cancel_sweep` | Run a parameter grid, optionally walk-forward validated; read the plateau-ranked leaderboard, sensitivity marginals, and retained curves. |
+| Live | `start_live`, `get_live`, `get_live_run`, `list_live`, `list_public_live`, `update_live`, `update_live_params`, `send_live_command`, `get_live_signals`, `rotate_live_stream`, `revoke_live_stream`, `stop_live` | Start a strategy's live run, follow its state, change its metadata and parameters, send it a command, read its retained signals, manage its signal stream, and stop it. |
 
 `submit_backtest` takes the full Java source of the strategy class as `strategyCode`; compilation
 happens on the platform. For a dataset run, pass `datasetId` and omit the exchange and instrument.
@@ -95,6 +97,21 @@ a loop of backtests: the leaderboard is plateau-ranked, each row carries a defla
 sweep reports a probability of backtest overfitting, walk-forward folds are scored out of sample, and
 the sensitivity marginals say whether an axis moved the objective at all. See
 [Parameter sweeps](/docs/developers/api/backtest_sweep) for the semantics.
+
+`compile_strategy` registers the source and reports the properties it declares and the plan
+capabilities it requires, such as `indicators.pro`. Registering is accepted on any plan; running a
+strategy whose requirements the plan does not include is refused with `402`, which carries an
+upgrade address when the platform has one and cannot succeed on retry until the plan changes
+([the pro indicators and your plan](/docs/developers/api/qtscript#the-pro-indicators-and-your-plan)).
+
+`import_dataset` brings the history of an exchange or a pool into a dataset, and
+`get_dataset_import` polls it. The import reports the cadence in effect, which is the plan's default
+when none is requested ([Cadences by plan](/docs/developers/api/backtest_execute#cadences-by-plan)).
+
+The live tools drive the same runs as the [live API](/docs/developers/api/live). A first run of a
+strategy starts in a sandbox trial before it goes live, and `sandboxMinutes` asks for a longer one;
+`stream=true` asks for a secret plain-WebSocket address for the signals, which is to be treated as a
+password.
 
 ## Local files: uploads and downloads
 

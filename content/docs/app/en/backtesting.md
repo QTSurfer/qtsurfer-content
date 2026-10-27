@@ -27,8 +27,9 @@ Pick the exchange whose data and instruments the backtest will use.
 ### 2. Data
 
 Choose what market data feeds the simulation and at what granularity (the **cadence** —
-from raw ticks up to daily bars; real-time cadence uses every update and ignores any
-multiplier). Higher resolution is more faithful, at the cost of a slower run.
+from seconds up to quarterly bars; the cadences you can pick depend on your plan, and
+real-time cadence uses every update and ignores any multiplier). Higher resolution is more
+faithful, at the cost of a slower run.
 
 ### 3. Strategy
 

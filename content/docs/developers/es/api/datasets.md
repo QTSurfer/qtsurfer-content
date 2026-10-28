@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 513b2ae06a252512a616ca7eebe599457ee31e86
+upstreamCommit: 635a06d58f30f7c36a4caa5d4173441fb168393f
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-10-26T17:46:51Z'
 ---
@@ -279,7 +279,7 @@ Una importación `dex` tiene dos formas de datos:
 | `from`, `to` | cadena (fecha-hora) | obligatorio, ISO-8601 UTC. `from` inclusivo, `to` exclusivo, `from < to`. El rango total está limitado por tu plan |
 | `cadence` | cadena | opcional, las mismas etiquetas que una preparación (de `1s` a `1q`; cualquier otro valor es `400`); una que tu plan no incluye es `402`. Para `dex`: velas a esa anchura en una red que las soporte; omitida/en blanco = la de por defecto del plan, o la cadencia nativa por operación en un plan que incluye la tasa nativa (ver abajo). Para `cex`: consulta [Importar el histórico de un exchange](#importar-el-histórico-de-un-exchange) |
 | `type` | cadena | obligatorio, `"dex"` \| `"cex"` |
-| `dex.network` | cadena | obligatorio, uno de `ethereum` \| `robinhood` |
+| `dex.network` | cadena | obligatorio, uno de `ethereum` \| `robinhood` \| `solana`. `solana` solo tiene velas (ver abajo) |
 | `dex.id` | cadena | obligatorio solo para la importación por operación (sin `cadence`, en un plan que incluye la tasa nativa); se ignora cuando se construyen velas. `"uniswap"` es el único valor por ahora — qué protocolo DEX on-chain implementa `dex.contract` |
 | `dex.version` | cadena | obligatorio solo para la importación por operación (sin `cadence`, en un plan que incluye la tasa nativa); se ignora cuando se construyen velas. `"v2"` \| `"v3"` |
 | `dex.contract` | cadena | obligatorio, la dirección del contrato del pool (v3) o par (v2) |
@@ -295,6 +295,24 @@ pero solo en una red que realmente tenga una fuente de velas detrás. En cualqui
 puede ser atendido y la petición es `402`; en un plan que sí los incluye, la `cadence` se ignora y la importación
 sigue como si nunca se hubiera enviado (nativa, `dex.id`/`dex.version` obligatorios). Qué redes soportan velas hoy
 no forma parte de este contrato y puede cambiar.
+
+**Solana solo tiene velas.** No hay importación por operación para un pool de Solana, así que no existe
+allí el caso de la tasa nativa: una petición que no indica `cadence` recibe la de por defecto del plan
+como velas en cualquier plan, Elite incluido (`1s`), y `dex.id`, `dex.version` y `dex.factory` nunca
+hacen falta. Se puede pedir cualquier cadencia que tu plan incluya, y una que no incluye es `402`,
+como en cualquier otro sitio. El `dex.contract` de un pool de Solana es su dirección en base58, que
+distingue mayúsculas de minúsculas: envíala exactamente como está escrita.
+
+**Las velas llegan hasta 180 días atrás.** Una importación de velas — una que indica una `cadence` o
+que recibe la de por defecto del plan — cuyo `from` es anterior a 180 días antes de la petición es
+`400`, sea cual sea la red; el mensaje dice el instante más antiguo que puede leer. Se rechaza de
+entrada en lugar de aceptarse y fallar después. La ventana no se aplica a una importación por operación
+ni a una de `cex`.
+
+**Una anchura en la que el pool no tuvo ninguna operación puede no tener barra.** Las velas de un pool
+no son una rejilla contigua: un segundo (o un minuto) sin operaciones puede faltar en el conjunto de
+datos, y eso solo significa que el precio no se movió y no se operó. Es más frecuente a `1s` y en pools
+que operan poco.
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
@@ -325,8 +343,8 @@ curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
   -d '{
     "name": "weth-usdc-1s",
     "instrument": "WETH/USDC",
-    "from": "2026-08-01T00:00:00Z",
-    "to": "2026-08-01T06:00:00Z",
+    "from": "2026-10-27T00:00:00Z",
+    "to": "2026-10-27T06:00:00Z",
     "cadence": "1s",
     "type": "dex",
     "dex": {
@@ -336,11 +354,32 @@ curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
   }'
 ```
 
+Lo mismo para un pool de Solana — solo velas, la dirección tal como está escrita:
+
+```bash
+curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "sol-usdc-5m",
+    "instrument": "SOL/USDC",
+    "from": "2026-10-27T00:00:00Z",
+    "to": "2026-10-27T06:00:00Z",
+    "cadence": "5m",
+    "type": "dex",
+    "dex": {
+      "network": "solana",
+      "contract": "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
+    }
+  }'
+```
+
 `importId` es con lo que sondeas, más abajo — no hay un paso de "finalizar" aparte como en una
 subida.
 
 Errores: `400` petición inválida, `instrument` no es un par spot llano, `from >= to`, `cadence`
-presente pero no uno de sus valores soportados, el rango excede el límite de importación de tu
+presente pero no uno de sus valores soportados, una importación de velas cuyo `from` es anterior a los
+180 días a los que llegan las velas, el rango excede el límite de importación de tu
 plan, la estimación aproximada de tamaño del rango excede el límite de filas de tu plan,
 `dex.network`/`dex.id` no es uno de sus valores soportados, `dex.contract`/`dex.factory` fallan la
 validación básica de forma, o (cuando se omite `cadence` en un plan que incluye la tasa nativa) falta `dex.id`/`dex.version` (si el

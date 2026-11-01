@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
+upstreamCommit: 4f422c3150a60aa8fe08bca4d4437503bda8a14d
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-25T23:05:17Z'
 ---
@@ -106,6 +106,11 @@ the run's signals keep flowing throughout. `desired` is what you last asked for 
 Only one run per strategy at a time. Starting again while one is `RUNNING` is `409` — stop it
 first with `DELETE`.
 
+Starting is also `409` when the strategy, as it was compiled, no longer works with the current version of the
+platform: a release removed something it calls. The answer is a fixed sentence (`The strategy was compiled for an earlier version of the platform and no longer works with the current one. Register it again to start a new run.`), no run is created and no
+place is taken. Register the strategy again (`POST /strategy` with the same source) and start it; if the source
+itself uses what was removed, registering it says so.
+
 A stop (`DELETE`) is a request, not an instant kill: `desired` flips to `STOPPED` immediately, but
 `state` can stay `RUNNING` for a short window while the run winds down. Calling `DELETE` again on
 an already-stopped run is not an error.
@@ -119,8 +124,9 @@ answers `409` to a new start of the same strategy and still counts toward your p
 limit. Call `DELETE` on it, then start again.
 
 The exception is a run that cannot run, and will not by waiting: when its strategy cannot consume its
-source type, or the pool of a `dex` run is not a pool or has no room to be followed, the platform stops it
-itself (`desired` becomes `STOPPED`, `state` stays `FAILED`, `reason` says why), so it does not hold a place.
+source type, when its strategy no longer works with the current version of the platform, or when the pool of a
+`dex` run is not a pool or has no room to be followed, the platform stops it itself (`desired` becomes `STOPPED`,
+`state` stays `FAILED`, `reason` says why), so it does not hold a place.
 
 ### Why a run failed or stopped
 
@@ -135,6 +141,7 @@ one of a fixed set of sentences, so a client can match on it.
 | `The run could not start: its definition was refused.` | The run's definition is not one the platform can run. |
 | `The run could not start after several attempts.` | A start that kept failing for a reason that was not yours. Start again. |
 | `The run stopped because its strategy failed while processing data.` | Your strategy's own code brought the run down. |
+| `The run stopped for good: its strategy does not work with the current version of the platform. Register it again to start a new run.` | The strategy was compiled for an earlier version of the platform and a release removed something it calls. A start refuses this up front with a `409`; a run that was already running when the version changed ends with this reason, and is not started again. |
 | `The run stopped because it lost its data feed.` | The run's market data stream broke and the run stalled. |
 | `The run could not start: its pool address is not a pool of that protocol on that chain.` | A `dex` run (see [DEX pools](#dex-pools)) names an address that is not a pool of its protocol on its chain, or whose tokens the platform cannot read. |
 | `The run could not start: the platform is following as many pools as it can right now. Try again later.` | A `dex` run names a pool the platform has no room to follow. |

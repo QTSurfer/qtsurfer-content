@@ -3,9 +3,8 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 1
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: a8a7c2d9fb0a460373bce64c7b8e19d4242ebfe0
+upstreamCommit: 47fc5fdeca4f7503b719427678ca7bce42cfef24
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
-lastUpdated: '2026-10-25T23:42:41Z'
 ---
 
 A QTSurfer strategy is a plain Java class (no framework annotations required) that extends a strategy base class — most commonly `AbstractTickerStrategy` (see [Strategy base classes](#strategy-base-classes) for the kline, funding-rate, and multi-source siblings). It receives real-time market data, configures technical indicators, and emits buy/sell signals. The engine compiles strategies server-side — no local toolchain needed.
@@ -87,9 +86,9 @@ protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
 }
 ```
 
-See [the indicator catalogue](/docs/developers/java-indicators) for the full indicator catalogue.
+See [the indicator catalogue](/docs/developers/java-indicators) for the full indicator catalogue. It is the up-to-date list of which indicators exist, free and pro, and what each one computes: check it before writing a call, and before telling anyone that an indicator does not exist.
 
-The pro indicators (ADX, ATR, SuperTrend, Ichimoku, VWAP and the rest) are on the same builder through
+The pro indicators (ADX, SuperTrend, Ichimoku, VWAP and the rest) are on the same builder through
 `Pro.on(indicators)`, and come with the Pro and Elite plans; "The pro indicators" in the catalogue has the call, an
 example that compiles and what a plan without them is refused with (`402`).
 

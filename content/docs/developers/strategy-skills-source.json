@@ -3,10 +3,32 @@
 	"ref": "main",
 	"commit": "47fc5fdeca4f7503b719427678ca7bce42cfef24",
 	"path": "skills/qtsurfer-java-strategy",
+	"skillPaths": ["skills/qtsurfer-java-strategy", "skills/qtsurfer-qtscript-strategy"],
 	"generatedPages": [
-		{ "sourcePath": "SKILL.md", "outputName": "java-strategies.md" },
-		{ "sourcePath": "references/indicators.md", "outputName": "java-indicators.md" },
-		{ "sourcePath": "references/patterns.md", "outputName": "strategy-patterns.md" },
-		{ "sourcePath": "references/examples.md", "outputName": "strategy-examples.md" }
+		{
+			"skillPath": "skills/qtsurfer-java-strategy",
+			"sourcePath": "SKILL.md",
+			"outputName": "java-strategies.md"
+		},
+		{
+			"skillPath": "skills/qtsurfer-java-strategy",
+			"sourcePath": "references/indicators.md",
+			"outputName": "java-indicators.md"
+		},
+		{
+			"skillPath": "skills/qtsurfer-java-strategy",
+			"sourcePath": "references/patterns.md",
+			"outputName": "strategy-patterns.md"
+		},
+		{
+			"skillPath": "skills/qtsurfer-java-strategy",
+			"sourcePath": "references/examples.md",
+			"outputName": "strategy-examples.md"
+		},
+		{
+			"skillPath": "skills/qtsurfer-qtscript-strategy",
+			"sourcePath": "references/indicators.md",
+			"outputName": "qtscript-indicators.md"
+		}
 	]
 }

@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
+upstreamCommit: 4f422c3150a60aa8fe08bca4d4437503bda8a14d
 upstreamPath: docs/live.md
 lastUpdated: '2026-10-25T23:05:17Z'
 ---
@@ -107,6 +107,9 @@ momento.
 Solo una ejecución por estrategia a la vez. Volver a arrancar mientras una está en `RUNNING` es
 `409` — detenla primero con `DELETE`.
 
+Arrancar también es `409` cuando la estrategia, tal como se compiló, ya no funciona con la versión actual de la
+plataforma: una versión quitó algo a lo que llama. La respuesta es una frase fija (`The strategy was compiled for an earlier version of the platform and no longer works with the current one. Register it again to start a new run.`), no se crea ninguna ejecución y no se ocupa ninguna plaza. Registra la estrategia de nuevo (`POST /strategy` con el mismo código) y arráncala; si el propio código usa lo que se quitó, al registrarla te lo dice.
+
 Un `DELETE` es una petición, no una parada instantánea: `desired` pasa a `STOPPED` de inmediato,
 pero `state` puede seguir en `RUNNING` durante una ventana corta mientras la ejecución concluye.
 Volver a llamar a `DELETE` sobre una ejecución ya detenida no es un error.
@@ -121,8 +124,8 @@ misma estrategia y sigue contando para el límite de ejecuciones en vivo de tu p
 sobre ella y arranca de nuevo.
 
 La excepción es una ejecución que no puede correr, y no podrá por mucho que esperes: cuando su estrategia
-no puede consumir su tipo de fuente, o la pool de una ejecución `dex` no es una pool o no tiene sitio para
-seguirla, la plataforma la detiene ella misma (`desired` pasa a `STOPPED`, `state` se queda en `FAILED`,
+no puede consumir su tipo de fuente, cuando su estrategia ya no funciona con la versión actual de la plataforma, o
+cuando la pool de una ejecución `dex` no es una pool o no tiene sitio para seguirla, la plataforma la detiene ella misma (`desired` pasa a `STOPPED`, `state` se queda en `FAILED`,
 `reason` dice por qué), así que no ocupa plaza.
 
 ### Por qué una ejecución falló o se detuvo
@@ -138,6 +141,7 @@ frase de un conjunto fijo, así que un cliente puede compararla.
 | `The run could not start: its definition was refused.` | La definición de la ejecución no es una que la plataforma pueda ejecutar. |
 | `The run could not start after several attempts.` | Un arranque que siguió fallando por un motivo que no era tuyo. Arranca de nuevo. |
 | `The run stopped because its strategy failed while processing data.` | El propio código de tu estrategia tumbó la ejecución. |
+| `The run stopped for good: its strategy does not work with the current version of the platform. Register it again to start a new run.` | La estrategia se compiló para una versión anterior de la plataforma y una versión quitó algo a lo que llama. Un arranque lo rechaza de entrada con un `409`; una ejecución que ya estaba en marcha cuando cambió la versión termina con este motivo y no se vuelve a arrancar. |
 | `The run stopped because it lost its data feed.` | El flujo de datos de mercado de la ejecución se cortó y la ejecución se quedó parada. |
 | `The run could not start: its pool address is not a pool of that protocol on that chain.` | Una ejecución `dex` (consulta [Pools DEX](#pools-dex)) nombra una dirección que no es una pool de su protocolo en su cadena, o cuyos tokens la plataforma no puede leer. |
 | `The run could not start: the platform is following as many pools as it can right now. Try again later.` | Una ejecución `dex` nombra una pool para la que la plataforma no tiene sitio. |

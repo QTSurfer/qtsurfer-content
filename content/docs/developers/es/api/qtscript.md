@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 5.15
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 513b2ae06a252512a616ca7eebe599457ee31e86
+upstreamCommit: 4f422c3150a60aa8fe08bca4d4437503bda8a14d
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-10-26T17:46:51Z'
 ---
@@ -80,7 +80,8 @@ escrita sin el punto. Estos son los nombres que funcionan:
 
 `add` `bollinger` `bollingerBandwidth` `cci` `clamp` `diff` `distance` `distanceMa` `ema` `equal`
 `gain` `greatOrEqual` `greatThan` `lessOrEqual` `lessThan` `loss` `macd` `max` `min` `mul` `notEqual`
-`percentChange` `rateChange` `round` `rsi` `sma` `stochRsi` `sum`
+`percentChange` `rateChange` `round` `rsi` `sma` `stochRsi` `sum` `wma` `tema` `hma` `mma` `kama` `stdDev` `variance`
+`volatility` `percentVolatility` `bollingerPercentB` `atr`
 
 Estas son las formas de cada nombre que una línea de QTScript puede escribir: un `String` es el nombre de un indicador,
 o bien uno que lee o bien el que registra, y un `Number` es un número entero o un decimal. Qué significa cada argumento
@@ -116,6 +117,17 @@ está en el Javadoc del builder.
 | `sma` | `sma(int)` · `sma(String, int)` · `sma(String, String, int)` · `sma(String, int, boolean)` |
 | `stochRsi` | `stochRsi(int)` · `stochRsi(String, int)` |
 | `sum` | `sum(String)` · `sum(String, String)` |
+| `wma` | `wma(int)` · `wma(String, int)` |
+| `tema` | `tema(int)` · `tema(String, int)` |
+| `hma` | `hma(int)` · `hma(String, int)` |
+| `mma` | `mma(int)` · `mma(String, int)` · `mma(String, String, int)` |
+| `kama` | `kama()` · `kama(int, int, int)` · `kama(String, int, int, int)` |
+| `stdDev` | `stdDev(int)` · `stdDev(String, int)` · `stdDev(String, String, int)` |
+| `variance` | `variance(int)` · `variance(String, int)` · `variance(String, String, int)` |
+| `volatility` | `volatility(int)` · `volatility(String, int)` |
+| `percentVolatility` | `percentVolatility(int)` · `percentVolatility(String, int)` |
+| `bollingerPercentB` | `bollingerPercentB()` · `bollingerPercentB(int)` · `bollingerPercentB(int, Number)` · `bollingerPercentB(String, int, Number)` |
+| `atr` | `atr()` · `atr(int)` · `atr(String, int)` |
 
 Una llamada cuyos argumentos no encajan con
 ninguna de sus formas se rechaza indicando las que sí existen: `ema(1, 2, 3)` responde que sus formas son
@@ -124,9 +136,16 @@ ninguna de sus formas se rechaza indicando las que sí existen: `ema(1, 2, 3)` r
 pueden escribir en Java. Para comparar un indicador con un número, usa `equal`, `notEqual`, `greatThan`, `greatOrEqual`,
 `lessThan` o `lessOrEqual`.
 
+Llamados sin un nombre propio, los más nuevos registran `atr14`, `wma5`, `tema4`, `hma6`, `mma7`, `kama10_2_30`,
+`stdDev5`, `variance5`, `vol5` (`volatility`), `pvol5` (`percentVolatility`) y `pctB20_2` (`bollingerPercentB`); un
+multiplicador entero pierde la parte decimal, como en `bollinger`.
+
+`atr` lee barras completas, igual que los indicadores pro: úsalo en una estrategia [`kline`](#velas). En una estrategia
+`ticker` sus valores no son los de la barra y no significan nada.
+
 Un nombre que no está en la lista, y que ninguna línea `uses` trae ([siguiente sección](#los-indicadores-pro-uses)), no
-es un indicador que puedas usar aquí, y la estrategia se rechaza con `unknown indicator '<nombre>'`: `wma` y `zscore`
-están entre los nombres que responden así, y también `atr` y `adx` salvo que el fichero los traiga con `uses`. Lo mismo
+es un indicador que puedas usar aquí, y la estrategia se rechaza con `unknown indicator '<nombre>'`: `zscore`
+está entre los nombres que responden así, y también `adx` y `kurtosis` salvo que el fichero los traiga con `uses`. Lo mismo
 ocurre con `value("nombre")`, que lee un indicador dentro de un cuerpo `{ }` y no tiene sentido en una línea de
 `setup:`.
 
@@ -135,9 +154,9 @@ ocurre con `value("nombre")`, que lee un indicador dentro de un cuerpo `{ }` y n
 Los indicadores pro no están en la lista de arriba. Un fichero los trae con una línea `uses`, y luego los llama en `setup:`
 por su nombre sin más, como cualquier otro indicador.
 
-- `uses pro.*` trae los trece. `uses pro.adx, pro.ichimoku` trae solo esos. Varias líneas `uses` se suman. Escríbelas junto
+- `uses pro.*` trae los doce. `uses pro.adx, pro.ichimoku` trae solo esos. Varias líneas `uses` se suman. Escríbelas junto
   a `param` e `instruments`, antes de `setup:`.
-- Solo los nombres que trae una línea `uses` son pro. Con `uses pro.atr`, una llamada a `adx(14)` sigue siendo `unknown
+- Solo los nombres que trae una línea `uses` son pro. Con `uses pro.obv`, una llamada a `adx(14)` sigue siendo `unknown
   indicator 'adx'`, indicado en la línea de la llamada. Los nombres propios del builder (`ema`, `rsi` y el resto de la
   lista de arriba) nunca son pro.
 - `pro` es el único conjunto que existe. `uses` es una palabra reservada: un fichero no puede tener un `param` ni una
@@ -151,7 +170,6 @@ por su nombre sin más, como cualquier otro indicador.
 
 | Indicador | Formas | Registra, con los argumentos por defecto | También registra |
 |---|---|---|---|
-| `atr` | `atr()` · `atr(int)` · `atr(String, int)` | `atr14` | |
 | `adx` | `adx()` · `adx(int)` · `adx(String, int)` | `adx14` | `adx14PlusDI` · `adx14MinusDI` |
 | `superTrend` | `superTrend()` · `superTrend(int, double)` · `superTrend(String)` · `superTrend(String, int, double)` | `st10_3` | `st10_3Upper` · `st10_3Lower` |
 | `ichimoku` | `ichimoku()` · `ichimoku(int, int, int)` · `ichimoku(String)` · `ichimoku(String, int, int, int)` | `ichi9_26_52`, la línea Tenkan | `ichi9_26_52Kijun` · `ichi9_26_52SenkouA` · `ichi9_26_52SenkouB` · `ichi9_26_52Chikou` |
@@ -166,7 +184,7 @@ por su nombre sin más, como cualquier otro indicador.
 | `yangZhang` | `yangZhang(int)` · `yangZhang(String, int)` · `yangZhang(String, int, double)` | `yz20` | |
 
 El `double` de los cuatro estimadores de volatilidad es el factor de anualización. Con otros argumentos el nombre sigue el
-mismo patrón: `atr(20)` registra `atr20`, `kurtosis(30)` registra `kurt30`, `ichimoku(7, 22, 44)` registra
+mismo patrón: `mfi(20)` registra `mfi20`, `kurtosis(30)` registra `kurt30`, `ichimoku(7, 22, 44)` registra
 `ichi7_22_44`, y `superTrend(10, 2.5)` registra `st10_2.5` (un multiplicador entero pierde el decimal: `superTrend(7, 3)`
 registra `st7_3`). Con un nombre como primer argumento el indicador se registra con ese nombre, y los demás indicadores
 que registra lo toman como prefijo: `adx("trend", 14)` registra `trend`, `trendPlusDI` y `trendMinusDI`.
@@ -182,7 +200,7 @@ Esto lee el ADX con las dos líneas direccionales a su lado:
 
 ```
 strategy "ADX trend" kline
-uses pro.adx, pro.atr
+uses pro.adx
 
 param adxLevel = 25 "ADX level"
 
@@ -213,11 +231,11 @@ setup:
   yangZhang(20)
 ```
 
-Un fichero que trae solo `atr` y luego llama a `adx(14)` no compila. La línea de la llamada se rechaza con
+Un fichero que trae solo `obv` y luego llama a `adx(14)` no compila. La línea de la llamada se rechaza con
 `unknown indicator 'adx'`:
 
 ```
-uses pro.atr
+uses pro.obv
 
 setup:
   adx(14)
@@ -228,10 +246,10 @@ Una línea `uses` mal formada se rechaza, contra tu fichero como los demás erro
 - `uses needs the indicators to bring in: uses pro.* or uses pro.adx, pro.ichimoku`, cuando nada sigue a `uses`.
 - `expected pro.* or pro.<indicator>, found 'pro'`, para `uses pro`.
 - `unknown set 'ta': the only set is pro`, para un conjunto que no existe.
-- `unknown pro indicator 'zscore': the pro indicators are adx, atr, cmf, garmanKlass, ichimoku, kurtosis, mfi, obv, parkinson,
+- `unknown pro indicator 'zscore': the pro indicators are adx, cmf, garmanKlass, ichimoku, kurtosis, mfi, obv, parkinson,
   rogersSatchell, superTrend, vwap, yangZhang`, para un miembro que no existe.
 - `expected pro.* or pro.<indicator> here`, para una coma sin nada detrás, como en `uses pro.adx,`.
-- `expected pro.* or pro.<indicator>, found 'pro.adx pro.atr'`, para dos miembros sin coma entre ellos.
+- `expected pro.* or pro.<indicator>, found 'pro.adx pro.obv'`, para dos miembros sin coma entre ellos.
 
 ### Los indicadores pro y tu plan
 

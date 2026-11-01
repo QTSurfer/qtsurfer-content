@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
+upstreamCommit: 19f1e3c6eba937ade198e18dbfa52047cda204e2
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-10-25T23:05:17Z'
 ---
@@ -139,7 +139,9 @@ duplicado — las peticiones de preparación y ejecución son idempotentes, inde
 Errores: `400` especificación inválida, un `type` que aún no se puede barrer (`funding`), o la
 cuadrícula expandida excede el límite del servidor ·
 `404` `requestId` no encontrado o expirado · `402` la estrategia usa los indicadores pro y tu plan no los incluye,
-consulta [los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan) · `429` cola de barridos o límite de concurrencia por
+consulta [los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan) · `409` la estrategia, tal como se
+compiló, ya no funciona con la versión actual de la plataforma (una versión quitó algo a lo que llama): no se encola
+nada; registra la estrategia de nuevo y envíala otra vez · `429` cola de barridos o límite de concurrencia por
 usuario alcanzado.
 
 ## Sondear el progreso y la clasificación

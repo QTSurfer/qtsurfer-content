@@ -4,7 +4,7 @@ description: Configura, compón y amplía el pipeline de indicadores en tiempo r
 order: 2
 lastUpdated: '2026-10-25T23:42:41Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: a8a7c2d9fb0a460373bce64c7b8e19d4242ebfe0
+upstreamCommit: 47fc5fdeca4f7503b719427678ca7bce42cfef24
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 ---
 
@@ -35,12 +35,39 @@ más los parámetros, por ejemplo `rsi14`.
 .ema("rapida", "vol", 9)              // EMA del volumen
 ```
 
+## Medias, estadística y volatilidad
+
+Gratuitos, en el mismo builder. Llamados sin un nombre propio, registran el nombre que indica el comentario.
+
+```java
+.wma(5)                                // media móvil ponderada → "wma5"
+.tema(4)                               // EMA triple → "tema4"
+.hma(6)                                // media móvil de Hull → "hma6"
+.mma(7)                                // → "mma7"
+.kama()                                // adaptativa de Kaufman → "kama10_2_30"
+.stdDev(5)                             // desviación típica → "stdDev5"
+.variance(5)                           // → "variance5"
+.volatility(5)                         // → "vol5"
+.percentVolatility(5)                  // → "pvol5"
+.bollingerPercentB()                   // %B de una banda de Bollinger → "pctB20_2"
+.atr(14)                               // rango verdadero medio → "atr14"
+```
+
+`atr` lee barras completas, igual que los indicadores pro: úsalo en una estrategia kline. En una estrategia ticker sus
+valores no son los de la barra y no significan nada. `wma` y `atr` son métodos del builder, gratuitos en todos los planes;
+ninguno de los dos tiene llamada en `Pro`.
+
 ## Osciladores y momento
 
 ```java
 .rsi(14)                               // RSI de Cutler → "rsi14"
 .rsi(14, false)                        // suavizado de Wilder
 .rsi("miRsi", 14, true)
+
+.cci(20)                               // → "cci20"
+.macd()                                // MACD 12/26 de la fuente del grupo → "macd"
+.macd("m", 8, 21)                      // periodos de EMA a medida
+.stochRsi(14)                          // RSI estocástico, salida de 0 a 100 → "stochRsi14"
 
 .bollinger("bb", 20, 2.0)             // → "bb", "bbUpper", "bbLower"
 .bollingerBandwidth("bb")             // % de anchura de una banda de Bollinger
@@ -146,7 +173,7 @@ indicador sin pasar por el grupo. Úsalo cuando ya tienes una referencia al obje
 Los indicadores pro vienen con los planes Pro y Elite. En Java son los métodos de `Pro`,
 en `com.wualabs.qtsurfer.engine.indicators.pro`: `Pro.on(indicators)` recibe el grupo de indicadores que recibe
 `setupIndicators`, y cada llamada registra un indicador pro con los mismos nombres, formas e ids que lista la
-tabla bajo "The pro indicators: `uses`" de la skill `qtsurfer-qtscript-strategy` (`atr`, `adx`, `cmf`,
+tabla bajo "The pro indicators: `uses`" de la skill `qtsurfer-qtscript-strategy` (`adx`, `cmf`,
 `garmanKlass`, `ichimoku`, `kurtosis`, `mfi`, `obv`, `parkinson`, `rogersSatchell`, `superTrend`, `vwap`, `yangZhang`). `Pro.on(indicators).adx(14)` registra `adx14` y, a su lado,
 `adx14PlusDI` y `adx14MinusDI`. Una ventana va sobre el principal (`adx14`), y el listener lee los demás por nombre.
 
@@ -244,22 +271,34 @@ indicators
 
 Los constructores varían según la clase — la mayoría acepta `(int periods)` y/o `(RTIndicator
 source, int periods)`; algunos (construidos con lombok) difieren, así que consulta la clase.
-Clases útiles por categoría — Tendencia, Volumen y los ratios de rendimiento son **solo pro hoy**,
-el nivel gratuito todavía no tiene ningún indicador en esas categorías:
+Las clases por categoría, con el paquete en el que vive cada una (bajo `com.wualabs.qtsurfer.engine.indicators`) —
+Tendencia, Volumen y los ratios de rendimiento son **solo pro hoy**, el nivel gratuito todavía no tiene ningún indicador en
+esas categorías. El nombre de una clase es el de la tabla más `RTIndicator` (`Sma` es `SmaRTIndicator`); el mismo nombre
+corto puede existir en un paquete gratuito y en uno pro (`StandardDeviation`, `Variance`), así que importa el del paquete
+que quieras:
 
-| Categoría             | Nivel     | Clases `*RTIndicator`                                                                                                                                                                      |
-| ---------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Medias móviles         | Gratuito  | `Sma`, `Ema`, `Wma`, `Hma`, `Kama`, `Tema`, `Mma`                                                                                                                                           |
-| Medias móviles         | Pro       | `Alma`, `Dema`, `Frama`, `LeastSquaresMovingAverage`, `McGinleyDynamic`, `Smma`, `Wma` (gemela O(1)), `Envelopes`                                                                          |
-| Estadística            | Gratuito  | `StandardDeviation`, `Variance`                                                                                                                                                             |
-| Estadística            | Pro       | `StandardDeviation`, `Variance` (gemelas O(1)), `ZScore`, `Skewness`, `Kurtosis`, `RollingPercentile`, `Correlation`, `Covariance`, `Beta`, `LinearRegressionSlope`, `SimpleLinearRegression` |
-| Tendencia              | Solo pro  | `Adx`, `Aroon`, `SuperTrend`, `ParabolicSar`, `Ichimoku`, `DonchianChannel`, `EfficiencyRatio`                                                                                              |
-| Volatilidad            | Gratuito  | `VolatilityRTIndicator`, `PercentVolatilityRTIndicator`                                                                                                                                     |
-| Volatilidad            | Pro       | `Atr`, `Natr`, `RealizedVolatility`, `Parkinson`, `GarmanKlass`, `EwmaVolatility`                                                                                                           |
-| Volumen                | Solo pro  | `Vwap`, `Obv`, `Mfi`, `Cmf`, `Adl`, `ElderForceIndex`                                                                                                                                       |
-| Osciladores            | Gratuito  | `Macd`, `StochasticRsi`, `Cci`                                                                                                                                                              |
-| Osciladores            | Pro       | `StochasticOscillator`, `Roc`, `Momentum`, `WilliamsR`, `UltimateOscillator`                                                                                                                |
-| Ratios (rendimiento)   | Solo pro  | `SharpeRatio`, `SortinoRatio`, `CalmarRatio`, `MaxDrawdown`, `OmegaRatio`, `UlcerIndex`                                                                                                     |
+| Categoría                           | Nivel    | Paquete                     | Clases `*RTIndicator`                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------------------- | -------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Medias móviles                      | Gratuito | `averages`                  | `Sma`, `Ema`, `Wma`, `WmaIncremental`, `Hma`, `Kama`, `Tema`, `Mma`                                                                                                                                                                                                                                                                                                          |
+| Medias móviles                      | Pro      | `averages.pro`              | `Alma`, `Dema`, `Envelopes`, `Frama`, `LeastSquaresMovingAverage`, `McGinleyDynamic`, `Smma`                                                                                                                                                                                                                                                                                 |
+| Bandas                              | Gratuito | `bollinger`                 | `BollingerBandWidth`, `BollingerBands`, `BollingerPercentB`                                                                                                                                                                                                                                                                                                                  |
+| Osciladores                         | Gratuito | `momentum`                  | `Rsi`, `Macd`, `StochasticRsi`, `Cci`                                                                                                                                                                                                                                                                                                                                        |
+| Osciladores                         | Pro      | `momentum.pro`              | `AcceleratorOscillator`, `AdaptiveFisherTransform`, `AwesomeOscillator`, `BalanceOfPower`, `BullBearPower`, `ChandeForecastOscillator`, `Cmo`, `ConnorsRsi`, `CoppockCurve`, `DetrendedPriceOscillator`, `FisherTransform`, `KnowSureThing`, `Momentum`, `RelativeVigorIndex`, `Roc`, `StochasticOscillator`, `Trix`, `TrueStrengthIndex`, `UltimateOscillator`, `WilliamsR` |
+| Estadística                         | Gratuito | `statistics`                | `StandardDeviation`, `Variance`                                                                                                                                                                                                                                                                                                                                              |
+| Estadística                         | Pro      | `statistics.pro`            | `Autocorrelation`, `Beta`, `Correlation`, `Covariance`, `HurstExponent`, `Kurtosis`, `LinearRegressionSlope`, `RollingPercentile`, `SimpleLinearRegression`, `Skewness`, `StandardDeviation`, `ValueAtRisk`, `Variance`, `ZScore`                                                                                                                                            |
+| Volatilidad                         | Gratuito | `volatility`                | `Atr`                                                                                                                                                                                                                                                                                                                                                                        |
+| Volatilidad                         | Gratuito | `helpers`                   | `Volatility`, `PercentVolatility`                                                                                                                                                                                                                                                                                                                                            |
+| Volatilidad                         | Pro      | `volatility.pro`            | `ChoppinessIndex`, `KeltnerChannel`, `MassIndex`, `Natr`, `RelativeVolatilityIndex`                                                                                                                                                                                                                                                                                          |
+| Volatilidad (estimadores)           | Pro      | `statistics.pro.volatility` | `EwmaVolatility`, `GarmanKlassVolatility`, `ParkinsonVolatility`, `RealizedVolatility`, `RogersSatchellVolatility`, `YangZhangVolatility`                                                                                                                                                                                                                                    |
+| Tendencia                           | Solo pro | `trend.pro`                 | `Adx`, `Aroon`, `ChandeKrollStop`, `ChandelierExit`, `DonchianChannel`, `EfficiencyRatio`, `Ichimoku`, `ParabolicSar`, `SuperTrend`, `Vortex`                                                                                                                                                                                                                                |
+| Volumen                             | Solo pro | `volume.pro`                | `Adl`, `ChaikinOscillator`, `Cmf`, `EaseOfMovement`, `ElderForceIndex`, `KlingerOscillator`, `Mfi`, `NegativeVolumeIndex`, `Obv`, `Pvt`, `Vwap`                                                                                                                                                                                                                              |
+| Ratios (rendimiento)                | Solo pro | `statistics.pro.ratios`     | `CalmarRatio`, `InformationRatio`, `MaxDrawdown`, `OmegaRatio`, `SharpeRatio`, `SortinoRatio`, `TailRatio`, `TreynorRatio`, `UlcerIndex`                                                                                                                                                                                                                                     |
+| Distancia y cambio                  | Gratuito | `distance`                  | `Distance`, `DistanceFromMa`                                                                                                                                                                                                                                                                                                                                                 |
+| Distancia y cambio                  | Gratuito | `helpers`                   | `RateChange`, `PercentChangePeriod`                                                                                                                                                                                                                                                                                                                                          |
+| Conteo y extremos                   | Gratuito | `helpers`                   | `Gain`, `Loss`, `Max`, `Min`, `Count`                                                                                                                                                                                                                                                                                                                                        |
+| Conteo y extremos                   | Gratuito | `numeric`                   | `Sum`                                                                                                                                                                                                                                                                                                                                                                        |
+| Derivados (los registra el builder) | Gratuito | `numeric`                   | `BiFunction`, `Clamp`, `ClampPredicate`, `Conditional`, `Predicate`, `Round`                                                                                                                                                                                                                                                                                                 |
+| Derivados (los registra el builder) | Gratuito | `helpers`                   | `PredicatePeriodCounter`                                                                                                                                                                                                                                                                                                                                                     |
 
 Compón estas clases alimentando la vista de solo lectura de un indicador al constructor
 `(RTIndicator, …)` de otro (por ejemplo, un `ZScore` de una `Sma`). Así se hacen estadísticas

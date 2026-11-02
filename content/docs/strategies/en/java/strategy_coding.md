@@ -1,7 +1,7 @@
 ---
 title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
-order: 5.1
+order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/strategy_coding.md
@@ -22,10 +22,10 @@ npx skills add QTSurfer/strategy-skills --skill qtsurfer-java-strategy
 
 The skill also covers choosing a strategy base class, configuring indicators, and managing
 per-instrument state. Once the source is ready, [compile and validate it through the
-API](strategy).
+API](/docs/strategies/strategy).
 
 The signal helpers in this guide are not tied to a Java class: the `{ }` bodies of a
-[QTScript](qtscript) strategy (beta) — a compact way to write a strategy that leaves out the
+[QTScript](/docs/strategies/qtscript) strategy (beta) — a compact way to write a strategy that leaves out the
 class, imports and listener — call `emitBuy`, `emitSell`, `emitInfo` and `emitSignal` exactly as
 shown here.
 
@@ -157,8 +157,8 @@ A strategy says when and which way, not how much. `emitBuy(price)` and `emitSell
 else, and no call puts a quantity or a notional on a signal. The size of each entry is a setting of the run,
 `percentAmountToLock`: the percentage of the account's free balance that an entry locks, above 0 and up to 100.
 
-Where you give it depends on the run: `baseConfig` for a [backtest](backtest_execute) or a
-[sweep](backtest_sweep), the `paper` block for a [paper live run](live_paper). Left out, a backtest puts the
+Where you give it depends on the run: `baseConfig` for a [backtest](/docs/developers/api/backtest_execute) or a
+[sweep](/docs/developers/api/backtest_sweep), the `paper` block for a [paper live run](/docs/developers/api/live_paper). Left out, a backtest puts the
 whole free balance into each entry (all-in) and a live run's paper account locks 10%. To see how a strategy behaves
 at another size, run it again with another `percentAmountToLock`; the class does not change.
 
@@ -208,7 +208,7 @@ It also accepts nested name/value pairs:
 emitInfo("averages", "fast", fast, "slow", slow);
 ```
 
-`emitInfo` takes the same arguments in a [QTScript](qtscript#inside-a-body) body — the
+`emitInfo` takes the same arguments in a [QTScript](/docs/strategies/qtscript#inside-a-body) body — the
 [README](https://github.com/QTSurfer/qtsurfer-api/blob/1234ca1a762e589f51b4679af889ca6cba5802cb/README.md#the-same-strategy-in-qtscript)
 shows the moving-average example above with its chart markers written that way.
 
@@ -303,7 +303,7 @@ public class TrueRange extends AbstractKlineStrategy {
 
 A Java kline strategy has to override `getInterval()`: the base class leaves it abstract, and a source without it is
 rejected. In a backtest the bar width is not what it returns but the `cadence` the data was prepared at, so
-`KlineInterval.s1` serves any run; a [QTScript](qtscript#candles) `kline` strategy gets this method written for it.
+`KlineInterval.s1` serves any run; a [QTScript](/docs/strategies/qtscript#candles) `kline` strategy gets this method written for it.
 
 The first time a window fires there is no earlier window to compare with: `prev` is the value the indicator had when
 that first window opened. A rule that needs two real closes should let the first firing pass, and an indicator with a
@@ -412,17 +412,17 @@ A run whose strategy does not implement `CommandRequestHandler` answers every co
 implementing the interface is what makes `POST /live/{runId}/commands` do anything at all.
 
 A QTScript strategy implements it too, through its own `onCommand { }` section (see
-[QTScript](qtscript#handling-a-command)) — the platform recognizes the generated class as
+[QTScript](/docs/strategies/qtscript#handling-a-command)) — the platform recognizes the generated class as
 `CommandRequestHandler` the same way it recognizes this one.
 
-See [Commands](live#commands) for the request/response shape and error codes.
+See [Commands](/docs/developers/api/live#commands) for the request/response shape and error codes.
 
 ## The pro indicators
 
-The [pro indicators](qtscript#the-pro-indicators-uses) come with the Pro and Elite plans. In Java they are the methods of
+The [pro indicators](/docs/strategies/qtscript#the-pro-indicators-uses) come with the Pro and Elite plans. In Java they are the methods of
 `Pro`, in `com.wualabs.qtsurfer.engine.indicators.pro`: `Pro.on(indicators)` takes the indicator group that `setupIndicators`
 receives, and each call registers one pro indicator with the same names, forms and ids as the
-[QTScript table](qtscript#the-pro-indicators-uses) lists. `Pro.on(indicators).adx(14)` registers `adx14` and, beside it,
+[QTScript table](/docs/strategies/qtscript#the-pro-indicators-uses) lists. `Pro.on(indicators).adx(14)` registers `adx14` and, beside it,
 `adx14PlusDI` and `adx14MinusDI`. A window goes on the main one (`adx14`), and the listener reads the others by name.
 
 They read whole bars, so use them in a kline strategy. This one buys when the ADX says there is a trend and the plus line is
@@ -483,12 +483,12 @@ Registering a strategy that uses them is accepted on every plan, and the answer 
 starting a backtest or a sweep with it and starting a live run with it. The message names the first call the strategy makes and
 the line of your source, here `strategy uses pro indicators (Pro.adx, line 25); your plan: free`. The check reads the compiled
 strategy, so any other mention of a class of the pro package counts the same, and the message then names the class. The status,
-the body and the `upgradeUrl` are the ones [the QTScript guide](qtscript#the-pro-indicators-and-your-plan) describes.
+the body and the `upgradeUrl` are the ones [the QTScript guide](/docs/strategies/qtscript#the-pro-indicators-and-your-plan) describes.
 
 ## See also
 
-- [QTScript (beta)](qtscript) — the same strategies written with the ceremony left out.
-- [Strategies](strategy) — compile, validate, list and read back a strategy, in either language.
+- [QTScript (beta)](/docs/strategies/qtscript) — the same strategies written with the ceremony left out.
+- [Strategies](/docs/strategies/strategy) — compile, validate, list and read back a strategy, in either language.
 
 [engine-javadoc]: https://www.qtsurfer.com/docs/developers/java-api
 [market-hint-javadoc]: https://www.qtsurfer.com/docs/developers/java-api/reference/latest/com/wualabs/qtsurfer/engine/strategy/event/signal/MarketHintSignal.html

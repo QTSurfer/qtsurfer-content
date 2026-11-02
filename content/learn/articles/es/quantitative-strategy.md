@@ -129,6 +129,6 @@ diseñado para ejecutarse contra datos históricos y contra un flujo en vivo.
 - [Backtesting](backtesting), [Barrido de parámetros](parameter-sweep), [Análisis
   walk-forward](walk-forward-analysis) — las etapas del ciclo.
 - [Revisión de estrategia](strategy-revision) — la unidad que hace reproducibles los resultados.
-- Guías para desarrolladores: [Estrategias Java](/docs/developers/java-strategies), [Patrones de
-  estrategia](/docs/developers/strategy-patterns).
+- Guías para desarrolladores: [Estrategias Java](/docs/strategies/java), [Patrones de
+  estrategia](/docs/strategies/java/patterns).
 - Guías del producto: [Primeros pasos](/docs/app/getting-started), [Laboratorio](/docs/app/laboratory).

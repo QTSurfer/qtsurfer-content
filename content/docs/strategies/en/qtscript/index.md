@@ -1,7 +1,7 @@
 ---
 title: QTScript (beta)
 description: A compact language for writing strategies — every section, windows, what's in scope, and how it compiles the same as Java.
-order: 5.15
+order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 4f422c3150a60aa8fe08bca4d4437503bda8a14d
 upstreamPath: docs/qtscript.md
@@ -11,7 +11,7 @@ lastUpdated: '2026-11-01T22:07:30Z'
 QTScript is a compact way to write a strategy: you keep the part that is yours — indicators, windows,
 signals — and leave out the ceremony of a Java class (package, imports, class, base class, property
 annotations, listener boilerplate). **Every `{ }` body is plain Java**, so everything the [Java
-strategy API](strategy_coding) offers inside a body works unchanged. A QTScript file becomes exactly
+strategy API](/docs/strategies/java/strategy_coding) offers inside a body works unchanged. A QTScript file becomes exactly
 one Java class and goes through the same server-side compilation as a Java strategy.
 
 It is **in beta** and will gain syntax. Java remains the established route, with the full engine API;
@@ -20,7 +20,7 @@ anything QTScript cannot express is written in Java (see [what it does not do](#
 ## Submit it like any strategy
 
 There is no separate endpoint and no header to set: send the raw source to
-[`POST /strategy`](strategy#compiling-a-strategy) with `Content-Type: text/plain`, exactly as for
+[`POST /strategy`](/docs/strategies/strategy#compiling-a-strategy) with `Content-Type: text/plain`, exactly as for
 Java. The platform tells the two apart by the text — a QTScript source starts with `strategy`, and
 whitespace or comments (`//`, `/* */`) before it are ignored, so a description can sit on top of the
 file. `.qtscript` is the conventional file extension; only the text is sent.
@@ -68,7 +68,7 @@ on a one-minute window, emitting a signal on each threshold.
 | `uses` | Optional. Brings the [pro indicators](#the-pro-indicators-uses) into the file, so `setup:` can call them by their bare name. Several `uses` lines add up | `uses pro.*` · `uses pro.adx, pro.ichimoku` |
 | `setup:` | The indicators, **one builder call per line** (the free catalogue of the builder a Java strategy uses, [listed below](#what-goes-under-setup)). The lines under `setup:` are indented, and the first line back at column 0 ends the section | `ema(12)` · `bollinger(20, 2)` |
 | Windows | Where the logic goes — see below | `rsi(14) window m1 { ... }` |
-| `onCommand { }` | Optional, at most one per file. Runs when the run receives a [command](live#commands) — see below | `onCommand { if ("flatten".equals($command)) ... }` |
+| `onCommand { }` | Optional, at most one per file. Runs when the run receives a [command](/docs/developers/api/live#commands) — see below | `onCommand { if ("flatten".equals($command)) ... }` |
 
 ### What goes under `setup:`
 
@@ -158,7 +158,7 @@ their bare name, like any other indicator.
 - Pro indicators read whole bars, so use them in a [`kline`](#candles) strategy. On a `ticker` strategy the values are not
   the bar's and mean nothing, and validating or running the strategy returns an engine notice that says so.
 - A pro line is an ordinary `setup:` line: one call per line, with a window after it as usual.
-- Backtests, sweeps (walk-forward included), [`validate`](strategy#checking-it-actually-runs) and live runs run the pro
+- Backtests, sweeps (walk-forward included), [`validate`](/docs/strategies/strategy#checking-it-actually-runs) and live runs run the pro
   indicators.
 
 | Indicator | Forms | Registers, with the default arguments | Also registers |
@@ -246,11 +246,11 @@ these messages:
 
 ### The pro indicators and your plan
 
-The pro indicators come with the Pro and Elite plans (your plan is the `tier` that [`GET /account`](account) returns).
+The pro indicators come with the Pro and Elite plans (your plan is the `tier` that [`GET /account`](/docs/developers/api/account) returns).
 Registering a strategy that uses them is accepted on every plan; what a plan without them cannot do is run it.
 
 - **`POST /strategy` says what the strategy needs.** The answer carries `requires`, a list: `["indicators.pro"]` when the
-  strategy uses the pro indicators and `[]` when it does not. [`GET /strategy/{strategyId}`](strategy#getting-a-strategy)
+  strategy uses the pro indicators and `[]` when it does not. [`GET /strategy/{strategyId}`](/docs/strategies/strategy#getting-a-strategy)
   does not show it.
 - **A plan that does not include them is refused with `402 Payment Required`**, without a `Retry-After` header, since waiting
   does not change the plan. That is the answer to validating the strategy, to starting a backtest with it, to starting a
@@ -353,7 +353,7 @@ setup:
 A window that names an indicator which is not registered, such as `window nosuch m1 { ... }`, is not
 rejected when you register the source. Whether the name exists can depend on your `param`s (a `param
 fast` used as `ema(fast)` registers a different name for each value) and on indicators registered from
-Java, so it is only found when the strategy is [validated](strategy#checking-it-actually-runs), which
+Java, so it is only found when the strategy is [validated](/docs/strategies/strategy#checking-it-actually-runs), which
 then fails on the window's line: `QTScript line 4: unknown indicator 'nosuch'`.
 
 ## Inside a body
@@ -401,7 +401,7 @@ the instrument shares.
 ## Candles
 
 `strategy … kline` gives the bar's fields as plain variables. A kline strategy never takes an
-interval: the bar width is the `cadence` you [prepare the data at](backtest_execute#kline-you-choose-the-bar-width),
+interval: the bar width is the `cadence` you [prepare the data at](/docs/developers/api/backtest_execute#kline-you-choose-the-bar-width),
 so the same file runs at any of them.
 
 ```
@@ -421,7 +421,7 @@ setup:
 ## Handling a command
 
 `onCommand { }` is a special section, at most one per file, that runs when the platform delivers a
-[command](live#commands) to a live run — `POST /live/{runId}/commands`, applied without restarting the
+[command](/docs/developers/api/live#commands) to a live run — `POST /live/{runId}/commands`, applied without restarting the
 strategy. It has no period and no indicator: it is not a window, it runs once per command, not once per
 market event, and a file has at most one of it, the same way it has at most one `init { }`.
 
@@ -449,17 +449,17 @@ onCommand {
 ```
 
 A strategy with no `onCommand { }` does not implement the engine's `CommandRequestHandler`, so a command sent
-to one of its runs is rejected with `409` (see [Commands](live#commands)). `$command` and `$command.<key>`
+to one of its runs is rejected with `409` (see [Commands](/docs/developers/api/live#commands)). `$command` and `$command.<key>`
 are not visible outside `onCommand`'s body, the same way `$indicator` is not visible outside a window's.
 
 Setting a `param` or writing to a `StateStore` from inside `onCommand` both take effect immediately, but
 neither survives a restart: a `StateStore` is memory, gone on a restart the same as a field. Only
-[`PUT /live/{runId}/params`](live#runtime-parameters) writes something a restarted replica actually
+[`PUT /live/{runId}/params`](/docs/developers/api/live#runtime-parameters) writes something a restarted replica actually
 starts from. `getStateStore(...)` here is not about durability — it is how `onCommand` reaches the
 per-instrument state a window body already reads, since a command carries no instrument of its own.
 
 A Java strategy implements the same contract directly, through `CommandRequestHandler` — see [Coding Java
-strategies](strategy_coding#receiving-commands).
+strategies](/docs/strategies/java/strategy_coding#receiving-commands).
 
 ## Sizing
 
@@ -467,15 +467,15 @@ A strategy says when and which way, not how much. `emitBuy(price)` and `emitSell
 else, and no call puts a quantity or a notional on a signal. The size of each entry is a setting of the run,
 `percentAmountToLock`: the percentage of the account's free balance that an entry locks, above 0 and up to 100.
 
-Where you give it depends on the run: `baseConfig` for a [backtest](backtest_execute) or a
-[sweep](backtest_sweep), the `paper` block for a [paper live run](live_paper). Left out, a backtest puts the
+Where you give it depends on the run: `baseConfig` for a [backtest](/docs/developers/api/backtest_execute) or a
+[sweep](/docs/developers/api/backtest_sweep), the `paper` block for a [paper live run](/docs/developers/api/live_paper). Left out, a backtest puts the
 whole free balance into each entry (all-in) and a live run's paper account locks 10%. To see how a strategy behaves
 at another size, run it again with another `percentAmountToLock`; the file does not change.
 
 ## Running it
 
 A registered QTScript strategy is prepared, executed and swept like any other:
-[`prepare`, `execute`](backtest_execute) and [`executeSweep`](backtest_sweep), with the
+[`prepare`, `execute`](/docs/developers/api/backtest_execute) and [`executeSweep`](/docs/developers/api/backtest_sweep), with the
 `strategyId` you got back. Sweep axes and `params` use the names of your `param` lines.
 
 | `strategy …` | Prepare | Execute | Sweep |
@@ -484,7 +484,7 @@ A registered QTScript strategy is prepared, executed and swept like any other:
 | `kline` | yes | yes | yes |
 | `funding` | yes | not yet | not yet |
 
-See [Data sources](backtest_execute#data-sources) for the details, including why a `funding`
+See [Data sources](/docs/developers/api/backtest_execute#data-sources) for the details, including why a `funding`
 strategy can be registered and its data prepared but not yet run.
 
 ## When something is wrong
@@ -496,7 +496,7 @@ errors from inside a body.
 
 **A `200` from `POST /strategy` means the source parsed and compiled, not that it will run.**
 Registering does not set the strategy up, so what only shows when it does is found by
-[`validate`](strategy#checking-it-actually-runs), which reports it against your file the same way. The
+[`validate`](/docs/strategies/strategy#checking-it-actually-runs), which reports it against your file the same way. The
 case to know is a window on an indicator that is not registered, `window nosuch m1 { ... }`: it
 registers, and `validate` ends `failed` on the window's line, `QTScript line 4: unknown indicator
 'nosuch'` (see [Which indicator a window is on](#which-indicator-a-window-is-on)). Call `validate`
@@ -515,7 +515,7 @@ QTScript line 6: Index 2 out of bounds for length 1
 the text, because indentation is part of the grammar: a byte-order mark, the style of line endings,
 whitespace at the end of a line and blank lines before the first and after the last line are ignored;
 anything else — a comment, the indentation, a blank line in between — gives a different id. (Java
-strategies are more forgiving; see [Strategies](strategy#compiling-a-strategy).)
+strategies are more forgiving; see [Strategies](/docs/strategies/strategy#compiling-a-strategy).)
 
 ## What it does not do
 
@@ -541,4 +541,4 @@ npx skills add QTSurfer/strategy-skills --skill qtsurfer-qtscript-strategy
 
 The bodies are written against the strategy API documented in the
 [`qtsurfer-java-strategy`](https://github.com/QTSurfer/strategy-skills) skill and in
-[Coding Java strategies](strategy_coding).
+[Coding Java strategies](/docs/strategies/java/strategy_coding).

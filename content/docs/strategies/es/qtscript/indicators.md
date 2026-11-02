@@ -1,7 +1,7 @@
 ---
 title: Indicadores de QTScript
 description: Todos los indicadores que puede llamar una estrategia QTScript, gratuitos y pro, agrupados por tipo.
-order: 5.16
+order: 8
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 47fc5fdeca4f7503b719427678ca7bce42cfef24
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
@@ -12,10 +12,10 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 `setup:` escribe una llamada por su nombre desnudo, como `ema(20)` o `atr(14)`.
 
 - **Los argumentos que acepta cada nombre** son las formas de la tabla bajo «Qué va bajo `setup:`» en
-  [la guía de QTScript](/docs/developers/api/qtscript#qué-va-bajo-setup). Esta página no las repite.
+  [la guía de QTScript](/docs/strategies/qtscript#qué-va-bajo-setup). Esta página no las repite.
 - Los nombres **gratuitos** funcionan en todos los planes. Hay 39.
 - Los nombres **pro** vienen con los planes Pro y Elite y necesitan una línea `uses` (consulta «Los indicadores pro: `uses`» en
-  [la guía de QTScript](/docs/developers/api/qtscript#los-indicadores-pro-uses), que trae sus formas y los nombres que
+  [la guía de QTScript](/docs/strategies/qtscript#los-indicadores-pro-uses), que trae sus formas y los nombres que
   registran). Hay 12.
 - Llamado sin un nombre propio, un indicador registra un nombre formado por el suyo y sus parámetros: `rsi(14)` registra
   `rsi14`, `ema(9)` registra `ema9` y `wma(5)` registra `wma5`. Cuando el nombre no es tan evidente, las notas lo dan.
@@ -131,4 +131,4 @@ Los cuatro estimadores reciben un factor de anualización como último argumento
 Los métodos del builder que reciben una función (`predicate`, `fun`, `decorate`, `periodCount`) y `conditional` solo se pueden
 escribir en una estrategia Java. También las clases de indicadores que no son nombres del builder: el motor Java tiene muchas
 más, gratuitas y pro (un z-score, Aroon, el ratio de Sharpe y otras), y el
-[catálogo de indicadores Java](/docs/developers/java-indicators) las lista con el paquete de cada una.
+[catálogo de indicadores Java](/docs/strategies/java/indicators) las lista con el paquete de cada una.

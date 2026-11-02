@@ -46,7 +46,7 @@ no se promueve, y sigue corriendo en el sandbox.
 
 Arrancar una ejecución necesita un plan que incluya ejecuciones en vivo. Un plan que no, el Free, se rechaza con `402`:
 `Live runs are not included in tier free. Upgrade your plan to run strategies live.` Una estrategia que usa los
-indicadores pro en un plan que no los incluye también se rechaza con `402`, consulta [los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan).
+indicadores pro en un plan que no los incluye también se rechaza con `402`, consulta [los indicadores pro y tu plan](/docs/strategies/qtscript#los-indicadores-pro-y-tu-plan).
 
 ### Volver a arrancar no repite la prueba
 
@@ -487,8 +487,8 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 
 `POST /live/{runId}/commands` le dice algo a una estrategia en marcha sin reiniciarla, para una estrategia que
 implementa `CommandRequestHandler` del motor — una estrategia Java directamente (consulta
-[Programar estrategias en Java](strategy_coding#recibir-comandos)), o una estrategia QTScript mediante
-`onCommand { }` (consulta [QTScript](qtscript#manejar-un-comando)). Acepta `{"command": "<texto>"}` — una
+[Programar estrategias en Java](/docs/strategies/java/strategy_coding#recibir-comandos)), o una estrategia QTScript mediante
+`onCommand { }` (consulta [QTScript](/docs/strategies/qtscript#manejar-un-comando)). Acepta `{"command": "<texto>"}` — una
 cadena simple — y un
 objeto `properties` opcional, de tu elección, que viaja sin cambios hasta el propio manejador de la estrategia;
 `command` y `properties` son las únicas claves que puede llevar el cuerpo. Responde `202` con `commandId` y

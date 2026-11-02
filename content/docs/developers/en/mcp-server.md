@@ -102,7 +102,7 @@ the sensitivity marginals say whether an axis moved the objective at all. See
 capabilities it requires, such as `indicators.pro`. Registering is accepted on any plan; running a
 strategy whose requirements the plan does not include is refused with `402`, which carries an
 upgrade address when the platform has one and cannot succeed on retry until the plan changes
-([the pro indicators and your plan](/docs/developers/api/qtscript#the-pro-indicators-and-your-plan)).
+([the pro indicators and your plan](/docs/strategies/qtscript#the-pro-indicators-and-your-plan)).
 
 `import_dataset` brings the history of an exchange or a pool into a dataset, and
 `get_dataset_import` polls it. The import reports the cadence in effect, which is the plan's default
@@ -163,6 +163,6 @@ configuration before spending an API key.
 
 ## Related pages
 
-- [Java strategies](/docs/developers/java-strategies) — the strategy model the assistant writes against.
+- [Java strategies](/docs/strategies/java) — the strategy model the assistant writes against.
 - [Backtest execution model](/docs/developers/backtest-execution-model) — what the tools orchestrate.
 - [Clients and SDKs](/docs/developers/clients-and-sdks) — the SDK the server is built on.

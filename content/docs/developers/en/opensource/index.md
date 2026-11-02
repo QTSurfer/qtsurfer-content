@@ -41,7 +41,7 @@ clients are generated from the OpenAPI contract and map one to one onto its endp
 - [strategy-skills](https://github.com/QTSurfer/strategy-skills) — agent skills for writing, reviewing,
   and debugging QTSurfer strategies in Java and in QTScript. They follow the open Agent Skills
   format, so they work with Claude Code, Codex, Cursor, Cline, and other agents that support it. The
-  [strategy guides](/docs/developers/java-strategies) in these docs are generated from them.
+  [strategy guides](/docs/strategies/java) in these docs are generated from them.
 
 ## Lastra and data formats
 

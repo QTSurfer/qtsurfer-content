@@ -46,7 +46,7 @@ promoted, and keeps running in the sandbox.
 
 Starting a run needs a plan that includes live runs. A plan that does not, the Free plan, is refused with `402`: `Live runs
 are not included in tier free. Upgrade your plan to run strategies live.` A strategy that uses the pro indicators on a plan
-that does not include them is refused with `402` too, see [the pro indicators and your plan](qtscript#the-pro-indicators-and-your-plan).
+that does not include them is refused with `402` too, see [the pro indicators and your plan](/docs/strategies/qtscript#the-pro-indicators-and-your-plan).
 
 ### Starting again does not repeat the trial
 
@@ -469,8 +469,8 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 
 `POST /live/{runId}/commands` tells a running strategy something without restarting it, for a strategy that
 implements the engine's `CommandRequestHandler` — a Java strategy directly (see [Coding Java
-strategies](strategy_coding#receiving-commands)), or a QTScript strategy through `onCommand { }` (see
-[QTScript](qtscript#handling-a-command)). It takes
+strategies](/docs/strategies/java/strategy_coding#receiving-commands)), or a QTScript strategy through `onCommand { }` (see
+[QTScript](/docs/strategies/qtscript#handling-a-command)). It takes
 `{"command": "<text>"}` — a plain string — and an optional `properties` object of your own choosing alongside
 it, which travels unchanged to the strategy's own handler; `command` and `properties` are the only keys the
 body may carry. It answers `202` with `commandId` and `effectiveAtMs`, the market position every execution

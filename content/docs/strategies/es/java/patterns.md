@@ -60,7 +60,7 @@ indicators
 
 ## Variantes de salida con trailing
 
-### Trailing al punto medio (probado en producción, ~7 % de media)
+### Trailing al punto medio
 
 ```java
 // En onChange:

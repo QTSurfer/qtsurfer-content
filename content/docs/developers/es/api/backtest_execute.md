@@ -280,7 +280,7 @@ curl -X POST https://api.qtsurfer.net/v1/backtest/binance/ticker/execute \
 
 Errores: `400` petición inválida, o un `type` que aún no se puede ejecutar (`funding`) · `404`
 job de preparación no encontrado o expirado · `402` la estrategia usa los indicadores pro y tu plan no los incluye,
-consulta [los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan) · `409` la estrategia, tal como se
+consulta [los indicadores pro y tu plan](/docs/strategies/qtscript#los-indicadores-pro-y-tu-plan) · `409` la estrategia, tal como se
 compiló, ya no funciona con la versión actual de la plataforma (una versión quitó algo a lo que llama): no se encola
 nada; registra la estrategia de nuevo y envíala otra vez · `429` limitado por tasa.
 

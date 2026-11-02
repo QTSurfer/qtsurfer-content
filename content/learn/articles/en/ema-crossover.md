@@ -160,7 +160,7 @@ developer guide.
 - [Parameter sweep](parameter-sweep) — how to explore the two periods without selecting noise.
 - [Slippage](slippage) — the cost the whipsaw pays on every false start.
 - [Overfitting](overfitting) — why each added filter is also a way to fit the sample.
-- Developer guides: [Strategy examples](/docs/developers/strategy-examples), [Java
-  indicators](/docs/developers/java-indicators), [Strategy
-  patterns](/docs/developers/strategy-patterns).
+- Developer guides: [Strategy examples](/docs/strategies/java/examples), [Java
+  indicators](/docs/strategies/java/indicators), [Strategy
+  patterns](/docs/strategies/java/patterns).
 - Product guide: [Strategies](/docs/app/strategies).

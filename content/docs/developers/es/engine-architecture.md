@@ -10,7 +10,7 @@ contra datos históricos como si la impulsa un flujo en vivo. Esta página descr
 ese motor con las que interactúa quien escribe una estrategia, y el orden en que actúan sobre cada
 evento de mercado. La referencia a nivel de clase es la [documentación de la API
 Java](/docs/developers/java-api); las guías prácticas empiezan por [Estrategias en
-Java](/docs/developers/java-strategies).
+Java](/docs/strategies/java).
 
 ## Un evento cada vez
 
@@ -74,7 +74,7 @@ protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
 
 El catálogo — medias, osciladores, medidas de distancia y volatilidad, operadores aritméticos y
 condicionales, estadística — se describe en [Indicadores en
-Java](/docs/developers/java-indicators).
+Java](/docs/strategies/java/indicators).
 
 ## Window listeners y estado
 
@@ -87,7 +87,7 @@ indicadores y al `StateStore` del instrumento.
 El `StateStore` es un almacén clave-valor por instrumento con contadores tipados, acumuladores y
 flags. Es cómo una estrategia recuerda si está en posición, cuántas entradas ha escalado, o qué
 régimen observó por última vez, sin mantener campos mutables que se compartirían entre
-instrumentos. [Patrones de estrategia](/docs/developers/strategy-patterns) muestra los usos
+instrumentos. [Patrones de estrategia](/docs/strategies/java/patterns) muestra los usos
 habituales.
 
 ## Señales
@@ -103,7 +103,7 @@ Una estrategia nunca coloca una orden directamente. Emite **señales**:
 
 Las señales fluyen por el flujo de eventos del motor hasta un ejecutor que las dirige al pipeline
 propietario de la posición de ese instrumento. Los detalles de cada tipo de señal y sus opciones
-están en [Emisión de señales](/docs/developers/api/strategy_coding).
+están en [Emisión de señales](/docs/strategies/java/strategy_coding).
 
 ## Pipelines de ejecución
 
@@ -142,7 +142,7 @@ cuando existe, que es donde corresponde la validación o el acotado. El campo no
 Las propiedades son lo que un backtest sobrescribe y sobre lo que itera un barrido. Compilar una
 estrategia devuelve sus propiedades declaradas, con sus valores por defecto y los rangos
 sugeridos, de modo que quien la llama puede construir un barrido contra claves conocidas —
-consulta [Compilar una estrategia](/docs/developers/api/strategy).
+consulta [Compilar una estrategia](/docs/strategies/strategy).
 
 ## Compilación y validación
 
@@ -170,9 +170,9 @@ determinarse.
 
 ## Por dónde seguir
 
-- [Estrategias en Java](/docs/developers/java-strategies) — la plantilla mínima y el modelo de
+- [Estrategias en Java](/docs/strategies/java) — la plantilla mínima y el modelo de
   autoría.
-- [Ejemplos de estrategias](/docs/developers/strategy-examples) — estrategias completas para cada
+- [Ejemplos de estrategias](/docs/strategies/java/examples) — estrategias completas para cada
   patrón.
 - [Modelo de ejecución de un backtest](/docs/developers/backtest-execution-model) — cómo una
   estrategia compilada se convierte en un resultado.

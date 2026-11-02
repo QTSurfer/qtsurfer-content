@@ -107,7 +107,7 @@ capacidades del plan que requiere, como `indicators.pro`. Registrar se acepta en
 ejecutar una estrategia cuyos requisitos el plan no incluye se rechaza con `402`, que lleva una
 dirección para mejorar el plan cuando la plataforma tiene una y no puede salir bien al reintentar
 hasta que el plan cambie
-([los indicadores pro y tu plan](/docs/developers/api/qtscript#los-indicadores-pro-y-tu-plan)).
+([los indicadores pro y tu plan](/docs/strategies/qtscript#los-indicadores-pro-y-tu-plan)).
 
 `import_dataset` trae a un conjunto de datos el histórico de un exchange o de un pool, y
 `get_dataset_import` lo sondea. La importación informa de la cadencia en efecto, que es la de por
@@ -172,7 +172,7 @@ comprobar la configuración de un asistente antes de gastar una clave de API.
 
 ## Páginas relacionadas
 
-- [Estrategias en Java](/docs/developers/java-strategies) — el modelo de estrategia contra el que
+- [Estrategias en Java](/docs/strategies/java) — el modelo de estrategia contra el que
   escribe el asistente.
 - [Modelo de ejecución de un backtest](/docs/developers/backtest-execution-model) — qué orquestan
   las herramientas.

@@ -1,7 +1,7 @@
 ---
 title: Java indicators
 description: Configure, compose, and extend the QTSurfer real-time indicator pipeline.
-order: 2
+order: 3
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 47fc5fdeca4f7503b719427678ca7bce42cfef24
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md

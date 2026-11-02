@@ -44,7 +44,7 @@ ellos.
 - [strategy-skills](https://github.com/QTSurfer/strategy-skills) — skills de agente para escribir,
   revisar y depurar estrategias de QTSurfer en Java y en QTScript. Siguen el formato abierto Agent
   Skills, así que funcionan con Claude Code, Codex, Cursor, Cline y otros agentes que lo admiten. Las
-  [guías de estrategias](/docs/developers/java-strategies) de esta documentación se generan a partir
+  [guías de estrategias](/docs/strategies/java) de esta documentación se generan a partir
   de ellas.
 
 ## Lastra y formatos de datos

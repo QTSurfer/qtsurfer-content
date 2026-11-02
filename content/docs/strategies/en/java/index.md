@@ -1,7 +1,7 @@
 ---
 title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
-order: 1
+order: 2
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 47fc5fdeca4f7503b719427678ca7bce42cfef24
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
@@ -87,7 +87,7 @@ protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
 }
 ```
 
-See [the indicator catalogue](/docs/developers/java-indicators) for the full indicator catalogue. It is the up-to-date list of which indicators exist, free and pro, and what each one computes: check it before writing a call, and before telling anyone that an indicator does not exist.
+See [the indicator catalogue](/docs/strategies/java/indicators) for the full indicator catalogue. It is the up-to-date list of which indicators exist, free and pro, and what each one computes: check it before writing a call, and before telling anyone that an indicator does not exist.
 
 The pro indicators (ADX, SuperTrend, Ichimoku, VWAP and the rest) are on the same builder through
 `Pro.on(indicators)`, and come with the Pro and Elite plans; "The pro indicators" in the catalogue has the call, an
@@ -555,7 +555,7 @@ A strategy instance sees **every** accepted instrument, each with its own indica
 compute something _across_ instruments (a market-wide percentile, a relative-strength rank, a
 basket signal), override `update(Ticker)` and read other instruments' indicators via
 `getInstruments()` / `getRTIndicator(...)`. See
-[strategy patterns](/docs/developers/strategy-patterns) → "Cross-instrument (market-wide) strategies".
+[strategy patterns](/docs/strategies/java/patterns) → "Cross-instrument (market-wide) strategies".
 
 **In a backtest the strategy sees only one instrument.** A backtest runs over the instrument it was
 prepared for and feeds the strategy that instrument's ticks alone: `getInstruments()` lists only it,

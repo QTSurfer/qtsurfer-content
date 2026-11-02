@@ -126,4 +126,4 @@ the representation a strategy is backtested on is the one it would trade on.
 - [Slippage](slippage) — the cost that separates simulated and live fills.
 - [Backtesting](backtesting) — what a historical simulation can and cannot claim.
 - [Strategy revision](strategy-revision) — why production changes need re-testing.
-- Developer guide: [Signal emission and order options](/docs/developers/api/strategy_coding).
+- Developer guide: [Signal emission and order options](/docs/strategies/java/strategy_coding).

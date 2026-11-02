@@ -113,6 +113,6 @@ cadences as a warning that its edge lives in the microstructure.
 - [Historical market data](historical-market-data) — cadence, tickers versus candles, and what a
   fill assumption can rest on.
 - [Overfitting](overfitting) — why a cost-free sweep selects the configurations costs punish most.
-- Developer guides: [Signal emission](/docs/developers/api/strategy_coding), [Parameter
+- Developer guides: [Signal emission](/docs/strategies/java/strategy_coding), [Parameter
   sweeps](/docs/developers/api/backtest_sweep).
 - Product guide: [Backtesting](/docs/app/backtesting).

@@ -166,7 +166,7 @@ están en la guía para desarrolladores.
 - [Slippage](slippage) — el coste que la señal falsa paga en cada arranque en falso.
 - [Sobreajuste](overfitting) — por qué cada filtro añadido es también una forma de ajustarse a la
   muestra.
-- Guías para desarrolladores: [Ejemplos de estrategias](/docs/developers/strategy-examples),
-  [Indicadores Java](/docs/developers/java-indicators), [Patrones de
-  estrategia](/docs/developers/strategy-patterns).
+- Guías para desarrolladores: [Ejemplos de estrategias](/docs/strategies/java/examples),
+  [Indicadores Java](/docs/strategies/java/indicators), [Patrones de
+  estrategia](/docs/strategies/java/patterns).
 - Guía del producto: [Estrategias](/docs/app/strategies).

@@ -8,27 +8,27 @@
 		{
 			"skillPath": "skills/qtsurfer-java-strategy",
 			"sourcePath": "SKILL.md",
-			"outputName": "java-strategies.md"
+			"outputName": "java/index.md"
 		},
 		{
 			"skillPath": "skills/qtsurfer-java-strategy",
 			"sourcePath": "references/indicators.md",
-			"outputName": "java-indicators.md"
+			"outputName": "java/indicators.md"
 		},
 		{
 			"skillPath": "skills/qtsurfer-java-strategy",
 			"sourcePath": "references/patterns.md",
-			"outputName": "strategy-patterns.md"
+			"outputName": "java/patterns.md"
 		},
 		{
 			"skillPath": "skills/qtsurfer-java-strategy",
 			"sourcePath": "references/examples.md",
-			"outputName": "strategy-examples.md"
+			"outputName": "java/examples.md"
 		},
 		{
 			"skillPath": "skills/qtsurfer-qtscript-strategy",
 			"sourcePath": "references/indicators.md",
-			"outputName": "qtscript-indicators.md"
+			"outputName": "qtscript/indicators.md"
 		}
 	]
 }

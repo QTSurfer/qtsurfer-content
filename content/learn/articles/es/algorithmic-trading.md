@@ -135,4 +135,4 @@ una estrategia es la misma con la que operaría.
 - [Backtesting](backtesting) — qué puede y qué no puede afirmar una simulación histórica.
 - [Revisión de estrategia](strategy-revision) — por qué los cambios en producción necesitan volver a
   probarse.
-- Guía para desarrolladores: [Emisión de señales y opciones de orden](/docs/developers/api/strategy_coding).
+- Guía para desarrolladores: [Emisión de señales y opciones de orden](/docs/strategies/java/strategy_coding).

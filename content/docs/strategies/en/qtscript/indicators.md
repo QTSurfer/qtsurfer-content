@@ -1,7 +1,7 @@
 ---
 title: QTScript indicators
 description: Every indicator a QTScript strategy can call, free and pro, grouped by kind.
-order: 5.16
+order: 8
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 47fc5fdeca4f7503b719427678ca7bce42cfef24
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
@@ -11,11 +11,11 @@ lastUpdated: '2026-11-01T23:47:39Z'
 Every indicator a `.qtscript` file can call, grouped by kind, with what each one computes. A line under `setup:` writes one
 call by its bare name, like `ema(20)` or `atr(14)`.
 
-- **The arguments each name accepts** are the forms in the table under "What goes under `setup:`" in [the QTScript guide](/docs/developers/api/qtscript#what-goes-under-setup).
+- **The arguments each name accepts** are the forms in the table under "What goes under `setup:`" in [the QTScript guide](/docs/strategies/qtscript#what-goes-under-setup).
   This page does not repeat them.
 - **Free** names work on every plan. There are 39.
 - **Pro** names come with the Pro and Elite plans and need a `uses` line (see "The pro indicators: `uses`" in
-  [the QTScript guide](/docs/developers/api/qtscript#the-pro-indicators-uses), which has their forms and the names they register). There are 12.
+  [the QTScript guide](/docs/strategies/qtscript#the-pro-indicators-uses), which has their forms and the names they register). There are 12.
 - Called without a name of its own, an indicator registers a name made from its own and its parameters: `rsi(14)` registers
   `rsi14`, `ema(9)` registers `ema9`, `wma(5)` registers `wma5`. Where the name is not that obvious, the notes give it.
 - A name that is on neither list, and a pro name whose `uses` line is missing, is rejected as `unknown indicator '<name>'`.
@@ -128,5 +128,5 @@ The four estimators take an annualization factor as their last, optional argumen
 
 The builder methods that take a function (`predicate`, `fun`, `decorate`, `periodCount`) and `conditional` can only be written
 in a Java strategy. So can the indicator classes that are not builder names: the Java engine has many more, free and pro (a
-z-score, Aroon, the Sharpe ratio and others), and the [Java indicator catalogue](/docs/developers/java-indicators) lists them with the
+z-score, Aroon, the Sharpe ratio and others), and the [Java indicator catalogue](/docs/strategies/java/indicators) lists them with the
 package each lives in.

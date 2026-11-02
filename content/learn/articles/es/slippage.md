@@ -121,6 +121,6 @@ ventaja vive en la microestructura.
   qué puede apoyarse una hipótesis de ejecución.
 - [Sobreajuste](overfitting) — por qué un barrido sin costes selecciona las configuraciones que más
   castigan los costes.
-- Guías para desarrolladores: [Emisión de señales](/docs/developers/api/strategy_coding), [Barridos
+- Guías para desarrolladores: [Emisión de señales](/docs/strategies/java/strategy_coding), [Barridos
   de parámetros](/docs/developers/api/backtest_sweep).
 - Guía del producto: [Backtesting](/docs/app/backtesting).

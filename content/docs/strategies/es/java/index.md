@@ -1,7 +1,7 @@
 ---
 title: Estrategias en Java
 description: Construye estrategias QTSurfer con indicadores, window listeners, estado y señales.
-order: 1
+order: 2
 lastUpdated: '2026-11-01T22:07:30Z'
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 47fc5fdeca4f7503b719427678ca7bce42cfef24
@@ -102,7 +102,7 @@ protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
 }
 ```
 
-Consulta [el catálogo de indicadores](/docs/developers/java-indicators) para verlo completo. Es la lista actualizada de qué indicadores existen, gratuitos y pro, y de qué calcula cada uno: consúltala antes de escribir una llamada, y antes de decirle a nadie que un indicador no existe.
+Consulta [el catálogo de indicadores](/docs/strategies/java/indicators) para verlo completo. Es la lista actualizada de qué indicadores existen, gratuitos y pro, y de qué calcula cada uno: consúltala antes de escribir una llamada, y antes de decirle a nadie que un indicador no existe.
 
 Los indicadores pro (ADX, SuperTrend, Ichimoku, VWAP y el resto) están en el mismo builder mediante
 `Pro.on(indicators)`, y vienen con los planes Pro y Elite; «Los indicadores pro» del catálogo tiene la llamada, un
@@ -605,7 +605,7 @@ Una instancia de estrategia ve **todos** los instrumentos aceptados, cada uno co
 de indicadores. Para calcular algo _entre_ instrumentos (un percentil de todo el mercado, un
 ranking de fuerza relativa, una señal de cesta), sobrescribe `update(Ticker)` y lee los indicadores
 de otros instrumentos con `getInstruments()` / `getRTIndicator(...)`. Consulta [patrones de
-estrategia](/docs/developers/strategy-patterns) → «Estrategias entre instrumentos (a nivel de
+estrategia](/docs/strategies/java/patterns) → «Estrategias entre instrumentos (a nivel de
 mercado)».
 
 **En un backtest la estrategia ve un solo instrumento.** Un backtest corre sobre el instrumento para el que se

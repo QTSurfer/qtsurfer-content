@@ -118,6 +118,6 @@ against a live feed.
 - [Backtesting](backtesting), [Parameter sweep](parameter-sweep), [Walk-forward
   analysis](walk-forward-analysis) — the stages of the loop.
 - [Strategy revision](strategy-revision) — the unit that makes results reproducible.
-- Developer guides: [Java strategies](/docs/developers/java-strategies), [Strategy
-  patterns](/docs/developers/strategy-patterns).
+- Developer guides: [Java strategies](/docs/strategies/java), [Strategy
+  patterns](/docs/strategies/java/patterns).
 - Product guides: [Getting started](/docs/app/getting-started), [Laboratory](/docs/app/laboratory).

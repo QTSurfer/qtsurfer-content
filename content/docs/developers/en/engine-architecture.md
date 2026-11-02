@@ -9,7 +9,7 @@ Every QTSurfer strategy runs inside the same engine, whether it is being backtes
 historical data or driven by a live feed. This page describes the parts of that engine a strategy
 author interacts with, and the order in which they act on each market event. The class-level
 reference is the [Java API documentation](/docs/developers/java-api); the hands-on guides start with
-[Java strategies](/docs/developers/java-strategies).
+[Java strategies](/docs/strategies/java).
 
 ## One event at a time
 
@@ -70,7 +70,7 @@ protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
 ```
 
 The catalogue — averages, oscillators, distance and volatility measures, arithmetic and
-conditional operators, statistics — is described in [Java indicators](/docs/developers/java-indicators).
+conditional operators, statistics — is described in [Java indicators](/docs/strategies/java/indicators).
 
 ## Window listeners and state
 
@@ -82,7 +82,7 @@ flicker. The listener has access to the whole indicator group and to the instrum
 The `StateStore` is a per-instrument key-value store with typed counters, accumulators, and flags.
 It is how a strategy remembers whether it is in a position, how many entries it has scaled into, or
 which regime it last observed, without keeping mutable fields that would be shared across
-instruments. [Strategy patterns](/docs/developers/strategy-patterns) shows the common uses.
+instruments. [Strategy patterns](/docs/strategies/java/patterns) shows the common uses.
 
 ## Signals
 
@@ -96,7 +96,7 @@ A strategy never places an order directly. It emits **signals**:
 
 Signals flow through the engine's event stream to an executor that routes them to the pipeline
 owning that instrument's position. The details of each signal type and its options are in
-[Signal emission](/docs/developers/api/strategy_coding).
+[Signal emission](/docs/strategies/java/strategy_coding).
 
 ## Execution pipelines
 
@@ -132,7 +132,7 @@ be `static`, since sweep trials run in parallel and would share it, nor `final`.
 
 Properties are what a backtest overrides and a sweep iterates over. Compiling a strategy returns
 its declared properties, with defaults and any suggested ranges, so a caller can build a sweep
-against known keys — see [Compiling a strategy](/docs/developers/api/strategy).
+against known keys — see [Compiling a strategy](/docs/strategies/strategy).
 
 ## Compilation and validation
 
@@ -158,8 +158,8 @@ compiled against, and which fail closed when the version cannot be determined.
 
 ## Where to go next
 
-- [Java strategies](/docs/developers/java-strategies) — the minimal template and the authoring model.
-- [Strategy examples](/docs/developers/strategy-examples) — complete strategies for each pattern.
+- [Java strategies](/docs/strategies/java) — the minimal template and the authoring model.
+- [Strategy examples](/docs/strategies/java/examples) — complete strategies for each pattern.
 - [Backtest execution model](/docs/developers/backtest-execution-model) — how a compiled strategy
   becomes a result.
 - [Java API documentation](/docs/developers/java-api) — the versioned class reference.

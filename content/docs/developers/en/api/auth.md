@@ -87,7 +87,7 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
 | `GET /exchanges`, `GET /exchange/{exchangeId}/instruments`, `GET /exchange/{exchangeId}/{segment}/instruments` | `exchanges` : `read` |
 | `GET /exchange/{exchangeId}/tickers/{base}/{quote}`, `GET /exchange/{exchangeId}/klines/{base}/{quote}` | `market_data` : `read` |
 
-**Strategies** — [Strategies](strategy)
+**Strategies** — [Strategies](/docs/strategies/strategy)
 
 | Operation | Scope |
 |---|---|

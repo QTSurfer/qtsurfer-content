@@ -1,7 +1,7 @@
 ---
 title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
-order: 5.15
+order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 4f422c3150a60aa8fe08bca4d4437503bda8a14d
 upstreamPath: docs/qtscript.md
@@ -11,7 +11,7 @@ lastUpdated: '2026-11-01T22:07:30Z'
 QTScript es una forma compacta de escribir una estrategia: conservas la parte que es tuya —
 indicadores, ventanas, señales — y dejas fuera la ceremonia de una clase Java (paquete, imports,
 clase, clase base, anotaciones de propiedades, código repetitivo de listeners). **Cada cuerpo `{ }`
-es Java tal cual**, así que todo lo que ofrece la [API de estrategias Java](strategy_coding) dentro
+es Java tal cual**, así que todo lo que ofrece la [API de estrategias Java](/docs/strategies/java/strategy_coding) dentro
 de un cuerpo funciona sin cambios. Un fichero QTScript se convierte en exactamente una clase Java y
 pasa por la misma compilación en el servidor que una estrategia Java.
 
@@ -21,7 +21,7 @@ motor; lo que QTScript no puede expresar se escribe en Java (consulta [qué no h
 ## Se envía como cualquier estrategia
 
 No hay un endpoint aparte ni una cabecera que fijar: envía el fuente en crudo a
-[`POST /strategy`](strategy#compilar-una-estrategia) con `Content-Type: text/plain`, exactamente
+[`POST /strategy`](/docs/strategies/strategy#compilar-una-estrategia) con `Content-Type: text/plain`, exactamente
 igual que con Java. La plataforma distingue ambas por el texto — un fuente QTScript empieza por
 `strategy`, y los espacios en blanco o comentarios (`//`, `/* */`) antes de esa palabra se ignoran,
 así que puede haber una descripción encima del fichero. `.qtscript` es la extensión de fichero
@@ -70,7 +70,7 @@ vigila en una ventana de un minuto, emitiendo una señal en cada umbral.
 | `uses` | Opcional. Trae los [indicadores pro](#los-indicadores-pro-uses) al fichero, de modo que `setup:` pueda llamarlos por su nombre sin más. Varias líneas `uses` se suman | `uses pro.*` · `uses pro.adx, pro.ichimoku` |
 | `setup:` | Los indicadores, **una llamada al builder por línea** (el catálogo libre del builder que usa una estrategia Java, [listado abajo](#qué-va-bajo-setup)). Las líneas bajo `setup:` van indentadas, y la primera línea que vuelve a la columna 0 cierra la sección | `ema(12)` · `bollinger(20, 2)` |
 | Ventanas | Donde va la lógica — consulta abajo | `rsi(14) window m1 { ... }` |
-| `onCommand { }` | Opcional, como mucho una por fichero. Corre cuando la ejecución recibe un [comando](live#comandos) — consulta abajo | `onCommand { if ("flatten".equals($command)) ... }` |
+| `onCommand { }` | Opcional, como mucho una por fichero. Corre cuando la ejecución recibe un [comando](/docs/developers/api/live#comandos) — consulta abajo | `onCommand { if ("flatten".equals($command)) ... }` |
 
 ### Qué va bajo `setup:`
 
@@ -165,7 +165,7 @@ por su nombre sin más, como cualquier otro indicador.
   los valores no son los de la barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor
   que lo dice.
 - Una línea pro es una línea `setup:` normal: una llamada por línea, con una ventana detrás como de costumbre.
-- Los backtests, los barridos (con walk-forward incluido), [`validate`](strategy#comprobar-que-realmente-funciona) y las
+- Los backtests, los barridos (con walk-forward incluido), [`validate`](/docs/strategies/strategy#comprobar-que-realmente-funciona) y las
   ejecuciones en vivo ejecutan los indicadores pro.
 
 | Indicador | Formas | Registra, con los argumentos por defecto | También registra |
@@ -253,11 +253,11 @@ Una línea `uses` mal formada se rechaza, contra tu fichero como los demás erro
 
 ### Los indicadores pro y tu plan
 
-Los indicadores pro vienen con los planes Pro y Elite (tu plan es el `tier` que devuelve [`GET /account`](account)).
+Los indicadores pro vienen con los planes Pro y Elite (tu plan es el `tier` que devuelve [`GET /account`](/docs/developers/api/account)).
 Registrar una estrategia que los usa se acepta en cualquier plan; lo que un plan sin ellos no puede hacer es ejecutarla.
 
 - **`POST /strategy` dice lo que necesita la estrategia.** La respuesta lleva `requires`, una lista: `["indicators.pro"]`
-  cuando la estrategia usa los indicadores pro y `[]` cuando no. [`GET /strategy/{strategyId}`](strategy#obtener-una-estrategia)
+  cuando la estrategia usa los indicadores pro y `[]` cuando no. [`GET /strategy/{strategyId}`](/docs/strategies/strategy#obtener-una-estrategia)
   no lo muestra.
 - **Un plan que no los incluye se rechaza con `402 Payment Required`**, sin cabecera `Retry-After`, ya que esperar no cambia
   el plan. Es la respuesta al validar la estrategia, al lanzar un backtest con ella, al lanzar un barrido con ella
@@ -363,7 +363,7 @@ setup:
 Una ventana que nombra un indicador que no está registrado, como `window noexiste m1 { ... }`, no se
 rechaza al registrar el fuente. Que el nombre exista puede depender de tus `param` (un `param rapida`
 usado como `ema(rapida)` registra un nombre distinto para cada valor) y de indicadores registrados desde
-Java, así que solo se descubre al [validar](strategy#comprobar-que-realmente-funciona) la estrategia,
+Java, así que solo se descubre al [validar](/docs/strategies/strategy#comprobar-que-realmente-funciona) la estrategia,
 que entonces falla en la línea de la ventana: `QTScript line 4: unknown indicator 'noexiste'`.
 
 ## Dentro de un cuerpo
@@ -412,7 +412,7 @@ que comparte cada ventana del instrumento.
 
 `strategy … kline` da los campos de la barra como variables normales. Una estrategia kline nunca
 recibe un intervalo: el ancho de la barra es la `cadence` con la que
-[preparas los datos](backtest_execute#kline-tú-eliges-el-ancho-de-la-barra), así que el mismo
+[preparas los datos](/docs/developers/api/backtest_execute#kline-tú-eliges-el-ancho-de-la-barra), así que el mismo
 fichero corre a cualquiera de ellas.
 
 ```
@@ -432,7 +432,7 @@ setup:
 ## Manejar un comando
 
 `onCommand { }` es una sección especial, como mucho una por fichero, que corre cuando la plataforma entrega un
-[comando](live#comandos) a una ejecución en vivo — `POST /live/{runId}/commands`, aplicado sin reiniciar la
+[comando](/docs/developers/api/live#comandos) a una ejecución en vivo — `POST /live/{runId}/commands`, aplicado sin reiniciar la
 estrategia. No tiene periodo ni indicador: no es una ventana, corre una vez por comando, no una vez por evento
 de mercado, y un fichero tiene como mucho una, igual que tiene como mucho un `init { }`.
 
@@ -462,19 +462,19 @@ onCommand {
 ```
 
 Una estrategia sin `onCommand { }` no implementa `CommandRequestHandler` del motor, así que un comando enviado
-a una de sus ejecuciones se rechaza con `409` (consulta [Comandos](live#comandos)). `$command` y
+a una de sus ejecuciones se rechaza con `409` (consulta [Comandos](/docs/developers/api/live#comandos)). `$command` y
 `$command.<clave>` no son visibles fuera del cuerpo de `onCommand`, igual que `$indicator` no es visible fuera
 de una ventana.
 
 Fijar un `param` o escribir en un `StateStore` desde dentro de `onCommand` surten efecto de inmediato, pero
 ninguno de los dos sobrevive a un reinicio: un `StateStore` es memoria, se pierde en un reinicio igual que un
-campo. Solo [`PUT /live/{runId}/params`](live#parámetros-en-tiempo-de-ejecución) escribe algo de lo que una
+campo. Solo [`PUT /live/{runId}/params`](/docs/developers/api/live#parámetros-en-tiempo-de-ejecución) escribe algo de lo que una
 réplica reiniciada realmente parte. `getStateStore(...)` aquí no trata de durabilidad — es cómo `onCommand`
 alcanza el estado por instrumento que el cuerpo de una ventana ya lee, ya que un comando no lleva instrumento
 propio.
 
 Una estrategia Java implementa el mismo contrato directamente, mediante `CommandRequestHandler` — consulta
-[Programar estrategias en Java](strategy_coding#recibir-comandos).
+[Programar estrategias en Java](/docs/strategies/java/strategy_coding#recibir-comandos).
 
 ## Dimensionado
 
@@ -483,8 +483,8 @@ más, y ninguna llamada pone una cantidad ni un nocional en una señal. El tama�
 ejecución, `percentAmountToLock`: el porcentaje del saldo libre de la cuenta que bloquea una entrada, por encima de
 0 y hasta 100.
 
-Dónde se da depende de la ejecución: `baseConfig` en un [backtest](backtest_execute) o un
-[barrido](backtest_sweep), el bloque `paper` en una [ejecución en vivo en papel](live_paper). Si se omite, un
+Dónde se da depende de la ejecución: `baseConfig` en un [backtest](/docs/developers/api/backtest_execute) o un
+[barrido](/docs/developers/api/backtest_sweep), el bloque `paper` en una [ejecución en vivo en papel](/docs/developers/api/live_paper). Si se omite, un
 backtest pone todo el saldo libre en cada entrada y la cuenta en papel de una ejecución en vivo bloquea el 10 %.
 Para ver cómo se comporta una estrategia con otro tamaño, vuelve a ejecutarla con otro `percentAmountToLock`; el
 fichero no cambia.
@@ -492,7 +492,7 @@ fichero no cambia.
 ## Ejecutarla
 
 Una estrategia QTScript registrada se prepara, ejecuta y barre como cualquier otra:
-[`prepare`, `execute`](backtest_execute) y [`executeSweep`](backtest_sweep), con el `strategyId`
+[`prepare`, `execute`](/docs/developers/api/backtest_execute) y [`executeSweep`](/docs/developers/api/backtest_sweep), con el `strategyId`
 que recibiste. Los ejes de barrido y `params` usan los nombres de tus líneas `param`.
 
 | `strategy …` | Prepare | Execute | Sweep |
@@ -501,7 +501,7 @@ que recibiste. Los ejes de barrido y `params` usan los nombres de tus líneas `p
 | `kline` | sí | sí | sí |
 | `funding` | sí | aún no | aún no |
 
-Consulta [Fuentes de datos](backtest_execute#fuentes-de-datos) para los detalles, incluido por qué
+Consulta [Fuentes de datos](/docs/developers/api/backtest_execute#fuentes-de-datos) para los detalles, incluido por qué
 una estrategia `funding` se puede registrar y sus datos preparar, pero todavía no ejecutar.
 
 ## Cuando algo va mal
@@ -513,7 +513,7 @@ patrón de instrumento mal formado) como para errores de Java dentro de un cuerp
 
 **Un `200` de `POST /strategy` significa que el fuente se analizó y compiló, no que vaya a funcionar.**
 Registrar no monta la estrategia, así que lo que solo aparece al montarla lo halla
-[`validate`](strategy#comprobar-que-realmente-funciona), que lo reporta contra tu fichero de la misma
+[`validate`](/docs/strategies/strategy#comprobar-que-realmente-funciona), que lo reporta contra tu fichero de la misma
 forma. El caso a conocer es una ventana sobre un indicador que no está registrado,
 `window noexiste m1 { ... }`: se registra, y `validate` acaba `failed` en la línea de la ventana,
 `QTScript line 4: unknown indicator 'noexiste'` (consulta
@@ -534,7 +534,7 @@ texto, porque la indentación es parte de la gramática: una marca de orden de b
 de saltos de línea, los espacios en blanco al final de línea y las líneas en blanco antes de la
 primera y después de la última se ignoran; cualquier otra cosa — un comentario, la indentación, una
 línea en blanco intermedia — da un id distinto. (Las estrategias Java son más tolerantes; consulta
-[Estrategias](strategy#compilar-una-estrategia).)
+[Estrategias](/docs/strategies/strategy#compilar-una-estrategia).)
 
 ## Qué no hace
 
@@ -563,4 +563,4 @@ npx skills add QTSurfer/strategy-skills --skill qtsurfer-qtscript-strategy
 
 Los cuerpos se escriben contra la API de estrategias documentada en la skill
 [`qtsurfer-java-strategy`](https://github.com/QTSurfer/strategy-skills) y en
-[Programar estrategias en Java](strategy_coding).
+[Programar estrategias en Java](/docs/strategies/java/strategy_coding).

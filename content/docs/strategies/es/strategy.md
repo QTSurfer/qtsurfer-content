@@ -1,7 +1,7 @@
 ---
 title: API de estrategias
 description: Compila, valida, inspecciona, recupera y elimina estrategias Java o QTScript (beta) a través de la API REST.
-order: 5.2
+order: 1
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/strategy.md
@@ -13,7 +13,7 @@ lista/inspecciona/elimina lo que has registrado, y recupera su código fuente.
 
 Esta página documenta los recursos REST de estrategias. Para el código fuente Java en sí — clases
 base, señales de ejecución e información, parámetros de orden avanzados y metadatos de gráfico —
-consulta [Programar estrategias en Java](strategy_coding).
+consulta [Programar estrategias en Java](/docs/strategies/java/strategy_coding).
 
 | Método | Ruta | Propósito |
 |---|---|---|
@@ -28,7 +28,7 @@ consulta [Programar estrategias en Java](strategy_coding).
 
 `POST /strategy` — el cuerpo es el código fuente en crudo, `Content-Type: text/plain`. Java es la
 vía establecida; QTScript es un lenguaje nuevo y compacto en beta (consulta [QTScript](#qtscript-beta)
-más abajo, y la [guía de QTScript](qtscript)).
+más abajo, y la [guía de QTScript](/docs/strategies/qtscript)).
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/strategy \
@@ -50,9 +50,9 @@ curl -X POST https://api.qtsurfer.net/v1/strategy \
 ```
 
 `requires` lista lo que la estrategia necesita de tu plan: `["indicators.pro"]` cuando usa los
-[indicadores pro](qtscript#los-indicadores-pro-uses) y `[]` cuando no necesita nada más. Registrar se acepta en
+[indicadores pro](/docs/strategies/qtscript#los-indicadores-pro-uses) y `[]` cuando no necesita nada más. Registrar se acepta en
 cualquier plan; lo que un plan sin los indicadores pro no puede hacer es ejecutar la estrategia, consulta
-[los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan).
+[los indicadores pro y tu plan](/docs/strategies/qtscript#los-indicadores-pro-y-tu-plan).
 
 **Esto responde a una única pregunta: si el fuente es válido.** Compila, registra y devuelve
 el id — nada más. Un `200` significa que el fuente se analizó y compiló, no que vaya a funcionar: lo
@@ -76,7 +76,7 @@ consecuencias:
 
 ### QTScript (beta)
 
-La [guía de QTScript](qtscript) cubre el lenguaje en una sola página, con ejemplos. En resumen:
+La [guía de QTScript](/docs/strategies/qtscript) cubre el lenguaje en una sola página, con ejemplos. En resumen:
 QTScript elimina la ceremonia alrededor de una estrategia — paquete, imports, clase, clase base,
 anotaciones de propiedades — y mantiene cada cuerpo `{ }` como Java tal cual. Se distingue de Java
 por su primer token: un fichero QTScript empieza por `strategy`. Los espacios en blanco y
@@ -98,7 +98,7 @@ setup:
 ```
 
 - `strategy Nombre [kline|funding]` elige la fuente de datos (ticker por defecto) — consulta
-  [Fuentes de datos](backtest_execute#fuentes-de-datos) para qué puede correr cada una.
+  [Fuentes de datos](/docs/developers/api/backtest_execute#fuentes-de-datos) para qué puede correr cada una.
 - Un `400` lleva entradas `Line N, Column M:` contra tu propio fuente.
 - **El `strategyId` sale del texto**, porque la indentación forma parte de la gramática. Una marca
   de orden de bytes (BOM), el estilo de saltos de línea, los espacios en blanco al final de línea y
@@ -152,7 +152,7 @@ de la API, antes de leerlo o compilarlo, y el mensaje nombra el límite:
 | `POST /datasets`, `POST /datasets/imports` | 1 KiB |
 
 Los datos de un conjunto de datos no viajan en un cuerpo de petición: van a una URL prefirmada,
-consulta [Conjuntos de datos](datasets). Los límites son los mismos para todos (no son un límite del
+consulta [Conjuntos de datos](/docs/developers/api/datasets). Los límites son los mismos para todos (no son un límite del
 plan), así que un fuente de estrategia de más de 32 KiB no se puede registrar: acórtalo.
 
 ## Comprobar que realmente funciona
@@ -180,7 +180,7 @@ curl -X POST https://api.qtsurfer.net/v1/strategy/2ul144qe9tlwzu5anhwvc6/validat
 ```
 
 Errores: `404` no existe esa estrategia registrada para este usuario · `402` la estrategia usa los indicadores pro y tu
-plan no los incluye, consulta [los indicadores pro y tu plan](qtscript#los-indicadores-pro-y-tu-plan).
+plan no los incluye, consulta [los indicadores pro y tu plan](/docs/strategies/qtscript#los-indicadores-pro-y-tu-plan).
 
 ## Obtener una estrategia
 

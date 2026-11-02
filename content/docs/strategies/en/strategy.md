@@ -1,7 +1,7 @@
 ---
 title: Strategy API
 description: Compile, validate, inspect, retrieve, and delete Java or QTScript (beta) strategies through the REST API.
-order: 5.2
+order: 1
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/strategy.md
@@ -13,7 +13,7 @@ what you've registered, and read back its source.
 
 This page documents the strategy REST resources. For the Java source itself — base classes,
 execution and information signals, advanced order parameters, and chart metadata — see [Coding
-Java strategies](strategy_coding).
+Java strategies](/docs/strategies/java/strategy_coding).
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -28,7 +28,7 @@ Java strategies](strategy_coding).
 
 `POST /strategy` — body is the raw source, `Content-Type: text/plain`. Java is the established
 route; QTScript is a newer, compact language in beta (see [QTScript](#qtscript-beta) below, and
-the [QTScript guide](qtscript)).
+the [QTScript guide](/docs/strategies/qtscript)).
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/strategy \
@@ -50,9 +50,9 @@ curl -X POST https://api.qtsurfer.net/v1/strategy \
 ```
 
 `requires` lists what the strategy needs from your plan: `["indicators.pro"]` when it uses the
-[pro indicators](qtscript#the-pro-indicators-uses) and `[]` when it needs nothing more. Registering is accepted on every plan;
+[pro indicators](/docs/strategies/qtscript#the-pro-indicators-uses) and `[]` when it needs nothing more. Registering is accepted on every plan;
 what a plan without the pro indicators cannot do is run the strategy, see
-[the pro indicators and your plan](qtscript#the-pro-indicators-and-your-plan).
+[the pro indicators and your plan](/docs/strategies/qtscript#the-pro-indicators-and-your-plan).
 
 **This answers one question: is the source valid.** It compiles, registers, and hands back
 the id — nothing more. A `200` means the source parsed and compiled, not that it will run: what only
@@ -74,7 +74,7 @@ see [below](#qtscript-beta).) Two consequences:
 
 ### QTScript (beta)
 
-The [QTScript guide](qtscript) covers the language in one page, with examples. In short:
+The [QTScript guide](/docs/strategies/qtscript) covers the language in one page, with examples. In short:
 QTScript removes the ceremony around a strategy — package, imports, class, base class, property
 annotations — and keeps every `{ }` body as plain Java. It is told apart from Java by its first
 token: a QTScript file begins with `strategy`. Whitespace and comments (`//` or `/* */`) before it
@@ -95,7 +95,7 @@ setup:
 ```
 
 - `strategy Name [kline|funding]` picks the data source (ticker by default) — see
-  [Data sources](backtest_execute#data-sources) for what each can run.
+  [Data sources](/docs/developers/api/backtest_execute#data-sources) for what each can run.
 - A `400` carries `Line N, Column M:` entries against your own source.
 - **`strategyId` comes from the text**, because indentation is part of the grammar. A byte-order
   mark, the style of line endings, trailing whitespace and blank lines before the first and after
@@ -147,7 +147,7 @@ read or compiled, and the message names the cap:
 | `POST /datasets`, `POST /datasets/imports` | 1 KiB |
 
 A dataset's data does not travel in a request body: it goes to a presigned URL, see
-[Datasets](datasets). The caps are the same for everyone (they are not a plan limit), so a
+[Datasets](/docs/developers/api/datasets). The caps are the same for everyone (they are not a plan limit), so a
 strategy source over 32 KiB cannot be registered: shorten it.
 
 ## Checking it actually runs
@@ -175,7 +175,7 @@ curl -X POST https://api.qtsurfer.net/v1/strategy/2ul144qe9tlwzu5anhwvc6/validat
 ```
 
 Errors: `404` no such registered strategy for this user · `402` the strategy uses the pro indicators and your plan does not
-include them, see [the pro indicators and your plan](qtscript#the-pro-indicators-and-your-plan).
+include them, see [the pro indicators and your plan](/docs/strategies/qtscript#the-pro-indicators-and-your-plan).
 
 ## Getting a strategy
 

@@ -98,5 +98,5 @@ a read-only reference copy, tied to the published revision, unless the listing e
 - [Backtesting](backtesting) — what a run of a revision measures.
 - [Overfitting](overfitting) — why discarded revisions are evidence too.
 - [Survivorship bias](survivorship-bias) — what deleting the losers does to a research record.
-- Developer guide: [Compiling and validating a strategy](/docs/developers/api/strategy).
+- Developer guide: [Compiling and validating a strategy](/docs/strategies/strategy).
 - Product guides: [Strategies](/docs/app/strategies), [Marketplace](/docs/app/marketplace).

@@ -22,15 +22,20 @@ source-provenance frontmatter when translating. `scripts/refresh-last-updated.ts
 commit that changed the Markdown file. A missing translation is preferable to a partial or stale one
 because the web application exposes its English fallback visibly.
 
-Pages derived from `QTSurfer/strategy-skills` must retain their exact `upstreamRepository`,
-`upstreamCommit`, and `upstreamPath` values. Do not hand-edit generated English pages; update them with
-the generator in the web repository and review the resulting diff here.
+Pages derived from `QTSurfer/strategy-skills` live in the Strategies section, under
+`content/docs/strategies/<content-locale>/` (`java/` and `qtscript/`), and must retain their exact
+`upstreamRepository`, `upstreamCommit`, and `upstreamPath` values. Do not hand-edit generated English
+pages; update them with the generator in the web repository and review the resulting diff here.
 
 English API guides under `content/docs/developers/en/api/` are manually imported from
 `QTSurfer/qtsurfer-api/docs/`. Preserve each upstream Markdown filename exactly and retain its exact
 `upstreamRepository`, `upstreamCommit`, and `upstreamPath` frontmatter. When refreshing them, keep body
 changes limited to the frontmatter and link adaptations required by MDsveX and the website routes, so
-the files remain straightforward to compare with upstream. Copy referenced graphics to
+the files remain straightforward to compare with upstream. Three of those guides belong to the Strategies
+section and live under `content/docs/strategies/en/`: `strategy.md` and `java/strategy_coding.md` keep the
+upstream filename, and `qtscript/index.md` is `docs/qtscript.md` stored as the landing page of its folder (its
+`upstreamPath` records the upstream file). Their links to the guides that stayed in `developers/en/api/` are
+absolute site paths, since a relative name would no longer resolve. Copy referenced graphics to
 `static/img/docs/` while preserving their upstream filenames, and adapt their Markdown URLs to
 root-relative `/img/docs/...`.
 Do not invent partial Spanish translations; the visible English fallback is preferred until a complete

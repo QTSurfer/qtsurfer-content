@@ -16,7 +16,7 @@ schemas, authentication requirements, and endpoint groups.
 - [Authentication and scopes](/docs/developers/api/auth) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/auth.md)
 - [Java strategy coding](/docs/strategies/java/strategy_coding) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy_coding.md)
 - [QTScript (beta)](/docs/strategies/qtscript) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/qtscript.md)
-- [Strategies](/docs/strategies/strategy) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy.md)
+- [Strategies](/docs/developers/api/strategy) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/strategy.md)
 - [Backtests](/docs/developers/api/backtest_execute) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_execute.md)
 - [Parameter sweeps](/docs/developers/api/backtest_sweep) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/backtest_sweep.md)
 - [Live execution](/docs/developers/api/live) · [source](https://github.com/QTSurfer/qtsurfer-api/blob/main/docs/live.md)

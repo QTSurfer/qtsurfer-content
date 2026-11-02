@@ -22,7 +22,7 @@ npx skills add QTSurfer/strategy-skills --skill qtsurfer-java-strategy
 
 The skill also covers choosing a strategy base class, configuring indicators, and managing
 per-instrument state. Once the source is ready, [compile and validate it through the
-API](/docs/strategies/strategy).
+API](/docs/developers/api/strategy).
 
 The signal helpers in this guide are not tied to a Java class: the `{ }` bodies of a
 [QTScript](/docs/strategies/qtscript) strategy (beta) — a compact way to write a strategy that leaves out the
@@ -488,7 +488,7 @@ the body and the `upgradeUrl` are the ones [the QTScript guide](/docs/strategies
 ## See also
 
 - [QTScript (beta)](/docs/strategies/qtscript) — the same strategies written with the ceremony left out.
-- [Strategies](/docs/strategies/strategy) — compile, validate, list and read back a strategy, in either language.
+- [Strategies](/docs/developers/api/strategy) — compile, validate, list and read back a strategy, in either language.
 
 [engine-javadoc]: https://www.qtsurfer.com/docs/developers/java-api
 [market-hint-javadoc]: https://www.qtsurfer.com/docs/developers/java-api/reference/latest/com/wualabs/qtsurfer/engine/strategy/event/signal/MarketHintSignal.html

@@ -20,7 +20,7 @@ anything QTScript cannot express is written in Java (see [what it does not do](#
 ## Submit it like any strategy
 
 There is no separate endpoint and no header to set: send the raw source to
-[`POST /strategy`](/docs/strategies/strategy#compiling-a-strategy) with `Content-Type: text/plain`, exactly as for
+[`POST /strategy`](/docs/developers/api/strategy#compiling-a-strategy) with `Content-Type: text/plain`, exactly as for
 Java. The platform tells the two apart by the text — a QTScript source starts with `strategy`, and
 whitespace or comments (`//`, `/* */`) before it are ignored, so a description can sit on top of the
 file. `.qtscript` is the conventional file extension; only the text is sent.
@@ -158,7 +158,7 @@ their bare name, like any other indicator.
 - Pro indicators read whole bars, so use them in a [`kline`](#candles) strategy. On a `ticker` strategy the values are not
   the bar's and mean nothing, and validating or running the strategy returns an engine notice that says so.
 - A pro line is an ordinary `setup:` line: one call per line, with a window after it as usual.
-- Backtests, sweeps (walk-forward included), [`validate`](/docs/strategies/strategy#checking-it-actually-runs) and live runs run the pro
+- Backtests, sweeps (walk-forward included), [`validate`](/docs/developers/api/strategy#checking-it-actually-runs) and live runs run the pro
   indicators.
 
 | Indicator | Forms | Registers, with the default arguments | Also registers |
@@ -250,7 +250,7 @@ The pro indicators come with the Pro and Elite plans (your plan is the `tier` th
 Registering a strategy that uses them is accepted on every plan; what a plan without them cannot do is run it.
 
 - **`POST /strategy` says what the strategy needs.** The answer carries `requires`, a list: `["indicators.pro"]` when the
-  strategy uses the pro indicators and `[]` when it does not. [`GET /strategy/{strategyId}`](/docs/strategies/strategy#getting-a-strategy)
+  strategy uses the pro indicators and `[]` when it does not. [`GET /strategy/{strategyId}`](/docs/developers/api/strategy#getting-a-strategy)
   does not show it.
 - **A plan that does not include them is refused with `402 Payment Required`**, without a `Retry-After` header, since waiting
   does not change the plan. That is the answer to validating the strategy, to starting a backtest with it, to starting a
@@ -353,7 +353,7 @@ setup:
 A window that names an indicator which is not registered, such as `window nosuch m1 { ... }`, is not
 rejected when you register the source. Whether the name exists can depend on your `param`s (a `param
 fast` used as `ema(fast)` registers a different name for each value) and on indicators registered from
-Java, so it is only found when the strategy is [validated](/docs/strategies/strategy#checking-it-actually-runs), which
+Java, so it is only found when the strategy is [validated](/docs/developers/api/strategy#checking-it-actually-runs), which
 then fails on the window's line: `QTScript line 4: unknown indicator 'nosuch'`.
 
 ## Inside a body
@@ -496,7 +496,7 @@ errors from inside a body.
 
 **A `200` from `POST /strategy` means the source parsed and compiled, not that it will run.**
 Registering does not set the strategy up, so what only shows when it does is found by
-[`validate`](/docs/strategies/strategy#checking-it-actually-runs), which reports it against your file the same way. The
+[`validate`](/docs/developers/api/strategy#checking-it-actually-runs), which reports it against your file the same way. The
 case to know is a window on an indicator that is not registered, `window nosuch m1 { ... }`: it
 registers, and `validate` ends `failed` on the window's line, `QTScript line 4: unknown indicator
 'nosuch'` (see [Which indicator a window is on](#which-indicator-a-window-is-on)). Call `validate`
@@ -515,7 +515,7 @@ QTScript line 6: Index 2 out of bounds for length 1
 the text, because indentation is part of the grammar: a byte-order mark, the style of line endings,
 whitespace at the end of a line and blank lines before the first and after the last line are ignored;
 anything else — a comment, the indentation, a blank line in between — gives a different id. (Java
-strategies are more forgiving; see [Strategies](/docs/strategies/strategy#compiling-a-strategy).)
+strategies are more forgiving; see [Strategies](/docs/developers/api/strategy#compiling-a-strategy).)
 
 ## What it does not do
 

@@ -21,7 +21,7 @@ motor; lo que QTScript no puede expresar se escribe en Java (consulta [qué no h
 ## Se envía como cualquier estrategia
 
 No hay un endpoint aparte ni una cabecera que fijar: envía el fuente en crudo a
-[`POST /strategy`](/docs/strategies/strategy#compilar-una-estrategia) con `Content-Type: text/plain`, exactamente
+[`POST /strategy`](/docs/developers/api/strategy#compilar-una-estrategia) con `Content-Type: text/plain`, exactamente
 igual que con Java. La plataforma distingue ambas por el texto — un fuente QTScript empieza por
 `strategy`, y los espacios en blanco o comentarios (`//`, `/* */`) antes de esa palabra se ignoran,
 así que puede haber una descripción encima del fichero. `.qtscript` es la extensión de fichero
@@ -165,7 +165,7 @@ por su nombre sin más, como cualquier otro indicador.
   los valores no son los de la barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor
   que lo dice.
 - Una línea pro es una línea `setup:` normal: una llamada por línea, con una ventana detrás como de costumbre.
-- Los backtests, los barridos (con walk-forward incluido), [`validate`](/docs/strategies/strategy#comprobar-que-realmente-funciona) y las
+- Los backtests, los barridos (con walk-forward incluido), [`validate`](/docs/developers/api/strategy#comprobar-que-realmente-funciona) y las
   ejecuciones en vivo ejecutan los indicadores pro.
 
 | Indicador | Formas | Registra, con los argumentos por defecto | También registra |
@@ -257,7 +257,7 @@ Los indicadores pro vienen con los planes Pro y Elite (tu plan es el `tier` que 
 Registrar una estrategia que los usa se acepta en cualquier plan; lo que un plan sin ellos no puede hacer es ejecutarla.
 
 - **`POST /strategy` dice lo que necesita la estrategia.** La respuesta lleva `requires`, una lista: `["indicators.pro"]`
-  cuando la estrategia usa los indicadores pro y `[]` cuando no. [`GET /strategy/{strategyId}`](/docs/strategies/strategy#obtener-una-estrategia)
+  cuando la estrategia usa los indicadores pro y `[]` cuando no. [`GET /strategy/{strategyId}`](/docs/developers/api/strategy#obtener-una-estrategia)
   no lo muestra.
 - **Un plan que no los incluye se rechaza con `402 Payment Required`**, sin cabecera `Retry-After`, ya que esperar no cambia
   el plan. Es la respuesta al validar la estrategia, al lanzar un backtest con ella, al lanzar un barrido con ella
@@ -363,7 +363,7 @@ setup:
 Una ventana que nombra un indicador que no está registrado, como `window noexiste m1 { ... }`, no se
 rechaza al registrar el fuente. Que el nombre exista puede depender de tus `param` (un `param rapida`
 usado como `ema(rapida)` registra un nombre distinto para cada valor) y de indicadores registrados desde
-Java, así que solo se descubre al [validar](/docs/strategies/strategy#comprobar-que-realmente-funciona) la estrategia,
+Java, así que solo se descubre al [validar](/docs/developers/api/strategy#comprobar-que-realmente-funciona) la estrategia,
 que entonces falla en la línea de la ventana: `QTScript line 4: unknown indicator 'noexiste'`.
 
 ## Dentro de un cuerpo
@@ -513,7 +513,7 @@ patrón de instrumento mal formado) como para errores de Java dentro de un cuerp
 
 **Un `200` de `POST /strategy` significa que el fuente se analizó y compiló, no que vaya a funcionar.**
 Registrar no monta la estrategia, así que lo que solo aparece al montarla lo halla
-[`validate`](/docs/strategies/strategy#comprobar-que-realmente-funciona), que lo reporta contra tu fichero de la misma
+[`validate`](/docs/developers/api/strategy#comprobar-que-realmente-funciona), que lo reporta contra tu fichero de la misma
 forma. El caso a conocer es una ventana sobre un indicador que no está registrado,
 `window noexiste m1 { ... }`: se registra, y `validate` acaba `failed` en la línea de la ventana,
 `QTScript line 4: unknown indicator 'noexiste'` (consulta
@@ -534,7 +534,7 @@ texto, porque la indentación es parte de la gramática: una marca de orden de b
 de saltos de línea, los espacios en blanco al final de línea y las líneas en blanco antes de la
 primera y después de la última se ignoran; cualquier otra cosa — un comentario, la indentación, una
 línea en blanco intermedia — da un id distinto. (Las estrategias Java son más tolerantes; consulta
-[Estrategias](/docs/strategies/strategy#compilar-una-estrategia).)
+[Estrategias](/docs/developers/api/strategy#compilar-una-estrategia).)
 
 ## Qué no hace
 

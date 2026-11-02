@@ -132,7 +132,7 @@ be `static`, since sweep trials run in parallel and would share it, nor `final`.
 
 Properties are what a backtest overrides and a sweep iterates over. Compiling a strategy returns
 its declared properties, with defaults and any suggested ranges, so a caller can build a sweep
-against known keys — see [Compiling a strategy](/docs/strategies/strategy).
+against known keys — see [Compiling a strategy](/docs/developers/api/strategy).
 
 ## Compilation and validation
 

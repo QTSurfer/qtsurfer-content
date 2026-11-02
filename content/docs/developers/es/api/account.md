@@ -65,7 +65,7 @@ curl https://api.qtsurfer.net/v1/account \
 
 `GET /account/usage` — cuánto de `maxTotalStorageBytes` estás usando ahora mismo. **Una sola bolsa
 compartida, no un tope por tipo de recurso**: los conjuntos de datos, las señales de ejecución de
-estrategia y las [estrategias](/docs/strategies/strategy) registradas cuentan todos contra el mismo total, ya que
+estrategia y las [estrategias](strategy) registradas cuentan todos contra el mismo total, ya que
 compiten por el mismo almacenamiento subyacente. No garantizado en tiempo real — una subida o
 ejecución de estrategia recién terminada puede tardar un instante en reflejarse aquí.
 
@@ -110,4 +110,4 @@ datos para liberar espacio si estás en tu límite.
 
 - [Conjuntos de datos](datasets) — el recurso que cuenta hacia, y puede quedar bloqueado por,
   `maxTotalStorageBytes`.
-- [Estrategias](/docs/strategies/strategy) — las estrategias registradas cuentan hacia `strategyBytesUsed`.
+- [Estrategias](strategy) — las estrategias registradas cuentan hacia `strategyBytesUsed`.

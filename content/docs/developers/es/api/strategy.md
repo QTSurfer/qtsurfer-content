@@ -1,7 +1,7 @@
 ---
 title: API de estrategias
 description: Compila, valida, inspecciona, recupera y elimina estrategias Java o QTScript (beta) a través de la API REST.
-order: 1
+order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/strategy.md
@@ -98,7 +98,7 @@ setup:
 ```
 
 - `strategy Nombre [kline|funding]` elige la fuente de datos (ticker por defecto) — consulta
-  [Fuentes de datos](/docs/developers/api/backtest_execute#fuentes-de-datos) para qué puede correr cada una.
+  [Fuentes de datos](backtest_execute#fuentes-de-datos) para qué puede correr cada una.
 - Un `400` lleva entradas `Line N, Column M:` contra tu propio fuente.
 - **El `strategyId` sale del texto**, porque la indentación forma parte de la gramática. Una marca
   de orden de bytes (BOM), el estilo de saltos de línea, los espacios en blanco al final de línea y
@@ -152,7 +152,7 @@ de la API, antes de leerlo o compilarlo, y el mensaje nombra el límite:
 | `POST /datasets`, `POST /datasets/imports` | 1 KiB |
 
 Los datos de un conjunto de datos no viajan en un cuerpo de petición: van a una URL prefirmada,
-consulta [Conjuntos de datos](/docs/developers/api/datasets). Los límites son los mismos para todos (no son un límite del
+consulta [Conjuntos de datos](datasets). Los límites son los mismos para todos (no son un límite del
 plan), así que un fuente de estrategia de más de 32 KiB no se puede registrar: acórtalo.
 
 ## Comprobar que realmente funciona

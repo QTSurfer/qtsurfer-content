@@ -91,7 +91,7 @@ una ejecución: un backtest, un barrido, una ejecución en vivo.
 | `GET /exchanges`, `GET /exchange/{exchangeId}/instruments`, `GET /exchange/{exchangeId}/{segment}/instruments` | `exchanges` : `read` |
 | `GET /exchange/{exchangeId}/tickers/{base}/{quote}`, `GET /exchange/{exchangeId}/klines/{base}/{quote}` | `market_data` : `read` |
 
-**Estrategias** — [Estrategias](/docs/strategies/strategy)
+**Estrategias** — [Estrategias](strategy)
 
 | Operación | Alcance |
 |---|---|

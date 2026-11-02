@@ -63,7 +63,7 @@ curl https://api.qtsurfer.net/v1/account \
 
 `GET /account/usage` — how much of `maxTotalStorageBytes` you're currently using. **One shared
 pool, not one cap per resource type**: datasets, strategy-execution signals, and registered
-[strategies](/docs/strategies/strategy) all count against the same total, since they compete for the same
+[strategies](strategy) all count against the same total, since they compete for the same
 underlying storage. Not guaranteed real-time — a just-completed upload or strategy execution may
 take a short moment to be reflected here.
 
@@ -107,4 +107,4 @@ a dataset to free space if you're at your limit.
 
 - [Datasets](datasets) — the resource that both counts toward, and can be blocked by,
   `maxTotalStorageBytes`.
-- [Strategies](/docs/strategies/strategy) — registered strategies count toward `strategyBytesUsed`.
+- [Strategies](strategy) — registered strategies count toward `strategyBytesUsed`.

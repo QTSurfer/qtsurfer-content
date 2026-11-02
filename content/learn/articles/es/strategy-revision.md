@@ -108,5 +108,5 @@ publicada, salvo que el listado exponga el código.
 - [Sobreajuste](overfitting) — por qué las revisiones descartadas también son evidencia.
 - [Sesgo de supervivencia](survivorship-bias) — qué le hace a un registro de investigación borrar las
   perdedoras.
-- Guía para desarrolladores: [Compilar y validar una estrategia](/docs/strategies/strategy).
+- Guía para desarrolladores: [Compilar y validar una estrategia](/docs/developers/api/strategy).
 - Guías del producto: [Estrategias](/docs/app/strategies), [Marketplace](/docs/app/marketplace).

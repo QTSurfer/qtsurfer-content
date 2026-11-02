@@ -1,7 +1,7 @@
 ---
 title: Strategy API
 description: Compile, validate, inspect, retrieve, and delete Java or QTScript (beta) strategies through the REST API.
-order: 1
+order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
 upstreamPath: docs/strategy.md
@@ -95,7 +95,7 @@ setup:
 ```
 
 - `strategy Name [kline|funding]` picks the data source (ticker by default) — see
-  [Data sources](/docs/developers/api/backtest_execute#data-sources) for what each can run.
+  [Data sources](backtest_execute#data-sources) for what each can run.
 - A `400` carries `Line N, Column M:` entries against your own source.
 - **`strategyId` comes from the text**, because indentation is part of the grammar. A byte-order
   mark, the style of line endings, trailing whitespace and blank lines before the first and after
@@ -147,7 +147,7 @@ read or compiled, and the message names the cap:
 | `POST /datasets`, `POST /datasets/imports` | 1 KiB |
 
 A dataset's data does not travel in a request body: it goes to a presigned URL, see
-[Datasets](/docs/developers/api/datasets). The caps are the same for everyone (they are not a plan limit), so a
+[Datasets](datasets). The caps are the same for everyone (they are not a plan limit), so a
 strategy source over 32 KiB cannot be registered: shorten it.
 
 ## Checking it actually runs

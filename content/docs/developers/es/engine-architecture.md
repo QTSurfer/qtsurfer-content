@@ -142,7 +142,7 @@ cuando existe, que es donde corresponde la validación o el acotado. El campo no
 Las propiedades son lo que un backtest sobrescribe y sobre lo que itera un barrido. Compilar una
 estrategia devuelve sus propiedades declaradas, con sus valores por defecto y los rangos
 sugeridos, de modo que quien la llama puede construir un barrido contra claves conocidas —
-consulta [Compilar una estrategia](/docs/strategies/strategy).
+consulta [Compilar una estrategia](/docs/developers/api/strategy).
 
 ## Compilación y validación
 

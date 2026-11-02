@@ -23,7 +23,7 @@ npx skills add QTSurfer/strategy-skills --skill qtsurfer-java-strategy
 
 La skill también cubre cómo elegir una clase base de estrategia, configurar indicadores y gestionar
 el estado por instrumento. Una vez listo el fuente, [compílalo y valídalo a través de la
-API](/docs/strategies/strategy).
+API](/docs/developers/api/strategy).
 
 Los helpers de señal de esta guía no están atados a una clase Java: los cuerpos `{ }` de una
 estrategia [QTScript](/docs/strategies/qtscript) (beta) — una forma compacta de escribir una estrategia que deja
@@ -503,7 +503,7 @@ nombra la clase. El estado, el cuerpo y el `upgradeUrl` son los que describe
 ## Ver también
 
 - [QTScript (beta)](/docs/strategies/qtscript) — las mismas estrategias escritas sin la ceremonia.
-- [Estrategias](/docs/strategies/strategy) — compila, valida, lista y recupera una estrategia, en cualquiera de los
+- [Estrategias](/docs/developers/api/strategy) — compila, valida, lista y recupera una estrategia, en cualquiera de los
   dos lenguajes.
 
 [engine-javadoc]: https://www.qtsurfer.com/docs/developers/java-api

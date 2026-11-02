@@ -3,6 +3,7 @@ id: strategies
 title: Estrategias
 description: Escribe una estrategia de QTSurfer en Java, el lenguaje del motor, o en QTScript, un lenguaje compacto que se convierte en una clase Java, y mira cómo se relacionan.
 order: 0
+lastUpdated: '2026-11-02T14:41:16Z'
 ---
 
 Una estrategia es la parte de QTSurfer que decide cuándo comprar o vender: observa indicadores sobre un flujo de

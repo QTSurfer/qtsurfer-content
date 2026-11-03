@@ -3,7 +3,7 @@ title: Indicadores de QTScript
 description: Todos los indicadores que puede llamar una estrategia QTScript, gratuitos y pro, agrupados por tipo.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 7981584a6fa6c745d892c80c9e999d304de0fa50
+upstreamCommit: 90cc80934daf70309c3476f614b747cbbf440524
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
 lastUpdated: '2026-11-02T14:16:44Z'
 ---
@@ -105,26 +105,43 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 
 ## Los indicadores pro
 
-Leen barras completas, así que úsalos en una estrategia `kline`. Una línea `uses` los trae: `uses pro.adx, pro.obv` para esos dos,
-`uses pro.*` para los doce, y varias líneas `uses` se suman. Un plan sin ellos puede registrar la estrategia, pero no
-ejecutarla (`402`).
+Una línea `uses` los trae: `uses pro.adx, pro.obv` para esos dos, `uses pro.*` para los doce, y varias líneas `uses` se suman. Un plan sin ellos puede registrar la estrategia, pero no ejecutarla (`402`).
 
-| Nombre           | Qué es                                                                                                         |
-| ---------------- | -------------------------------------------------------------------------------------------------------------- |
-| `adx`            | Índice direccional medio; las dos líneas direccionales se registran a su lado                                  |
-| `superTrend`     | Línea SuperTrend, con una banda superior y otra inferior a su lado                                             |
-| `ichimoku`       | Nube de Ichimoku; la línea Tenkan es la principal, con las líneas Kijun, Senkou A, Senkou B y Chikou a su lado |
-| `obv`            | Volumen en balance (OBV)                                                                                       |
-| `vwap`           | Precio medio ponderado por volumen                                                                             |
-| `mfi`            | Índice de flujo de dinero                                                                                      |
-| `cmf`            | Flujo de dinero de Chaikin                                                                                     |
-| `kurtosis`       | Curtosis del cierre a lo largo de un periodo                                                                   |
-| `parkinson`      | Estimador de volatilidad sobre barras completas                                                                |
-| `garmanKlass`    | Estimador de volatilidad sobre barras completas                                                                |
-| `rogersSatchell` | Estimador de volatilidad sobre barras completas                                                                |
-| `yangZhang`      | Estimador de volatilidad sobre barras completas                                                                |
+Once de los doce leen barras completas, no un solo valor, así que van en una estrategia `kline`: en una estrategia `ticker` sus valores no son los de la barra y no significan nada. `kurtosis` es la excepción, porque lee un solo valor, el precio del grupo (el cierre en una vela).
 
-Los cuatro estimadores reciben un factor de anualización como último argumento, opcional.
+### Tendencia
+
+| Nombre       | Qué es                   | Notas                                                                                        |
+| ------------ | ------------------------ | -------------------------------------------------------------------------------------------- |
+| `adx`        | Índice direccional medio | Las dos líneas direccionales se registran a su lado                                          |
+| `superTrend` | Línea SuperTrend         | Una banda superior y otra inferior se registran a su lado                                    |
+| `ichimoku`   | Nube de Ichimoku         | La línea Tenkan es la principal, con las líneas Kijun, Senkou A, Senkou B y Chikou a su lado |
+
+### Volumen
+
+| Nombre | Qué es                             | Notas |
+| ------ | ---------------------------------- | ----- |
+| `obv`  | Volumen en balance (OBV)           |       |
+| `vwap` | Precio medio ponderado por volumen |       |
+| `mfi`  | Índice de flujo de dinero          |       |
+| `cmf`  | Flujo de dinero de Chaikin         |       |
+
+### Estadística
+
+| Nombre     | Qué es                                                 | Notas                                                      |
+| ---------- | ------------------------------------------------------ | ---------------------------------------------------------- |
+| `kurtosis` | Curtosis en exceso del precio a lo largo de un periodo | Lee un solo valor, no una barra. El periodo es obligatorio |
+
+### Estimadores de volatilidad
+
+Cada uno recibe un factor de anualización como último argumento, opcional.
+
+| Nombre           | Qué es                         | Notas                                                     |
+| ---------------- | ------------------------------ | --------------------------------------------------------- |
+| `parkinson`      | Volatilidad de Parkinson       | A partir del máximo y el mínimo                           |
+| `garmanKlass`    | Volatilidad de Garman-Klass    | A partir de la apertura, el máximo, el mínimo y el cierre |
+| `rogersSatchell` | Volatilidad de Rogers-Satchell | A partir de la apertura, el máximo, el mínimo y el cierre |
+| `yangZhang`      | Volatilidad de Yang-Zhang      | A partir de la apertura, el máximo, el mínimo y el cierre |
 
 ## Lo que QTScript no puede llamar
 

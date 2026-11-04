@@ -5,7 +5,7 @@ order: 5
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 90cc80934daf70309c3476f614b747cbbf440524
 upstreamPath: skills/qtsurfer-java-strategy/references/examples.md
-lastUpdated: '2026-11-02T14:16:44Z'
+lastUpdated: '2026-11-03T23:57:40Z'
 ---
 
 ## 1. EMA Crossover (update loop)

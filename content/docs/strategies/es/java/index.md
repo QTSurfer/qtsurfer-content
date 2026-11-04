@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 2
 lastUpdated: '2026-11-02T14:16:44Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 7981584a6fa6c745d892c80c9e999d304de0fa50
+upstreamCommit: 90cc80934daf70309c3476f614b747cbbf440524
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 

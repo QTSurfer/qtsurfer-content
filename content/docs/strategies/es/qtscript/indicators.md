@@ -3,7 +3,7 @@ title: Indicadores de QTScript
 description: Todos los indicadores que puede llamar una estrategia QTScript, gratuitos y pro, agrupados por tipo.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 90cc80934daf70309c3476f614b747cbbf440524
+upstreamCommit: 5d1c461f4ecc701b2d109b09fe898d6a563d6944
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
 lastUpdated: '2026-11-03T23:57:40Z'
 ---
@@ -107,7 +107,7 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 
 Una línea `uses` los trae: `uses pro.adx, pro.obv` para esos dos, `uses pro.*` para los doce, y varias líneas `uses` se suman. Un plan sin ellos puede registrar la estrategia, pero no ejecutarla (`402`).
 
-Once de los doce leen barras completas, no un solo valor, así que van en una estrategia `kline`: en una estrategia `ticker` sus valores no son los de la barra y no significan nada. `kurtosis` es la excepción, porque lee un solo valor, el precio del grupo (el cierre en una vela).
+Once de los doce leen barras completas, no un solo valor, así que van en una estrategia `kline`: en una estrategia `ticker` sus valores no son los de la barra y no significan nada. `kurtosis` es la excepción, porque lee un solo valor, el precio del grupo (el cierre en una vela), así que significa algo en una estrategia `ticker` y no emite aviso.
 
 ### Tendencia
 

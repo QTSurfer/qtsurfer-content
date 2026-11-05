@@ -3,7 +3,7 @@ title: QTScript indicators
 description: Every indicator a QTScript strategy can call, free and pro, grouped by kind.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 90cc80934daf70309c3476f614b747cbbf440524
+upstreamCommit: 5d1c461f4ecc701b2d109b09fe898d6a563d6944
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
 lastUpdated: '2026-11-03T23:57:40Z'
 ---
@@ -108,7 +108,7 @@ add up. A plan without them can register the strategy but not run it (`402`).
 
 Eleven of the twelve read whole bars, not a single value, so they belong in a `kline` strategy: on a `ticker` strategy their
 values are not the bar's and mean nothing. `kurtosis` is the exception, since it reads one value, the price of the group (the
-close on a kline).
+close on a kline), so it means something on a `ticker` strategy and raises no notice.
 
 ### Trend
 

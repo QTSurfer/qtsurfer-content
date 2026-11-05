@@ -3,7 +3,7 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
+upstreamCommit: 9d054dbf7db807bd1dfb0386e3deac7b3ab9fe3d
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-02T14:41:16Z'
 ---
@@ -425,7 +425,7 @@ receives, and each call registers one pro indicator with the same names, forms a
 [QTScript table](/docs/strategies/qtscript#the-pro-indicators-uses) lists. `Pro.on(indicators).adx(14)` registers `adx14` and, beside it,
 `adx14PlusDI` and `adx14MinusDI`. A window goes on the main one (`adx14`), and the listener reads the others by name.
 
-They read whole bars, so use them in a kline strategy. This one buys when the ADX says there is a trend and the plus line is
+Eleven of the twelve read whole bars (`kurtosis` reads the close), so use them in a kline strategy. This one buys when the ADX says there is a trend and the plus line is
 above the minus line, and sells when it is below:
 
 ```java
@@ -475,8 +475,9 @@ public class AdxTrend extends AbstractKlineStrategy {
 }
 ```
 
-On a `ticker` strategy a pro indicator is not refused, but its values are not the bar's and mean nothing, and validating or
-running the strategy returns an engine notice that says so.
+On a `ticker` strategy a pro indicator is not refused. For the eleven that read whole bars the values are not the bar's and
+mean nothing, and validating or running the strategy returns an engine notice that says so; `kurtosis` reads the close, so it
+means something there and raises no notice.
 
 Registering a strategy that uses them is accepted on every plan, and the answer of `POST /strategy` carries
 `requires: ["indicators.pro"]`. Running it on a plan that does not include them is refused with `402`, when validating it,

@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
+upstreamCommit: 9d054dbf7db807bd1dfb0386e3deac7b3ab9fe3d
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-02T14:41:16Z'
 ---
@@ -439,8 +439,8 @@ en `com.wualabs.qtsurfer.engine.indicators.pro`: `Pro.on(indicators)` recibe el 
 [tabla de QTScript](/docs/strategies/qtscript#los-indicadores-pro-uses). `Pro.on(indicators).adx(14)` registra `adx14` y, a su lado,
 `adx14PlusDI` y `adx14MinusDI`. Una ventana va sobre el principal (`adx14`), y el listener lee los demás por nombre.
 
-Leen barras enteras, así que úsalos en una estrategia kline. Esta compra cuando el ADX dice que hay tendencia y la línea
-plus está por encima de la minus, y vende cuando está por debajo:
+Once de los doce leen barras enteras (`kurtosis` lee el cierre), así que úsalos en una estrategia kline. Esta compra cuando el
+ADX dice que hay tendencia y la línea plus está por encima de la minus, y vende cuando está por debajo:
 
 ```java
 import com.wualabs.qtsurfer.engine.core.KlineInterval;
@@ -489,8 +489,9 @@ public class AdxTrend extends AbstractKlineStrategy {
 }
 ```
 
-En una estrategia `ticker`, un indicador pro no se rechaza, pero sus valores no son los de la barra y no significan nada, y
-validar o ejecutar la estrategia devuelve un aviso del motor que lo dice.
+En una estrategia `ticker`, un indicador pro no se rechaza. Para los once que leen barras enteras, los valores no son los de la
+barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor que lo dice; `kurtosis` lee el
+cierre, así que significa algo ahí y no emite aviso.
 
 Registrar una estrategia que los usa se acepta en cualquier plan, y la respuesta de `POST /strategy` lleva
 `requires: ["indicators.pro"]`. Ejecutarla en un plan que no los incluye se rechaza con `402`, al validarla, al lanzar un

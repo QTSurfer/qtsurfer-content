@@ -3,7 +3,7 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 2
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 90cc80934daf70309c3476f614b747cbbf440524
+upstreamCommit: 5d1c461f4ecc701b2d109b09fe898d6a563d6944
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 lastUpdated: '2026-11-03T23:57:40Z'
 ---

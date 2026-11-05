@@ -4,7 +4,7 @@ description: Configura, compón y amplía el pipeline de indicadores en tiempo r
 order: 3
 lastUpdated: '2026-11-03T23:57:40Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 90cc80934daf70309c3476f614b747cbbf440524
+upstreamCommit: 5d1c461f4ecc701b2d109b09fe898d6a563d6944
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 ---
 
@@ -177,8 +177,8 @@ tabla bajo "The pro indicators: `uses`" de la skill `qtsurfer-qtscript-strategy`
 `garmanKlass`, `ichimoku`, `kurtosis`, `mfi`, `obv`, `parkinson`, `rogersSatchell`, `superTrend`, `vwap`, `yangZhang`). `Pro.on(indicators).adx(14)` registra `adx14` y, a su lado,
 `adx14PlusDI` y `adx14MinusDI`. Una ventana va sobre el principal (`adx14`), y el listener lee los demás por nombre.
 
-Leen barras enteras, así que úsalos en una estrategia kline. Esta compra cuando el ADX dice que hay tendencia y la línea
-plus está por encima de la minus, y vende cuando está por debajo:
+Once de los doce leen barras enteras (`kurtosis` lee el cierre), así que úsalos en una estrategia kline. Esta compra cuando el
+ADX dice que hay tendencia y la línea plus está por encima de la minus, y vende cuando está por debajo:
 
 ```java
 import com.wualabs.qtsurfer.engine.core.KlineInterval;
@@ -227,8 +227,9 @@ public class AdxTrend extends AbstractKlineStrategy {
 }
 ```
 
-En una estrategia `ticker`, un indicador pro no se rechaza, pero sus valores no son los de la barra y no significan nada, y
-validar o ejecutar la estrategia devuelve un aviso del motor que lo dice.
+En una estrategia `ticker`, un indicador pro no se rechaza. Para los once que leen barras enteras, los valores no son los de la
+barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor que lo dice; `kurtosis` lee el
+cierre, así que significa algo ahí y no emite aviso.
 
 Registrar una estrategia que los usa se acepta en cualquier plan, y la respuesta de `POST /strategy` lleva
 `requires: ["indicators.pro"]`. Ejecutarla en un plan que no los incluye se rechaza con `402`, al validarla, al lanzar un

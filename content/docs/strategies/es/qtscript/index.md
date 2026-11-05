@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 4f422c3150a60aa8fe08bca4d4437503bda8a14d
+upstreamCommit: 9d054dbf7db807bd1dfb0386e3deac7b3ab9fe3d
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-02T14:41:16Z'
 ---
@@ -161,9 +161,10 @@ por su nombre sin más, como cualquier otro indicador.
   lista de arriba) nunca son pro.
 - `pro` es el único conjunto que existe. `uses` es una palabra reservada: un fichero no puede tener un `param` ni una
   sección llamados `uses`.
-- Los indicadores pro leen barras enteras, así que úsalos en una estrategia [`kline`](#velas). En una estrategia `ticker`
-  los valores no son los de la barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor
-  que lo dice.
+- Once de los doce indicadores pro leen barras enteras, así que úsalos en una estrategia [`kline`](#velas). En una estrategia
+  `ticker` sus valores no son los de la barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del
+  motor que lo dice. `kurtosis` es la excepción: lee el cierre, así que significa algo en una estrategia `ticker` y no emite
+  aviso.
 - Una línea pro es una línea `setup:` normal: una llamada por línea, con una ventana detrás como de costumbre.
 - Los backtests, los barridos (con walk-forward incluido), [`validate`](/docs/developers/api/strategy#comprobar-que-realmente-funciona) y las
   ejecuciones en vivo ejecutan los indicadores pro.

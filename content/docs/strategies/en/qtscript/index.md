@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: A compact language for writing strategies — every section, windows, what's in scope, and how it compiles the same as Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 4f422c3150a60aa8fe08bca4d4437503bda8a14d
+upstreamCommit: 9d054dbf7db807bd1dfb0386e3deac7b3ab9fe3d
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-02T14:41:16Z'
 ---
@@ -155,8 +155,9 @@ their bare name, like any other indicator.
   indicator 'adx'`, reported on the line of the call. The builder's own names (`ema`, `rsi` and the rest of the list
   above) are never pro.
 - `pro` is the only set there is. `uses` is a reserved word: a file cannot have a `param` or a section called `uses`.
-- Pro indicators read whole bars, so use them in a [`kline`](#candles) strategy. On a `ticker` strategy the values are not
-  the bar's and mean nothing, and validating or running the strategy returns an engine notice that says so.
+- Eleven of the twelve pro indicators read whole bars, so use them in a [`kline`](#candles) strategy. On a `ticker` strategy
+  their values are not the bar's and mean nothing, and validating or running the strategy returns an engine notice that says
+  so. `kurtosis` is the exception: it reads the close, so it means something on a `ticker` strategy and raises no notice.
 - A pro line is an ordinary `setup:` line: one call per line, with a window after it as usual.
 - Backtests, sweeps (walk-forward included), [`validate`](/docs/developers/api/strategy#checking-it-actually-runs) and live runs run the pro
   indicators.

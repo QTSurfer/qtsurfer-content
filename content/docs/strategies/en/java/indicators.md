@@ -3,7 +3,7 @@ title: Java indicators
 description: Configure, compose, and extend the QTSurfer real-time indicator pipeline.
 order: 3
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 90cc80934daf70309c3476f614b747cbbf440524
+upstreamCommit: 5d1c461f4ecc701b2d109b09fe898d6a563d6944
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 lastUpdated: '2026-11-03T23:57:40Z'
 ---
@@ -173,8 +173,8 @@ table under "The pro indicators: `uses`" in the `qtsurfer-qtscript-strategy` ski
 `garmanKlass`, `ichimoku`, `kurtosis`, `mfi`, `obv`, `parkinson`, `rogersSatchell`, `superTrend`, `vwap`, `yangZhang`). `Pro.on(indicators).adx(14)` registers `adx14` and, beside it,
 `adx14PlusDI` and `adx14MinusDI`. A window goes on the main one (`adx14`), and the listener reads the others by name.
 
-They read whole bars, so use them in a kline strategy. This one buys when the ADX says there is a trend and the plus line is
-above the minus line, and sells when it is below:
+Eleven of the twelve read whole bars (`kurtosis` reads the close), so use them in a kline strategy. This one buys when the ADX
+says there is a trend and the plus line is above the minus line, and sells when it is below:
 
 ```java
 import com.wualabs.qtsurfer.engine.core.KlineInterval;
@@ -223,8 +223,9 @@ public class AdxTrend extends AbstractKlineStrategy {
 }
 ```
 
-On a `ticker` strategy a pro indicator is not refused, but its values are not the bar's and mean nothing, and validating or
-running the strategy returns an engine notice that says so.
+On a `ticker` strategy a pro indicator is not refused. For the eleven that read whole bars the values are not the bar's and
+mean nothing, and validating or running the strategy returns an engine notice that says so; `kurtosis` reads the close, so it
+means something there and raises no notice.
 
 Registering a strategy that uses them is accepted on every plan, and the answer of `POST /strategy` carries
 `requires: ["indicators.pro"]`. Running it on a plan that does not include them is refused with `402`, when validating it,

@@ -53,10 +53,13 @@ explicit `id` (the same in every language), as the home of Strategies does, beca
 `index.md`: the site lists a page in the sidebar only under an existing parent page. These pages say what the engine
 computes, so check a claim against the engine's own behaviour before publishing it.
 
-A page can show an interactive chart: put `<div data-indicator-demo="name"></div>` on its own line where the chart goes,
-with `name` the indicator (`rsi`, `ema-crossover`). The site mounts the demo into that element. A name the site does not
-know leaves the element empty, so a page may name a demo before the site has it. Keep the element identical in every
-language.
+A page can show an interactive chart: put a plain element on its own line where the chart goes, and the site mounts the
+chart into it. There are two kinds. `<div data-indicator-chart="sma"></div>` is the generic chart of one indicator, named
+as the catalogues name it, and `any` adds a picker over all of them; it draws what the engine computes and reads nothing
+into it. `<div data-indicator-demo="rsi"></div>` is an interpretation demo written for one indicator (`rsi`,
+`ema-crossover`), which adds how it is read, with levels and arrows, and exists only where that reading is clear. A name
+the site does not know leaves the element empty, so a page may name a chart before the site has it. Keep the element
+identical in every language.
 
 Learn articles live under `content/learn/articles/<content-locale>/`. English is the editorial source of truth;
 publish a missing translation as a visible English fallback rather than creating a partial or thin

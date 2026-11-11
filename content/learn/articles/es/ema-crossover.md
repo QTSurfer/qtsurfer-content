@@ -60,6 +60,8 @@ La elección de parámetros intercambia una cosa por la otra: periodos más cort
 tendencias y generan más señales falsas; periodos más largos generan menos señales falsas y devuelven
 más de cada tendencia en los giros.
 
+<div data-indicator-demo="ema-crossover"></div>
+
 ## Ejemplo resuelto
 
 Precios a lo largo de diez actualizaciones, `N_fast = 3` y `N_slow = 5`, ambas medias inicializadas

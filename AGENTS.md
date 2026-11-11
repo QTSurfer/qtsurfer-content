@@ -45,6 +45,19 @@ root-relative `/img/docs/...`.
 Do not invent partial Spanish translations; the visible English fallback is preferred until a complete
 `es_ES` translation is available.
 
+The Indicators section lives under `content/docs/indicators/<content-locale>/`: one folder per indicator group, named as
+the catalogues name it in lower case (`oscillators/`), and one page per indicator inside it, named by the indicator's
+builder name (`rsi.md`). The section home, `index.md`, and the `index.md` of every group are written in this repository,
+have no upstream, take the lowest `order` of their level and are translated like any editorial page. The home declares an
+explicit `id` (the same in every language), as the home of Strategies does, because its slug is empty. A group needs its
+`index.md`: the site lists a page in the sidebar only under an existing parent page. These pages say what the engine
+computes, so check a claim against the engine's own behaviour before publishing it.
+
+A page can show an interactive chart: put `<div data-indicator-demo="name"></div>` on its own line where the chart goes,
+with `name` the indicator (`rsi`, `ema-crossover`). The site mounts the demo into that element. A name the site does not
+know leaves the element empty, so a page may name a demo before the site has it. Keep the element identical in every
+language.
+
 Learn articles live under `content/learn/articles/<content-locale>/`. English is the editorial source of truth;
 publish a missing translation as a visible English fallback rather than creating a partial or thin
 localized page. Every standalone concept page must answer a real reader question with substantive,

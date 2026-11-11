@@ -3,7 +3,7 @@ title: Cuenta
 description: Consulta los límites de tu plan y tu uso de almacenamiento en vivo frente a ellos.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
+upstreamCommit: dc2e37beab45ecc9a829dd8735cae4e66e32faae
 upstreamPath: docs/account.md
 lastUpdated: '2026-11-02T14:41:16Z'
 ---
@@ -34,6 +34,7 @@ curl https://api.qtsurfer.net/v1/account \
   "userId": "00000000-0000-0000-0000-000000000000",
   "tier": "free",
   "scopes": { "backtests": ["read", "write", "execute"], "exchanges": ["read"] },
+  "apiKeyExpiresAt": "2026-12-05T10:05:00Z",
   "maxExecute": 10,
   "maxRangeDays": 7,
   "maxSweepCartesian": 100,
@@ -53,6 +54,7 @@ curl https://api.qtsurfer.net/v1/account \
 | `userId` | tu id de cuenta — la claim `sub` del JWT |
 | `tier` | tu plan de suscripción actual |
 | `scopes` | lo que puede hacer tu clave de API: un mapa de un recurso a sus acciones, en minúsculas; `{}` para una clave sin ninguno. Es el mismo mapa que el `scopes` de la respuesta del token, sin pedir un token nuevo. Consulta [Autenticación y alcances](auth#alcances) |
+| `apiKeyExpiresAt` | cuándo deja de funcionar tu clave de API, ISO-8601 en UTC; siempre está en la respuesta, y es `null` cuando no se aplica ninguna caducidad de clave (una clave que nunca caduca, un token emitido antes de que existiera el campo, o una credencial que no es una clave de API). Es el mismo instante que el `key_exp` de la respuesta del token. Crea una clave nueva en la aplicación web antes de él. Consulta [Cuándo caduca tu clave](auth#cuándo-caduca-tu-clave) |
 | `maxExecute` | número máximo de ejecuciones de estrategia (y barridos) que puedes tener corriendo a la vez a través de la API. Arrancar una por encima de este número se responde con `429`, cuyo mensaje lleva el mismo número. El valor ya incluye el margen de API que tenga tu plan |
 | `maxRangeDays` | longitud máxima, en días, del rango de tiempo de un backtest sobre uno de tus propios [conjuntos de datos](datasets) |
 | `maxSweepCartesian` | cuadrícula completa más grande, en combinaciones de parámetros, que un [barrido](backtest_sweep#qué-tamaño-puede-tener-una-cuadrícula) puede ejecutar con el muestreador `grid`. Una cuadrícula mayor se rechaza con `400`; los muestreadores `random` y `lhs` no están sujetos a él |

@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 635a06d58f30f7c36a4caa5d4173441fb168393f
+upstreamCommit: dc2e37beab45ecc9a829dd8735cae4e66e32faae
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-10-28T18:11:38Z'
 ---
@@ -115,9 +115,8 @@ Errores: `404` no existe ese conjunto de datos para este usuario.
 columnas con nombre; un fichero `lastra` es nuestro propio formato columnar nativo — el mismo que
 te devuelve por defecto el `dataUrl` de un conjunto de datos, así que descargar un conjunto de
 datos y entregarle ese mismo fichero a otro usuario para que lo suba funciona sin ninguna
-conversión de por medio. Para CSV/parquet, `timestamp` (ISO-8601, o segundos/milisegundos/
-microsegundos de época numéricos — detectado en la primera fila, y exigido después para cada fila
-posterior) y `close` son obligatorias; opcionales: `open`, `high`, `low`, `volume`, `quoteVolume`,
+conversión de por medio. Para CSV/parquet, `timestamp` (una fecha o fecha-hora ISO-8601, que sin zona significa UTC, o segundos/milisegundos/
+microsegundos de época numéricos — [las formas se listan más abajo](#la-columna-timestamp)) y `close` son obligatorias; opcionales: `open`, `high`, `low`, `volume`, `quoteVolume`,
 `bid`, `bidSize`, `ask`, `askSize`. Una subida lastra lleva su propio conjunto fijo de columnas en
 su lugar (ya es una descarga de `dataUrl`, no un formato que construyas a mano) y solo necesita que
 estén presentes una serie de marca de tiempo y una de cierre. **La cadencia y la unidad de la marca
@@ -140,6 +139,39 @@ curl -X PUT "$UPLOAD_URL" --data-binary @my-btc-ticks.csv
 # or gzip/zip it first -- detected from content, no extra parameter needed
 curl -X PUT "$UPLOAD_URL" --data-binary @my-btc-ticks.csv.gz
 ```
+
+### La columna `timestamp`
+
+El `timestamp` de un CSV se lee en cualquiera de estas formas:
+
+| Forma | Ejemplos | Se lee como |
+|---|---|---|
+| fecha ISO-8601 | `2010-06-29` | medianoche UTC, `2010-06-29T00:00:00Z` |
+| fecha-hora ISO-8601 con zona | `2010-06-29T14:30:00Z`, `2010-06-29T14:30:00+02:00`, `2010-06-29T14:30:00.123Z` | ese instante; se respeta el desfase horario |
+| fecha-hora ISO-8601 sin zona | `2010-06-29T14:30:00`, `2010-06-29T14:30` | esa hora **en UTC** |
+| lo mismo con un espacio en lugar de `T` | `2010-06-29 14:30:00` | esa hora en UTC (o la zona, si la nombra) |
+| época en segundos, milisegundos o microsegundos | `1277821800`, `1277821800000`, `1277821800000000` | la unidad se deduce de la magnitud de la primera fila |
+
+- **Sin zona significa UTC.** Un fichero exportado en hora local debe llevar la zona, o convertirse, antes de
+  subirlo: de lo contrario sus filas se leen como UTC.
+- La primera fila decide si la columna es ISO-8601 o de época, y cada fila posterior debe ser del mismo tipo. Las
+  filas de época también deben seguir en la unidad que fijó la primera fila; las filas ISO-8601 pueden mezclar una
+  fecha y una fecha-hora.
+- Las marcas de tiempo deben crecer estrictamente. La cadencia y los huecos se descubren como en cualquier fichero:
+  una serie diaria, con fechas sueltas, tiene cadencia `1d`, y un día sin fila (un fin de semana, por ejemplo) cuenta
+  en `gaps` y no es un error. La versión informa `timestampUnit: "iso"` para todas las formas ISO-8601.
+- No se aceptan: fechas con el día primero o el mes primero (`29/06/2010`, `06/29/2010`) ni nombres de mes, que
+  son ambiguos. Reescribe una columna así como ISO-8601 antes de subirla.
+
+Una marca de tiempo que no esté en ninguna de esas formas hace fallar la subida: `status` es `failed` y `error`
+nombra la línea (la línea 1 es la cabecera) y lo que se habría aceptado:
+
+```
+line 2: not a valid timestamp: 29/06/2010. Accepted: an ISO-8601 date (2010-06-29, read as midnight UTC), an ISO-8601 date-time with or without a zone (2010-06-29T14:30:00Z, 2010-06-29 14:30:00; no zone means UTC), or epoch seconds, milliseconds or microseconds.
+```
+
+Una fila posterior que no es del tipo que fijó la primera lo dice: `Line 2 was read as ISO-8601, so every
+later line must be one too.`
 
 ## Finalizar una subida (disparar la ingesta)
 
@@ -197,7 +229,7 @@ puede caducar por sí mismo (ver el caso `404` más abajo).
 
 | Campo | Notas |
 |---|---|
-| `status` | `uploading` (fichero subido con `PUT`, aún no finalizado) → `ingesting` (finalize llamado, el worker analiza/valida) → `ready` (`version` lleva el resultado) \| `failed` (por ejemplo, contrato CSV incorrecto, unidades de marca de tiempo mezcladas, un `.zip` sin fichero dentro o con más de uno) |
+| `status` | `uploading` (fichero subido con `PUT`, aún no finalizado) → `ingesting` (finalize llamado, el worker analiza/valida) → `ready` (`version` lleva el resultado) \| `failed` (por ejemplo, contrato CSV incorrecto, una [marca de tiempo](#la-columna-timestamp) que no está en ninguna de las formas aceptadas, unidades de marca de tiempo mezcladas, un `.zip` sin fichero dentro o con más de uno) |
 | `jobId` | el id del job de ingesta, mientras `status` es `ingesting` |
 | `error` | motivo legible, presente cuando `status` es `failed`. Se registra de forma duradera junto con el fallo — sigue disponible sondees cuando sondees después |
 | `version` | una [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito), presente cuando `status` es `ready` o `failed` |

@@ -3,7 +3,7 @@ title: Autenticación y alcances
 description: Cambia tu clave de API por un token y consulta qué permiten los alcances de tu clave.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 3a97c37ef21dc83a76e523828f926b96f083dd31
+upstreamCommit: dc2e37beab45ecc9a829dd8735cae4e66e32faae
 upstreamPath: docs/auth.md
 lastUpdated: '2026-11-02T14:41:16Z'
 ---
@@ -26,7 +26,8 @@ curl -X POST https://api.qtsurfer.net/v1/auth/token \
   "token_type": "Bearer",
   "expires_in": 3600,
   "scopes": { "backtests": ["read", "write", "execute"], "exchanges": ["read"] },
-  "tier": "free"
+  "tier": "free",
+  "key_exp": 1796465100
 }
 ```
 
@@ -37,6 +38,7 @@ curl -X POST https://api.qtsurfer.net/v1/auth/token \
 | `expires_in` | segundos hasta que el token caduca. Pide uno nuevo antes, o ante un `401` |
 | `scopes` | lo que puede hacer tu clave, [más abajo](#alcances) |
 | `tier` | el plan de suscripción para el que se emitió el token; fija tus límites, consulta [Cuenta](account) |
+| `key_exp` | cuándo deja de funcionar tu clave de API, en segundos desde la época. Ausente en una clave que nunca caduca. Es la caducidad de la clave, no la del token, consulta [Cuándo caduca tu clave](#cuándo-caduca-tu-clave) |
 
 Envía un `User-Agent` propio. Una petición que lleva el valor por defecto de algunas bibliotecas HTTP, entre ellas
 `urllib` de Python, se rechaza en el borde de la red antes de llegar a la API, con un `403` cuyo cuerpo es el texto
@@ -44,10 +46,32 @@ plano `error code: 1010` y no el JSON con el que responde la API. No es un probl
 `User-Agent`, basta con el nombre de tu herramienta, y vuelve a enviar la petición. `curl` y los navegadores ya
 envían una.
 
-Una clave desconocida, revocada o caducada se responde con `401`; el cuerpo es `AuthTokenError` en
-la referencia de la API. Donde un despliegue exige alcances, una clave que no lleva ninguno se
-responde con `403` con el código `apikey_without_scopes` y sin token: crea en la aplicación web una
-clave con al menos un alcance.
+Una clave ausente, desconocida, revocada o caducada se responde con `401` y `{"error": "invalid_credentials"}`
+(`AuthTokenRejected` en la referencia de la API). La respuesta es la misma para las cuatro: no dice cuál es, así
+que lee la caducidad de tu clave con antelación, [más abajo](#cuándo-caduca-tu-clave), y no a partir de esta respuesta.
+Donde un despliegue exige alcances, una clave que no lleva ninguno se responde con `403` con el código
+`apikey_without_scopes` y sin token (`AuthTokenError`): crea en la aplicación web una clave con al menos un alcance.
+
+## Cuándo caduca tu clave
+
+Una clave de API puede tener una caducidad propia. Se puede leer en tres sitios, y en los tres es el mismo instante,
+de modo que un cliente puede rotar la clave con antelación en lugar de enterarse por un `401`:
+
+| Dónde | Campo | Forma |
+|---|---|---|
+| la respuesta de `POST /auth/token` | `key_exp` | segundos desde la época, como el `exp` del token |
+| el propio token | la claim `key_exp` | el mismo número |
+| [`GET /account`](account#obtener-tu-plan-y-sus-límites) | `apiKeyExpiresAt` | ISO-8601 en UTC, o `null` |
+
+- `key_exp` está **ausente** de la respuesta en una clave que nunca caduca, y `apiKeyExpiresAt` es entonces `null`.
+  `null` también se devuelve para un token emitido antes de que existiera el campo (pide uno nuevo) y para una
+  credencial que no es una clave de API: significa que no se aplica ninguna caducidad de clave, no que sea desconocida.
+- Es la caducidad de la **clave**, no la del token. `expires_in` y `exp` son la hora propia del token. Un token
+  emitido justo antes de que la clave caduque sigue funcionando hasta su propio `exp`; después de la caducidad de la
+  clave, pedir un token nuevo con ella se responde con `401`.
+- Rotación: crea la clave nueva en la aplicación web antes de `key_exp`, cambia tu cliente a ella y la clave vieja
+  puede caducar. Un cliente que guarda la clave puede leer `key_exp` de cualquier respuesta de token y avisar, por
+  ejemplo, una semana antes.
 
 ## Alcances
 

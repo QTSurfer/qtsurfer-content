@@ -2,6 +2,7 @@
 title: Bandas de Bollinger
 description: "Cómo las bandas de Bollinger envuelven el precio en una banda que se ensancha y se estrecha con su volatilidad, qué leen de ella el %B y la anchura, y cómo usarlas en una estrategia de QTSurfer."
 order: 5
+lastUpdated: '2026-11-11T22:23:04Z'
 ---
 
 Las **bandas de Bollinger** dibujan una banda alrededor de una media móvil del precio. La banda es un número de

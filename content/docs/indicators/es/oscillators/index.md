@@ -2,7 +2,7 @@
 title: Osciladores
 description: "Indicadores que oscilan entre niveles o alrededor de una línea central en lugar de seguir el precio: el RSI, el RSI estocástico, el MACD y el CCI."
 order: 1
-lastUpdated: '2026-11-11T19:40:19Z'
+lastUpdated: '2026-11-11T22:23:04Z'
 ---
 
 En los catálogos de QTSurfer, los osciladores son `rsi`, `stochRsi`, `macd` y `cci`: indicadores que oscilan entre

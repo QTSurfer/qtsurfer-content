@@ -2,6 +2,7 @@
 title: Bandas
 description: "Bandas dibujadas alrededor del precio y las medidas que se toman de ellas: las bandas de Bollinger, su %B y su anchura."
 order: 4
+lastUpdated: '2026-11-11T22:23:04Z'
 ---
 
 En los catálogos de QTSurfer, las bandas son `bollinger`, `bollingerPercentB` y `bollingerBandwidth`: una banda dibujada

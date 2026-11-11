@@ -58,6 +58,8 @@ strategy.
 The parameter choice trades one against the other: shorter periods enter trends earlier and
 whipsaw more; longer periods whipsaw less and give back more of each trend at the turns.
 
+<div data-indicator-demo="ema-crossover"></div>
+
 ## Worked example
 
 Prices over ten updates, `N_fast = 3` and `N_slow = 5`, both averages seeded at the first price:

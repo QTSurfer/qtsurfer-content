@@ -1,0 +1,14 @@
+---
+title: Osciladores
+description: "Indicadores que oscilan entre niveles o alrededor de una línea central en lugar de seguir el precio: el RSI, el RSI estocástico, el MACD y el CCI."
+order: 1
+---
+
+En los catálogos de QTSurfer, los osciladores son `rsi`, `stochRsi`, `macd` y `cci`: indicadores que oscilan entre
+niveles o alrededor de una línea central en lugar de seguir el precio. Se leen frente a esos niveles, para juzgar si un
+movimiento ha ido más lejos de lo habitual o si su impulso se debilita.
+
+- [RSI](/docs/indicators/oscillators/rsi): fuerza relativa, entre 0 y 100.
+
+Los demás están en los catálogos, con sus formas: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e
+[indicadores de Java](/docs/strategies/java/indicators).

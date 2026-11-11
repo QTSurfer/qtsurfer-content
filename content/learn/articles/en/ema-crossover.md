@@ -5,7 +5,7 @@ order: 11
 kind: concept
 author: QTSurfer
 datePublished: "2026-09-03"
-lastUpdated: '2026-11-02T12:01:59Z'
+lastUpdated: '2026-11-11T19:40:19Z'
 ---
 
 An **EMA crossover** strategy holds a position when a fast exponential moving average is above a

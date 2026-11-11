@@ -2,6 +2,7 @@
 title: Índice de fuerza relativa (RSI)
 description: "Cómo el RSI convierte las ganancias y pérdidas recientes en un número entre 0 y 100, cómo cambian la línea su periodo y su suavizado, y cómo usarlo en una estrategia de QTSurfer."
 order: 2
+lastUpdated: '2026-11-11T19:40:19Z'
 ---
 
 El **índice de fuerza relativa** (RSI, por sus siglas en inglés) mide cuánto del movimiento reciente del precio ha sido

@@ -18,5 +18,17 @@ Vendrán más indicadores. Para todos los indicadores que puede llamar una estra
 registran, consulta los catálogos: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e
 [indicadores de Java](/docs/strategies/java/indicators).
 
+## Prueba cualquier indicador
+
+Elige un indicador, una serie y sus parámetros. El gráfico dibuja lo que calcula el motor, sobre el precio o en un panel
+propio, con los nombres con los que lo lee una estrategia, y muestra la línea de `setup:` de una estrategia QTScript que
+hace la misma llamada. Dibuja y no interpreta: para saber cómo se lee un indicador, con sus niveles y sus señales, mira su
+página cuando la tiene, como la del [RSI](/docs/indicators/oscillators/rsi).
+
+<div data-indicator-chart="any"></div>
+
+Un indicador que lee barras completas, como el ATR, necesita una serie kline: un ticker lleva un precio y nada más, y el
+gráfico lo dice.
+
 Los gráficos usan series de muestra: sintéticas, con la forma de un ticker o de un kline, y reales de criptomonedas en
 varias temporalidades. Muestran cómo se comporta un indicador. No son el resultado de una estrategia.

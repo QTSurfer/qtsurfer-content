@@ -10,6 +10,8 @@ levels or around a centre line rather than follow the price. They are read again
 move has gone further than usual or whether its momentum is fading.
 
 - [RSI](/docs/indicators/oscillators/rsi): relative strength, between 0 and 100.
+- [MACD](/docs/indicators/oscillators/macd): the gap between two exponential averages, with its signal line and its
+  histogram.
 
-The others are in the catalogues, with their forms: [QTScript indicators](/docs/strategies/qtscript/indicators) and
+The others, `stochRsi` and `cci`, are in the catalogues, with their forms: [QTScript indicators](/docs/strategies/qtscript/indicators) and
 [Java indicators](/docs/strategies/java/indicators).

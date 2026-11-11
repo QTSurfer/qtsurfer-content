@@ -10,6 +10,8 @@ niveles o alrededor de una línea central en lugar de seguir el precio. Se leen 
 movimiento ha ido más lejos de lo habitual o si su impulso se debilita.
 
 - [RSI](/docs/indicators/oscillators/rsi): fuerza relativa, entre 0 y 100.
+- [MACD](/docs/indicators/oscillators/macd): la distancia entre dos medias exponenciales, con su línea de señal y su
+  histograma.
 
-Los demás están en los catálogos, con sus formas: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e
+Los demás, `stochRsi` y `cci`, están en los catálogos, con sus formas: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e
 [indicadores de Java](/docs/strategies/java/indicators).

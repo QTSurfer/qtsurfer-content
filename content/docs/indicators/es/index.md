@@ -12,7 +12,9 @@ la misma clase de indicador que ejecuta el motor. Cambia sus parámetros y mira 
 
 Las páginas se agrupan como los catálogos agrupan los indicadores:
 
-- [Osciladores](/docs/indicators/oscillators): por ahora, el [RSI](/docs/indicators/oscillators/rsi).
+- [Osciladores](/docs/indicators/oscillators): por ahora, el [RSI](/docs/indicators/oscillators/rsi) y el
+  [MACD](/docs/indicators/oscillators/macd).
+- [Bandas](/docs/indicators/bands): por ahora, las [bandas de Bollinger](/docs/indicators/bands/bollinger).
 
 Vendrán más indicadores. Para todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que
 registran, consulta los catálogos: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e

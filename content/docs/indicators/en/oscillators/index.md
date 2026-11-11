@@ -1,7 +1,7 @@
 ---
 title: Oscillators
 description: "Indicators that swing between levels or around a centre line instead of following the price: the RSI, the stochastic RSI, the MACD and the CCI."
-order: 1
+order: 2
 lastUpdated: '2026-11-11T22:23:04Z'
 ---
 
@@ -12,6 +12,7 @@ move has gone further than usual or whether its momentum is fading.
 - [RSI](/docs/indicators/oscillators/rsi): relative strength, between 0 and 100.
 - [MACD](/docs/indicators/oscillators/macd): the gap between two exponential averages, with its signal line and its
   histogram.
+- [CCI](/docs/indicators/oscillators/cci): how far the price is from its average, in units of the usual deviation.
 
-The others, `stochRsi` and `cci`, are in the catalogues, with their forms: [QTScript indicators](/docs/strategies/qtscript/indicators) and
+The other one, `stochRsi`, is in the catalogues, with its forms: [QTScript indicators](/docs/strategies/qtscript/indicators) and
 [Java indicators](/docs/strategies/java/indicators).

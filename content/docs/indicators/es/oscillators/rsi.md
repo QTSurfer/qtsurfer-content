@@ -1,7 +1,7 @@
 ---
 title: Índice de fuerza relativa (RSI)
 description: "Cómo el RSI convierte las ganancias y pérdidas recientes en un número entre 0 y 100, cómo cambian la línea su periodo y su suavizado, y cómo usarlo en una estrategia de QTSurfer."
-order: 2
+order: 2.1
 lastUpdated: '2026-11-11T19:40:19Z'
 ---
 
@@ -98,6 +98,8 @@ fuera de la muestra, que es la defensa frente al [sobreajuste](/learn/articles/o
 
 ## Relacionado
 
+- [SMA](/docs/indicators/averages/sma) y [MMA](/docs/indicators/averages/mma): las medias que hay bajo el RSI por defecto del motor y
+  bajo el suavizado de Wilder.
 - [Cruce de EMA](/learn/articles/ema-crossover): la contrapartida de seguimiento de tendencia, con su propio gráfico.
 - [Indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators):
   todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran.

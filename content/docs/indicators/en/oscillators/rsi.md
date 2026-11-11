@@ -1,7 +1,7 @@
 ---
 title: Relative strength index (RSI)
 description: "How the RSI turns recent gains and losses into a number between 0 and 100, how its period and its smoothing change the line, and how to use it in a QTSurfer strategy."
-order: 2
+order: 2.1
 lastUpdated: '2026-11-11T19:40:19Z'
 ---
 
@@ -95,6 +95,8 @@ sample, which is the defence against [overfitting](/learn/articles/overfitting).
 
 ## Related
 
+- [SMA](/docs/indicators/averages/sma) and [MMA](/docs/indicators/averages/mma): the averages under the engine's default RSI and
+  under Wilder's smoothing.
 - [EMA crossover](/learn/articles/ema-crossover): the trend-following counterpart, with its own chart.
 - [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators):
   every indicator a strategy can call, with its forms and the names it registers.

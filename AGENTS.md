@@ -47,7 +47,8 @@ Do not invent partial Spanish translations; the visible English fallback is pref
 
 The Indicators section lives under `content/docs/indicators/<content-locale>/`: one folder per indicator group, named as
 the catalogues name it in lower case (`oscillators/`), and one page per indicator inside it, named by the indicator's
-builder name (`rsi.md`). The section home, `index.md`, and the `index.md` of every group are written in this repository,
+builder name (`rsi.md`, `stdDev.md`: the slug keeps the case of the name a strategy calls the indicator by, and the
+site resolves it as written, so its lowercase form is a `404`). The section home, `index.md`, and the `index.md` of every group are written in this repository,
 have no upstream, take the lowest `order` of their level and are translated like any editorial page. The home declares an
 explicit `id` (the same in every language), as the home of Strategies does, because its slug is empty. A group needs its
 `index.md`: the site lists a page in the sidebar only under an existing parent page. These pages say what the engine

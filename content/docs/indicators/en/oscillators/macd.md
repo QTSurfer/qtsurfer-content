@@ -1,7 +1,7 @@
 ---
 title: Moving average convergence divergence (MACD)
 description: "How the MACD turns two exponential averages into a momentum line with a signal line and a histogram, how its three periods change them, and how to use it in a QTSurfer strategy."
-order: 3
+order: 2.2
 lastUpdated: '2026-11-11T22:23:04Z'
 ---
 
@@ -87,6 +87,7 @@ which is the defence against [overfitting](/learn/articles/overfitting).
 ## Related
 
 - [RSI](/docs/indicators/oscillators/rsi): the momentum oscillator with a fixed range, to read alongside it.
+- [EMA](/docs/indicators/averages/ema): the average the MACD is the difference of.
 - [EMA crossover](/learn/articles/ema-crossover): the trend-following rule the MACD is built from.
 - [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators):
   every indicator a strategy can call, with its forms and the names it registers.

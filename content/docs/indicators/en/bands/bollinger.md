@@ -1,7 +1,7 @@
 ---
 title: Bollinger bands
 description: "How the Bollinger bands wrap the price in a band that widens and narrows with its volatility, what the %B and the bandwidth read from it, and how to use them in a QTSurfer strategy."
-order: 5
+order: 3.1
 lastUpdated: '2026-11-11T22:23:04Z'
 ---
 
@@ -88,6 +88,9 @@ sample, which is the defence against [overfitting](/learn/articles/overfitting).
 
 ## Related
 
+- [Bollinger %B](/docs/indicators/bands/bollingerPercentB) and [bandwidth](/docs/indicators/bands/bollingerBandwidth): the two
+  measures taken from the band, each with its own page.
+- [Standard deviation](/docs/indicators/volatility/stdDev): what the band is made of.
 - [RSI](/docs/indicators/oscillators/rsi) and [MACD](/docs/indicators/oscillators/macd): the oscillators, to read alongside
   the bands.
 - [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators):

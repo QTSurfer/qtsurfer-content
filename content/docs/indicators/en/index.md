@@ -12,7 +12,9 @@ runs. Change its parameters and watch the line change.
 
 The pages are grouped as the catalogues group the indicators:
 
-- [Oscillators](/docs/indicators/oscillators): the [RSI](/docs/indicators/oscillators/rsi), so far.
+- [Oscillators](/docs/indicators/oscillators): the [RSI](/docs/indicators/oscillators/rsi) and the
+  [MACD](/docs/indicators/oscillators/macd), so far.
+- [Bands](/docs/indicators/bands): the [Bollinger bands](/docs/indicators/bands/bollinger), so far.
 
 More indicators will follow. For every indicator a strategy can call, with its forms and the names it registers, see the
 catalogues: [QTScript indicators](/docs/strategies/qtscript/indicators) and

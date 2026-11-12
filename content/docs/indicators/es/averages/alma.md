@@ -2,6 +2,7 @@
 title: "Media móvil de Arnaud Legoux (ALMA)"
 description: "Cómo la media móvil de Arnaud Legoux pondera los últimos precios con una campana cuyo pico el desplazamiento acerca al último, qué cambian el desplazamiento y la sigma, y cómo usarla en una estrategia de QTSurfer."
 order: 1.72
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 La **media móvil de Arnaud Legoux** (ALMA, por sus siglas en inglés), de Arnaud Legoux y Dimitrios Kouzis-Loukas, pondera los últimos `N` precios con una campana. Un desplazamiento acerca el pico de la campana al último precio, así que la línea es suave y va poco por detrás del precio.

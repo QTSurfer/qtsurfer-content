@@ -2,6 +2,7 @@
 title: "Arnaud Legoux moving average (ALMA)"
 description: "How the Arnaud Legoux moving average weights the last prices with a bell curve whose peak the offset moves toward the latest one, what the offset and the sigma change, and how to use it in a QTSurfer strategy."
 order: 1.72
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 The **Arnaud Legoux moving average** (ALMA), by Arnaud Legoux and Dimitrios Kouzis-Loukas, weights the last `N` prices with a bell curve. An offset moves the peak of the bell toward the latest price, so the line is smooth and trails the price little.

@@ -2,6 +2,7 @@
 title: "Media móvil de mínimos cuadrados (LSMA)"
 description: "Cómo la media móvil de mínimos cuadrados toma el extremo de la recta que mejor ajusta los últimos precios, por qué no se retrasa en una tendencia y rebasa en un giro, y cómo usarla en una estrategia de QTSurfer."
 order: 1.74
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 La **media móvil de mínimos cuadrados** (LSMA, por sus siglas en inglés), también llamada recta de regresión lineal o media móvil de punto final, es el valor en la última barra de la recta que mejor ajusta los últimos `N` precios.

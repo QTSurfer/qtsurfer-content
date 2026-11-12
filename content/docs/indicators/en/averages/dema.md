@@ -2,6 +2,7 @@
 title: "Double exponential moving average (DEMA)"
 description: "How the double exponential moving average combines two exponential averages to cut the lag of one, what it costs in overshoot, and how to use it in a QTSurfer strategy."
 order: 1.71
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 The **double exponential moving average** (DEMA), by Patrick Mulloy, combines two exponential averages to cut the lag of a single one. It is the two-average version of the [TEMA](/docs/indicators/averages/tema).

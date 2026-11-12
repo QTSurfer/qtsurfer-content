@@ -2,6 +2,7 @@
 title: "Least squares moving average (LSMA)"
 description: "How the least squares moving average takes the end of the straight line that best fits the last prices, why it does not lag on a trend and overshoots at a turn, and how to use it in a QTSurfer strategy."
 order: 1.74
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 The **least squares moving average** (LSMA), also called the linear regression line or the end-point moving average, is the value at the latest bar of the straight line that best fits the last `N` prices.

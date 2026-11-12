@@ -2,6 +2,7 @@
 title: "Media móvil adaptativa fractal (FRAMA)"
 description: "Cómo la media móvil adaptativa fractal fija su velocidad con la dimensión fractal de los últimos precios, corriendo en una recta y casi parándose en un rango, y cómo usarla en una estrategia de QTSurfer."
 order: 1.73
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 La **media móvil adaptativa fractal** (FRAMA, por sus siglas en inglés), de John Ehlers, es una media exponencial cuya velocidad sigue la dimensión fractal de los últimos precios: corre a toda velocidad cuando el precio se mueve en línea recta y casi se para cuando divaga.

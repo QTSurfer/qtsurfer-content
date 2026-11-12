@@ -2,6 +2,7 @@
 title: "Media móvil exponencial doble (DEMA)"
 description: "Cómo la media móvil exponencial doble combina dos medias exponenciales para recortar el retraso de una sola, lo que cuesta en rebasamiento, y cómo usarla en una estrategia de QTSurfer."
 order: 1.71
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 La **media móvil exponencial doble** (DEMA, por sus siglas en inglés), de Patrick Mulloy, combina dos medias exponenciales para recortar el retraso de una sola. Es la versión de dos medias de la [TEMA](/docs/indicators/averages/tema).

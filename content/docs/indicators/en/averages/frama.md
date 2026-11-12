@@ -2,6 +2,7 @@
 title: "Fractal adaptive moving average (FRAMA)"
 description: "How the fractal adaptive moving average sets its speed from the fractal dimension of the last prices, running fast on a straight line and nearly stopping in a range, and how to use it in a QTSurfer strategy."
 order: 1.73
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 The **fractal adaptive moving average** (FRAMA), by John Ehlers, is an exponential average whose speed follows the fractal dimension of the last prices: it runs at full speed when the price moves in a straight line and nearly stops when it wanders.

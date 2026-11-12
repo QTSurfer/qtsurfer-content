@@ -2,6 +2,7 @@
 title: "McGinley Dynamic"
 description: "How the McGinley Dynamic changes its speed with how far the price is from it, moving faster toward a price below and slower toward a price above, and how to use it in a QTSurfer strategy."
 order: 1.75
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 The **McGinley Dynamic**, by John McGinley, is a moving average that changes its speed with how far the price is from it: it moves faster toward a price below it and slower toward a price above it.

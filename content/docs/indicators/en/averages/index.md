@@ -2,6 +2,7 @@
 title: "Averages"
 description: "Moving averages of the price: the simple, exponential, weighted, double and triple exponential, Hull, modified, Kaufman's adaptive, Arnaud Legoux, fractal adaptive, least squares and McGinley averages."
 order: 1
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 In the QTSurfer catalogues, the averages are `sma`, `ema`, `wma`, `tema`, `hma`, `mma`, `kama`, `dema`, `alma`, `frama`, `leastSquaresMovingAverage` and `mcGinleyDynamic`: averages of the last prices that smooth the price and follow it with a delay. They differ in how they weight the prices, and in how much delay they accept.

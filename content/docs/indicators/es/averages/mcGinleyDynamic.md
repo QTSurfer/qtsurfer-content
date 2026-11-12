@@ -2,6 +2,7 @@
 title: "Dinámica de McGinley"
 description: "Cómo la dinámica de McGinley cambia su velocidad según lo lejos que está el precio, moviéndose más deprisa hacia un precio por debajo y más despacio hacia uno por encima, y cómo usarla en una estrategia de QTSurfer."
 order: 1.75
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 La **dinámica de McGinley**, de John McGinley, es una media móvil que cambia su velocidad según lo lejos que está el precio: se mueve más deprisa hacia un precio por debajo y más despacio hacia uno por encima.

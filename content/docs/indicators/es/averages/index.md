@@ -2,6 +2,7 @@
 title: "Medias"
 description: "Medias móviles del precio: las medias simple, exponencial, ponderada, exponencial doble y triple, de Hull, modificada, adaptativa de Kaufman, de Arnaud Legoux, adaptativa fractal, de mínimos cuadrados y la dinámica de McGinley."
 order: 1
+lastUpdated: '2026-11-12T18:10:40Z'
 ---
 
 En los catálogos de QTSurfer, las medias son `sma`, `ema`, `wma`, `tema`, `hma`, `mma`, `kama`, `dema`, `alma`, `frama`, `leastSquaresMovingAverage` y `mcGinleyDynamic`: medias de los últimos precios que suavizan el precio y lo siguen con retraso. Se diferencian en cómo pesan los precios y en cuánto retraso aceptan.

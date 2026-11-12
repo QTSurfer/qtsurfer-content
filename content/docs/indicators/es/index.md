@@ -39,6 +39,10 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   [regresión lineal simple](/docs/indicators/statistics/simpleLinearRegression),
   [percentil móvil](/docs/indicators/statistics/rollingPercentile), [valor en riesgo](/docs/indicators/statistics/valueAtRisk),
   [autocorrelación](/docs/indicators/statistics/autocorrelation) y [exponente de Hurst](/docs/indicators/statistics/hurstExponent).
+- [Riesgo y rendimiento](/docs/indicators/risk): los indicadores pro [ratio de Sharpe](/docs/indicators/risk/sharpeRatio),
+  [ratio de Sortino](/docs/indicators/risk/sortinoRatio), [ratio omega](/docs/indicators/risk/omegaRatio),
+  [ratio de Calmar](/docs/indicators/risk/calmarRatio), [caída máxima](/docs/indicators/risk/maxDrawdown),
+  [índice de úlcera](/docs/indicators/risk/ulcerIndex) y [ratio de colas](/docs/indicators/risk/tailRatio).
 
 Para todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran, consulta los
 catálogos: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e

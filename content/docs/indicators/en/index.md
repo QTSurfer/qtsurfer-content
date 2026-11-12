@@ -39,6 +39,10 @@ The pages are grouped as the catalogues group the indicators:
   [simple linear regression](/docs/indicators/statistics/simpleLinearRegression),
   [rolling percentile](/docs/indicators/statistics/rollingPercentile), [value at risk](/docs/indicators/statistics/valueAtRisk),
   [autocorrelation](/docs/indicators/statistics/autocorrelation) and [Hurst exponent](/docs/indicators/statistics/hurstExponent).
+- [Risk and performance](/docs/indicators/risk): the pro indicators [Sharpe ratio](/docs/indicators/risk/sharpeRatio),
+  [Sortino ratio](/docs/indicators/risk/sortinoRatio), [omega ratio](/docs/indicators/risk/omegaRatio),
+  [Calmar ratio](/docs/indicators/risk/calmarRatio), [maximum drawdown](/docs/indicators/risk/maxDrawdown),
+  [Ulcer index](/docs/indicators/risk/ulcerIndex) and [tail ratio](/docs/indicators/risk/tailRatio).
 
 For every indicator a strategy can call, with its forms and the names it registers, see the catalogues:
 [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators).

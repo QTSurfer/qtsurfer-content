@@ -2,6 +2,7 @@
 title: "Ratio omega"
 description: "Cómo el ratio omega divide la suma de las ganancias por la suma de las pérdidas de los últimos rendimientos frente a un umbral, por qué está por encima de 1 exactamente cuando el rendimiento medio es positivo, y cómo usarlo en una estrategia de QTSurfer."
 order: 8.03
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 El **ratio omega**, de Con Keating y William Shadwick, es la suma de las ganancias sobre la suma de las pérdidas de los últimos `N` rendimientos, medidas frente a un umbral. Por encima de 1 las ganancias pesan más que las pérdidas.

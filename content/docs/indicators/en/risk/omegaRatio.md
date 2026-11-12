@@ -2,6 +2,7 @@
 title: "Omega ratio"
 description: "How the omega ratio divides the sum of the gains by the sum of the losses of the last returns against a threshold, why it is above 1 exactly when the mean return is positive, and how to use it in a QTSurfer strategy."
 order: 8.03
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 The **omega ratio**, by Con Keating and William Shadwick, is the sum of the gains over the sum of the losses of the last `N` returns, measured against a threshold. Above 1 the gains outweigh the losses.

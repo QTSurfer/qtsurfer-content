@@ -2,6 +2,7 @@
 title: "Sharpe ratio"
 description: "How the Sharpe ratio divides the mean return of the last bars by how much the returns vary, per bar and not annualized, why a window with no variation reads 0, and how to use it in a QTSurfer strategy."
 order: 8.01
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 The **Sharpe ratio**, by William Sharpe, divides the mean return of the last `N` bars by how much the returns vary: return per unit of risk. Here it is per bar, not annualized.

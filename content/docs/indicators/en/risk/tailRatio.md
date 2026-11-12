@@ -2,6 +2,7 @@
 title: "Tail ratio"
 description: "How the tail ratio compares the 95th percentile of the last returns with the absolute value of the 5th, the right tail against the left one, and how to use it in a QTSurfer strategy."
 order: 8.07
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 The **tail ratio** compares the right tail of the last `N` returns with the left one: the 95th percentile over the absolute value of the 5th. Above 1 the best returns are larger than the worst ones.

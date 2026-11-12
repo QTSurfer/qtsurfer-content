@@ -2,6 +2,7 @@
 title: "Índice de úlcera"
 description: "Cómo el índice de úlcera mide la profundidad y la duración de las caídas de los últimos precios, la raíz de la media de sus caídas porcentuales al cuadrado, y cómo usarlo en una estrategia de QTSurfer."
 order: 8.06
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 El **índice de úlcera**, de Peter Martin, mide la profundidad y la duración de las caídas de los últimos `N` precios: la raíz de la media de sus caídas porcentuales al cuadrado desde el máximo. Está en puntos porcentuales.

@@ -2,6 +2,7 @@
 title: "Ratio de Calmar"
 description: "Cómo el ratio de Calmar divide el rendimiento anualizado de las últimas barras por su mayor caída, por qué su factor por defecto solo sirve para barras diarias, y cómo usarlo en una estrategia de QTSurfer."
 order: 8.04
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 El **ratio de Calmar**, de Terry Young, divide el rendimiento anualizado de las últimas `N` barras por su mayor caída: cuánto rendimiento por cuán profunda caída.

@@ -2,6 +2,7 @@
 title: "Calmar ratio"
 description: "How the Calmar ratio divides the annualized return of the last bars by their largest drawdown, why its default factor suits daily bars only, and how to use it in a QTSurfer strategy."
 order: 8.04
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 The **Calmar ratio**, by Terry Young, divides the annualized return of the last `N` bars by their largest drawdown: how much return for how deep a fall.

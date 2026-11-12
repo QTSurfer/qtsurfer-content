@@ -2,6 +2,7 @@
 title: "Ratio de Sharpe"
 description: "Cómo el ratio de Sharpe divide el rendimiento medio de las últimas barras por lo que varían los rendimientos, por barra y sin anualizar, por qué una ventana sin variación lee 0, y cómo usarlo en una estrategia de QTSurfer."
 order: 8.01
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 El **ratio de Sharpe**, de William Sharpe, divide el rendimiento medio de las últimas `N` barras por lo que varían los rendimientos: rendimiento por unidad de riesgo. Aquí es por barra, sin anualizar.

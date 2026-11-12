@@ -2,6 +2,7 @@
 title: "Ulcer index"
 description: "How the Ulcer index measures the depth and the duration of the drawdowns of the last prices, the root of the mean of their squared percentage falls, and how to use it in a QTSurfer strategy."
 order: 8.06
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 The **Ulcer index**, by Peter Martin, measures the depth and the duration of the drawdowns of the last `N` prices: the root of the mean of their squared percentage falls from the peak. It is in percentage points.

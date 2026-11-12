@@ -2,6 +2,7 @@
 title: "Sortino ratio"
 description: "How the Sortino ratio divides the mean return of the last bars by the deviation of the returns below a target, so only the falls count as risk, and how to use it in a QTSurfer strategy."
 order: 8.02
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 The **Sortino ratio**, by Frank Sortino, is the Sharpe ratio with only the downside as risk: the mean return over the deviation of the returns that fall below a target. Here it is per bar, not annualized.

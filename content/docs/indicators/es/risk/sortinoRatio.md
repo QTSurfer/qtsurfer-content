@@ -2,6 +2,7 @@
 title: "Ratio de Sortino"
 description: "Cómo el ratio de Sortino divide el rendimiento medio de las últimas barras por la desviación de los rendimientos por debajo de un objetivo, de modo que solo las caídas cuentan como riesgo, y cómo usarlo en una estrategia de QTSurfer."
 order: 8.02
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 El **ratio de Sortino**, de Frank Sortino, es el ratio de Sharpe con solo la caída como riesgo: el rendimiento medio sobre la desviación de los rendimientos que quedan por debajo de un objetivo. Aquí es por barra, sin anualizar.

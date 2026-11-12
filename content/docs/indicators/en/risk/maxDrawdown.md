@@ -2,6 +2,7 @@
 title: "Maximum drawdown"
 description: "How the maximum drawdown keeps the largest fall from a peak to a later low since the start, as a fraction of the peak, why it never goes down, and how to use it in a QTSurfer strategy."
 order: 8.05
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 The **maximum drawdown** is the largest fall from a peak to a later low since the indicator started, as a fraction of the peak: 0.25 is a fall of 25 %.

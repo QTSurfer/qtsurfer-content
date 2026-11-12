@@ -2,6 +2,7 @@
 title: "Ratio de colas"
 description: "Cómo el ratio de colas compara el percentil 95 de los últimos rendimientos con el valor absoluto del 5, la cola derecha frente a la izquierda, y cómo usarlo en una estrategia de QTSurfer."
 order: 8.07
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 El **ratio de colas** compara la cola derecha de los últimos `N` rendimientos con la izquierda: el percentil 95 sobre el valor absoluto del 5. Por encima de 1 los mejores rendimientos son mayores que los peores.

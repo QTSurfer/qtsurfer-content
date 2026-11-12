@@ -2,6 +2,7 @@
 title: "Caída máxima (drawdown)"
 description: "Cómo la caída máxima guarda la mayor caída desde un máximo hasta un mínimo posterior desde el inicio, como fracción del máximo, por qué nunca baja, y cómo usarla en una estrategia de QTSurfer."
 order: 8.05
+lastUpdated: '2026-11-12T20:44:51Z'
 ---
 
 La **caída máxima** (*maximum drawdown*) es la mayor caída desde un máximo hasta un mínimo posterior desde que arrancó el indicador, como fracción del máximo: 0,25 es una caída del 25 %.

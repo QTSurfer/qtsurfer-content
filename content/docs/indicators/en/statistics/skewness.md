@@ -2,6 +2,7 @@
 title: "Skewness"
 description: "How the skewness measures how lopsided the distribution of the last prices is, 0 for a symmetric one, positive for a long tail on the high side, and how to use it in a QTSurfer strategy."
 order: 7.05
+lastUpdated: '2026-11-12T21:10:07Z'
 ---
 
 The **skewness** here is the sample skewness of the last `N` prices: how lopsided their distribution is. 0 is a symmetric one; above 0 the long tail is on the high side, below 0 it is on the low side.

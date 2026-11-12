@@ -2,6 +2,7 @@
 title: "Asimetría"
 description: "Cómo la asimetría mide lo desequilibrada que está la distribución de los últimos precios, 0 para una simétrica, positiva para una cola larga en el lado alto, y cómo usarla en una estrategia de QTSurfer."
 order: 7.05
+lastUpdated: '2026-11-12T21:10:07Z'
 ---
 
 La **asimetría** es aquí la asimetría muestral de los últimos `N` precios: cuán desequilibrada está su distribución. 0 es una simétrica; por encima de 0 la cola larga está en el lado alto, por debajo de 0 está en el lado bajo.

@@ -16,7 +16,8 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   la [WMA](/docs/indicators/averages/wma), la [TEMA](/docs/indicators/averages/tema), la [HMA](/docs/indicators/averages/hma),
   la [MMA](/docs/indicators/averages/mma) y la [KAMA](/docs/indicators/averages/kama).
 - [Osciladores](/docs/indicators/oscillators): el [RSI](/docs/indicators/oscillators/rsi),
-  el [MACD](/docs/indicators/oscillators/macd) y el [CCI](/docs/indicators/oscillators/cci).
+  el [RSI estocástico](/docs/indicators/oscillators/stochRsi), el [MACD](/docs/indicators/oscillators/macd) y
+  el [CCI](/docs/indicators/oscillators/cci).
 - [Bandas](/docs/indicators/bands): las [bandas de Bollinger](/docs/indicators/bands/bollinger), su
   [%B](/docs/indicators/bands/bollingerPercentB) y su [anchura](/docs/indicators/bands/bollingerBandwidth).
 - [Volatilidad](/docs/indicators/volatility): el [ATR](/docs/indicators/volatility/atr),

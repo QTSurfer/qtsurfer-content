@@ -100,6 +100,7 @@ fuera de la muestra, que es la defensa frente al [sobreajuste](/learn/articles/o
 
 - [SMA](/docs/indicators/averages/sma) y [MMA](/docs/indicators/averages/mma): las medias que hay bajo el RSI por defecto del motor y
   bajo el suavizado de Wilder.
+- [RSI estocástico](/docs/indicators/oscillators/stochRsi): dónde está el RSI dentro de su propio rango reciente.
 - [Cruce de EMA](/learn/articles/ema-crossover): la contrapartida de seguimiento de tendencia, con su propio gráfico.
 - [Indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators):
   todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran.

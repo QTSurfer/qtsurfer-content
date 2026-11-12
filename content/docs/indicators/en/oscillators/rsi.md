@@ -97,6 +97,7 @@ sample, which is the defence against [overfitting](/learn/articles/overfitting).
 
 - [SMA](/docs/indicators/averages/sma) and [MMA](/docs/indicators/averages/mma): the averages under the engine's default RSI and
   under Wilder's smoothing.
+- [Stochastic RSI](/docs/indicators/oscillators/stochRsi): where the RSI sits in its own recent range.
 - [EMA crossover](/learn/articles/ema-crossover): the trend-following counterpart, with its own chart.
 - [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators):
   every indicator a strategy can call, with its forms and the names it registers.

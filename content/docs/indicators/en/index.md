@@ -22,8 +22,12 @@ The pages are grouped as the catalogues group the indicators:
   [%B](/docs/indicators/bands/bollingerPercentB) and their [bandwidth](/docs/indicators/bands/bollingerBandwidth).
 - [Volatility](/docs/indicators/volatility): the [ATR](/docs/indicators/volatility/atr),
   the [standard deviation](/docs/indicators/volatility/stdDev), the [variance](/docs/indicators/volatility/variance),
-  the [volatility](/docs/indicators/volatility/volatility) and the
-  [percent volatility](/docs/indicators/volatility/percentVolatility).
+  the [volatility](/docs/indicators/volatility/volatility), the
+  [percent volatility](/docs/indicators/volatility/percentVolatility) and four pro estimators: the
+  [Parkinson](/docs/indicators/volatility/parkinson), [Garman-Klass](/docs/indicators/volatility/garmanKlass),
+  [Rogers-Satchell](/docs/indicators/volatility/rogersSatchell) and [Yang-Zhang](/docs/indicators/volatility/yangZhang) volatilities.
+- [Trend](/docs/indicators/trend): the pro indicators [ADX](/docs/indicators/trend/adx),
+  [SuperTrend](/docs/indicators/trend/superTrend) and [Ichimoku cloud](/docs/indicators/trend/ichimoku).
 
 For every indicator a strategy can call, with its forms and the names it registers, see the catalogues:
 [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators).

@@ -2,7 +2,7 @@
 title: "Rango verdadero medio (ATR)"
 description: "Cómo el rango verdadero medio mide cuánto se mueve el precio en una barra, huecos incluidos, por qué necesita barras y no las estadísticas de un ticker, y cómo usarlo en una estrategia de QTSurfer."
 order: 4.1
-lastUpdated: '2026-11-12T00:02:30Z'
+lastUpdated: '2026-11-12T14:13:55Z'
 ---
 
 El **rango verdadero medio** (ATR, por sus siglas en inglés), de J. Welles Wilder, mide cuánto se mueve el precio en una barra, contando los huecos entre barras. Está en las unidades del precio y no dice nada de la dirección.

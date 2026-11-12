@@ -2,7 +2,7 @@
 title: "Average true range (ATR)"
 description: "How the average true range measures how much the price moves in a bar, gaps included, why it needs bars and not the statistics of a ticker, and how to use it in a QTSurfer strategy."
 order: 4.1
-lastUpdated: '2026-11-12T00:02:30Z'
+lastUpdated: '2026-11-12T14:13:55Z'
 ---
 
 The **average true range** (ATR), by J. Welles Wilder, measures how much the price moves in a bar, counting the gaps between bars. It is in the units of the price and says nothing about direction.

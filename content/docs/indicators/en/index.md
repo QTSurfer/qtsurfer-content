@@ -37,8 +37,9 @@ there is one, such as the [RSI](/docs/indicators/oscillators/rsi).
 
 <div data-indicator-chart="any"></div>
 
-An indicator that reads whole bars, such as the ATR, needs a kline series: a ticker carries a price and nothing else, and
-the chart says so.
+An indicator that reads whole bars, such as the ATR, belongs on a kline series: a ticker carries the exchange's statistics
+over a window and not a bar's, so on a ticker series the line is computed from those, it does not mean what the name of
+the indicator says, and the chart says so.
 
-The charts run on sample series: synthetic ones, with the shape of a ticker or of a kline, and real crypto ones in
-several timeframes. They show how an indicator behaves. They are not the result of a strategy.
+The charts run on sample series, all of them with open, high, low, close and volume: synthetic ones, with the shape of a
+ticker or of a kline, and real crypto ones in several timeframes. They show how an indicator behaves. They are not the result of a strategy.

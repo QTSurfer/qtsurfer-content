@@ -38,8 +38,9 @@ página cuando la tiene, como la del [RSI](/docs/indicators/oscillators/rsi).
 
 <div data-indicator-chart="any"></div>
 
-Un indicador que lee barras completas, como el ATR, necesita una serie kline: un ticker lleva un precio y nada más, y el
-gráfico lo dice.
+Un indicador que lee barras completas, como el ATR, va en una serie kline: un ticker lleva las estadísticas del exchange
+sobre una ventana y no las de una barra, así que en una serie ticker la línea se calcula con ellas, no significa lo que
+dice el nombre del indicador, y el gráfico lo dice.
 
-Los gráficos usan series de muestra: sintéticas, con la forma de un ticker o de un kline, y reales de criptomonedas en
-varias temporalidades. Muestran cómo se comporta un indicador. No son el resultado de una estrategia.
+Los gráficos usan series de muestra, todas con apertura, máximo, mínimo, cierre y volumen: sintéticas, con la forma de un
+ticker o de un kline, y reales de criptomonedas en varias temporalidades. Muestran cómo se comporta un indicador. No son el resultado de una estrategia.

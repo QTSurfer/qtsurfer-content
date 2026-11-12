@@ -1,13 +1,13 @@
 ---
 title: "Average true range (ATR)"
-description: "How the average true range measures how much the price moves in a bar, gaps included, why it needs bars and not a ticker, and how to use it in a QTSurfer strategy."
+description: "How the average true range measures how much the price moves in a bar, gaps included, why it needs bars and not the statistics of a ticker, and how to use it in a QTSurfer strategy."
 order: 4.1
 lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **average true range** (ATR), by J. Welles Wilder, measures how much the price moves in a bar, counting the gaps between bars. It is in the units of the price and says nothing about direction.
 
-Try it on a series below. It reads whole bars, so choose a kline series: on a ticker series the chart has nothing to draw, and says so.
+Try it on a series below. It reads whole bars, so choose a kline series: on a ticker series the chart draws a line, but it is computed from the ticker's statistics and the chart says so.
 
 <div data-indicator-chart="atr"></div>
 
@@ -22,7 +22,7 @@ ATR = previous ATR + (TR − previous ATR) / N
 
 The true range `TR` is the largest of the bar's own range and the distance from the previous close to the bar's high and to its low, so a gap counts. The first bar has no previous close and its range is `high − low`. The engine starts the average on the mean of the first `N` ranges and then smooths as Wilder does, the [MMA](/docs/indicators/averages/mma) weight of `1 / N`. It is ready after `N` bars.
 
-It needs the high, the low and the close of each bar. A ticker carries a 24-hour high and low and not those of a bar, so on a ticker feed the engine raises a notice and the ATR draws nothing.
+It needs the high, the low and the close of each bar. A ticker carries the exchange's high and low over a window, 24 hours on a real exchange, and not those of a bar. On a ticker feed the engine raises a notice, and the ATR it gives is that of those statistics: it does not mean what the ATR means, and the chart draws it with the notice.
 
 ## Reading it
 

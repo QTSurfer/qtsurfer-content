@@ -28,6 +28,8 @@ The pages are grouped as the catalogues group the indicators:
   [Rogers-Satchell](/docs/indicators/volatility/rogersSatchell) and [Yang-Zhang](/docs/indicators/volatility/yangZhang) volatilities.
 - [Trend](/docs/indicators/trend): the pro indicators [ADX](/docs/indicators/trend/adx),
   [SuperTrend](/docs/indicators/trend/superTrend) and [Ichimoku cloud](/docs/indicators/trend/ichimoku).
+- [Volume](/docs/indicators/volume): the pro indicators [OBV](/docs/indicators/volume/obv),
+  [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) and [CMF](/docs/indicators/volume/cmf).
 
 For every indicator a strategy can call, with its forms and the names it registers, see the catalogues:
 [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators).

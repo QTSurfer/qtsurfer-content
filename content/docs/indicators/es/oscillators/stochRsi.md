@@ -2,6 +2,7 @@
 title: "RSI estocástico"
 description: "Cómo el RSI estocástico sitúa el RSI entre sus valores más bajo y más alto de las últimas N actualizaciones, por qué llega tan a menudo a 0 y a 100, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.4
+lastUpdated: '2026-11-12T11:00:05Z'
 ---
 
 El **RSI estocástico** aplica la fórmula del oscilador estocástico al [RSI](/docs/indicators/oscillators/rsi) en lugar de al precio. Dice dónde está el RSI entre su valor más bajo y su valor más alto de las últimas `N` actualizaciones, de 0 a 100. Lo idearon Tushar Chande y Stanley Kroll.

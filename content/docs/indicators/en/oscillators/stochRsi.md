@@ -2,6 +2,7 @@
 title: "Stochastic RSI"
 description: "How the stochastic RSI places the RSI between its lowest and highest values of the last N updates, why it reaches 0 and 100 so often, and how to use it in a QTSurfer strategy."
 order: 2.4
+lastUpdated: '2026-11-12T11:00:05Z'
 ---
 
 The **stochastic RSI** applies the formula of the stochastic oscillator to the [RSI](/docs/indicators/oscillators/rsi) instead of to the price. It says where the RSI sits between its lowest and its highest value of the last `N` updates, from 0 to 100. It was devised by Tushar Chande and Stanley Kroll.

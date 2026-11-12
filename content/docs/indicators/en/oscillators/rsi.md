@@ -2,7 +2,7 @@
 title: Relative strength index (RSI)
 description: "How the RSI turns recent gains and losses into a number between 0 and 100, how its period and its smoothing change the line, and how to use it in a QTSurfer strategy."
 order: 2.1
-lastUpdated: '2026-11-12T00:02:30Z'
+lastUpdated: '2026-11-12T11:00:05Z'
 ---
 
 The **relative strength index** (RSI) measures how much of the recent price movement has been up and how much down, and

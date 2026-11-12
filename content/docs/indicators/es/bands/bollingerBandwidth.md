@@ -2,6 +2,7 @@
 title: "Anchura de las bandas de Bollinger"
 description: "Cómo la anchura da lo que miden de ancho las bandas de Bollinger en porcentaje de su línea media, cómo leerla y cómo usarla en una estrategia de QTSurfer."
 order: 3.2
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **anchura de las bandas de Bollinger** es lo que mide de ancho una [banda de Bollinger](/docs/indicators/bands/bollinger) como porcentaje de su línea media. Dice cuánto de ancha es la banda respecto al precio.

@@ -2,6 +2,7 @@
 title: "Commodity channel index (CCI)"
 description: "How the CCI measures the distance of the price from its average in units of the usual deviation, what the engine applies it to, and how to use it in a QTSurfer strategy."
 order: 2.3
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **commodity channel index** (CCI), by Donald Lambert, measures how far the price is from its recent average, in units of how far it usually is. It has no fixed range: it swings around zero.

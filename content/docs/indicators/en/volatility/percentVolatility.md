@@ -2,6 +2,7 @@
 title: "Percent volatility"
 description: "How the percent volatility gives the average absolute percent change between consecutive prices over a block of N changes, and how to use it in a QTSurfer strategy."
 order: 4.5
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **percent volatility** is the average size of the changes of the price, as a percentage: how much it moves from one update to the next, on average. Being a percentage, it can be compared between instruments.

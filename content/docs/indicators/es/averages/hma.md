@@ -2,6 +2,7 @@
 title: "Media móvil de Hull (HMA)"
 description: "Cómo la media móvil de Hull combina medias ponderadas de tres periodos para seguir de cerca el precio y aun así ser suave, y cómo usarla en una estrategia de QTSurfer."
 order: 1.5
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **media móvil de Hull** (HMA, por sus siglas en inglés), ideada por Alan Hull, está construida para seguir de cerca el precio y aun así ser suave. Combina medias ponderadas de tres periodos distintos.

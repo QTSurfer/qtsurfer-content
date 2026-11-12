@@ -2,6 +2,7 @@
 title: "Media móvil modificada (MMA)"
 description: "Cómo la media móvil modificada, el suavizado que usa J. Welles Wilder, es una media exponencial con un peso más suave, y cómo usarla en una estrategia de QTSurfer."
 order: 1.6
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **media móvil modificada** (MMA, por sus siglas en inglés) es el suavizado que usa J. Welles Wilder en sus indicadores, como el RSI y el ATR. Es una media exponencial con un peso más suave.

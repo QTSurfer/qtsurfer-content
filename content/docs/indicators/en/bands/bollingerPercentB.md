@@ -2,6 +2,7 @@
 title: "Bollinger %B"
 description: "How the %B tells where the price sits in a Bollinger band, 0 at the lower band and 1 at the upper one, how to read it, and how to use it in a QTSurfer strategy."
 order: 3.3
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **Bollinger %B** tells where the price sits in a [Bollinger band](/docs/indicators/bands/bollinger): 0 at the lower band, 1 at the upper band, and outside that range when the price is outside the band.

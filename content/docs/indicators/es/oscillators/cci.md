@@ -2,6 +2,7 @@
 title: "Índice de canal de materias primas (CCI)"
 description: "Cómo el CCI mide la distancia del precio a su media en unidades de la desviación habitual, a qué lo aplica el motor y cómo usarlo en una estrategia de QTSurfer."
 order: 2.3
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 El **índice de canal de materias primas** (CCI, por sus siglas en inglés), de Donald Lambert, mide a qué distancia está el precio de su media reciente, en unidades de la distancia a la que suele estar. No tiene un rango fijo: oscila alrededor de cero.

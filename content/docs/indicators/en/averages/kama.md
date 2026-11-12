@@ -2,6 +2,7 @@
 title: "Kaufman's adaptive moving average (KAMA)"
 description: "How Kaufman's adaptive moving average follows the price fast when it moves in one direction and slowly when it zigzags, what its three periods set, and how to use it in a QTSurfer strategy."
 order: 1.7
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 **Kaufman's adaptive moving average** (KAMA), by Perry Kaufman, changes how fast it follows the price: quickly when the price moves in one direction, slowly when it zigzags.

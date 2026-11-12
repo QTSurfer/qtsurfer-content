@@ -2,6 +2,7 @@
 title: "Varianza"
 description: "Cómo la varianza, el cuadrado de la desviación típica, mide la dispersión de los últimos N precios, con el divisor de una muestra, y cómo usarla en una estrategia de QTSurfer."
 order: 4.3
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **varianza** es el cuadrado de la [desviación típica](/docs/indicators/volatility/stdDev): la media de los cuadrados de las distancias de los últimos `N` precios a su media. Está en el cuadrado de las unidades del precio.

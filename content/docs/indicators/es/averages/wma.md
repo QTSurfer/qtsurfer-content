@@ -2,6 +2,7 @@
 title: "Media móvil ponderada (WMA)"
 description: "Cómo la media móvil ponderada pesa los últimos N precios de 1 a N, qué pasa en las primeras barras y cómo usarla en una estrategia de QTSurfer."
 order: 1.3
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **media móvil ponderada** (WMA, por sus siglas en inglés) pesa los últimos `N` precios en línea recta: el más reciente pesa `N` y el más antiguo pesa 1.

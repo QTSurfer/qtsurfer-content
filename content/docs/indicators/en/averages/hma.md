@@ -2,6 +2,7 @@
 title: "Hull moving average (HMA)"
 description: "How the Hull moving average combines weighted averages of three periods to follow the price closely and still be smooth, and how to use it in a QTSurfer strategy."
 order: 1.5
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **Hull moving average** (HMA), devised by Alan Hull, is built to follow the price closely and still be smooth. It combines weighted averages of three different periods.

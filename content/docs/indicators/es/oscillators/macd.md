@@ -2,7 +2,7 @@
 title: Convergencia y divergencia de medias móviles (MACD)
 description: "Cómo el MACD convierte dos medias exponenciales en una línea de impulso con su línea de señal y su histograma, cómo la cambian sus tres periodos y cómo usarlo en una estrategia de QTSurfer."
 order: 2.2
-lastUpdated: '2026-11-11T22:23:04Z'
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **convergencia y divergencia de medias móviles** (MACD, por sus siglas en inglés) es la distancia entre una media

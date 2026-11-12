@@ -2,6 +2,7 @@
 title: "Variance"
 description: "How the variance, the square of the standard deviation, measures the spread of the last N prices, with the divisor of a sample, and how to use it in a QTSurfer strategy."
 order: 4.3
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **variance** is the square of the [standard deviation](/docs/indicators/volatility/stdDev): the mean of the squared distances of the last `N` prices from their mean. It is in the square of the units of the price.

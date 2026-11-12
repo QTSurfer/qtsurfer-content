@@ -2,6 +2,7 @@
 title: "Standard deviation"
 description: "How the standard deviation measures how spread out the last N prices are around their mean, with the deviation of a sample, and how to use it in a QTSurfer strategy."
 order: 4.2
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **standard deviation** measures how spread out the last `N` prices are around their mean. It is in the units of the price, and it is what the [Bollinger bands](/docs/indicators/bands/bollinger) are made of.

@@ -2,6 +2,7 @@
 title: "Weighted moving average (WMA)"
 description: "How the weighted moving average weights the last N prices from 1 to N, what happens in the first bars, and how to use it in a QTSurfer strategy."
 order: 1.3
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **weighted moving average** (WMA) weights the last `N` prices in a straight line: the newest weighs `N` and the oldest weighs 1.

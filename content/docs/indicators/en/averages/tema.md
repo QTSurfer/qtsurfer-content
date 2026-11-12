@@ -2,6 +2,7 @@
 title: "Triple exponential moving average (TEMA)"
 description: "How the triple exponential moving average combines three exponential averages to cut the lag of one, and how to use it in a QTSurfer strategy."
 order: 1.4
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **triple exponential moving average** (TEMA) combines three exponential averages to cut the lag of a single one.

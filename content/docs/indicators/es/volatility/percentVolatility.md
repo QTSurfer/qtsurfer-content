@@ -2,6 +2,7 @@
 title: "Volatilidad porcentual"
 description: "Cómo la volatilidad porcentual da el cambio porcentual absoluto medio entre precios consecutivos sobre un bloque de N cambios, y cómo usarla en una estrategia de QTSurfer."
 order: 4.5
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **volatilidad porcentual** es el tamaño medio de los cambios del precio, en porcentaje: cuánto se mueve de una actualización a la siguiente, de media. Al ser un porcentaje, se puede comparar entre instrumentos.

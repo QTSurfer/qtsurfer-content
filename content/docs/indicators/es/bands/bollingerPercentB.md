@@ -2,6 +2,7 @@
 title: "%B de Bollinger"
 description: "Cómo el %B dice dónde está el precio dentro de una banda de Bollinger, 0 en la banda inferior y 1 en la superior, cómo leerlo y cómo usarlo en una estrategia de QTSurfer."
 order: 3.3
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 El **%B de Bollinger** dice dónde está el precio dentro de una [banda de Bollinger](/docs/indicators/bands/bollinger): 0 en la banda inferior, 1 en la superior, y fuera de ese rango cuando el precio está fuera de la banda.

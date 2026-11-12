@@ -2,7 +2,7 @@
 title: Bands
 description: "Bands drawn around the price, and the measures taken from them: the Bollinger bands, their %B and their bandwidth."
 order: 3
-lastUpdated: '2026-11-11T22:23:04Z'
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 In the QTSurfer catalogues, the bands are `bollinger`, `bollingerPercentB` and `bollingerBandwidth`: a band drawn around a

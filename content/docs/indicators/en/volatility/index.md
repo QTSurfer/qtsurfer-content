@@ -2,6 +2,7 @@
 title: "Volatility"
 description: "Indicators of how much the price moves: the average true range, the standard deviation, the variance, and the volatility indicators of the engine."
 order: 4
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 In the QTSurfer catalogues, the volatility indicators are `atr`, `stdDev`, `variance`, `volatility` and `percentVolatility`: measures of how much the price moves, or of how often. They answer different questions, and the units tell them apart: some are in the units of the price, one in its square, and two in percent.

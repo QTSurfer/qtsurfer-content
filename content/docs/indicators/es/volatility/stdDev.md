@@ -2,6 +2,7 @@
 title: "Desviación típica"
 description: "Cómo la desviación típica mide cuán dispersos están los últimos N precios alrededor de su media, con la desviación de una muestra, y cómo usarla en una estrategia de QTSurfer."
 order: 4.2
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **desviación típica** mide cuán dispersos están los últimos `N` precios alrededor de su media. Está en las unidades del precio, y es con lo que se construyen las [bandas de Bollinger](/docs/indicators/bands/bollinger).

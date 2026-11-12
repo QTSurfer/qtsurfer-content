@@ -2,6 +2,7 @@
 title: "Media móvil simple (SMA)"
 description: "Cómo la media móvil simple toma la media de los últimos N precios, por qué la de por defecto del motor se renueva una vez por periodo y dibuja una escalera, y cómo usarla en una estrategia de QTSurfer."
 order: 1.1
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **media móvil simple** (SMA, por sus siglas en inglés) es la media de los últimos `N` precios. Todos los precios de la ventana pesan lo mismo, así que la media suaviza el precio y lo sigue con un retraso de cerca de la mitad de la ventana.

@@ -2,6 +2,7 @@
 title: "Media móvil adaptativa de Kaufman (KAMA)"
 description: "Cómo la media móvil adaptativa de Kaufman sigue al precio deprisa cuando se mueve en una dirección y despacio cuando zigzaguea, qué fijan sus tres periodos y cómo usarla en una estrategia de QTSurfer."
 order: 1.7
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **media móvil adaptativa de Kaufman** (KAMA, por sus siglas en inglés), de Perry Kaufman, cambia lo rápido que sigue al precio: deprisa cuando el precio se mueve en una dirección, despacio cuando zigzaguea.

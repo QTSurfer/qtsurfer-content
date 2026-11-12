@@ -2,6 +2,7 @@
 title: "Bollinger bandwidth"
 description: "How the bandwidth gives the width of a Bollinger band in percent of its middle line, how to read it, and how to use it in a QTSurfer strategy."
 order: 3.2
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **Bollinger bandwidth** is the width of a [Bollinger band](/docs/indicators/bands/bollinger) as a percentage of its middle line. It says how wide the band is next to the price.

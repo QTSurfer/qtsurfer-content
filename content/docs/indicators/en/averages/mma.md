@@ -2,6 +2,7 @@
 title: "Modified moving average (MMA)"
 description: "How the modified moving average, the smoothing J. Welles Wilder uses, is an exponential average with a gentler weight, and how to use it in a QTSurfer strategy."
 order: 1.6
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **modified moving average** (MMA) is the smoothing that J. Welles Wilder uses in his indicators, such as the RSI and the ATR. It is an exponential average with a gentler weight.

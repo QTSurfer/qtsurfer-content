@@ -2,6 +2,7 @@
 title: "Exponential moving average (EMA)"
 description: "How the exponential moving average weights the recent prices more with weights that fall geometrically, what its period sets, and how to use it in a QTSurfer strategy."
 order: 1.2
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **exponential moving average** (EMA) weights the most recent prices more, with weights that fall geometrically as the prices get older. It never fully forgets a price, and each update needs only the previous value.

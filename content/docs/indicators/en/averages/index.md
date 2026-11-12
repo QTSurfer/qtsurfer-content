@@ -2,6 +2,7 @@
 title: "Averages"
 description: "Moving averages of the price: the simple, exponential, weighted, triple exponential, Hull, modified and Kaufman's adaptive averages."
 order: 1
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 In the QTSurfer catalogues, the averages are `sma`, `ema`, `wma`, `tema`, `hma`, `mma` and `kama`: averages of the last prices that smooth the price and follow it with a delay. They differ in how they weight the prices, and in how much delay they accept.

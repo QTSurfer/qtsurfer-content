@@ -2,6 +2,7 @@
 title: "Volatilidad"
 description: "Cómo el indicador de volatilidad da la proporción de actualizaciones recientes en las que cambió el precio, por qué marca 100 casi siempre sobre velas, y cómo usarlo en una estrategia de QTSurfer."
 order: 4.4
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **volatilidad** de los catálogos de QTSurfer no es la estadística. Es el porcentaje de las últimas actualizaciones en las que cambió el precio: dice con qué frecuencia se mueve el precio, no cuánto.

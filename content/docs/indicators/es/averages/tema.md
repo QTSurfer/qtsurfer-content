@@ -2,6 +2,7 @@
 title: "Media móvil exponencial triple (TEMA)"
 description: "Cómo la media móvil exponencial triple combina tres medias exponenciales para recortar el retraso de una sola, y cómo usarla en una estrategia de QTSurfer."
 order: 1.4
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **media móvil exponencial triple** (TEMA, por sus siglas en inglés) combina tres medias exponenciales para recortar el retraso de una sola.

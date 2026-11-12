@@ -2,6 +2,7 @@
 title: "Simple moving average (SMA)"
 description: "How the simple moving average takes the mean of the last N prices, why the engine's default one renews once per period and draws a staircase, and how to use it in a QTSurfer strategy."
 order: 1.1
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **simple moving average** (SMA) is the mean of the last `N` prices. Every price in the window weighs the same, so the average smooths the price and follows it with a delay of about half the window.

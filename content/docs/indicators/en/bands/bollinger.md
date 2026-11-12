@@ -2,7 +2,7 @@
 title: Bollinger bands
 description: "How the Bollinger bands wrap the price in a band that widens and narrows with its volatility, what the %B and the bandwidth read from it, and how to use them in a QTSurfer strategy."
 order: 3.1
-lastUpdated: '2026-11-11T22:23:04Z'
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 **Bollinger bands** draw a band around a moving average of the price. The band is a number of standard deviations of the

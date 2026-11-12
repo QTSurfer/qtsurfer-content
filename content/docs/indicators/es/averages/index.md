@@ -2,6 +2,7 @@
 title: "Medias"
 description: "Medias móviles del precio: las medias simple, exponencial, ponderada, exponencial triple, de Hull, modificada y adaptativa de Kaufman."
 order: 1
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 En los catálogos de QTSurfer, las medias son `sma`, `ema`, `wma`, `tema`, `hma`, `mma` y `kama`: medias de los últimos precios que suavizan el precio y lo siguen con retraso. Se diferencian en cómo pesan los precios y en cuánto retraso aceptan.

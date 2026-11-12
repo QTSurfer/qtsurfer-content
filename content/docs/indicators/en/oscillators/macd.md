@@ -2,7 +2,7 @@
 title: Moving average convergence divergence (MACD)
 description: "How the MACD turns two exponential averages into a momentum line with a signal line and a histogram, how its three periods change them, and how to use it in a QTSurfer strategy."
 order: 2.2
-lastUpdated: '2026-11-11T22:23:04Z'
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **moving average convergence divergence** (MACD) is the gap between a fast and a slow exponential moving average of

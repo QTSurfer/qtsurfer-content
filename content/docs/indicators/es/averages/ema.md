@@ -2,6 +2,7 @@
 title: "Media móvil exponencial (EMA)"
 description: "Cómo la media móvil exponencial da más peso a los precios recientes con pesos que caen de forma geométrica, qué fija su periodo y cómo usarla en una estrategia de QTSurfer."
 order: 1.2
+lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 La **media móvil exponencial** (EMA, por sus siglas en inglés) da más peso a los precios más recientes, con pesos que caen de forma geométrica a medida que los precios envejecen. Nunca olvida del todo un precio, y cada actualización solo necesita el valor anterior.

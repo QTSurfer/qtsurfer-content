@@ -28,6 +28,8 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   [Rogers-Satchell](/docs/indicators/volatility/rogersSatchell) y [Yang-Zhang](/docs/indicators/volatility/yangZhang).
 - [Tendencia](/docs/indicators/trend): los indicadores pro [ADX](/docs/indicators/trend/adx),
   [SuperTrend](/docs/indicators/trend/superTrend) y [nube de Ichimoku](/docs/indicators/trend/ichimoku).
+- [Volumen](/docs/indicators/volume): los indicadores pro [OBV](/docs/indicators/volume/obv),
+  [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) y [CMF](/docs/indicators/volume/cmf).
 
 Para todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran, consulta los
 catálogos: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e

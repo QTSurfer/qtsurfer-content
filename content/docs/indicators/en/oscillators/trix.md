@@ -2,6 +2,7 @@
 title: "TRIX"
 description: "How the TRIX gives the percentage change of a triple exponential average, which filters out the small moves, and how to use it in a QTSurfer strategy."
 order: 2.45
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **TRIX**, by Jack Hutson, is the percentage change of a triple exponential average: three exponential averages in a row filter out the small moves, and the rate of the result is what is left.

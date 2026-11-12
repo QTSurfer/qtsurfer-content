@@ -2,6 +2,7 @@
 title: "Índice de fuerza verdadera (TSI)"
 description: "Cómo el índice de fuerza verdadera suaviza dos veces los cambios de precio y los contrapone a su tamaño suavizado dos veces, de −100 a 100, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.44
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 El **índice de fuerza verdadera** (TSI, por sus siglas en inglés), de William Blau, suaviza dos veces los cambios de precio y los contrapone al tamaño, suavizado dos veces, de esos cambios, de −100 a 100.

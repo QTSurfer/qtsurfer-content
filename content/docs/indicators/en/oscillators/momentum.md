@@ -2,6 +2,7 @@
 title: "Momentum"
 description: "How the momentum gives the difference between the latest price and the price N bars ago, in price units, why it does not compare between instruments, and how to use it in a QTSurfer strategy."
 order: 2.41
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **momentum** is the difference between the latest price and the price `N` bars ago, in price units: how far the price has gone in `N` bars, and in which direction.

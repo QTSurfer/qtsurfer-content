@@ -2,6 +2,7 @@
 title: "Chande momentum oscillator (CMO)"
 description: "How the Chande momentum oscillator sets the gains against the losses of the last N changes, from minus 100 to 100, with no smoothing, and how to use it in a QTSurfer strategy."
 order: 2.43
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **Chande momentum oscillator** (CMO), by Tushar Chande, sets the gains against the losses of the last `N` price changes, from −100 to 100, with no smoothing.

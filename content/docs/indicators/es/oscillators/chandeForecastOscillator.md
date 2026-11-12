@@ -2,6 +2,7 @@
 title: "Oscilador de pronóstico de Chande (CFO)"
 description: "Cómo el oscilador de pronóstico de Chande da el porcentaje en que el precio está por encima o por debajo de su recta de regresión lineal, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.48
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 El **oscilador de pronóstico de Chande** (CFO, por sus siglas en inglés), de Tushar Chande, da el porcentaje en que el precio está por encima o por debajo de su recta de regresión lineal.

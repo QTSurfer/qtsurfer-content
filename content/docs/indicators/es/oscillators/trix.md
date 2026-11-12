@@ -2,6 +2,7 @@
 title: "TRIX"
 description: "Cómo el TRIX da el cambio porcentual de una media exponencial triple, que filtra los movimientos pequeños, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.45
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 El **TRIX**, de Jack Hutson, es el cambio porcentual de una media exponencial triple: tres medias exponenciales seguidas filtran los movimientos pequeños, y la tasa del resultado es lo que queda.

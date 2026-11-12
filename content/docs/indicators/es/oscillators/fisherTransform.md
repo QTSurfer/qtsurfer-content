@@ -2,6 +2,7 @@
 title: "Transformada de Fisher"
 description: "Cómo la transformada de Fisher sitúa el precio en su rango reciente, lo suaviza y estira los extremos con la tangente hiperbólica inversa, acotada a unos 3,8, y cómo usarla en una estrategia de QTSurfer."
 order: 2.50
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 La **transformada de Fisher**, de John Ehlers, sitúa el precio en su rango reciente, lo suaviza y estira los extremos con la tangente hiperbólica inversa, de modo que los puntos de giro destaquen.

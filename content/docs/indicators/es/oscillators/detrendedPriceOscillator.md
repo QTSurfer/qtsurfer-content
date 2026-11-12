@@ -2,6 +2,7 @@
 title: "Oscilador de precio sin tendencia (DPO)"
 description: "Cómo el oscilador de precio sin tendencia contrapone un precio pasado a la media para quitar la tendencia y mostrar ciclos, por qué no es una señal del presente, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.49
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 El **oscilador de precio sin tendencia** (DPO, por sus siglas en inglés) contrapone un precio del pasado a la media simple actual, lo que centra la media en ese precio y quita la tendencia, para mostrar los ciclos en torno a ella.

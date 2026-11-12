@@ -2,6 +2,7 @@
 title: "Coppock curve"
 description: "How the Coppock curve smooths the sum of two rates of change with a weighted average, designed for monthly data, and how to use it in a QTSurfer strategy."
 order: 2.46
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **Coppock curve**, by Edwin Coppock, is a weighted moving average of the sum of two rates of change. It was designed to spot long-term buying opportunities in stock indexes, on monthly data.

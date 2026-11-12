@@ -2,6 +2,7 @@
 title: "True strength index (TSI)"
 description: "How the true strength index double-smooths the price changes and sets them against their double-smoothed size, from minus 100 to 100, and how to use it in a QTSurfer strategy."
 order: 2.44
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **true strength index** (TSI), by William Blau, double-smooths the price changes and sets them against the double-smoothed size of those changes, from −100 to 100.

@@ -2,6 +2,7 @@
 title: "Detrended price oscillator (DPO)"
 description: "How the detrended price oscillator sets a past price against the average to remove the trend and show cycles, why it is not a signal of the present, and how to use it in a QTSurfer strategy."
 order: 2.49
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **detrended price oscillator** (DPO) sets a price from the past against the current simple average, which centres the average on that price and removes the trend, to show the cycles around it.

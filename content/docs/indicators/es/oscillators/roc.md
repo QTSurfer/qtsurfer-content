@@ -2,6 +2,7 @@
 title: "Tasa de cambio (ROC)"
 description: "Cómo la tasa de cambio da el cambio porcentual del precio en las últimas N barras, por qué se compara entre instrumentos donde el momento no, y cómo usarla en una estrategia de QTSurfer."
 order: 2.42
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 La **tasa de cambio** (ROC, por sus siglas en inglés) es el cambio porcentual del precio en las últimas `N` barras. Es el [momento](/docs/indicators/oscillators/momentum) dividido por el precio antiguo.

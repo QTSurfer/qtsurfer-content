@@ -2,6 +2,7 @@
 title: "Know Sure Thing (KST)"
 description: "Cómo el Know Sure Thing suma cuatro tasas de cambio suavizadas de longitudes distintas, con su línea de señal, por qué la versión del motor se mueve a saltos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.47
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 El **Know Sure Thing** (KST), de Martin Pring, suma cuatro tasas de cambio de longitudes distintas, cada una suavizada con una media simple y con más peso cuanto más larga es. Viene con una línea de señal, la media del propio KST.

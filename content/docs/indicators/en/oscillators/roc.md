@@ -2,6 +2,7 @@
 title: "Rate of change (ROC)"
 description: "How the rate of change gives the percentage change of the price over the last N bars, why it compares between instruments where the momentum does not, and how to use it in a QTSurfer strategy."
 order: 2.42
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **rate of change** (ROC) is the percentage change of the price over the last `N` bars. It is the [momentum](/docs/indicators/oscillators/momentum) divided by the old price.

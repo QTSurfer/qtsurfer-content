@@ -2,6 +2,7 @@
 title: "Oscilador de momento de Chande (CMO)"
 description: "Cómo el oscilador de momento de Chande contrapone las ganancias a las pérdidas de los últimos N cambios, de −100 a 100, sin suavizado, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.43
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 El **oscilador de momento de Chande** (CMO, por sus siglas en inglés), de Tushar Chande, contrapone las ganancias a las pérdidas de los últimos `N` cambios de precio, de −100 a 100, sin suavizado.

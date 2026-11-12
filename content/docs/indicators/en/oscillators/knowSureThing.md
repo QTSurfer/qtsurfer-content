@@ -2,6 +2,7 @@
 title: "Know sure thing (KST)"
 description: "How the know sure thing adds four smoothed rates of change of different lengths, with its signal line, why the engine's version moves in steps, and how to use it in a QTSurfer strategy."
 order: 2.47
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **know sure thing** (KST), by Martin Pring, adds four rates of change of different lengths, each smoothed with a simple average and weighted more the longer it is. It comes with a signal line, the average of the KST itself.

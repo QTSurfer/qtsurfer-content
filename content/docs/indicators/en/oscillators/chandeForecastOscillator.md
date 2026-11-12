@@ -2,6 +2,7 @@
 title: "Chande forecast oscillator (CFO)"
 description: "How the Chande forecast oscillator gives the percentage by which the price is above or below its linear regression line, and how to use it in a QTSurfer strategy."
 order: 2.48
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **Chande forecast oscillator** (CFO), by Tushar Chande, gives the percentage by which the price is above or below its linear regression line.

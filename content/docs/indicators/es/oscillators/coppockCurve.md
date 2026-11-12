@@ -2,6 +2,7 @@
 title: "Curva de Coppock"
 description: "Cómo la curva de Coppock suaviza con una media ponderada la suma de dos tasas de cambio, diseñada para datos mensuales, y cómo usarla en una estrategia de QTSurfer."
 order: 2.46
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 La **curva de Coppock**, de Edwin Coppock, es una media móvil ponderada de la suma de dos tasas de cambio. Se diseñó para detectar oportunidades de compra a largo plazo en índices bursátiles, con datos mensuales.

@@ -2,6 +2,7 @@
 title: "Momento (momentum)"
 description: "Cómo el momento da la diferencia entre el último precio y el precio de hace N barras, en unidades de precio, por qué no se compara entre instrumentos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.41
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 El **momento** (*momentum*) es la diferencia entre el último precio y el precio de hace `N` barras, en unidades de precio: cuánto se ha movido el precio en `N` barras, y en qué sentido.

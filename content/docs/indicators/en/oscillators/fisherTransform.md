@@ -2,6 +2,7 @@
 title: "Fisher transform"
 description: "How the Fisher transform places the price in its recent range, smooths it and stretches the extremes with the inverse hyperbolic tangent, bounded to about 3.8, and how to use it in a QTSurfer strategy."
 order: 2.50
+lastUpdated: '2026-11-12T21:21:22Z'
 ---
 
 The **Fisher transform**, by John Ehlers, places the price in its recent range, smooths it, and stretches the extremes with the inverse hyperbolic tangent, so that turning points stand out.

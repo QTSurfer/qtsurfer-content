@@ -2,6 +2,7 @@
 title: "Exact variance"
 description: "How the exact variance measures the spread of the last prices, dividing by N where the free variance divides by N minus 1, and how to use it in a QTSurfer strategy."
 order: 7.01
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **exact variance** is the mean of the squared distances of the last `N` prices from their mean. It is the pro counterpart of the [variance](/docs/indicators/volatility/variance): it divides by `N`, where that one divides by `N − 1`.

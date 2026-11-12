@@ -2,6 +2,7 @@
 title: "Z-score"
 description: "How the z-score says how many standard deviations the latest price is from the mean of the last prices, why it cannot pass the square root of N minus 1, and how to use it in a QTSurfer strategy."
 order: 7.03
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **z-score** says how many standard deviations the latest price is from the mean of the last `N` prices.

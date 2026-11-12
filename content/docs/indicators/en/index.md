@@ -3,7 +3,7 @@ id: indicators
 title: Indicators
 description: "How each QTSurfer indicator works, with a chart you can change: what it computes, how its parameters shape it, and how to use it in a strategy."
 order: 0
-lastUpdated: '2026-11-12T15:34:29Z'
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 An indicator turns a price series into a number a strategy can act on: a trend, a momentum, a volatility. Each page here

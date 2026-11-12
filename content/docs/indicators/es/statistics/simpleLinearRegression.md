@@ -2,6 +2,7 @@
 title: "Regresión lineal simple"
 description: "Cómo la regresión lineal simple ajusta una recta a los últimos precios y da lo bien que ajusta, con la pendiente, la ordenada en el origen, el R cuadrado y el error típico, y cómo usarla en una estrategia de QTSurfer."
 order: 7.07
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 La **regresión lineal simple** ajusta una recta a los últimos `N` precios, por mínimos cuadrados, y dice lo bien que ajusta: la pendiente, la ordenada en el origen, el R² y el error típico.

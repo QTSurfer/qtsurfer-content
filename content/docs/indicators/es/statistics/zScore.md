@@ -2,6 +2,7 @@
 title: "Puntuación z"
 description: "Cómo la puntuación z dice a cuántas desviaciones típicas está el último precio de la media de los últimos precios, por qué no puede pasar de la raíz de N menos 1, y cómo usarla en una estrategia de QTSurfer."
 order: 7.03
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 La **puntuación z** dice a cuántas desviaciones típicas está el último precio de la media de los últimos `N` precios.

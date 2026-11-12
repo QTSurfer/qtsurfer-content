@@ -2,6 +2,7 @@
 title: "Percentil móvil"
 description: "Cómo el percentil móvil da el precio por debajo del cual está una parte de los últimos precios, con la mediana, el mínimo y el máximo de la misma ventana, y cómo usarlo en una estrategia de QTSurfer."
 order: 7.08
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 El **percentil móvil** es el precio por debajo del cual está una parte dada de los últimos `N` precios, por ejemplo el percentil 95. El motor lo da con la mediana, el mínimo y el máximo de la misma ventana.

@@ -2,6 +2,7 @@
 title: "Value at risk (VaR)"
 description: "How the value at risk gives the loss a bar is not expected to exceed with 95 percent confidence if the returns were normal, how often real losses pass it, and how to use it in a QTSurfer strategy."
 order: 7.09
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **value at risk** (VaR) is the loss that a bar is not expected to exceed, with 95 % confidence, if the returns followed a normal distribution with the mean and the deviation of the last `N` returns.

@@ -2,6 +2,7 @@
 title: "Linear regression slope"
 description: "How the linear regression slope gives the slope, in price units per bar, of the straight line that best fits the last prices, and how to use it in a QTSurfer strategy."
 order: 7.06
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **linear regression slope** is the slope of the straight line that best fits the last `N` prices, by least squares, in price units per bar.

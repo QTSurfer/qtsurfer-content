@@ -2,6 +2,7 @@
 title: "Autocorrelación"
 description: "Cómo la autocorrelación mide cuánto se parece cada rendimiento al anterior, de −1 a 1, por qué es ruidosa en una ventana corta, y cómo usarla en una estrategia de QTSurfer."
 order: 7.10
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 La **autocorrelación** es aquí la autocorrelación de retardo 1 de los rendimientos: cuánto se parece el rendimiento de cada barra al de la anterior. Va de −1 a 1.

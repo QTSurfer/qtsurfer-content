@@ -2,6 +2,7 @@
 title: "Kurtosis"
 description: "How the kurtosis measures how heavy the tails of the last prices are compared with a normal distribution, which reads 0, and how to use it in a QTSurfer strategy."
 order: 7.04
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **kurtosis** here is the excess kurtosis of the last `N` prices: how heavy the tails of their distribution are compared with a normal one, which reads 0. Heavy tails are outliers: a few values far from the rest.

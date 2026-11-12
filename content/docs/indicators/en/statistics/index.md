@@ -2,6 +2,7 @@
 title: "Statistics"
 description: "Statistics of the price and of its returns: the exact variance and deviation, the z-score, the kurtosis, the regression, the percentile, the value at risk, the autocorrelation and the Hurst exponent."
 order: 7
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 In the QTSurfer catalogues, the statistics are `exactVariance`, `exactStdDev`, `zScore`, `kurtosis`, `linearRegressionSlope`, `simpleLinearRegression`, `rollingPercentile`, `valueAtRisk`, `autocorrelation` and `hurstExponent`: they describe how the last prices, or the last returns, are spread and shaped. All of them are pro indicators: they come with the Pro and Elite plans, and a strategy brings them in with a `uses` line. They read one price, so they work in a `ticker` or a `kline` strategy.

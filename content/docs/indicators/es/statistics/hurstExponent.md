@@ -2,6 +2,7 @@
 title: "Exponente de Hurst"
 description: "Cómo el exponente de Hurst estima, a partir del rango reescalado de los rendimientos, si los movimientos tienden a continuar o a revertirse, cerca de 0,5 en un paseo aleatorio, y cómo usarlo en una estrategia de QTSurfer."
 order: 7.11
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 El **exponente de Hurst** es aquí una estimación por rango reescalado de lo persistentes que son los rendimientos: cerca de 0,5 para un paseo aleatorio, por encima de 0,5 cuando los movimientos tienden a continuar, por debajo de 0,5 cuando tienden a revertirse.

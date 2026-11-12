@@ -2,6 +2,7 @@
 title: "Desviación típica exacta"
 description: "Cómo la desviación típica exacta mide la dispersión de los últimos precios en las unidades del precio, dividiendo por N donde la libre divide por N menos 1, y cómo usarla en una estrategia de QTSurfer."
 order: 7.02
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 La **desviación típica exacta** es la raíz cuadrada de la media de los cuadrados de las distancias de los últimos `N` precios a su media. Es la contrapartida pro de la [desviación típica](/docs/indicators/volatility/stdDev): divide por `N`, donde aquella divide por `N − 1`.

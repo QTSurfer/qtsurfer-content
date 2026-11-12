@@ -2,6 +2,7 @@
 title: "Estadística"
 description: "Estadística del precio y de sus rendimientos: la varianza y la desviación exactas, la puntuación z, la curtosis, la regresión, el percentil, el valor en riesgo, la autocorrelación y el exponente de Hurst."
 order: 7
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 En los catálogos de QTSurfer, las estadísticas son `exactVariance`, `exactStdDev`, `zScore`, `kurtosis`, `linearRegressionSlope`, `simpleLinearRegression`, `rollingPercentile`, `valueAtRisk`, `autocorrelation` y `hurstExponent`: describen cómo se reparten y qué forma tienen los últimos precios, o los últimos rendimientos. Todas son indicadores pro: vienen con los planes Pro y Elite, y una estrategia los trae con una línea `uses`. Leen un solo precio, así que sirven en una estrategia `ticker` o `kline`.

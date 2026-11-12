@@ -2,6 +2,7 @@
 title: "Curtosis"
 description: "Cómo la curtosis mide lo pesadas que son las colas de los últimos precios frente a una distribución normal, que lee 0, y cómo usarla en una estrategia de QTSurfer."
 order: 7.04
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 La **curtosis** es aquí el exceso de curtosis de los últimos `N` precios: cuán pesadas son las colas de su distribución frente a una normal, que lee 0. Las colas pesadas son valores atípicos: unos pocos valores lejos del resto.

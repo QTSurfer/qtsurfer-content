@@ -2,6 +2,7 @@
 title: "Valor en riesgo (VaR)"
 description: "Cómo el valor en riesgo da la pérdida que no se espera que una barra supere con un 95 por ciento de confianza si los rendimientos fueran normales, con qué frecuencia la pasan las pérdidas reales, y cómo usarlo en una estrategia de QTSurfer."
 order: 7.09
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 El **valor en riesgo** (VaR, por sus siglas en inglés) es la pérdida que no se espera que una barra supere, con un 95 % de confianza, si los rendimientos siguieran una distribución normal con la media y la desviación de los últimos `N` rendimientos.

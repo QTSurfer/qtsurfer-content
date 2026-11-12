@@ -2,6 +2,7 @@
 title: "Exact standard deviation"
 description: "How the exact standard deviation measures the spread of the last prices in the units of the price, dividing by N where the free one divides by N minus 1, and how to use it in a QTSurfer strategy."
 order: 7.02
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **exact standard deviation** is the square root of the mean of the squared distances of the last `N` prices from their mean. It is the pro counterpart of the [standard deviation](/docs/indicators/volatility/stdDev): it divides by `N`, where that one divides by `N − 1`.

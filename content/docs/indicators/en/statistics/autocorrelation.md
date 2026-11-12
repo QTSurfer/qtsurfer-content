@@ -2,6 +2,7 @@
 title: "Autocorrelation"
 description: "How the autocorrelation measures how much each return resembles the one before, from minus 1 to 1, why it is noisy on a short window, and how to use it in a QTSurfer strategy."
 order: 7.10
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **autocorrelation** here is the lag-1 autocorrelation of the returns: how much each bar's return resembles the one before. It runs from −1 to 1.

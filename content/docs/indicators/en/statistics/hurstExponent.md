@@ -2,6 +2,7 @@
 title: "Hurst exponent"
 description: "How the Hurst exponent estimates from the rescaled range of the returns whether moves tend to continue or to reverse, about 0.5 for a random walk, and how to use it in a QTSurfer strategy."
 order: 7.11
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **Hurst exponent** here is a rescaled-range estimate of how persistent the returns are: about 0.5 for a random walk, above 0.5 when moves tend to continue, below 0.5 when they tend to reverse.

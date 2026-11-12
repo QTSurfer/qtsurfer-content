@@ -2,6 +2,7 @@
 title: "Rolling percentile"
 description: "How the rolling percentile gives the price below which a share of the last prices lie, with the median, the minimum and the maximum of the same window, and how to use it in a QTSurfer strategy."
 order: 7.08
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **rolling percentile** is the price below which a given share of the last `N` prices lie, for example the 95th percentile. The engine gives it with the median, the minimum and the maximum of the same window.

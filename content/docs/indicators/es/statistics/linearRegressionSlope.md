@@ -2,6 +2,7 @@
 title: "Pendiente de la regresión lineal"
 description: "Cómo la pendiente de la regresión lineal da la pendiente, en unidades de precio por barra, de la recta que mejor ajusta los últimos precios, y cómo usarla en una estrategia de QTSurfer."
 order: 7.06
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 La **pendiente de la regresión lineal** es la pendiente de la recta que mejor ajusta los últimos `N` precios, por mínimos cuadrados, en unidades de precio por barra.

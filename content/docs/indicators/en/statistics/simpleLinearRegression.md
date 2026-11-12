@@ -2,6 +2,7 @@
 title: "Simple linear regression"
 description: "How the simple linear regression fits a straight line to the last prices and gives how well it fits, with the slope, the intercept, the R squared and the standard error, and how to use it in a QTSurfer strategy."
 order: 7.07
+lastUpdated: '2026-11-12T18:54:41Z'
 ---
 
 The **simple linear regression** fits a straight line to the last `N` prices, by least squares, and says how well it fits: the slope, the intercept, the R² and the standard error.

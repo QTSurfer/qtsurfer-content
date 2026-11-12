@@ -35,7 +35,7 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) y [CMF](/docs/indicators/volume/cmf).
 - [Estadística](/docs/indicators/statistics): los indicadores pro [varianza exacta](/docs/indicators/statistics/exactVariance),
   [desviación típica exacta](/docs/indicators/statistics/exactStdDev), [puntuación z](/docs/indicators/statistics/zScore),
-  [curtosis](/docs/indicators/statistics/kurtosis), [pendiente de la regresión lineal](/docs/indicators/statistics/linearRegressionSlope),
+  [asimetría](/docs/indicators/statistics/skewness), [curtosis](/docs/indicators/statistics/kurtosis), [pendiente de la regresión lineal](/docs/indicators/statistics/linearRegressionSlope),
   [regresión lineal simple](/docs/indicators/statistics/simpleLinearRegression),
   [percentil móvil](/docs/indicators/statistics/rollingPercentile), [valor en riesgo](/docs/indicators/statistics/valueAtRisk),
   [autocorrelación](/docs/indicators/statistics/autocorrelation) y [exponente de Hurst](/docs/indicators/statistics/hurstExponent).

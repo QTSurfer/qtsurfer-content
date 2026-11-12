@@ -20,7 +20,13 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   [dinámica de McGinley](/docs/indicators/averages/mcGinleyDynamic).
 - [Osciladores](/docs/indicators/oscillators): el [RSI](/docs/indicators/oscillators/rsi),
   el [RSI estocástico](/docs/indicators/oscillators/stochRsi), el [MACD](/docs/indicators/oscillators/macd) y
-  el [CCI](/docs/indicators/oscillators/cci).
+  el [CCI](/docs/indicators/oscillators/cci), y diez osciladores pro: el [momento](/docs/indicators/oscillators/momentum),
+  la [tasa de cambio](/docs/indicators/oscillators/roc), el [momento de Chande](/docs/indicators/oscillators/cmo),
+  el [índice de fuerza verdadera](/docs/indicators/oscillators/trueStrengthIndex), el [TRIX](/docs/indicators/oscillators/trix),
+  la [curva de Coppock](/docs/indicators/oscillators/coppockCurve), el [Know Sure Thing](/docs/indicators/oscillators/knowSureThing),
+  el [pronóstico de Chande](/docs/indicators/oscillators/chandeForecastOscillator),
+  el [precio sin tendencia](/docs/indicators/oscillators/detrendedPriceOscillator) y
+  la [transformada de Fisher](/docs/indicators/oscillators/fisherTransform).
 - [Bandas](/docs/indicators/bands): las [bandas de Bollinger](/docs/indicators/bands/bollinger), su
   [%B](/docs/indicators/bands/bollingerPercentB) y su [anchura](/docs/indicators/bands/bollingerBandwidth).
 - [Volatilidad](/docs/indicators/volatility): el [ATR](/docs/indicators/volatility/atr),

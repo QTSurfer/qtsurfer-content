@@ -14,7 +14,10 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
 
 - [Medias](/docs/indicators/averages): la [SMA](/docs/indicators/averages/sma), la [EMA](/docs/indicators/averages/ema),
   la [WMA](/docs/indicators/averages/wma), la [TEMA](/docs/indicators/averages/tema), la [HMA](/docs/indicators/averages/hma),
-  la [MMA](/docs/indicators/averages/mma) y la [KAMA](/docs/indicators/averages/kama).
+  la [MMA](/docs/indicators/averages/mma) y la [KAMA](/docs/indicators/averages/kama), y cinco medias pro: la
+  [DEMA](/docs/indicators/averages/dema), la [ALMA](/docs/indicators/averages/alma),
+  la [FRAMA](/docs/indicators/averages/frama), la [LSMA](/docs/indicators/averages/leastSquaresMovingAverage) y la
+  [dinámica de McGinley](/docs/indicators/averages/mcGinleyDynamic).
 - [Osciladores](/docs/indicators/oscillators): el [RSI](/docs/indicators/oscillators/rsi),
   el [RSI estocástico](/docs/indicators/oscillators/stochRsi), el [MACD](/docs/indicators/oscillators/macd) y
   el [CCI](/docs/indicators/oscillators/cci).
@@ -30,6 +33,12 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   [SuperTrend](/docs/indicators/trend/superTrend) y [nube de Ichimoku](/docs/indicators/trend/ichimoku).
 - [Volumen](/docs/indicators/volume): los indicadores pro [OBV](/docs/indicators/volume/obv),
   [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) y [CMF](/docs/indicators/volume/cmf).
+- [Estadística](/docs/indicators/statistics): los indicadores pro [varianza exacta](/docs/indicators/statistics/exactVariance),
+  [desviación típica exacta](/docs/indicators/statistics/exactStdDev), [puntuación z](/docs/indicators/statistics/zScore),
+  [curtosis](/docs/indicators/statistics/kurtosis), [pendiente de la regresión lineal](/docs/indicators/statistics/linearRegressionSlope),
+  [regresión lineal simple](/docs/indicators/statistics/simpleLinearRegression),
+  [percentil móvil](/docs/indicators/statistics/rollingPercentile), [valor en riesgo](/docs/indicators/statistics/valueAtRisk),
+  [autocorrelación](/docs/indicators/statistics/autocorrelation) y [exponente de Hurst](/docs/indicators/statistics/hurstExponent).
 
 Para todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran, consulta los
 catálogos: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e

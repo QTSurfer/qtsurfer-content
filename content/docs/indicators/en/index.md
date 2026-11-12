@@ -14,7 +14,10 @@ The pages are grouped as the catalogues group the indicators:
 
 - [Averages](/docs/indicators/averages): the [SMA](/docs/indicators/averages/sma), [EMA](/docs/indicators/averages/ema),
   [WMA](/docs/indicators/averages/wma), [TEMA](/docs/indicators/averages/tema), [HMA](/docs/indicators/averages/hma),
-  [MMA](/docs/indicators/averages/mma) and [KAMA](/docs/indicators/averages/kama).
+  [MMA](/docs/indicators/averages/mma) and [KAMA](/docs/indicators/averages/kama), and five pro averages: the
+  [DEMA](/docs/indicators/averages/dema), [ALMA](/docs/indicators/averages/alma),
+  [FRAMA](/docs/indicators/averages/frama), [LSMA](/docs/indicators/averages/leastSquaresMovingAverage) and
+  [McGinley Dynamic](/docs/indicators/averages/mcGinleyDynamic).
 - [Oscillators](/docs/indicators/oscillators): the [RSI](/docs/indicators/oscillators/rsi),
   the [stochastic RSI](/docs/indicators/oscillators/stochRsi), the [MACD](/docs/indicators/oscillators/macd) and
   the [CCI](/docs/indicators/oscillators/cci).
@@ -30,6 +33,12 @@ The pages are grouped as the catalogues group the indicators:
   [SuperTrend](/docs/indicators/trend/superTrend) and [Ichimoku cloud](/docs/indicators/trend/ichimoku).
 - [Volume](/docs/indicators/volume): the pro indicators [OBV](/docs/indicators/volume/obv),
   [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) and [CMF](/docs/indicators/volume/cmf).
+- [Statistics](/docs/indicators/statistics): the pro indicators [exact variance](/docs/indicators/statistics/exactVariance),
+  [exact standard deviation](/docs/indicators/statistics/exactStdDev), [z-score](/docs/indicators/statistics/zScore),
+  [kurtosis](/docs/indicators/statistics/kurtosis), [linear regression slope](/docs/indicators/statistics/linearRegressionSlope),
+  [simple linear regression](/docs/indicators/statistics/simpleLinearRegression),
+  [rolling percentile](/docs/indicators/statistics/rollingPercentile), [value at risk](/docs/indicators/statistics/valueAtRisk),
+  [autocorrelation](/docs/indicators/statistics/autocorrelation) and [Hurst exponent](/docs/indicators/statistics/hurstExponent).
 
 For every indicator a strategy can call, with its forms and the names it registers, see the catalogues:
 [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators).

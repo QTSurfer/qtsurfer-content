@@ -35,7 +35,7 @@ The pages are grouped as the catalogues group the indicators:
   [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) and [CMF](/docs/indicators/volume/cmf).
 - [Statistics](/docs/indicators/statistics): the pro indicators [exact variance](/docs/indicators/statistics/exactVariance),
   [exact standard deviation](/docs/indicators/statistics/exactStdDev), [z-score](/docs/indicators/statistics/zScore),
-  [kurtosis](/docs/indicators/statistics/kurtosis), [linear regression slope](/docs/indicators/statistics/linearRegressionSlope),
+  [skewness](/docs/indicators/statistics/skewness), [kurtosis](/docs/indicators/statistics/kurtosis), [linear regression slope](/docs/indicators/statistics/linearRegressionSlope),
   [simple linear regression](/docs/indicators/statistics/simpleLinearRegression),
   [rolling percentile](/docs/indicators/statistics/rollingPercentile), [value at risk](/docs/indicators/statistics/valueAtRisk),
   [autocorrelation](/docs/indicators/statistics/autocorrelation) and [Hurst exponent](/docs/indicators/statistics/hurstExponent).

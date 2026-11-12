@@ -2,7 +2,7 @@
 title: "Volatility"
 description: "Indicators of how much the price moves: the average true range, the standard deviation, the variance, the volatility indicators of the engine, and the four OHLC estimators."
 order: 4
-lastUpdated: '2026-11-12T00:02:30Z'
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 In the QTSurfer catalogues, the volatility indicators are `atr`, `stdDev`, `variance`, `volatility` and `percentVolatility`, and the four OHLC estimators `parkinson`, `garmanKlass`, `rogersSatchell` and `yangZhang`: measures of how much the price moves, or of how often. They answer different questions, and the units tell them apart: some are in the units of the price, one in its square, two in percent, and the estimators are a fraction of the price per bar.

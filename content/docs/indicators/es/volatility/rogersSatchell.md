@@ -2,6 +2,7 @@
 title: "Volatilidad de Rogers-Satchell"
 description: "Cómo la volatilidad de Rogers-Satchell estima cuánto se mueve el precio en una barra a partir de su apertura, máximo, mínimo y cierre, construida para que una deriva constante no la infle, y cómo usarla en una estrategia de QTSurfer."
 order: 4.8
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 La **volatilidad de Rogers-Satchell**, de L. C. G. Rogers y Stuart Satchell, estima cuánto se mueve el precio en una barra a partir de su apertura, máximo, mínimo y cierre, de una manera que una deriva constante del precio no la infla. Es una volatilidad por barra, como fracción del precio.

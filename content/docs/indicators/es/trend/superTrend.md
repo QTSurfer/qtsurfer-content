@@ -2,6 +2,7 @@
 title: "SuperTrend"
 description: "Cómo el SuperTrend sigue al precio a una distancia de un múltiplo del rango medio, cambia de lado cuando el precio lo cruza, y cómo usarlo en una estrategia de QTSurfer."
 order: 5.2
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 El **SuperTrend** es una línea que sigue al precio a una distancia fijada por el rango medio: por debajo en una subida y por encima en una caída. Cuando el cierre cruza la línea, salta al otro lado. Se usa como stop de seguimiento y como señal de tendencia.

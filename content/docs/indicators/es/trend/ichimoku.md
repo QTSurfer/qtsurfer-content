@@ -2,6 +2,7 @@
 title: "Nube de Ichimoku"
 description: "Cómo la nube de Ichimoku lee el precio frente a los puntos medios de sus propios máximos y mínimos de tres periodos, por qué las líneas del motor no están desplazadas, y cómo usarla en una estrategia de QTSurfer."
 order: 5.3
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 La **nube de Ichimoku** (Ichimoku Kinko Hyo), ideada por Goichi Hosoda, lee el precio frente a los puntos medios de sus propios máximos y mínimos de tres periodos. Se registran cinco líneas: Tenkan, Kijun, Senkou A, Senkou B y Chikou. El espacio entre Senkou A y Senkou B es la nube.

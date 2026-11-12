@@ -2,6 +2,7 @@
 title: "Volatilidad de Garman-Klass"
 description: "Cómo la volatilidad de Garman-Klass estima cuánto se mueve el precio en una barra a partir de su apertura, máximo, mínimo y cierre, por barra y sin anualizar, y cómo usarla en una estrategia de QTSurfer."
 order: 4.7
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 La **volatilidad de Garman-Klass**, de Mark Garman y Michael Klass, estima cuánto se mueve el precio en una barra a partir de su apertura, máximo, mínimo y cierre. Es una volatilidad por barra, como fracción del precio.

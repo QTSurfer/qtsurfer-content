@@ -2,6 +2,7 @@
 title: "Yang-Zhang volatility"
 description: "How the Yang-Zhang volatility combines the jump between bars, the open-to-close movement and the Rogers-Satchell term, per bar and not annualized, and how to use it in a QTSurfer strategy."
 order: 4.9
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 The **Yang-Zhang volatility**, by Dennis Yang and Qiang Zhang, estimates how much the price moves in a bar from its open, high, low and close, and also counts the jump between one bar's close and the next bar's open. It is a combination of three variances, per bar, as a fraction of the price.

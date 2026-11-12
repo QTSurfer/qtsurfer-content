@@ -2,6 +2,7 @@
 title: "SuperTrend"
 description: "How the SuperTrend follows the price at a distance of a multiple of the average range, flips when the price crosses it, and how to use it in a QTSurfer strategy."
 order: 5.2
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 The **SuperTrend** is a line that follows the price at a distance set by the average range: below it in a rise and above it in a fall. When the close crosses the line, it jumps to the other side. It is used as a trailing stop and as a trend signal.

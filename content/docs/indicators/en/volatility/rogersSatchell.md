@@ -2,6 +2,7 @@
 title: "Rogers-Satchell volatility"
 description: "How the Rogers-Satchell volatility estimates how much the price moves in a bar from its open, high, low and close, built so that a steady drift does not inflate it, and how to use it in a QTSurfer strategy."
 order: 4.8
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 The **Rogers-Satchell volatility**, by L. C. G. Rogers and Stuart Satchell, estimates how much the price moves in a bar from its open, high, low and close, in a way that a steady drift of the price does not inflate. It is a volatility per bar, as a fraction of the price.

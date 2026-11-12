@@ -2,6 +2,7 @@
 title: "Volatilidad de Parkinson"
 description: "Cómo la volatilidad de Parkinson estima cuánto se mueve el precio en una barra solo a partir de su máximo y su mínimo, por barra y sin anualizar, y cómo usarla en una estrategia de QTSurfer."
 order: 4.6
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 La **volatilidad de Parkinson**, de Michael Parkinson, estima cuánto se mueve el precio en una barra solo a partir de su máximo y su mínimo. Es una volatilidad por barra, como fracción del precio: 0,02 es un 2 %.

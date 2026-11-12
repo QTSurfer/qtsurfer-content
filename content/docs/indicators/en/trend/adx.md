@@ -2,6 +2,7 @@
 title: "Average directional index (ADX)"
 description: "How the average directional index measures the strength of a trend, not its direction, with the two directional lines that say which side is stronger, and how to use it in a QTSurfer strategy."
 order: 5.1
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 The **average directional index** (ADX), by J. Welles Wilder, measures how strong a trend is, whatever its direction, from 0 to 100. Two directional lines register beside it, `+DI` and `−DI`, and say which side is moving more.

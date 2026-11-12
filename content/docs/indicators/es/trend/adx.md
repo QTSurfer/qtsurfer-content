@@ -2,6 +2,7 @@
 title: "Índice direccional medio (ADX)"
 description: "Cómo el índice direccional medio mide la fuerza de una tendencia, no su dirección, con las dos líneas direccionales que dicen qué lado es más fuerte, y cómo usarlo en una estrategia de QTSurfer."
 order: 5.1
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 El **índice direccional medio** (ADX, por sus siglas en inglés), de J. Welles Wilder, mide lo fuerte que es una tendencia, sea cual sea su dirección, de 0 a 100. Dos líneas direccionales se registran a su lado, `+DI` y `−DI`, y dicen qué lado se mueve más.

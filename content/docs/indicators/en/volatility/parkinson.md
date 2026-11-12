@@ -2,6 +2,7 @@
 title: "Parkinson volatility"
 description: "How the Parkinson volatility estimates how much the price moves in a bar from its high and low alone, per bar and not annualized, and how to use it in a QTSurfer strategy."
 order: 4.6
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 The **Parkinson volatility**, by Michael Parkinson, estimates how much the price moves in a bar from its high and low alone. It is a volatility per bar, as a fraction of the price: 0.02 is 2 %.

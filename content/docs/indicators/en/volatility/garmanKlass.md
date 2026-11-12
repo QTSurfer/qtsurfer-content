@@ -2,6 +2,7 @@
 title: "Garman-Klass volatility"
 description: "How the Garman-Klass volatility estimates how much the price moves in a bar from its open, high, low and close, per bar and not annualized, and how to use it in a QTSurfer strategy."
 order: 4.7
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 The **Garman-Klass volatility**, by Mark Garman and Michael Klass, estimates how much the price moves in a bar from its open, high, low and close. It is a volatility per bar, as a fraction of the price.

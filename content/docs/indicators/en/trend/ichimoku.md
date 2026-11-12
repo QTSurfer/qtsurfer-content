@@ -2,6 +2,7 @@
 title: "Ichimoku cloud"
 description: "How the Ichimoku cloud reads the price against the middles of its own highest highs and lowest lows over three periods, why the engine's lines are not displaced, and how to use it in a QTSurfer strategy."
 order: 5.3
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 The **Ichimoku cloud** (Ichimoku Kinko Hyo), devised by Goichi Hosoda, reads the price against the middles of its own highest highs and lowest lows over three periods. Five lines register: Tenkan, Kijun, Senkou A, Senkou B and Chikou. The space between Senkou A and Senkou B is the cloud.

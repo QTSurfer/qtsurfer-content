@@ -2,6 +2,7 @@
 title: "Trend"
 description: "Indicators of whether the market is trending and which way: the average directional index, the SuperTrend and the Ichimoku cloud."
 order: 5
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 In the QTSurfer catalogues, the trend indicators are `adx`, `superTrend` and `ichimoku`: they say whether the market is trending, how strongly, and on which side the price stands. All three are pro indicators: they come with the Pro and Elite plans, a strategy brings them in with a `uses` line (see [the QTScript guide](/docs/strategies/qtscript#the-pro-indicators-uses)), and they read whole bars, so they belong in a `kline` strategy.

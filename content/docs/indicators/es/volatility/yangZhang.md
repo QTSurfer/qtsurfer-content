@@ -2,6 +2,7 @@
 title: "Volatilidad de Yang-Zhang"
 description: "Cómo la volatilidad de Yang-Zhang combina el salto entre barras, el movimiento de apertura a cierre y el término de Rogers-Satchell, por barra y sin anualizar, y cómo usarla en una estrategia de QTSurfer."
 order: 4.9
+lastUpdated: '2026-11-12T13:54:17Z'
 ---
 
 La **volatilidad de Yang-Zhang**, de Dennis Yang y Qiang Zhang, estima cuánto se mueve el precio en una barra a partir de su apertura, máximo, mínimo y cierre, y cuenta además el salto entre el cierre de una barra y la apertura de la siguiente. Es una combinación de tres varianzas, por barra, como fracción del precio.

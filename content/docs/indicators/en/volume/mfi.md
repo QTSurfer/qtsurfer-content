@@ -2,6 +2,7 @@
 title: "Money flow index (MFI)"
 description: "How the money flow index says what share of the money flow of the last N changes was rising, from 0 to 100, how rarely it reaches 80 or 20 on these series, and how to use it in a QTSurfer strategy."
 order: 6.3
+lastUpdated: '2026-11-12T15:34:29Z'
 ---
 
 The **money flow index** (MFI), by Gene Quong and Avrum Soudack, is an RSI that counts money instead of price: it says, from 0 to 100, what share of the money flow of the last `N` changes was rising.

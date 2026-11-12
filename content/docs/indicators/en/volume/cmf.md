@@ -2,6 +2,7 @@
 title: "Chaikin money flow (CMF)"
 description: "How the Chaikin money flow measures how much of the volume of the last N bars was bought and how much sold, judged by where each bar closed in its range, from -1 to 1, and how to use it in a QTSurfer strategy."
 order: 6.4
+lastUpdated: '2026-11-12T15:34:29Z'
 ---
 
 The **Chaikin money flow** (CMF), by Marc Chaikin, measures how much of the volume of the last `N` bars was bought and how much sold, judged by where each bar closed in its range. It runs from −1 to 1.

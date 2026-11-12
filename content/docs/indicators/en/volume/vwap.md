@@ -2,6 +2,7 @@
 title: "Volume-weighted average price (VWAP)"
 description: "How the volume-weighted average price averages the typical price of every bar since the first, weighted by volume, why it never resets and moves ever more slowly, and how to use it in a QTSurfer strategy."
 order: 6.2
+lastUpdated: '2026-11-12T15:34:29Z'
 ---
 
 The **volume-weighted average price** (VWAP) is the average price paid since the series began: the typical price of each bar, weighted by the volume traded in it.

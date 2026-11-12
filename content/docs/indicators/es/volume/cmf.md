@@ -2,6 +2,7 @@
 title: "Flujo de dinero de Chaikin (CMF)"
 description: "Cómo el flujo de dinero de Chaikin mide cuánto del volumen de las últimas N barras se compró y cuánto se vendió, juzgado por dónde cerró cada barra dentro de su rango, de -1 a 1, y cómo usarlo en una estrategia de QTSurfer."
 order: 6.4
+lastUpdated: '2026-11-12T15:34:29Z'
 ---
 
 El **flujo de dinero de Chaikin** (CMF, por sus siglas en inglés), de Marc Chaikin, mide cuánto del volumen de las últimas `N` barras se compró y cuánto se vendió, juzgado por dónde cerró cada barra dentro de su rango. Va de −1 a 1.

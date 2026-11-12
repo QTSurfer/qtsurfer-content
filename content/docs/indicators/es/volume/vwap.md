@@ -2,6 +2,7 @@
 title: "Precio medio ponderado por volumen (VWAP)"
 description: "Cómo el precio medio ponderado por volumen promedia el precio típico de cada barra desde la primera, ponderado por el volumen, por qué nunca se reinicia y se mueve cada vez más despacio, y cómo usarlo en una estrategia de QTSurfer."
 order: 6.2
+lastUpdated: '2026-11-12T15:34:29Z'
 ---
 
 El **precio medio ponderado por volumen** (VWAP, por sus siglas en inglés) es el precio medio pagado desde que empezó la serie: el precio típico de cada barra, ponderado por el volumen negociado en ella.

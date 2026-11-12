@@ -2,6 +2,7 @@
 title: "Volumen en balance (OBV)"
 description: "Cómo el volumen en balance lleva un total acumulado del volumen, sumado cuando el cierre sube y restado cuando baja, por qué su nivel no significa nada y su dirección sí, y cómo usarlo en una estrategia de QTSurfer."
 order: 6.1
+lastUpdated: '2026-11-12T15:34:29Z'
 ---
 
 El **volumen en balance** (OBV, por sus siglas en inglés), de Joseph Granville, es un total acumulado del volumen: suma el volumen de una barra cuando el cierre está por encima del cierre anterior, lo resta cuando está por debajo, y lo deja como estaba cuando son iguales.

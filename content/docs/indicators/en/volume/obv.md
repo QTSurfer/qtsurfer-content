@@ -2,6 +2,7 @@
 title: "On-balance volume (OBV)"
 description: "How the on-balance volume keeps a running total of volume, added when the close rises and subtracted when it falls, why its level means nothing and its direction does, and how to use it in a QTSurfer strategy."
 order: 6.1
+lastUpdated: '2026-11-12T15:34:29Z'
 ---
 
 The **on-balance volume** (OBV), by Joseph Granville, is a running total of volume: it adds the volume of a bar when the close is above the previous close, subtracts it when the close is below, and leaves it as it was when the two are equal.

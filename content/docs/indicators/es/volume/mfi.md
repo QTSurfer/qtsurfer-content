@@ -2,6 +2,7 @@
 title: "Índice de flujo de dinero (MFI)"
 description: "Cómo el índice de flujo de dinero dice qué parte del flujo de dinero de los últimos N cambios subía, de 0 a 100, lo poco que llega a 80 o a 20 en estas series, y cómo usarlo en una estrategia de QTSurfer."
 order: 6.3
+lastUpdated: '2026-11-12T15:34:29Z'
 ---
 
 El **índice de flujo de dinero** (MFI, por sus siglas en inglés), de Gene Quong y Avrum Soudack, es un RSI que cuenta dinero en lugar de precio: dice, de 0 a 100, qué parte del flujo de dinero de los últimos `N` cambios subía.

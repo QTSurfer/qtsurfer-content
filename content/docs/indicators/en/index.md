@@ -12,13 +12,20 @@ runs. Change its parameters and watch the line change.
 
 The pages are grouped as the catalogues group the indicators:
 
-- [Oscillators](/docs/indicators/oscillators): the [RSI](/docs/indicators/oscillators/rsi) and the
-  [MACD](/docs/indicators/oscillators/macd), so far.
-- [Bands](/docs/indicators/bands): the [Bollinger bands](/docs/indicators/bands/bollinger), so far.
+- [Averages](/docs/indicators/averages): the [SMA](/docs/indicators/averages/sma), [EMA](/docs/indicators/averages/ema),
+  [WMA](/docs/indicators/averages/wma), [TEMA](/docs/indicators/averages/tema), [HMA](/docs/indicators/averages/hma),
+  [MMA](/docs/indicators/averages/mma) and [KAMA](/docs/indicators/averages/kama).
+- [Oscillators](/docs/indicators/oscillators): the [RSI](/docs/indicators/oscillators/rsi),
+  the [MACD](/docs/indicators/oscillators/macd) and the [CCI](/docs/indicators/oscillators/cci).
+- [Bands](/docs/indicators/bands): the [Bollinger bands](/docs/indicators/bands/bollinger), their
+  [%B](/docs/indicators/bands/bollingerPercentB) and their [bandwidth](/docs/indicators/bands/bollingerBandwidth).
+- [Volatility](/docs/indicators/volatility): the [ATR](/docs/indicators/volatility/atr),
+  the [standard deviation](/docs/indicators/volatility/stdDev), the [variance](/docs/indicators/volatility/variance),
+  the [volatility](/docs/indicators/volatility/volatility) and the
+  [percent volatility](/docs/indicators/volatility/percentVolatility).
 
-More indicators will follow. For every indicator a strategy can call, with its forms and the names it registers, see the
-catalogues: [QTScript indicators](/docs/strategies/qtscript/indicators) and
-[Java indicators](/docs/strategies/java/indicators).
+For every indicator a strategy can call, with its forms and the names it registers, see the catalogues:
+[QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators).
 
 ## Try any indicator
 

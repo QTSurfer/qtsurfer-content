@@ -1,7 +1,7 @@
 ---
 title: Convergencia y divergencia de medias móviles (MACD)
 description: "Cómo el MACD convierte dos medias exponenciales en una línea de impulso con su línea de señal y su histograma, cómo la cambian sus tres periodos y cómo usarlo en una estrategia de QTSurfer."
-order: 3
+order: 2.2
 lastUpdated: '2026-11-11T22:23:04Z'
 ---
 
@@ -88,6 +88,7 @@ muestra, que es la defensa frente al [sobreajuste](/learn/articles/overfitting).
 ## Relacionado
 
 - [RSI](/docs/indicators/oscillators/rsi): el oscilador de impulso con rango fijo, para leerlo junto a este.
+- [EMA](/docs/indicators/averages/ema): la media de la que el MACD es la diferencia.
 - [Cruce de EMA](/learn/articles/ema-crossover): la regla de seguimiento de tendencia de la que se construye el MACD.
 - [Indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators):
   todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran.

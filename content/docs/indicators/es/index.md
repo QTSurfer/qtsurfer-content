@@ -12,12 +12,20 @@ la misma clase de indicador que ejecuta el motor. Cambia sus parámetros y mira 
 
 Las páginas se agrupan como los catálogos agrupan los indicadores:
 
-- [Osciladores](/docs/indicators/oscillators): por ahora, el [RSI](/docs/indicators/oscillators/rsi) y el
-  [MACD](/docs/indicators/oscillators/macd).
-- [Bandas](/docs/indicators/bands): por ahora, las [bandas de Bollinger](/docs/indicators/bands/bollinger).
+- [Medias](/docs/indicators/averages): la [SMA](/docs/indicators/averages/sma), la [EMA](/docs/indicators/averages/ema),
+  la [WMA](/docs/indicators/averages/wma), la [TEMA](/docs/indicators/averages/tema), la [HMA](/docs/indicators/averages/hma),
+  la [MMA](/docs/indicators/averages/mma) y la [KAMA](/docs/indicators/averages/kama).
+- [Osciladores](/docs/indicators/oscillators): el [RSI](/docs/indicators/oscillators/rsi),
+  el [MACD](/docs/indicators/oscillators/macd) y el [CCI](/docs/indicators/oscillators/cci).
+- [Bandas](/docs/indicators/bands): las [bandas de Bollinger](/docs/indicators/bands/bollinger), su
+  [%B](/docs/indicators/bands/bollingerPercentB) y su [anchura](/docs/indicators/bands/bollingerBandwidth).
+- [Volatilidad](/docs/indicators/volatility): el [ATR](/docs/indicators/volatility/atr),
+  la [desviación típica](/docs/indicators/volatility/stdDev), la [varianza](/docs/indicators/volatility/variance),
+  la [volatilidad](/docs/indicators/volatility/volatility) y la
+  [volatilidad porcentual](/docs/indicators/volatility/percentVolatility).
 
-Vendrán más indicadores. Para todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que
-registran, consulta los catálogos: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e
+Para todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran, consulta los
+catálogos: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e
 [indicadores de Java](/docs/strategies/java/indicators).
 
 ## Prueba cualquier indicador

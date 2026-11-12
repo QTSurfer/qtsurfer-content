@@ -1,7 +1,7 @@
 ---
 title: Bandas de Bollinger
 description: "Cómo las bandas de Bollinger envuelven el precio en una banda que se ensancha y se estrecha con su volatilidad, qué leen de ella el %B y la anchura, y cómo usarlas en una estrategia de QTSurfer."
-order: 5
+order: 3.1
 lastUpdated: '2026-11-11T22:23:04Z'
 ---
 
@@ -89,6 +89,9 @@ fuera de la muestra, que es la defensa frente al [sobreajuste](/learn/articles/o
 
 ## Relacionado
 
+- [%B de Bollinger](/docs/indicators/bands/bollingerPercentB) y [anchura](/docs/indicators/bands/bollingerBandwidth): las dos
+  medidas que se toman de la banda, cada una con su página.
+- [Desviación típica](/docs/indicators/volatility/stdDev): con lo que se construye la banda.
 - [RSI](/docs/indicators/oscillators/rsi) y [MACD](/docs/indicators/oscillators/macd): los osciladores, para leerlos junto
   a las bandas.
 - [Indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators):

@@ -20,13 +20,19 @@ The pages are grouped as the catalogues group the indicators:
   [McGinley Dynamic](/docs/indicators/averages/mcGinleyDynamic).
 - [Oscillators](/docs/indicators/oscillators): the [RSI](/docs/indicators/oscillators/rsi),
   the [stochastic RSI](/docs/indicators/oscillators/stochRsi), the [MACD](/docs/indicators/oscillators/macd) and
-  the [CCI](/docs/indicators/oscillators/cci), and ten pro oscillators: the [momentum](/docs/indicators/oscillators/momentum),
+  the [CCI](/docs/indicators/oscillators/cci), and twenty pro oscillators: the [momentum](/docs/indicators/oscillators/momentum),
   [rate of change](/docs/indicators/oscillators/roc), [Chande momentum](/docs/indicators/oscillators/cmo),
   [true strength index](/docs/indicators/oscillators/trueStrengthIndex), [TRIX](/docs/indicators/oscillators/trix),
   [Coppock curve](/docs/indicators/oscillators/coppockCurve), [know sure thing](/docs/indicators/oscillators/knowSureThing),
   [Chande forecast](/docs/indicators/oscillators/chandeForecastOscillator),
-  [detrended price](/docs/indicators/oscillators/detrendedPriceOscillator) and
-  [Fisher transform](/docs/indicators/oscillators/fisherTransform).
+  [detrended price](/docs/indicators/oscillators/detrendedPriceOscillator),
+  [Fisher transform](/docs/indicators/oscillators/fisherTransform),
+  [adaptive Fisher](/docs/indicators/oscillators/adaptiveFisherTransform), [Connors RSI](/docs/indicators/oscillators/connorsRsi),
+  [stochastic oscillator](/docs/indicators/oscillators/stochasticOscillator), [Williams %R](/docs/indicators/oscillators/williamsR),
+  [ultimate oscillator](/docs/indicators/oscillators/ultimateOscillator),
+  [awesome](/docs/indicators/oscillators/awesomeOscillator) and [accelerator](/docs/indicators/oscillators/acceleratorOscillator) oscillators,
+  [balance of power](/docs/indicators/oscillators/balanceOfPower), [relative vigor index](/docs/indicators/oscillators/relativeVigorIndex)
+  and [bull and bear power](/docs/indicators/oscillators/bullBearPower).
 - [Bands](/docs/indicators/bands): the [Bollinger bands](/docs/indicators/bands/bollinger), their
   [%B](/docs/indicators/bands/bollingerPercentB) and their [bandwidth](/docs/indicators/bands/bollingerBandwidth).
 - [Volatility](/docs/indicators/volatility): the [ATR](/docs/indicators/volatility/atr),

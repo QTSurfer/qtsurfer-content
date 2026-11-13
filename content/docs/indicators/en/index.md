@@ -34,13 +34,19 @@ The pages are grouped as the catalogues group the indicators:
   [balance of power](/docs/indicators/oscillators/balanceOfPower), [relative vigor index](/docs/indicators/oscillators/relativeVigorIndex)
   and [bull and bear power](/docs/indicators/oscillators/bullBearPower).
 - [Bands](/docs/indicators/bands): the [Bollinger bands](/docs/indicators/bands/bollinger), their
-  [%B](/docs/indicators/bands/bollingerPercentB) and their [bandwidth](/docs/indicators/bands/bollingerBandwidth).
+  [%B](/docs/indicators/bands/bollingerPercentB) and their [bandwidth](/docs/indicators/bands/bollingerBandwidth), and three pro
+  bands: the [Donchian channel](/docs/indicators/bands/donchianChannel), the [envelopes](/docs/indicators/bands/envelopes) and
+  the [Keltner channel](/docs/indicators/bands/keltnerChannel).
 - [Volatility](/docs/indicators/volatility): the [ATR](/docs/indicators/volatility/atr),
   the [standard deviation](/docs/indicators/volatility/stdDev), the [variance](/docs/indicators/volatility/variance),
   the [volatility](/docs/indicators/volatility/volatility), the
   [percent volatility](/docs/indicators/volatility/percentVolatility) and four pro estimators: the
   [Parkinson](/docs/indicators/volatility/parkinson), [Garman-Klass](/docs/indicators/volatility/garmanKlass),
-  [Rogers-Satchell](/docs/indicators/volatility/rogersSatchell) and [Yang-Zhang](/docs/indicators/volatility/yangZhang) volatilities.
+  [Rogers-Satchell](/docs/indicators/volatility/rogersSatchell) and [Yang-Zhang](/docs/indicators/volatility/yangZhang) volatilities, and six more pro indicators: the
+  [NATR](/docs/indicators/volatility/natr), the [choppiness](/docs/indicators/volatility/choppinessIndex) and
+  [mass](/docs/indicators/volatility/massIndex) indexes, the [EWMA](/docs/indicators/volatility/ewmaVolatility) and
+  [realized](/docs/indicators/volatility/realizedVolatility) volatilities and the
+  [relative volatility index](/docs/indicators/volatility/relativeVolatilityIndex).
 - [Trend](/docs/indicators/trend): the pro indicators [ADX](/docs/indicators/trend/adx),
   [SuperTrend](/docs/indicators/trend/superTrend) and [Ichimoku cloud](/docs/indicators/trend/ichimoku).
 - [Volume](/docs/indicators/volume): the pro indicators [OBV](/docs/indicators/volume/obv),

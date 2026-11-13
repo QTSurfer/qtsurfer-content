@@ -20,13 +20,19 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   [dinámica de McGinley](/docs/indicators/averages/mcGinleyDynamic).
 - [Osciladores](/docs/indicators/oscillators): el [RSI](/docs/indicators/oscillators/rsi),
   el [RSI estocástico](/docs/indicators/oscillators/stochRsi), el [MACD](/docs/indicators/oscillators/macd) y
-  el [CCI](/docs/indicators/oscillators/cci), y diez osciladores pro: el [momento](/docs/indicators/oscillators/momentum),
+  el [CCI](/docs/indicators/oscillators/cci), y veinte osciladores pro: el [momento](/docs/indicators/oscillators/momentum),
   la [tasa de cambio](/docs/indicators/oscillators/roc), el [momento de Chande](/docs/indicators/oscillators/cmo),
   el [índice de fuerza verdadera](/docs/indicators/oscillators/trueStrengthIndex), el [TRIX](/docs/indicators/oscillators/trix),
   la [curva de Coppock](/docs/indicators/oscillators/coppockCurve), el [Know Sure Thing](/docs/indicators/oscillators/knowSureThing),
   el [pronóstico de Chande](/docs/indicators/oscillators/chandeForecastOscillator),
-  el [precio sin tendencia](/docs/indicators/oscillators/detrendedPriceOscillator) y
-  la [transformada de Fisher](/docs/indicators/oscillators/fisherTransform).
+  el [precio sin tendencia](/docs/indicators/oscillators/detrendedPriceOscillator),
+  la [transformada de Fisher](/docs/indicators/oscillators/fisherTransform),
+  la [Fisher adaptativa](/docs/indicators/oscillators/adaptiveFisherTransform), el [RSI de Connors](/docs/indicators/oscillators/connorsRsi),
+  el [oscilador estocástico](/docs/indicators/oscillators/stochasticOscillator), el [%R de Williams](/docs/indicators/oscillators/williamsR),
+  el [oscilador definitivo](/docs/indicators/oscillators/ultimateOscillator),
+  los osciladores [Awesome](/docs/indicators/oscillators/awesomeOscillator) y [acelerador](/docs/indicators/oscillators/acceleratorOscillator),
+  el [balance de poder](/docs/indicators/oscillators/balanceOfPower), el [índice de vigor relativo](/docs/indicators/oscillators/relativeVigorIndex)
+  y la [fuerza alcista y bajista](/docs/indicators/oscillators/bullBearPower).
 - [Bandas](/docs/indicators/bands): las [bandas de Bollinger](/docs/indicators/bands/bollinger), su
   [%B](/docs/indicators/bands/bollingerPercentB) y su [anchura](/docs/indicators/bands/bollingerBandwidth).
 - [Volatilidad](/docs/indicators/volatility): el [ATR](/docs/indicators/volatility/atr),

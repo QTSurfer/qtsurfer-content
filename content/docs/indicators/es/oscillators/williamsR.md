@@ -2,6 +2,7 @@
 title: "%R de Williams"
 description: "Cómo el %R de Williams sitúa el cierre en el rango de las últimas barras de −100 a 0, como el estocástico rápido menos 100, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.54
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 El **%R de Williams**, de Larry Williams, sitúa el cierre en el rango de las últimas `N` barras, de −100 en el mínimo más bajo a 0 en el máximo más alto. Es el oscilador estocástico sin suavizar, vuelto del revés.

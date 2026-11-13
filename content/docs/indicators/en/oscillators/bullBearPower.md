@@ -2,6 +2,7 @@
 title: "Bull and bear power"
 description: "How the bull and bear power give how far the high and the low of each bar are from an exponential average of the close, in price units, and how to use them in a QTSurfer strategy."
 order: 2.59
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **bull power** and the **bear power**, by Alexander Elder, say how far the high and the low of each bar are from an exponential average of the close: how high the buyers pushed, and how low the sellers did.

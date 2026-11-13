@@ -2,6 +2,7 @@
 title: "Awesome oscillator (AO)"
 description: "How the awesome oscillator takes the gap between a fast and a slow average of the middle of each bar, why the engine's histogram moves in steps, and how to use it in a QTSurfer strategy."
 order: 2.56
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **awesome oscillator** (AO), by Bill Williams, is the gap between a fast and a slow simple average of the middle of each bar. It is drawn as a histogram around zero.

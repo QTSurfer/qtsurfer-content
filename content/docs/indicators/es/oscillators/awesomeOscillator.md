@@ -2,6 +2,7 @@
 title: "Oscilador Awesome (AO)"
 description: "Cómo el oscilador Awesome toma la distancia entre una media rápida y una lenta del punto medio de cada barra, por qué el histograma del motor se mueve a saltos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.56
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 El **oscilador Awesome** (AO, por sus siglas en inglés), de Bill Williams, es la distancia entre una media simple rápida y una lenta del punto medio de cada barra. Se dibuja como un histograma alrededor de cero.

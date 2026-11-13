@@ -2,6 +2,7 @@
 title: "Transformada de Fisher adaptativa"
 description: "Cómo la transformada de Fisher adaptativa cambia la ventana de la transformada de Fisher con el ratio de eficiencia del precio, corta en una tendencia y larga en un rango, alcanzando el doble de amplitud en reposo, y cómo usarla en una estrategia de QTSurfer."
 order: 2.51
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 La **transformada de Fisher adaptativa** es la [transformada de Fisher](/docs/indicators/oscillators/fisherTransform) con una ventana que cambia según lo recto que se mueve el precio: corta cuando tiene tendencia, larga cuando divaga. Toma el ratio de eficiencia de Perry Kaufman para fijar la ventana.

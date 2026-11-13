@@ -2,6 +2,7 @@
 title: "Accelerator oscillator (AC)"
 description: "How the accelerator oscillator takes the gap between the awesome oscillator and its own average, so that it turns before it, why the engine's histogram moves in steps, and how to use it in a QTSurfer strategy."
 order: 2.57
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **accelerator oscillator** (AC), by Bill Williams, is the gap between the [awesome oscillator](/docs/indicators/oscillators/awesomeOscillator) and its own 5-bar average: how fast the momentum is changing. It is drawn as a histogram around zero.

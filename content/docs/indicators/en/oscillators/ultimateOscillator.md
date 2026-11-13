@@ -2,6 +2,7 @@
 title: "Ultimate oscillator"
 description: "How the ultimate oscillator combines the buying pressure over 7, 14 and 28 bars with weights 4, 2 and 1, from 0 to 100, why it rarely reaches 70 or 30, and how to use it in a QTSurfer strategy."
 order: 2.55
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **ultimate oscillator**, by Larry Williams, combines the buying pressure over three periods, 7, 14 and 28 bars, so that a single period does not decide. It runs from 0 to 100.

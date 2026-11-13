@@ -2,6 +2,7 @@
 title: "Fuerza alcista y bajista"
 description: "Cómo la fuerza alcista y la bajista dan lo lejos que están el máximo y el mínimo de cada barra de una media exponencial del cierre, en unidades de precio, y cómo usarlas en una estrategia de QTSurfer."
 order: 2.59
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 La **fuerza alcista** y la **fuerza bajista** (*bull power* y *bear power*), de Alexander Elder, dicen lo lejos que están el máximo y el mínimo de cada barra de una media exponencial del cierre: hasta dónde empujaron los compradores, y hasta dónde los vendedores.

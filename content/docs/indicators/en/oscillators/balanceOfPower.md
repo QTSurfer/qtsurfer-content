@@ -2,6 +2,7 @@
 title: "Balance of power (BOP)"
 description: "How the balance of power sets the move from the open to the close against the range of each bar, from minus 1 to 1, with no smoothing, and how to use it in a QTSurfer strategy."
 order: 2.58
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **balance of power** (BOP), by Igor Livshin, sets the move of each bar from its open to its close against its range, from −1 to 1: who won the bar, the buyers or the sellers.

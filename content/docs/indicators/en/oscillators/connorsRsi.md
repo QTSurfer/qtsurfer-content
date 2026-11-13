@@ -2,6 +2,7 @@
 title: "Connors RSI"
 description: "How the Connors RSI averages the RSI of the price, the RSI of the streak of rises or falls and the percent rank of the latest return, from 0 to 100, and how to use it in a QTSurfer strategy."
 order: 2.52
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **Connors RSI**, by Larry Connors, averages three things: the RSI of the price, the RSI of the streak of consecutive rises or falls, and where the latest return ranks among the recent ones. It runs from 0 to 100.

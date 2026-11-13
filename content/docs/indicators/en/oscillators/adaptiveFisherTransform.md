@@ -2,6 +2,7 @@
 title: "Adaptive Fisher transform"
 description: "How the adaptive Fisher transform changes the window of the Fisher transform with the efficiency ratio of the price, short in a trend and long in a range, reaching twice the amplitude at rest, and how to use it in a QTSurfer strategy."
 order: 2.51
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **adaptive Fisher transform** is the [Fisher transform](/docs/indicators/oscillators/fisherTransform) with a window that changes with how straight the price moves: short when it trends, long when it wanders. It takes the efficiency ratio of Perry Kaufman to set the window.

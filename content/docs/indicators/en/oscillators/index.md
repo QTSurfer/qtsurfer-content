@@ -2,6 +2,7 @@
 title: "Oscillators"
 description: "Indicators that swing between levels or around a centre line instead of following the price: the RSI, the stochastic RSI, the MACD, the CCI and twenty pro oscillators."
 order: 2
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 In the QTSurfer catalogues, the oscillators are `rsi`, `stochRsi`, `macd`, `cci` and twenty pro oscillators: indicators that swing between levels or around a centre line rather than follow the price. They are read against those levels, to judge whether a move has gone further than usual or whether its momentum is fading.

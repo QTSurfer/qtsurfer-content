@@ -2,6 +2,7 @@
 title: "Balance de poder (BOP)"
 description: "Cómo el balance de poder contrapone el movimiento de la apertura al cierre al rango de cada barra, de −1 a 1, sin suavizado, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.58
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 El **balance de poder** (BOP, por sus siglas en inglés), de Igor Livshin, contrapone el movimiento de cada barra de su apertura a su cierre a su rango, de −1 a 1: quién ganó la barra, los compradores o los vendedores.

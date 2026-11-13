@@ -2,6 +2,7 @@
 title: "Stochastic oscillator"
 description: "How the stochastic oscillator places the close in the range of the last bars, with its smoothed %K and its %D, why the engine's lines move in steps, and how to use it in a QTSurfer strategy."
 order: 2.53
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **stochastic oscillator**, by George Lane, places the close in the range of the last `N` bars, from 0 at the lowest low to 100 at the highest high. It comes with a smoothed line, `%K`, and an average of it, `%D`.

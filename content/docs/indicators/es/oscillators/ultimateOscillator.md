@@ -2,6 +2,7 @@
 title: "Oscilador definitivo (Ultimate)"
 description: "Cómo el oscilador definitivo combina la presión compradora en 7, 14 y 28 barras con pesos 4, 2 y 1, de 0 a 100, por qué rara vez llega a 70 o 30, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.55
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 El **oscilador definitivo** (*ultimate oscillator*), de Larry Williams, combina la presión compradora en tres periodos, 7, 14 y 28 barras, de modo que un solo periodo no decida. Va de 0 a 100.

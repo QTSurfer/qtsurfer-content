@@ -2,6 +2,7 @@
 title: "Oscilador estocástico"
 description: "Cómo el oscilador estocástico sitúa el cierre en el rango de las últimas barras, con su %K suavizado y su %D, por qué las líneas del motor se mueven a saltos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.53
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 El **oscilador estocástico**, de George Lane, sitúa el cierre en el rango de las últimas `N` barras, de 0 en el mínimo más bajo a 100 en el máximo más alto. Viene con una línea suavizada, `%K`, y una media de ella, `%D`.

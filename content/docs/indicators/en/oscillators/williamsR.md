@@ -2,6 +2,7 @@
 title: "Williams %R"
 description: "How Williams %R places the close in the range of the last bars from minus 100 to 0, as the fast stochastic minus 100, and how to use it in a QTSurfer strategy."
 order: 2.54
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 **Williams %R**, by Larry Williams, places the close in the range of the last `N` bars, from −100 at the lowest low to 0 at the highest high. It is the unsmoothed stochastic oscillator turned upside down.

@@ -2,6 +2,7 @@
 title: "Relative vigor index (RVGI)"
 description: "How the relative vigor index sets the weighted move from the open to the close against the weighted range of the last bars, why the engine's line moves in steps, and how to use it in a QTSurfer strategy."
 order: 2.60
+lastUpdated: '2026-11-13T21:28:19Z'
 ---
 
 The **relative vigor index** (RVGI), by John Ehlers, sets the move from the open to the close against the range, weighted over four bars and smoothed: the idea that prices close higher than they open in an uptrend.

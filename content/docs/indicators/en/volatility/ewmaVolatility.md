@@ -2,6 +2,7 @@
 title: "EWMA volatility"
 description: "How the EWMA volatility estimates the volatility per bar with exponentially decaying weights on the squared returns, the RiskMetrics way, and how to use it in a QTSurfer strategy."
 order: 4.94
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **EWMA volatility** estimates the volatility per bar from the squared log returns, with weights that decay exponentially: the RiskMetrics method of J.P. Morgan. It needs no window.

@@ -2,6 +2,7 @@
 title: "Donchian channel"
 description: "How the Donchian channel draws the highest high and the lowest low of the last bars with their middle, why the close never leaves its own channel, and how to use it in a QTSurfer strategy."
 order: 3.41
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **Donchian channel**, by Richard Donchian, draws the highest high and the lowest low of the last `N` bars, with the middle between them.

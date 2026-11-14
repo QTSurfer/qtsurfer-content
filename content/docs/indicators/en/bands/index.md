@@ -2,6 +2,7 @@
 title: "Bands"
 description: "Bands drawn around the price, and the measures taken from them: the Bollinger bands, their %B and their bandwidth, and three pro bands."
 order: 3
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 In the QTSurfer catalogues, the bands are `bollinger`, `bollingerPercentB`, `bollingerBandwidth` and the pro bands `donchianChannel`, `envelopes` and `keltnerChannel`: a band drawn around the price, and measures taken from it, where the price sits in the band and how wide the band is.

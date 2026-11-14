@@ -2,6 +2,7 @@
 title: "Keltner channel"
 description: "How the Keltner channel draws two lines at a multiple of the average true range above and below an exponential average of the close, and how to use it in a QTSurfer strategy."
 order: 3.43
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **Keltner channel**, by Chester Keltner and in the version of Linda Raschke, draws two lines at a multiple of the [average true range](/docs/indicators/volatility/atr) above and below an exponential average of the close, so its width follows the volatility.

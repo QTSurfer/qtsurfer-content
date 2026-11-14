@@ -2,6 +2,7 @@
 title: "Volatilidad EWMA"
 description: "Cómo la volatilidad EWMA estima la volatilidad por barra con pesos que decaen exponencialmente sobre los rendimientos al cuadrado, a la manera de RiskMetrics, y cómo usarla en una estrategia de QTSurfer."
 order: 4.94
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 La **volatilidad EWMA** estima la volatilidad por barra a partir de los rendimientos logarítmicos al cuadrado, con pesos que decaen exponencialmente: el método RiskMetrics de J.P. Morgan. No necesita ventana.

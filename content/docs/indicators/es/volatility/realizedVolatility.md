@@ -2,6 +2,7 @@
 title: "Volatilidad realizada"
 description: "Cómo la volatilidad realizada toma la desviación típica de los últimos rendimientos logarítmicos, por barra, con pesos iguales, y cómo usarla en una estrategia de QTSurfer."
 order: 4.95
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 La **volatilidad realizada** es la desviación típica de los últimos `N` rendimientos logarítmicos, por barra, con pesos iguales.

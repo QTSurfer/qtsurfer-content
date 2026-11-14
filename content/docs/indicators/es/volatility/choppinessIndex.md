@@ -2,6 +2,7 @@
 title: "Índice de oscilación (choppiness)"
 description: "Cómo el índice de choppiness distingue un mercado que divaga de uno con tendencia comparando la suma de los rangos verdaderos con el rango de la ventana, de 0 a 100, y cómo usarlo en una estrategia de QTSurfer."
 order: 4.92
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 El **índice de choppiness** (*choppiness index*), de Bill Dreiss, distingue un mercado que divaga de uno con tendencia: compara la suma de los rangos verdaderos de las últimas `N` barras con el rango de toda la ventana. Alto es errático, bajo es con tendencia.

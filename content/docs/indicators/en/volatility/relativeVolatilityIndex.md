@@ -2,6 +2,7 @@
 title: "Relative volatility index (RVI)"
 description: "How the relative volatility index applies the RSI to the standard deviation of the price instead of to the price, from 0 to 100, and how to use it in a QTSurfer strategy."
 order: 4.96
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **relative volatility index** (RVI), by Donald Dorsey, applies the idea of the RSI to the standard deviation of the price instead of to the price: it says whether the volatility has been rising or falling. It runs from 0 to 100.

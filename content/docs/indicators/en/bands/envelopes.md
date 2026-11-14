@@ -2,6 +2,7 @@
 title: "Envelopes"
 description: "How the envelopes draw two lines at a fixed percentage above and below an exponential average, why a fixed percentage fits one volatility only, and how to use them in a QTSurfer strategy."
 order: 3.42
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **envelopes** draw two lines at a fixed percentage above and below an exponential average of the price.

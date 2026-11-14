@@ -2,6 +2,7 @@
 title: "Rango verdadero medio normalizado (NATR)"
 description: "Cómo el rango verdadero medio normalizado da el rango verdadero medio como porcentaje del cierre, de modo que se compara entre instrumentos y precios, y cómo usarlo en una estrategia de QTSurfer."
 order: 4.91
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 El **rango verdadero medio normalizado** (NATR, por sus siglas en inglés) es el [rango verdadero medio](/docs/indicators/volatility/atr) como porcentaje del cierre, de modo que se compara entre instrumentos y entre niveles de precio.

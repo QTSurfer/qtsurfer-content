@@ -3,7 +3,7 @@ id: indicators
 title: Indicadores
 description: "Cómo funciona cada indicador de QTSurfer, con un gráfico que puedes cambiar: qué calcula, cómo lo modelan sus parámetros y cómo usarlo en una estrategia."
 order: 0
-lastUpdated: '2026-11-13T21:28:19Z'
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 Un indicador convierte una serie de precios en un número sobre el que una estrategia puede actuar: una tendencia, un

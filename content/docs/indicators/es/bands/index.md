@@ -2,6 +2,7 @@
 title: "Bandas"
 description: "Bandas dibujadas alrededor del precio y las medidas que se toman de ellas: las bandas de Bollinger, su %B y su anchura, y tres bandas pro."
 order: 3
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 En los catálogos de QTSurfer, las bandas son `bollinger`, `bollingerPercentB`, `bollingerBandwidth` y las bandas pro `donchianChannel`, `envelopes` y `keltnerChannel`: una banda dibujada alrededor del precio, y medidas que se toman de ella, dónde se sitúa el precio dentro de la banda y cuánto mide de ancha.

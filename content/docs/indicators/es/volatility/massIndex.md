@@ -2,6 +2,7 @@
 title: "Índice de masa"
 description: "Cómo el índice de masa suma el cociente de una media exponencial simple y doble del rango de la barra, para detectar giros a partir de un rango que se ensancha, y cómo usarlo en una estrategia de QTSurfer."
 order: 4.93
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 El **índice de masa** (*mass index*), de Donald Dorsey, suma el cociente de una media exponencial simple y doble del rango de cada barra. Busca el ensanchamiento del rango que a menudo precede a un giro, sin idea de su sentido.

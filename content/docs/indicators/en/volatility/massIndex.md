@@ -2,6 +2,7 @@
 title: "Mass index"
 description: "How the mass index adds up the ratio of a single to a double exponential average of the bar range, to spot reversals from a widening range, and how to use it in a QTSurfer strategy."
 order: 4.93
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **mass index**, by Donald Dorsey, adds up the ratio of a single to a double exponential average of the range of each bar. It looks for the widening of the range that often comes before a reversal, with no idea of its direction.

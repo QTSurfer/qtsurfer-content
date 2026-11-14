@@ -2,6 +2,7 @@
 title: "Índice de volatilidad relativa (RVI)"
 description: "Cómo el índice de volatilidad relativa aplica el RSI a la desviación típica del precio en vez de al precio, de 0 a 100, y cómo usarlo en una estrategia de QTSurfer."
 order: 4.96
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 El **índice de volatilidad relativa** (RVI, por sus siglas en inglés), de Donald Dorsey, aplica la idea del RSI a la desviación típica del precio en vez de al precio: dice si la volatilidad ha estado subiendo o bajando. Va de 0 a 100.

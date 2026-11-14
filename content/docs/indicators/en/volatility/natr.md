@@ -2,6 +2,7 @@
 title: "Normalized average true range (NATR)"
 description: "How the normalized average true range gives the average true range as a percentage of the close, so that it compares between instruments and prices, and how to use it in a QTSurfer strategy."
 order: 4.91
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **normalized average true range** (NATR) is the [average true range](/docs/indicators/volatility/atr) as a percentage of the close, so that it compares between instruments and between price levels.

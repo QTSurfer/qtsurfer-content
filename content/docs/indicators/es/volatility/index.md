@@ -2,6 +2,7 @@
 title: "Volatilidad"
 description: "Indicadores de cuánto se mueve el precio: el rango verdadero medio, la desviación típica, la varianza, los indicadores de volatilidad del motor, los cuatro estimadores OHLC y seis indicadores pro más."
 order: 4
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 En los catálogos de QTSurfer, los indicadores de volatilidad son `atr`, `stdDev`, `variance`, `volatility` y `percentVolatility`, los cuatro estimadores OHLC `parkinson`, `garmanKlass`, `rogersSatchell` y `yangZhang`, y los indicadores pro `natr`, `choppinessIndex`, `massIndex`, `ewmaVolatility`, `realizedVolatility` y `relativeVolatilityIndex`: medidas de cuánto se mueve el precio, o de con qué frecuencia. Responden preguntas distintas, y las unidades las distinguen: unas están en las unidades del precio, una en su cuadrado, algunas en porcentaje del precio y otras por barra.

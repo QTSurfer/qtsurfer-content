@@ -2,6 +2,7 @@
 title: "Choppiness index"
 description: "How the choppiness index tells a market that wanders from one that trends by comparing the sum of the true ranges with the range of the window, from 0 to 100, and how to use it in a QTSurfer strategy."
 order: 4.92
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **choppiness index**, by Bill Dreiss, tells a market that wanders from one that trends: it compares the sum of the true ranges of the last `N` bars with the range of the whole window. High is choppy, low is trending.

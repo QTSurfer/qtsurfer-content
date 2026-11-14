@@ -2,6 +2,7 @@
 title: "Envolventes"
 description: "Cómo las envolventes dibujan dos líneas a un porcentaje fijo por encima y por debajo de una media exponencial, por qué un porcentaje fijo solo encaja con una volatilidad, y cómo usarlas en una estrategia de QTSurfer."
 order: 3.42
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 Las **envolventes** dibujan dos líneas a un porcentaje fijo por encima y por debajo de una media exponencial del precio.

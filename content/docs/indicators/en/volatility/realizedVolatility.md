@@ -2,6 +2,7 @@
 title: "Realized volatility"
 description: "How the realized volatility takes the standard deviation of the last log returns, per bar, with equal weights, and how to use it in a QTSurfer strategy."
 order: 4.95
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 The **realized volatility** is the standard deviation of the last `N` log returns, per bar, with equal weights.

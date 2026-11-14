@@ -2,6 +2,7 @@
 title: "Canal de Donchian"
 description: "Cómo el canal de Donchian dibuja el máximo más alto y el mínimo más bajo de las últimas barras con su punto medio, por qué el cierre nunca sale de su propio canal, y cómo usarlo en una estrategia de QTSurfer."
 order: 3.41
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 El **canal de Donchian**, de Richard Donchian, dibuja el máximo más alto y el mínimo más bajo de las últimas `N` barras, con el punto medio entre ellos.

@@ -2,6 +2,7 @@
 title: "Canal de Keltner"
 description: "Cómo el canal de Keltner dibuja dos líneas a un múltiplo del rango verdadero medio por encima y por debajo de una media exponencial del cierre, y cómo usarlo en una estrategia de QTSurfer."
 order: 3.43
+lastUpdated: '2026-11-13T23:26:15Z'
 ---
 
 El **canal de Keltner**, de Chester Keltner y en la versión de Linda Raschke, dibuja dos líneas a un múltiplo del [rango verdadero medio](/docs/indicators/volatility/atr) por encima y por debajo de una media exponencial del cierre, así que su anchura sigue a la volatilidad.

@@ -48,9 +48,16 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   [realizada](/docs/indicators/volatility/realizedVolatility) y el
   [índice de volatilidad relativa](/docs/indicators/volatility/relativeVolatilityIndex).
 - [Tendencia](/docs/indicators/trend): los indicadores pro [ADX](/docs/indicators/trend/adx),
-  [SuperTrend](/docs/indicators/trend/superTrend) y [nube de Ichimoku](/docs/indicators/trend/ichimoku).
+  [SuperTrend](/docs/indicators/trend/superTrend) y [nube de Ichimoku](/docs/indicators/trend/ichimoku), y seis más:
+  [Aroon](/docs/indicators/trend/aroon), [Vortex](/docs/indicators/trend/vortex),
+  [ratio de eficiencia](/docs/indicators/trend/efficiencyRatio), [SAR parabólico](/docs/indicators/trend/parabolicSar),
+  [salida Chandelier](/docs/indicators/trend/chandelierExit) y [stop de Chande y Kroll](/docs/indicators/trend/chandeKrollStop).
 - [Volumen](/docs/indicators/volume): los indicadores pro [OBV](/docs/indicators/volume/obv),
-  [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) y [CMF](/docs/indicators/volume/cmf).
+  [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) y [CMF](/docs/indicators/volume/cmf), y siete más:
+  [ADL](/docs/indicators/volume/adl), [oscilador de Chaikin](/docs/indicators/volume/chaikinOscillator),
+  [facilidad de movimiento](/docs/indicators/volume/easeOfMovement), [índice de fuerza de Elder](/docs/indicators/volume/elderForceIndex),
+  [oscilador de Klinger](/docs/indicators/volume/klingerOscillator), [índice de volumen negativo](/docs/indicators/volume/negativeVolumeIndex)
+  y [tendencia precio-volumen](/docs/indicators/volume/pvt).
 - [Estadística](/docs/indicators/statistics): los indicadores pro [varianza exacta](/docs/indicators/statistics/exactVariance),
   [desviación típica exacta](/docs/indicators/statistics/exactStdDev), [puntuación z](/docs/indicators/statistics/zScore),
   [asimetría](/docs/indicators/statistics/skewness), [curtosis](/docs/indicators/statistics/kurtosis), [pendiente de la regresión lineal](/docs/indicators/statistics/linearRegressionSlope),

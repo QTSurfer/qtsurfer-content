@@ -48,9 +48,16 @@ The pages are grouped as the catalogues group the indicators:
   [realized](/docs/indicators/volatility/realizedVolatility) volatilities and the
   [relative volatility index](/docs/indicators/volatility/relativeVolatilityIndex).
 - [Trend](/docs/indicators/trend): the pro indicators [ADX](/docs/indicators/trend/adx),
-  [SuperTrend](/docs/indicators/trend/superTrend) and [Ichimoku cloud](/docs/indicators/trend/ichimoku).
+  [SuperTrend](/docs/indicators/trend/superTrend) and [Ichimoku cloud](/docs/indicators/trend/ichimoku), and six more:
+  [Aroon](/docs/indicators/trend/aroon), [vortex](/docs/indicators/trend/vortex),
+  [efficiency ratio](/docs/indicators/trend/efficiencyRatio), [parabolic SAR](/docs/indicators/trend/parabolicSar),
+  [chandelier exit](/docs/indicators/trend/chandelierExit) and [Chande Kroll stop](/docs/indicators/trend/chandeKrollStop).
 - [Volume](/docs/indicators/volume): the pro indicators [OBV](/docs/indicators/volume/obv),
-  [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) and [CMF](/docs/indicators/volume/cmf).
+  [VWAP](/docs/indicators/volume/vwap), [MFI](/docs/indicators/volume/mfi) and [CMF](/docs/indicators/volume/cmf), and seven more:
+  [ADL](/docs/indicators/volume/adl), [Chaikin oscillator](/docs/indicators/volume/chaikinOscillator),
+  [ease of movement](/docs/indicators/volume/easeOfMovement), [Elder force index](/docs/indicators/volume/elderForceIndex),
+  [Klinger oscillator](/docs/indicators/volume/klingerOscillator), [negative volume index](/docs/indicators/volume/negativeVolumeIndex)
+  and [price volume trend](/docs/indicators/volume/pvt).
 - [Statistics](/docs/indicators/statistics): the pro indicators [exact variance](/docs/indicators/statistics/exactVariance),
   [exact standard deviation](/docs/indicators/statistics/exactStdDev), [z-score](/docs/indicators/statistics/zScore),
   [skewness](/docs/indicators/statistics/skewness), [kurtosis](/docs/indicators/statistics/kurtosis), [linear regression slope](/docs/indicators/statistics/linearRegressionSlope),

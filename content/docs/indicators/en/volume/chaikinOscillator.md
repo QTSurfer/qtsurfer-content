@@ -2,6 +2,7 @@
 title: "Chaikin oscillator"
 description: "How the Chaikin oscillator takes the gap between a fast and a slow exponential average of the accumulation/distribution line, and how to use it in a QTSurfer strategy."
 order: 6.42
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **Chaikin oscillator**, by Marc Chaikin, is the gap between a fast and a slow exponential average of the [accumulation/distribution line](/docs/indicators/volume/adl): the momentum of the money flow. It is drawn around zero.

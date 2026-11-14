@@ -2,6 +2,7 @@
 title: "Índice de volumen negativo (NVI)"
 description: "Cómo el índice de volumen negativo se mueve solo en las barras donde el volumen bajó respecto a la anterior, según el cambio porcentual del cierre, empezando en 1000, y cómo usarlo en una estrategia de QTSurfer."
 order: 6.46
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **índice de volumen negativo** (NVI, por sus siglas en inglés), de Paul Dysart y Norman Fosback, empieza en 1000 y se mueve solo en las barras donde el volumen bajó respecto a la anterior, según el cambio porcentual del cierre. La idea es que los informados operan en las barras tranquilas.

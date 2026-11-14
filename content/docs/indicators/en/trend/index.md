@@ -2,6 +2,7 @@
 title: "Trend"
 description: "Indicators of whether the market is trending and which way: the average directional index, the SuperTrend, the Ichimoku cloud and six more pro indicators."
 order: 5
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 In the QTSurfer catalogues, the trend indicators are `adx`, `superTrend`, `ichimoku`, `aroon`, `chandeKrollStop`, `chandelierExit`, `efficiencyRatio`, `parabolicSar` and `vortex`: they say whether the market is trending, how strongly, and on which side the price stands. All of them are pro indicators: they come with the Pro and Elite plans, a strategy brings them in with a `uses` line (see [the QTScript guide](/docs/strategies/qtscript#the-pro-indicators-uses)), and they read whole bars, so they belong in a `kline` strategy; the efficiency ratio is the exception and reads one price.

@@ -2,6 +2,7 @@
 title: "Ease of movement (EMV)"
 description: "How the ease of movement says how easily the price moves for the volume it takes, averaging the move of the middle of each bar over its volume per unit of range, and how to use it in a QTSurfer strategy."
 order: 6.43
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **ease of movement** (EMV), by Richard Arms, says how easily the price moves for the volume it takes: it divides the move of the middle of each bar by its volume per unit of range, and averages the last `N` values.

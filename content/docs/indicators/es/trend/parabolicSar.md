@@ -2,6 +2,7 @@
 title: "SAR parabólico"
 description: "Cómo el SAR parabólico dibuja un stop que persigue al precio y se acelera a medida que sigue la tendencia, y se invierte cuando el precio lo toca, y cómo usarlo en una estrategia de QTSurfer."
 order: 5.45
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **SAR parabólico** (*stop and reverse*), de Welles Wilder, dibuja un stop que persigue al precio más deprisa cuanto más dura la tendencia, y pasa al otro lado cuando el precio lo toca.

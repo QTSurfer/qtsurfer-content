@@ -2,6 +2,7 @@
 title: "Ratio de eficiencia"
 description: "Cómo el ratio de eficiencia contrapone el movimiento neto del precio a la suma de sus movimientos, de 0 a 1, lo recto que fue el precio, y cómo usarlo en una estrategia de QTSurfer."
 order: 5.44
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **ratio de eficiencia** (*efficiency ratio*), de Perry Kaufman, contrapone el movimiento neto del precio en `N` barras a la suma de todos sus movimientos: 1 cuando fue en línea recta, cerca de 0 cuando divagó. Es con lo que [KAMA](/docs/indicators/averages/kama) adapta su velocidad.

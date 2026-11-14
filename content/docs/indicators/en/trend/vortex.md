@@ -2,6 +2,7 @@
 title: "Vortex indicator"
 description: "How the vortex indicator compares the movement from each low to the next high with the one from each high to the next low, as two lines around 1, and how to use it in a QTSurfer strategy."
 order: 5.46
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **vortex indicator**, by Etienne Botes and Douglas Siepman, compares the upward movement, from each bar's low to the next bar's high, with the downward one, from each high to the next low, against the true range. It draws two lines: `VI+` and `VI−`.

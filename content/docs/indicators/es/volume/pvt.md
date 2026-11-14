@@ -2,6 +2,7 @@
 title: "Tendencia precio-volumen (PVT)"
 description: "Cómo la tendencia precio-volumen lleva un total acumulado del volumen de cada barra ponderado por el cambio porcentual del cierre, y cómo usarla en una estrategia de QTSurfer."
 order: 6.47
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 La **tendencia precio-volumen** (PVT, por sus siglas en inglés) lleva un total acumulado del volumen de cada barra ponderado por el cambio porcentual del cierre. Es el [volumen en balance](/docs/indicators/volume/obv) contando el tamaño del movimiento, no solo su signo.

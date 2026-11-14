@@ -2,6 +2,7 @@
 title: "Klinger oscillator"
 description: "How the Klinger oscillator takes the gap between a fast and a slow average of a volume force that follows the trend of the bar, with its signal line, and how to use it in a QTSurfer strategy."
 order: 6.45
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **Klinger oscillator**, by Stephen Klinger, takes the gap between a fast and a slow exponential average of a volume force that follows the trend of each bar. It comes with a signal line, an average of itself.

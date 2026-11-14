@@ -2,6 +2,7 @@
 title: "Salida de araña (Chandelier)"
 description: "Cómo la salida Chandelier cuelga un stop a un múltiplo del rango verdadero medio por debajo del máximo más alto, y otro por encima del mínimo más bajo, y cómo usarla en una estrategia de QTSurfer."
 order: 5.43
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 La **salida Chandelier** (*chandelier exit*), de Chuck LeBeau, cuelga un stop del máximo más alto de las últimas `N` barras, a un múltiplo del [rango verdadero medio](/docs/indicators/volatility/atr) por debajo, para una posición larga; y otro del mínimo más bajo, por encima, para una corta.

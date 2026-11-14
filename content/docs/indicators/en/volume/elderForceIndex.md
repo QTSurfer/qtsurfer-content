@@ -2,6 +2,7 @@
 title: "Elder force index"
 description: "How the Elder force index smooths the change of the close times the volume, so that a big move on a big volume weighs the most, and how to use it in a QTSurfer strategy."
 order: 6.44
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **Elder force index**, by Alexander Elder, smooths the change of the close times the volume: a big move on a big volume weighs the most. It is drawn around zero.

@@ -2,6 +2,7 @@
 title: "Price volume trend (PVT)"
 description: "How the price volume trend keeps a running total of each bar's volume weighted by the percentage change of the close, and how to use it in a QTSurfer strategy."
 order: 6.47
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **price volume trend** (PVT) keeps a running total of each bar's volume weighted by the percentage change of the close. It is the [on-balance volume](/docs/indicators/volume/obv) with the size of the move counted, not only its sign.

@@ -2,6 +2,7 @@
 title: "Oscilador de Klinger"
 description: "Cómo el oscilador de Klinger toma la distancia entre una media rápida y una lenta de una fuerza de volumen que sigue la tendencia de la barra, con su línea de señal, y cómo usarlo en una estrategia de QTSurfer."
 order: 6.45
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **oscilador de Klinger**, de Stephen Klinger, toma la distancia entre una media exponencial rápida y una lenta de una fuerza de volumen que sigue la tendencia de cada barra. Viene con una línea de señal, una media de sí mismo.

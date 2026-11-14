@@ -2,6 +2,7 @@
 title: "Índice de fuerza de Elder"
 description: "Cómo el índice de fuerza de Elder suaviza el cambio del cierre por el volumen, de modo que un gran movimiento con un gran volumen pesa más, y cómo usarlo en una estrategia de QTSurfer."
 order: 6.44
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **índice de fuerza de Elder** (*force index*), de Alexander Elder, suaviza el cambio del cierre por el volumen: un gran movimiento con un gran volumen es el que más pesa. Se dibuja en torno a cero.

@@ -2,6 +2,7 @@
 title: "Indicador Vortex"
 description: "Cómo el indicador Vortex compara el movimiento de cada mínimo al máximo siguiente con el de cada máximo al mínimo siguiente, como dos líneas en torno a 1, y cómo usarlo en una estrategia de QTSurfer."
 order: 5.46
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **indicador Vortex**, de Etienne Botes y Douglas Siepman, compara el movimiento al alza, del mínimo de cada barra al máximo de la siguiente, con el movimiento a la baja, de cada máximo al mínimo siguiente, frente al rango verdadero. Dibuja dos líneas: `VI+` y `VI−`.

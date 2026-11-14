@@ -2,6 +2,7 @@
 title: "Tendencia"
 description: "Indicadores de si el mercado tiene tendencia y hacia dónde: el índice direccional medio, el SuperTrend, la nube de Ichimoku y seis indicadores pro más."
 order: 5
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 En los catálogos de QTSurfer, los indicadores de tendencia son `adx`, `superTrend`, `ichimoku`, `aroon`, `chandeKrollStop`, `chandelierExit`, `efficiencyRatio`, `parabolicSar` y `vortex`: dicen si el mercado tiene tendencia, con qué fuerza, y de qué lado está el precio. Todos son indicadores pro: vienen con los planes Pro y Elite, una estrategia los trae con una línea `uses` (consulta [la guía de QTScript](/docs/strategies/qtscript#the-pro-indicators-uses)), y leen barras completas, así que van en una estrategia `kline`; el ratio de eficiencia es la excepción y lee un solo precio.

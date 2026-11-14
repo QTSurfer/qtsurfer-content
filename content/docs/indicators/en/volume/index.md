@@ -2,6 +2,7 @@
 title: "Volume"
 description: "Indicators that read the volume traded: the on-balance volume, the volume-weighted average price, the money flow index, the Chaikin money flow and seven more pro indicators."
 order: 6
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 In the QTSurfer catalogues, the volume indicators are `obv`, `vwap`, `mfi`, `cmf`, `adl`, `chaikinOscillator`, `easeOfMovement`, `elderForceIndex`, `klingerOscillator`, `negativeVolumeIndex` and `pvt`: they weigh or split what happens to the price by the volume traded. All of them are pro indicators: they come with the Pro and Elite plans, a strategy brings them in with a `uses` line (see [the QTScript guide](/docs/strategies/qtscript#the-pro-indicators-uses)), and they read whole bars, so they belong in a `kline` strategy. The sample series of the charts carry volume, in the klines and in the tickers alike.

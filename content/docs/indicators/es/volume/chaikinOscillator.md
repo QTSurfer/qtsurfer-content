@@ -2,6 +2,7 @@
 title: "Oscilador de Chaikin"
 description: "Cómo el oscilador de Chaikin toma la distancia entre una media exponencial rápida y una lenta de la línea de acumulación/distribución, y cómo usarlo en una estrategia de QTSurfer."
 order: 6.42
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **oscilador de Chaikin**, de Marc Chaikin, es la distancia entre una media exponencial rápida y una lenta de la [línea de acumulación/distribución](/docs/indicators/volume/adl): el impulso del flujo de dinero. Se dibuja en torno a cero.

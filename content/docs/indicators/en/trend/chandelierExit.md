@@ -2,6 +2,7 @@
 title: "Chandelier exit"
 description: "How the chandelier exit hangs a stop at a multiple of the average true range below the highest high, and another above the lowest low, and how to use it in a QTSurfer strategy."
 order: 5.43
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **chandelier exit**, by Chuck LeBeau, hangs a stop from the highest high of the last `N` bars, at a multiple of the [average true range](/docs/indicators/volatility/atr) below it, for a long position; and another from the lowest low, above it, for a short one.

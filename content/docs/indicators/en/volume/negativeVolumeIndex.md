@@ -2,6 +2,7 @@
 title: "Negative volume index (NVI)"
 description: "How the negative volume index moves only on the bars where the volume fell from the previous one, by the percentage change of the close, starting at 1000, and how to use it in a QTSurfer strategy."
 order: 6.46
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **negative volume index** (NVI), by Paul Dysart and Norman Fosback, starts at 1000 and moves only on the bars where the volume fell from the previous bar, by the percentage change of the close. The idea is that the informed trade in the quiet bars.

@@ -2,6 +2,7 @@
 title: "Chande Kroll stop"
 description: "How the Chande Kroll stop draws two stop lines from the highest and lowest closes less and plus a multiple of the average true range, then takes the extreme of each, and how to use it in a QTSurfer strategy."
 order: 5.42
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **Chande Kroll stop**, by Tushar Chande and Stanley Kroll, draws two stop lines from the extremes of the recent closes, moved by a multiple of the [average true range](/docs/indicators/volatility/atr), and then takes the extreme of each over a second window.

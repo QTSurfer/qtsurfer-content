@@ -2,6 +2,7 @@
 title: "Efficiency ratio"
 description: "How the efficiency ratio sets the net move of the price against the sum of its moves, from 0 to 1, how straight the price went, and how to use it in a QTSurfer strategy."
 order: 5.44
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **efficiency ratio**, by Perry Kaufman, sets the net move of the price over `N` bars against the sum of all its moves: 1 when it went straight, near 0 when it wandered. It is what [KAMA](/docs/indicators/averages/kama) adapts its speed with.

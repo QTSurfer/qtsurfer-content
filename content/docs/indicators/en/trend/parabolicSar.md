@@ -2,6 +2,7 @@
 title: "Parabolic SAR"
 description: "How the parabolic SAR draws a trailing stop that speeds up as a trend goes on and flips when the price touches it, and how to use it in a QTSurfer strategy."
 order: 5.45
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **parabolic SAR** (stop and reverse), by Welles Wilder, draws a trailing stop that moves toward the price faster the longer the trend lasts, and flips to the other side when the price touches it.

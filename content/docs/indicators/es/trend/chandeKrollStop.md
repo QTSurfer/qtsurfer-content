@@ -2,6 +2,7 @@
 title: "Stop de Chande y Kroll"
 description: "Cómo el stop de Chande y Kroll dibuja dos líneas de parada a partir de los cierres más alto y más bajo menos y más un múltiplo del rango verdadero medio, y luego toma el extremo de cada una, y cómo usarlo en una estrategia de QTSurfer."
 order: 5.42
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **stop de Chande y Kroll**, de Tushar Chande y Stanley Kroll, dibuja dos líneas de parada a partir de los extremos de los cierres recientes, desplazadas un múltiplo del [rango verdadero medio](/docs/indicators/volatility/atr), y luego toma el extremo de cada una sobre una segunda ventana.

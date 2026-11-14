@@ -2,6 +2,7 @@
 title: "Accumulation/distribution line (ADL)"
 description: "How the accumulation/distribution line keeps a running total of each bar's volume weighted by where the close sits in its range, why its level means nothing and its direction does, and how to use it in a QTSurfer strategy."
 order: 6.41
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **accumulation/distribution line** (ADL), by Marc Chaikin, keeps a running total of each bar's volume weighted by where the close sits in its range: all of it counts as buying at the high, all as selling at the low.

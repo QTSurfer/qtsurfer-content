@@ -2,6 +2,7 @@
 title: "Aroon"
 description: "How the Aroon measures how long ago the highest high and the lowest low of the last bars were, as two lines from 0 to 100 and their difference, and how to use it in a QTSurfer strategy."
 order: 5.41
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 The **Aroon**, by Tushar Chande, measures how long ago the highest high and the lowest low of the last `N` bars were. `Up` is 100 when the high was on the latest bar and falls to 0 as it ages; `Down` does the same for the low.

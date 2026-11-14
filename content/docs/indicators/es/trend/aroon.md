@@ -2,6 +2,7 @@
 title: "Aroon"
 description: "Cómo el Aroon mide cuánto hace que ocurrieron el máximo más alto y el mínimo más bajo de las últimas barras, como dos líneas de 0 a 100 y su diferencia, y cómo usarlo en una estrategia de QTSurfer."
 order: 5.41
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 El **Aroon**, de Tushar Chande, mide cuánto hace que ocurrieron el máximo más alto y el mínimo más bajo de las últimas `N` barras. `Up` vale 100 cuando el máximo fue en la última barra y baja hasta 0 al envejecer; `Down` hace lo mismo con el mínimo.

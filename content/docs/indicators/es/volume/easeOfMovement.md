@@ -2,6 +2,7 @@
 title: "Facilidad de movimiento (EMV)"
 description: "Cómo la facilidad de movimiento dice con qué facilidad se mueve el precio por el volumen que cuesta, promediando el movimiento del punto medio de cada barra sobre su volumen por unidad de rango, y cómo usarla en una estrategia de QTSurfer."
 order: 6.43
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 La **facilidad de movimiento** (EMV, por sus siglas en inglés), de Richard Arms, dice con qué facilidad se mueve el precio por el volumen que cuesta: divide el movimiento del punto medio de cada barra por su volumen por unidad de rango, y promedia los últimos `N` valores.

@@ -2,6 +2,7 @@
 title: "Línea de acumulación/distribución (ADL)"
 description: "Cómo la línea de acumulación/distribución lleva un total acumulado del volumen de cada barra ponderado por dónde está el cierre en su rango, por qué su nivel no significa nada y su dirección sí, y cómo usarla en una estrategia de QTSurfer."
 order: 6.41
+lastUpdated: '2026-11-14T12:16:29Z'
 ---
 
 La **línea de acumulación/distribución** (ADL, por sus siglas en inglés), de Marc Chaikin, lleva un total acumulado del volumen de cada barra ponderado por dónde está el cierre en su rango: todo cuenta como compra en el máximo, todo como venta en el mínimo.

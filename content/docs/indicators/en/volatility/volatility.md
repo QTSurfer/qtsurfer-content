@@ -2,7 +2,6 @@
 title: "Volatility"
 description: "How the volatility indicator gives the share of recent updates in which the price changed, why it reads 100 almost everywhere on candles, and how to use it in a QTSurfer strategy."
 order: 4.4
-lastUpdated: '2026-11-12T00:02:30Z'
 ---
 
 The **volatility** of the QTSurfer catalogues is not the statistical one. It is the percentage of the last updates in which the price changed: it says how often the price moves, not by how much.

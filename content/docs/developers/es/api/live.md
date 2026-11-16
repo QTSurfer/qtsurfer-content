@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 4f422c3150a60aa8fe08bca4d4437503bda8a14d
+upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
 upstreamPath: docs/live.md
 lastUpdated: '2026-11-02T12:01:59Z'
 ---
@@ -22,6 +22,8 @@ medida que ocurren, y cambia sus parámetros sin reiniciarla.
 | `PATCH` | `/live/{runId}` | Cambiar visibilidad, nombre o descripción |
 | `PUT` | `/live/{runId}/params` | Cambiar parámetros mientras sigue en vivo |
 | `POST` | `/live/{runId}/commands` | Indicarle un comando mientras sigue en vivo |
+| `POST` | `/live/{runId}/attachments` | Adjuntarle una fuente de datos de mercado |
+| `DELETE` | `/live/{runId}/attachments/{attachmentId}` | Quitarle una fuente |
 | `GET` | `/live/{runId}/signals` | Leer las señales que ya ha producido |
 | `GET` | `/live/{runId}/paper` | Leer su paper trading — consulta [Paper trading](live_paper) |
 | `GET` | `/live/{runId}/paper/equity` | Leer la curva de equity de una cuenta de paper trading, con la forma de cualquier [curva de equity](equity_curves) — consulta [Paper trading](live_paper) |
@@ -92,6 +94,7 @@ desconocido como "en marcha, con algo que mirar".
 | `state` | Qué significa |
 |---|---|
 | `STARTING` | Aceptada; ningún runner ha informado todavía sobre ella. |
+| `WAITING` | En marcha sin ninguna fuente de datos de mercado adjuntada: no ocupa plaza en la plataforma y no lee datos hasta que [le adjuntes una](#adjuntar-y-quitar-una-fuente). |
 | `RUNNING` | En marcha con normalidad. |
 | `LAGGING` | En marcha, pero por detrás de los datos de mercado: habitual mientras se pone al día tras arrancar o tras un reinicio de la plataforma. Se despeja sola. |
 | `HUNG` | Tu estrategia está atascada dentro de una llamada durante más tiempo del que la plataforma permite. Se despeja cuando esa llamada devuelve. |
@@ -188,8 +191,7 @@ Tres cosas que conviene saber:
 
 ## Fuentes
 
-`sources` acepta exactamente una entrada (las estrategias multi-fuente todavía no están
-soportadas):
+`sources` acepta una entrada, o ninguna: un arranque sin `sources` (omitido, o `[]`) crea una ejecución que espera, y [adjuntas una fuente](#adjuntar-y-quitar-una-fuente) cuando quieras. Más fuentes, del mismo mercado, se adjuntan después. Una entrada:
 
 ```json
 {
@@ -326,6 +328,117 @@ cualquier fuente `kline`: arrancar una estrategia ticker sobre una fuente `dex` 
 arranque que omite `instruments`, o envía `["*"]`, se rechaza con `402` en un plan sin el comodín; en
 cualquier otro la ejecución falla como se ha descrito.
 
+#### Varias pools en una ejecución
+
+Una ejecución puede leer varias pools a la vez: adjunta cada una como su propia fuente (consulta [Adjuntar y quitar una
+fuente](#adjuntar-y-quitar-una-fuente)). Tienen que estar en la misma cadena y el mismo protocolo, y tu plan limita
+cuántas pools puedes seguir a la vez entre tus ejecuciones (`429`, con el número). Dos cosas son distintas de un arranque:
+
+- **Una pool adjuntada a una ejecución que ya lee otra se lee desde el momento en que surte efecto.** No tiene historia:
+  envía `warmFrom: 0` o déjalo sin enviar, porque cualquier otro valor es un `400`. Su primera señal llega unos 25 segundos
+  después de la petición en nuestras mediciones: el adjuntado surte efecto con 15 segundos de adelanto, y luego vienen la
+  espera de las operaciones tardías (hasta unos tres segundos) y el segundo de la propia vela. Solo la primera fuente de una
+  ejecución en espera, que es la que la arranca, toma `warmFrom` como lo hace un arranque.
+- **Una pool por par.** La estrategia ve el par (`WETH/USDG`), nunca la pool, así que no podría distinguir dos pools del mismo
+  par, y un par suele tener varias (una por nivel de comisión). La primera pool que da una vela del par se la queda. Una pool
+  del mismo par adjuntada después se retira: pasa a `DETACHED` con el `reason` `SAME_PAIR`, normalmente en menos de media
+  hora desde que surte efecto, y ninguna de sus velas llega a la estrategia. Adjúntala a otra ejecución, o quita la primera
+  pool.
+
+## Adjuntar y quitar una fuente
+
+Una ejecución no tiene por qué arrancar sobre un mercado. Arráncala sin `sources` y **espera** (`state: WAITING`): existe,
+conserva su [URL de flujo](#un-flujo-websocket-plano-de-una-ejecución), su canal y sus cuentas de paper trading, no lee
+datos de mercado y no ocupa ninguna plaza en la plataforma. Cuando una alerta te dice qué instrumento importa, **adjúntalo**;
+cuando termines, **quítalo** y adjunta otro. Una ejecución arrancada con una entrada en `sources` es lo mismo con su primera
+fuente ya adjuntada por ti.
+
+`POST /live/{runId}/attachments` toma una fuente y responde `202`:
+
+```json
+{
+  "source": {"venueType": "dex", "exchange": "robinhood", "segment": "uniswap-v3", "type": "kline",
+             "instruments": ["0x3f4e0b2c8e1a4b6d9c0f1a2b3c4d5e6f708192a3"]},
+  "warmFrom": 120,
+  "ref": "alert-8841"
+}
+```
+
+```json
+{"attachmentId": "3p5YyWkq0vH2nJb7LrT9Zc", "state": "ATTACHING", "effectiveAtMs": 1758330015000}
+```
+
+| Campo | Qué significa |
+|---|---|
+| `source` | Obligatorio. La misma entrada que toma `sources` al arrancar, comprobada igual: exchange, segmento y tipo, y sus instrumentos (una fuente `dex` es exactamente una pool). Consulta [Fuentes](#fuentes). |
+| `warmFrom` | Opcional. Cuántos segundos del flujo anteriores al adjuntado ve primero la estrategia, de `0` a `3600`, [como al arrancar](#calentar-la-ejecución-warmfrom) pero solo para esta fuente. Si se omite, el mismo valor por defecto que al arrancar. Una pool `dex` adjuntada a una ejecución que ya lee otra se lee desde ahora: `0`, u omitirlo, son los únicos valores que admite (consulta [Varias pools en una ejecución](#varias-pools-en-una-ejecución)). |
+| `ref` | Opcional. Una cadena tuya, de hasta 64 caracteres. Enviar el mismo `ref` a la misma ejecución devuelve el adjuntado que ya hizo en lugar de hacer otro, así que una petición reintentada, o una alerta que llega dos veces, es segura. Enviar una fuente que la ejecución ya tiene adjuntada, o está adjuntando, devuelve también ese adjuntado, sea cual sea su `ref`. |
+
+**Toda fuente adjuntada a la vez a una ejecución está en el mismo mercado**: el mismo exchange para un `cex`, la misma
+cadena y el mismo protocolo para un `dex`. Una fuente de otro mercado se rechaza con `409` hasta que se quiten las demás.
+Una ejecución en espera acepta cualquiera.
+
+**Cuándo ocurre.** La primera fuente de una ejecución en espera la arranca, como lo hace un arranque. Cualquier otro
+adjuntado, y todo quitado, surte efecto en `effectiveAtMs`, un momento unos segundos por delante que todas las ejecuciones
+detrás de la ejecución aplican en la misma posición del mercado, de modo que siguen idénticas entre sí, como con un
+[comando](#comandos). El `202` es la aceptación; `state` dice cuándo ha ocurrido.
+
+### Leer los adjuntados
+
+`attachments` es una lista en la ejecución, en `GET /strategy/{strategyId}/live` y `GET /live/{runId}`: de cada uno, su
+`attachmentId`, la `source` tal como la tiene la plataforma, `warmFrom`, tu `ref`, `state`, `reason` y `message` cuando hay
+algo que decir, `createdAtMs` y `effectiveAtMs`. Las `sources` de la ejecución son las fuentes de sus adjuntados que están
+`ATTACHING` o `ATTACHED`, y están vacías mientras espera.
+
+| `state` | Qué significa |
+|---|---|
+| `ATTACHING` | Aceptado; surte efecto en `effectiveAtMs`. |
+| `ATTACHED` | La ejecución lo está leyendo. |
+| `DETACHING` | Un quitado está aceptado; surte efecto en su `effectiveAtMs`. |
+| `DETACHED` | La ejecución ya no lo lee. `reason` dice por qué cuando no fuiste tú. |
+| `REFUSED` | La plataforma no pudo seguirlo. `reason` y `message` dicen por qué. La ejecución queda como estaba. |
+
+`reason` es una cadena que puede ganar valores: `OWNER` (lo quitaste tú), `REFUSED` (la plataforma lo rechazó), `POOL_GONE`
+(una pool `dex` dejó de seguirse), `CAPACITY` (la plataforma no tiene sitio para seguirla), `SAME_PAIR` (una pool `dex` de un
+par que la ejecución ya lee a través de otra pool) y `NO_DATA` (el instrumento, de un exchange centralizado, no envió nada
+en cinco minutos: puede ser uno que la plataforma no captura). Una ejecución arrancada con una fuente `dex` que la
+plataforma no seguirá falla como siempre (consulta [Por qué una ejecución falló o se
+detuvo](#por-qué-una-ejecución-falló-o-se-detuvo)), y lo mismo una cuya primera fuente, adjuntada mientras esperaba, es una
+pool así. Una pool adjuntada a una ejecución que ya está leyendo se retira en su lugar, sin hacer fallar la ejecución:
+acaba `DETACHED` con el `reason` `REFUSED` (no es una pool de ese protocolo en esa cadena) o `CAPACITY` (la plataforma no
+tiene sitio para seguirla), normalmente en menos de medio minuto desde que el adjuntado surte efecto, y el `onDetach` de la
+estrategia recibe `CAPACITY` cuando la plataforma no tiene sitio y `REFUSED` en cualquier otro caso, `SAME_PAIR` incluido.
+
+### Quitar
+
+`DELETE /live/{runId}/attachments/{attachmentId}` responde `202` con el adjuntado en `DETACHING`; repetirlo no es un error.
+En una ejecución que se ha detenido no hay nada que avisar, y el adjuntado pasa directamente a `DETACHED`. Las posiciones
+que una [cuenta de paper trading](live_paper#huecos) tenía abiertas en los instrumentos de esa fuente se informan como
+huecos. Cuando se quita la última fuente la ejecución vuelve a esperar: la memoria de la estrategia se libera, así que el
+siguiente adjuntado la arranca limpia, y las cuentas de paper trading se conservan.
+
+### Qué puede rechazar un adjuntado
+
+| Estado | Cuándo |
+|---|---|
+| `400` | El cuerpo: sin `source`, un `warmFrom` fuera de `0` a `3600`, un `ref` de más de 64 caracteres; o una fuente que un arranque rechazaría, con los mismos mensajes (una mal formada, una pool que no es una sola dirección, un tipo que la estrategia no puede consumir, un segmento sin datos en vivo); o un `warmFrom` por encima de `0` para una pool `dex` adjuntada a una ejecución que ya lee otra. |
+| `402` | Un instrumento comodín en un plan que no lo incluye. |
+| `404` | No existe esa ejecución, o no es tuya; en un quitado, no existe ese adjuntado. |
+| `409` | La ejecución no está corriendo, o la fuente está en otro mercado distinto de los ya adjuntados. |
+| `422` | Un instrumento que la selección registrada de la estrategia deja fuera (una línea `instruments` de QTScript). |
+| `429` | Un límite de tu plan, que el mensaje nombra con su número: los instrumentos que una ejecución puede leer (el mismo límite que al arrancar, contado sobre todos sus adjuntados), las pools `dex` que puedes seguir a la vez entre tus ejecuciones (también contadas cuando una ejecución se arranca con una pool); o la plataforma no tiene sitio. |
+
+Una ejecución cuenta para tu límite de ejecuciones en vivo solo mientras tiene una fuente adjuntada. Las ejecuciones que
+mantienes en espera, sin ninguna, también están limitadas, por tu plan; el límite se aplica cuando arrancas una así, y un
+arranque que lo supera se rechaza con `429`.
+
+El sandbox también acepta adjuntados. Su prueba cuenta solo el tiempo con una fuente adjuntada: una ejecución en espera no
+la hace avanzar (consulta [Cuánto dura el sandbox](#cuánto-dura-el-sandbox-sandboxminutes)). Un [comando](#comandos)
+enviado a una ejecución sin fuente adjuntada se rechaza con `409`: no hay nada a lo que entregarlo.
+
+La estrategia recibe aviso de cada adjuntado y quitado, consulta [QTScript](/docs/strategies/qtscript#adjuntar-y-quitar-una-fuente) y
+[Programar estrategias en Java](/docs/strategies/java/strategy_coding#adjuntar-y-quitar-una-fuente).
+
 ## Calentar la ejecución: `warmFrom`
 
 Una estrategia que lee una media, una ventana o cualquier otro indicador necesita algo de historia antes
@@ -373,7 +486,7 @@ reproducir. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a 
 
 Toda ejecución empieza con una prueba en la etapa `sandbox` (consulta [Ciclo de vida](#ciclo-de-vida-sandbox-luego-live)). Cuánto dura
 depende de tu plan: cada plan tiene una **prueba más corta**, desde una hora hasta un día entero, y la más larga que tiene una
-ejecución es de **24 horas**. Una ejecución que no pide nada recibe la prueba más corta que da su plan.
+ejecución es de **24 horas**. Una ejecución que no pide nada recibe la prueba más corta que da su plan. La prueba cuenta solo el tiempo en que la ejecución tiene una fuente adjuntada (consulta [Adjuntar y quitar una fuente](#adjuntar-y-quitar-una-fuente)): una ejecución que espera no la hace avanzar.
 
 `sandboxMinutes` es como pides una más larga. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a `sources`:
 
@@ -500,7 +613,7 @@ comando de antes de esa ventana simplemente no le llega — un par que ya estaba
 que arranca después no. Todo lo que la estrategia necesite recordar entre reinicios va en un parámetro
 (`PUT /live/{runId}/params`), que sí tiene un valor guardado.
 
-Un `409` significa una de tres cosas, cada una con su propio mensaje: la ejecución no está corriendo; la estrategia
+Un `409` significa una de cuatro cosas, cada una con su propio mensaje: la ejecución no está corriendo; la ejecución no tiene ninguna fuente de datos de mercado adjuntada, así que no hay nada a lo que entregar el comando (consulta [Adjuntar y quitar una fuente](#adjuntar-y-quitar-una-fuente)); la estrategia
 compilada de esta ejecución no tiene registro de si maneja comandos (regístrala de nuevo y arranca una ejecución
 nueva, igual que el `409` de `params`); o la estrategia no implementa `CommandRequestHandler` en absoluto. Un `503`
 significa que el comando no se pudo entregar ahora mismo y **no** se envió — no hay una vía alternativa para un

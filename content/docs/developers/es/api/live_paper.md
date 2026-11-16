@@ -3,7 +3,7 @@ title: Paper trading en ejecuciones en vivo
 description: Ejecuta en simulación las señales de una ejecución en vivo — configúralo, y lee sus cuentas, su curva de equity y sus KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c86f02ce5ec438734ce62a5738863345aeedc59f
+upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-10-22T21:25:37Z'
 ---
@@ -575,3 +575,8 @@ cuenta. En una ejecución `mix`, la señal correspondiente nombra el par y lo qu
 {"type": "paper", "kind": "gap", "instrument": {"exchange": "binance", "segment": "spot", "symbol": "ETH/USDT"},
  "data": {"currency": "USDT", "base": 0.05948, "cost": 160.0}, …}
 ```
+
+Una fuente que se [quita](live#adjuntar-y-quitar-una-fuente) mientras la ejecución sigue informa de un hueco de la misma
+manera: cada posición que estaba abierta en uno de los instrumentos de esa fuente es un `gap` y deja de contarse, y las demás
+posiciones de la ejecución no se tocan. En una ejecución `mix`, la señal correspondiente es la misma, con `"reason": "DETACHED"`
+en su `data`.

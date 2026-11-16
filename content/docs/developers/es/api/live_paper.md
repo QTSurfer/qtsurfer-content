@@ -5,7 +5,7 @@ order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
 upstreamPath: docs/live_paper.md
-lastUpdated: '2026-10-22T21:25:37Z'
+lastUpdated: '2026-11-16T20:20:30Z'
 ---
 
 Arranca una [ejecución en vivo](live) con un bloque `paper` y sus hints se ejecutan en simulación

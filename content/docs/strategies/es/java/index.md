@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 2
 lastUpdated: '2026-11-05T17:34:21Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5d1c461f4ecc701b2d109b09fe898d6a563d6944
+upstreamCommit: 5d3c0a2df425f77bc377fce133edf2cc706a3193
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -461,6 +461,64 @@ Una ejecución cuya estrategia no implementa `CommandRequestHandler` responde to
 Una estrategia QTScript también la implementa, mediante su propia sección `onCommand { }` (consulta la
 skill `qtsurfer-qtscript-strategy`) — la plataforma reconoce la clase generada como
 `CommandRequestHandler` de la misma forma que reconoce esta.
+
+## Fuentes adjuntadas y quitadas
+
+Una ejecución en vivo puede arrancar sin ninguna fuente de datos de mercado y esperar, y que su propietario le adjunte una, se
+la quite y vuelva a adjuntar (`POST` y `DELETE /live/{runId}/attachments`). Una estrategia recibe aviso de cada cosa mediante
+dos métodos de `Strategy`, vacíos a menos que los sobrescribas:
+
+```java
+import com.wualabs.qtsurfer.engine.strategy.StrategyContext;
+
+public class Watcher extends AbstractKlineStrategy {
+
+    private final Set<String> watching = new HashSet<>();
+
+    @Override
+    public void onAttach(StrategyContext context) {
+        for (int i = 0; i < context.getInstrumentCount(); i++) {
+            watching.add(context.getInstrument(i));
+        }
+    }
+
+    @Override
+    public void onDetach(StrategyContext context) {
+        for (int i = 0; i < context.getInstrumentCount(); i++) {
+            watching.remove(context.getInstrument(i));
+        }
+    }
+}
+```
+
+`StrategyContext` es inmutable. Lleva el `getId()`, `getExchange()` y `getSegment()` del adjuntado (`""` para un mercado
+sin segmentos); `getVenueType()` (el enum `VenueType`: `CEX`, `DEX`) y `getType()` (el enum `MarketDataSource`: `Ticker`,
+`KLine`, `FundingRate`), con `getVenueTypeName()` (`"cex"` o `"dex"`) y `getTypeName()` (`"ticker"`, `"kline"` o `"funding"`)
+como los mismos valores en texto; `getInstrumentCount()`, `getInstrument(int)` (el símbolo), `hasInstrument(String)` e
+`instrumentList()`; `isWarmingUp()`; y `getReason()`, nunca `null`: `""` en un adjuntado y, en un quitado, uno de
+`REASON_OWNER`, `REASON_REFUSED`, `REASON_POOL_GONE`, `REASON_CAPACITY` o `REASON_FUNDS` (como texto: `"OWNER"`, ...). Una
+fuente retirada por falta de datos, y una pool `dex` de un par que la ejecución ya lee, llegan como `REASON_REFUSED`.
+
+Los dos métodos corren en el mismo hilo que `update()`, justo antes del primer evento de mercado de la fuente nueva (o,
+en un quitado, antes del primer evento que la ejecución ya no lee), así que ven el estado de la estrategia exactamente como
+estaba en ese punto y pueden llamar a cualquier cosa que pueda `update()`, un `emitBuy`/`emitSell` incluido. Una señal
+emitida mientras `isWarmingUp()` es true se descarta, como cualquier señal sobre tiempo reproducido. Una `RuntimeException`
+que lancen se captura y se cuenta, como en `update()`.
+
+Los indicadores de un instrumento nuevo empiezan vacíos: una fuente adjuntada con `warmFrom` reproduce esos segundos del
+flujo a la estrategia antes de su primer evento en vivo, como al arrancar, y `isWarmingUp()` te dice que viene. La memoria de
+la estrategia (campos, un `StateStore`) dura mientras la ejecución tiene al menos una fuente adjuntada; cuando se quita la
+última se libera, y el siguiente adjuntado empieza limpio. Un backtest llama a `onAttach` una vez antes de su primer evento,
+con su propia fuente, y a `onDetach` una vez después del último, también cuando termina antes que sus datos (cancelado, sin
+tiempo o fallado).
+
+`onDetach` corre cuando se quita una fuente mientras la ejecución sigue: por el propietario, o por la plataforma, con el motivo que dice por qué. **No**
+corre cuando la ejecución se detiene o falla: una detención no es un punto de los datos de la ejecución, así que nada de lo
+que un gancho emitiera entonces podría atarse a los eventos que la ejecución había leído. Para actuar antes de que termine
+una ejecución, cerrando sus posiciones abiertas por ejemplo, envíale un comando (consulta «Recibir comandos» más arriba) y detén la ejecución una vez
+aplicado el comando.
+
+Una estrategia QTScript hace lo mismo con `onAttach { }` y `onDetach { }` — consulta el skill `qtsurfer-qtscript-strategy`.
 
 ## Emisión de señales
 

@@ -3,7 +3,7 @@ title: Paper trading on live runs
 description: Execute a live run's signals in simulation — configure it, read its accounts, equity curve and KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: c86f02ce5ec438734ce62a5738863345aeedc59f
+upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-10-22T21:25:37Z'
 ---
@@ -573,3 +573,7 @@ counts them. In a `mix` run the matching signal names the pair and what was held
 {"type": "paper", "kind": "gap", "instrument": {"exchange": "binance", "segment": "spot", "symbol": "ETH/USDT"},
  "data": {"currency": "USDT", "base": 0.05948, "cost": 160.0}, …}
 ```
+
+A source that is [detached](live#attaching-and-detaching-a-source) while the run goes on reports a gap the same way: each
+position that was open in one of that source's instruments is a `gap` and is no longer counted, and the run's other
+positions are untouched. In a `mix` run the matching signal is the same, with `"reason": "DETACHED"` in its `data`.

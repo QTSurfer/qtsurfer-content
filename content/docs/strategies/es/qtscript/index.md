@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9d054dbf7db807bd1dfb0386e3deac7b3ab9fe3d
+upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-05T17:34:21Z'
 ---
@@ -476,6 +476,64 @@ propio.
 
 Una estrategia Java implementa el mismo contrato directamente, mediante `CommandRequestHandler` — consulta
 [Programar estrategias en Java](/docs/strategies/java/strategy_coding#recibir-comandos).
+
+## Adjuntar y quitar una fuente
+
+`onAttach { }` y `onDetach { }` son secciones especiales, como mucho una de cada por fichero, que corren cuando la plataforma
+adjunta una fuente de datos de mercado a una ejecución en vivo o le quita una ([Adjuntar y quitar una
+fuente](/docs/developers/api/live#adjuntar-y-quitar-una-fuente)). Como `onCommand { }`, no son ventanas: no tienen periodo
+ni indicador, y corren una vez por adjuntado o quitado, no una vez por evento de mercado. Una ejecución arrancada con una
+fuente recibe su primer `onAttach` antes del primer evento de mercado; una ejecución que espera no tiene ninguno hasta que se
+adjunta una fuente.
+
+Dentro de cualquiera de los dos cuerpos, `$context` es el adjuntado, con estos accesores y nada más:
+
+| Accesor | Devuelve |
+|---|---|
+| `$context.getId()` | el id del adjuntado, un `String` |
+| `$context.getVenueTypeName()` | `"cex"` o `"dex"` |
+| `$context.getExchange()`, `$context.getSegment()` | `String`s (`getSegment()` es `""` para un mercado sin segmentos) |
+| `$context.getTypeName()` | `"ticker"`, `"kline"` o `"funding"` |
+| `$context.getInstrumentCount()`, `$context.getInstrument(i)` | cuántos instrumentos lee el adjuntado, y el `i`-ésimo como símbolo |
+| `$context.hasInstrument("BTC/USDT")` | si lee ese instrumento |
+| `$context.isWarmingUp()` | si el adjuntado tiene un calentamiento que reproducir (`warmFrom` por encima de `0`) |
+| `$context.getReason()` | nunca `null`: `""` en `onAttach`; en `onDetach`, uno de `"OWNER"`, `"REFUSED"`, `"POOL_GONE"`, `"CAPACITY"` o `"FUNDS"`. Una fuente retirada por falta de datos, y una pool `dex` de un par que la ejecución ya lee (`SAME_PAIR` en el adjuntado), llegan como `"REFUSED"` |
+
+Compara con `"OWNER".equals($context.getReason())`, que se lee igual sea cual sea el valor. Como en `onCommand`, nada de lo que
+tiene un cuerpo de ventana (`actual`, `$indicator`, `value(...)`, el `store` ambiente) está en el ámbito, porque el adjuntado
+no es un instrumento ya elegido para ti; todo `param` se puede leer y asignar, `getStateStore("<símbolo>")` alcanza el store de
+un instrumento, y las llamadas de señal que toman un símbolo funcionan. Una señal emitida desde cualquiera de los dos cuerpos
+mientras `$context.isWarmingUp()` es true se descarta, como cualquier señal sobre tiempo reproducido.
+
+```
+strategy "Pump watcher" kline
+
+onAttach {
+  if ($context.getInstrumentCount() > 0) {
+    getStateStore($context.getInstrument(0)).set("watching");
+  }
+}
+
+onDetach {
+  if ("OWNER".equals($context.getReason()) && $context.getInstrumentCount() > 0) {
+    getStateStore($context.getInstrument(0)).set("released");
+  }
+}
+```
+
+La memoria de la estrategia (un `param` que cambiaste, un `StateStore`) dura mientras la ejecución tiene al menos una fuente
+adjuntada; cuando se quita la última se libera, y el siguiente adjuntado empieza limpio. Un backtest llama a `onAttach` una
+vez antes de su primer evento, con su propia fuente, y a `onDetach` una vez después del último, también cuando termina antes
+que sus datos (cancelado, sin tiempo o fallado).
+
+`onDetach` corre cuando se quita una fuente mientras la ejecución sigue: por ti, o por la plataforma, con el motivo que dice
+por qué. **No** corre cuando la ejecución se detiene o falla: una detención no es un punto de los datos de la ejecución, así
+que nada de lo que un gancho emitiera entonces podría atarse a los eventos que la ejecución había leído. Para actuar antes de
+que termine una ejecución, cerrando sus posiciones abiertas por ejemplo, envíale un comando ([Manejar un
+comando](#manejar-un-comando)) y detén la ejecución una vez aplicado el comando.
+
+Una estrategia Java sobrescribe los mismos dos métodos de `Strategy` - consulta [Programar estrategias en
+Java](/docs/strategies/java/strategy_coding#adjuntar-y-quitar-una-fuente).
 
 ## Dimensionado
 

@@ -3,7 +3,7 @@ title: QTScript indicators
 description: Every indicator a QTScript strategy can call, free and pro, grouped by kind.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5d1c461f4ecc701b2d109b09fe898d6a563d6944
+upstreamCommit: 5d3c0a2df425f77bc377fce133edf2cc706a3193
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
 lastUpdated: '2026-11-05T17:34:21Z'
 ---

@@ -3,7 +3,7 @@ title: Cuenta
 description: Consulta los límites de tu plan y tu uso de almacenamiento en vivo frente a ellos.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc2e37beab45ecc9a829dd8735cae4e66e32faae
+upstreamCommit: 7df1dbb3a61a122715f5c061ac5b4b56ea23c352
 upstreamPath: docs/account.md
 lastUpdated: '2026-11-11T16:38:36Z'
 ---
@@ -39,6 +39,8 @@ curl https://api.qtsurfer.net/v1/account \
   "maxRangeDays": 7,
   "maxSweepCartesian": 100,
   "maxImportRangeHours": 6,
+  "maxCexImportRangeHours": 24,
+  "maxConcurrentImports": 1,
   "maxDatasets": 3,
   "maxDatasetBytes": 52428800,
   "maxTotalStorageBytes": 104857600,
@@ -58,7 +60,9 @@ curl https://api.qtsurfer.net/v1/account \
 | `maxExecute` | número máximo de ejecuciones de estrategia (y barridos) que puedes tener corriendo a la vez a través de la API. Arrancar una por encima de este número se responde con `429`, cuyo mensaje lleva el mismo número. El valor ya incluye el margen de API que tenga tu plan |
 | `maxRangeDays` | longitud máxima, en días, del rango de tiempo de un backtest sobre uno de tus propios [conjuntos de datos](datasets) |
 | `maxSweepCartesian` | cuadrícula completa más grande, en combinaciones de parámetros, que un [barrido](backtest_sweep#qué-tamaño-puede-tener-una-cuadrícula) puede ejecutar con el muestreador `grid`. Una cuadrícula mayor se rechaza con `400`; los muestreadores `random` y `lhs` no están sujetos a él |
-| `maxImportRangeHours` | longitud máxima, en horas, del rango de tiempo de una importación de un conjunto de datos desde un exchange. Consulta [Importar un conjunto de datos en lugar de subirlo](datasets#importar-un-conjunto-de-datos-en-lugar-de-subirlo) |
+| `maxImportRangeHours` | longitud máxima, en horas, del rango de tiempo de una importación de un conjunto de datos de la pool de un exchange descentralizado (`type: dex`). Consulta [Importar un conjunto de datos en lugar de subirlo](datasets#importar-un-conjunto-de-datos-en-lugar-de-subirlo) |
+| `maxCexImportRangeHours` | longitud máxima, en horas, del rango de tiempo de una importación de un conjunto de datos del histórico de un exchange centralizado (`type: cex`), que se cuenta aparte de `maxImportRangeHours`. Consulta [Importar el histórico de un exchange](datasets#importar-el-histórico-de-un-exchange) |
+| `maxConcurrentImports` | número máximo de [importaciones de conjuntos de datos](datasets#importar-un-conjunto-de-datos-en-lugar-de-subirlo) que tu cuenta puede tener en curso a la vez, en cola o en ejecución, sean del histórico de un exchange o de una pool. Una importación nueva por encima de ese número se rechaza con `429` hasta que termine una |
 | `maxDatasets` | número máximo de [conjuntos de datos](datasets) activos que permite tu plan |
 | `maxDatasetBytes` | tamaño máximo, en bytes, de una sola versión de un conjunto de datos **tal como se almacena** (los `bytes` de su versión lista: para una subida CSV, el fichero convertido, no el que subes). Consulta [Límites de tamaño](datasets#límites-de-tamaño) |
 | `maxTotalStorageBytes` | almacenamiento combinado máximo, en bytes, entre todos los conjuntos de datos, señales de ejecución de estrategia y estrategias registradas de tu cuenta — ver abajo |

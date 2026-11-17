@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc2e37beab45ecc9a829dd8735cae4e66e32faae
+upstreamCommit: 7df1dbb3a61a122715f5c061ac5b4b56ea23c352
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-11-11T16:38:36Z'
 ---
@@ -418,17 +418,21 @@ validación básica de forma, o (cuando se omite `cadence` en un plan que incluy
 pool/par realmente se resuelve, y para una `cadence` de velas si esa combinación se puede servir en
 la red pedida, se comprueba después, de forma asíncrona — ver `failed` abajo) · `402` `cadence` no es una de las de tu plan, o datos por operación que tu
 plan no incluye · `409` nombre de
-conjunto de datos ya en uso · `429` se alcanzó el límite de conjuntos de datos de tu plan, o ya se
+conjunto de datos ya en uso · `429` se alcanzó el límite de conjuntos de datos de tu plan, ya se
 alcanzó el límite de almacenamiento total de tu cuenta (`maxTotalStorageBytes` de [`GET
-/account`](account)) — elimina un conjunto de datos para liberar hueco o espacio, o mejora de
-plan.
+/account`](account)), o ya tienes tantas importaciones en curso como permite tu plan
+(`maxConcurrentImports`) — elimina un conjunto de datos para liberar hueco o espacio, espera a que termine una
+importación, o mejora de plan. Una importación está en curso desde que se acepta hasta que está lista o ha fallado; no
+hace falta sondearla para que su plaza se libere.
 
 ### Importar el histórico de un exchange
 
 `type: "cex"` importa un instrumento de un exchange centralizado a lo largo de un rango. Mismo
-endpoint, mismos campos `name`, `instrument`, `from`, `to` y `cadence`, mismos límites (el rango
-está limitado por el `maxImportRangeHours` de tu plan, [`GET /account`](account)) y el mismo sondeo
-de más abajo; solo cambia el bloque que dice qué importar:
+endpoint, mismos campos `name`, `instrument`, `from`, `to` y `cadence`, el mismo sondeo de más abajo y
+los mismos límites, salvo el rango: lo limita el `maxCexImportRangeHours` de tu plan ([`GET /account`](account)), en
+horas y aparte del `maxImportRangeHours` de una pool. El histórico ya lo guarda la plataforma, así que en los planes
+mayores el rango llega a semanas; lo que lo acota es cuánto cargas después, ya que una barra por segundo son unos 57
+bytes en el fichero guardado y 88 en memoria. Solo cambia el bloque que dice qué importar:
 
 | Campo | Tipo | Notas |
 |---|---|---|

@@ -36,6 +36,10 @@ setup:
 
 `bollingerPercentB(20, 2)` registers `pctB20_2`, and builds the bands it needs inside. In Java, `.bollingerPercentB()` registers the same, for 20 periods and a multiplier of 2.
 
+The period and the multiplier are parameters, so a [parameter sweep](/learn/articles/parameter-sweep) can explore them,
+and [walk-forward analysis](/learn/articles/walk-forward-analysis) tells you whether what it found holds outside the
+sample, which is the defence against [overfitting](/learn/articles/overfitting).
+
 ## Related
 
 - [Bollinger bands](/docs/indicators/bands/bollinger): the band itself, with its arrows and a strategy that reads the %B.

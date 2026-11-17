@@ -21,8 +21,6 @@ stochRSI = 100 × (RSI − lowest RSI of the last N) / (highest RSI of the last 
 
 The RSI is the one of the [RSI page](/docs/indicators/oscillators/rsi), with Wilder's smoothing, and `N` is both its period and the length of the window: the engine uses one period for the two. The RSI is not defined on the first bar, so the window starts on the second: the first value of the line, on update `N`, is taken over `N − 1` values of the RSI, and the chart draws from there. Where the window has no spread, as on a price that does not move or that only rises, the value reads 0.
 
-The builder has one more form, which builds the RSI with the discrete simple averages of the [SMA](/docs/indicators/averages/sma) page, the default of the engine's own `rsi`. That RSI holds its value for a whole period, so the stochastic of it takes only the values 0 and 100. It is there for strategies written against the older default of this indicator, not to be used as an oscillator.
-
 ## Reading it
 
 - **It is the RSI, rescaled to its own recent range.** It says where the RSI is in that range, not where the price is, so it reaches 0 and 100 each time the RSI makes a new lowest or highest value of the window.

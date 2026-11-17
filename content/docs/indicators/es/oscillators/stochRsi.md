@@ -21,8 +21,6 @@ stochRSI = 100 × (RSI − RSI más bajo de los últimos N) / (RSI más alto de 
 
 El RSI es el de la [página del RSI](/docs/indicators/oscillators/rsi), con el suavizado de Wilder, y `N` es a la vez su periodo y la longitud de la ventana: el motor usa un solo periodo para los dos. El RSI no está definido en la primera barra, así que la ventana empieza en la segunda: el primer valor de la línea, en la actualización `N`, se toma sobre `N − 1` valores del RSI, y el gráfico dibuja desde ahí. Donde la ventana no tiene dispersión, como en un precio que no se mueve o que solo sube, el valor es 0.
 
-El builder tiene una forma más, que construye el RSI con las medias simples discretas de la página de la [SMA](/docs/indicators/averages/sma), el valor por defecto del `rsi` del propio motor. Ese RSI conserva su valor durante todo un periodo, así que el estocástico de él solo toma los valores 0 y 100. Existe para las estrategias escritas con el valor por defecto anterior de este indicador, no para usarlo como oscilador.
-
 ## Cómo leerlo
 
 - **Es el RSI, reescalado a su propio rango reciente.** Dice dónde está el RSI en ese rango, no dónde está el precio, así que llega a 0 y a 100 cada vez que el RSI marca un nuevo valor mínimo o máximo de la ventana.

@@ -1,5 +1,5 @@
 ---
-title: "Volatilidad"
+title: "Volatilidad (frecuencia de cambio)"
 description: "Cómo el indicador de volatilidad da la proporción de actualizaciones recientes en las que cambió el precio, por qué marca 100 casi siempre sobre velas, y cómo usarlo en una estrategia de QTSurfer."
 order: 4.4
 lastUpdated: '2026-11-13T23:26:15Z'
@@ -36,6 +36,10 @@ setup:
 ```
 
 `volatility(5)` registra `vol5`. En Java, `.volatility(5)` en el builder.
+
+El periodo es un parámetro, así que un [barrido de parámetros](/learn/articles/parameter-sweep) puede
+explorarlo, y el [análisis walk-forward](/learn/articles/walk-forward-analysis) te dice si lo que encontró se sostiene
+fuera de la muestra, que es la defensa frente al [sobreajuste](/learn/articles/overfitting).
 
 ## Relacionado
 

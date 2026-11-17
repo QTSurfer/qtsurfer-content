@@ -36,6 +36,10 @@ setup:
 
 `bollingerPercentB(20, 2)` registra `pctB20_2`, y construye por dentro las bandas que necesita. En Java, `.bollingerPercentB()` registra lo mismo, para 20 periodos y un multiplicador de 2.
 
+El periodo y el multiplicador son parámetros, así que un [barrido de parámetros](/learn/articles/parameter-sweep) puede
+explorarlos, y el [análisis walk-forward](/learn/articles/walk-forward-analysis) te dice si lo que encontró se sostiene
+fuera de la muestra, que es la defensa frente al [sobreajuste](/learn/articles/overfitting).
+
 ## Relacionado
 
 - [Bandas de Bollinger](/docs/indicators/bands/bollinger): la banda en sí, con sus flechas y una estrategia que lee el %B.

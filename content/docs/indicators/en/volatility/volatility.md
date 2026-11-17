@@ -1,5 +1,5 @@
 ---
-title: "Volatility"
+title: "Volatility (how often the price changes)"
 description: "How the volatility indicator gives the share of recent updates in which the price changed, why it reads 100 almost everywhere on candles, and how to use it in a QTSurfer strategy."
 order: 4.4
 lastUpdated: '2026-11-13T23:26:15Z'
@@ -36,6 +36,10 @@ setup:
 ```
 
 `volatility(5)` registers `vol5`. In Java, `.volatility(5)` on the builder.
+
+The period is a parameter, so a [parameter sweep](/learn/articles/parameter-sweep) can explore it,
+and [walk-forward analysis](/learn/articles/walk-forward-analysis) tells you whether what it found holds outside the
+sample, which is the defence against [overfitting](/learn/articles/overfitting).
 
 ## Related
 

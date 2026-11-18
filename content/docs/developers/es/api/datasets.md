@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 7df1dbb3a61a122715f5c061ac5b4b56ea23c352
+upstreamCommit: 82c055136cecf913dedc3c7c8c9476a8d416fda1
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-11-17T14:15:14Z'
 ---
@@ -568,12 +568,50 @@ conjunto de datos.
 | `from`, `to`, `cadence`, `timestampUnit` | el rango/cadencia/unidad de marca de tiempo propios de la versión actual (una cuadrícula fija o cadencia `rt`, `iso`\|`s`\|`ms`\|`us` para `timestampUnit`, consulta [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)), tal como se descubrieron en la ingesta. **Ausentes hasta que existe una versión** |
 | `bytes`, `rows`, `gaps`, `largestGapSteps` | el tamaño almacenado, el número de filas, el número de huecos y el mayor hueco (en pasos de su cadencia) propios de la versión actual. **Presentes solo cuando `status` es `ready`** — consulta [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito) para saber qué mide `bytes` exactamente |
 | `error` | por qué falló el intento más reciente. **Presente solo cuando `status` es `failed`** |
+| `meta` | cómo nació el conjunto de datos, un mapa plano de texto a texto (consulta [`meta`](#meta--cómo-nació-un-conjunto-de-datos)). **Siempre presente**, `{}` cuando no se registró nada |
 
 `GET /datasets/{datasetId}` por sí solo añade `dataUrl`/`dataFormat` (con el mismo significado que
 en [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)) una vez que la versión
 actual está `ready`, más `_links.self`. El listado masivo no los emite nunca — una URL de descarga
 prefirmada para cada conjunto de datos en una pantalla que no dibuja ninguna gráfica no compensa
 la exposición.
+
+### `meta` — cómo nació un conjunto de datos
+
+Una importación anota en el propio conjunto de datos lo que se le pidió, una sola vez, cuando el conjunto se crea. Lo
+devuelven `GET /datasets` y `GET /datasets/{datasetId}` como `meta`, un objeto plano cuyas claves y valores son texto; es
+información para quien mira el conjunto de datos y nunca se usa para decidir nada. Un conjunto de datos que se subió, o que
+se creó antes de que esto existiera, tiene `{}`.
+
+```json
+{
+  "import.type": "dex",
+  "import.cadence": "1s",
+  "import.from": "2026-11-16T00:25:02Z",
+  "import.to": "2026-11-16T10:30:00Z",
+  "dex.network": "solana",
+  "dex.contract": "6nwmQSgHWtRfXw9xqQM3hseyKzWrQq2gzamoSbjKqs32",
+  "pool.name": "FiveM / SOL"
+}
+```
+
+| Claves | Las fija | Qué contienen |
+|---|---|---|
+| `import.type`, `import.cadence`, `import.from`, `import.to` | la plataforma | el tipo de importación (`dex` o `cex`), su cadencia cuando la tiene, y el rango **pedido** (los datos que guarda la fuente pueden ser menos) |
+| `dex.network`, `dex.contract`, `dex.id`, `dex.version`, `dex.factory` | la plataforma | lo que nombró una importación `dex`; una clave que la importación no usó (una importación de velas ignora `id`, `version` y `factory`) se deja fuera |
+| `cex.exchange`, `cex.segment`, `cex.data_type` | la plataforma | lo que nombró una importación `cex` |
+| `pool.*`, `user.*` | tú | lo que envías como `meta` en [`POST /datasets/imports`](#importar-un-conjunto-de-datos-en-lugar-de-subirlo) |
+
+Puedes enviar `meta` con una importación para dejar una nota tuya en el conjunto de datos. Solo dos espacios de nombres son
+tuyos: `pool.*` (una nota sobre la pool; por convención `pool.id`, `pool.name`, `pool.dex`, `pool.reserve_usd` y
+`pool.created_at`) y `user.*` (cualquier etiqueta). Una clave que empiece por `import.`, `dex.` o `cex.`, o por cualquier cosa
+que no sea `pool.` o `user.`, es `400`.
+
+Una clave son letras minúsculas, dígitos y `_`, en partes separadas por `.`, de hasta 64 caracteres. Un valor es un texto no
+vacío de hasta 256 caracteres, sin caracteres de control. Puedes enviar hasta 16 claves, y el conjunto de lo que se guarda,
+lo tuyo y lo de la plataforma, está limitado a 32 claves y 4096 bytes de JSON. Todo lo que pase de un límite es `400` y no se
+crea nada. `POST /datasets` (una subida) no admite `meta`: responde `400` en lugar de descartarlo. No hay forma de cambiar
+`meta` después.
 
 ## Listar tus conjuntos de datos
 

@@ -3,7 +3,7 @@ title: Autenticación y alcances
 description: Cambia tu clave de API por un token y consulta qué permiten los alcances de tu clave.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc2e37beab45ecc9a829dd8735cae4e66e32faae
+upstreamCommit: b730b82dbf370bf69cd52983fde46366d7ba82f2
 upstreamPath: docs/auth.md
 lastUpdated: '2026-11-11T16:38:36Z'
 ---
@@ -102,6 +102,7 @@ minúsculas.
 | `backtests` | `read`, `write`, `execute` | preparar, ejecutar, barrer y cancelar backtests; leer su estado y resultados |
 | `datasets` | `read`, `write` | listar y leer tus conjuntos de datos; crearlos, subirlos, importarlos y borrarlos |
 | `live` | `read`, `write`, `execute` | leer ejecuciones en vivo, sus señales y cuentas de paper; cambiar una ejecución; arrancar, parar y mandar comandos a una, y gestionar su flujo |
+| `signals` | `read`, `write` | leer tus canales de señales, sus avisos, tus suscripciones y lo que recibieron; crear, cambiar y borrar un canal, publicar un aviso, suscribir una ejecución y terminar una suscripción |
 
 `read` lista y obtiene. `write` crea, cambia, cancela o borra sin ejecutar nada. `execute` arranca
 una ejecución: un backtest, un barrido, una ejecución en vivo.
@@ -145,8 +146,16 @@ una ejecución: un backtest, un barrido, una ejecución en vivo.
 | `PATCH /live/{runId}`, `PUT /live/{runId}/params` | `live` : `write` |
 | `POST /strategy/{strategyId}/live`, `DELETE /strategy/{strategyId}/live`, `POST /live/{runId}/commands`, `POST /live/{runId}/stream`, `DELETE /live/{runId}/stream` | `live` : `execute` |
 
+**Canales de señales** — [Canales de señales](signals)
+
+| Operación | Alcance |
+|---|---|
+| `GET /signals/channels`, `GET /signals/channels/{channelId}`, `GET /signals/channels/{channelId}/notices`, `GET /signals/subscriptions`, `GET /signals/subscriptions/{subscriptionId}/deliveries` | `signals` : `read` |
+| `POST /signals/channels`, `PATCH /signals/channels/{channelId}`, `DELETE /signals/channels/{channelId}`, `POST /signals/channels/{channelId}/notices`, `POST /signals/channels/{channelId}/subscriptions`, `DELETE /signals/subscriptions/{subscriptionId}` | `signals` : `write` |
+
 **Sin alcance:** `GET /account` y `GET /account/usage` necesitan un token válido y nada más;
-`GET /live/public` no necesita ningún token.
+`GET /live/public` y `GET /signals/channels/public` no necesitan ningún token, y
+`POST /signals/hook/{hookKey}` toma como credencial la dirección secreta del canal.
 
 ### Cuando falta un alcance
 

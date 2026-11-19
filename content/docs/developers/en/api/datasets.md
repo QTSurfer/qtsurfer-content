@@ -5,7 +5,7 @@ order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 82c055136cecf913dedc3c7c8c9476a8d416fda1
 upstreamPath: docs/datasets.md
-lastUpdated: '2026-11-17T14:15:14Z'
+lastUpdated: '2026-11-18T21:34:06Z'
 ---
 
 Backtest against a CSV, parquet, or lastra file you upload instead of a managed exchange: create a dataset,

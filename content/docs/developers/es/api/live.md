@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
+upstreamCommit: 6eaf29a03b096c793954bfe152e5f7d0d093cdff
 upstreamPath: docs/live.md
 lastUpdated: '2026-11-16T20:20:30Z'
 ---
@@ -421,7 +421,7 @@ siguiente adjuntado la arranca limpia, y las cuentas de paper trading se conserv
 
 | Estado | Cuándo |
 |---|---|
-| `400` | El cuerpo: sin `source`, un `warmFrom` fuera de `0` a `3600`, un `ref` de más de 64 caracteres; o una fuente que un arranque rechazaría, con los mismos mensajes (una mal formada, una pool que no es una sola dirección, un tipo que la estrategia no puede consumir, un segmento sin datos en vivo); o un `warmFrom` por encima de `0` para una pool `dex` adjuntada a una ejecución que ya lee otra. |
+| `400` | El cuerpo: sin `source`, un `warmFrom` fuera de `0` a `3600`, un `ref` de más de 64 caracteres; o una fuente que un arranque rechazaría, con los mismos mensajes (una mal formada, una pool que no es una sola dirección, un tipo que la estrategia no puede consumir, un segmento sin datos en vivo); o un `warmFrom` por encima de `0` para una pool `dex` adjuntada a una ejecución que ya lee otra. o un instrumento comodín (`*`, o un par con `*` en un lado) en una ejecución arrancada con `paper.accounts: instrument`, en todos los planes (esa ejecución abre una cuenta por cada instrumento que lee, así que hay que nombrarlos: adjunta uno a uno, o una lista). |
 | `402` | Un instrumento comodín en un plan que no lo incluye. |
 | `404` | No existe esa ejecución, o no es tuya; en un quitado, no existe ese adjuntado. |
 | `409` | La ejecución no está corriendo, o la fuente está en otro mercado distinto de los ya adjuntados. |
@@ -430,7 +430,8 @@ siguiente adjuntado la arranca limpia, y las cuentas de paper trading se conserv
 
 Una ejecución cuenta para tu límite de ejecuciones en vivo solo mientras tiene una fuente adjuntada. Las ejecuciones que
 mantienes en espera, sin ninguna, también están limitadas, por tu plan; el límite se aplica cuando arrancas una así, y un
-arranque que lo supera se rechaza con `429`.
+arranque que lo supera se rechaza con `429` y `reason: WAITING_RUNS_LIMIT`, sin `Retry-After`: detén una de ellas o dale una
+fuente a una.
 
 El sandbox también acepta adjuntados. Su prueba cuenta solo el tiempo con una fuente adjuntada: una ejecución en espera no
 la hace avanzar (consulta [Cuánto dura el sandbox](#cuánto-dura-el-sandbox-sandboxminutes)). Un [comando](#comandos)
@@ -594,6 +595,18 @@ PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
 
 200
 {"runId": "6TzAPiPpsOWwBLdLBZCxwH", "paramsVersion": 2, "effectiveAtMs": 1758330015000}
+```
+
+Una ejecución que no lee ninguna fuente (`state: WAITING`) no está corriendo en ningún sitio, así que no hay un momento en el
+que aplicar el cambio. Los valores nuevos se guardan para la ejecución y esta arranca con ellos cuando se le adjunta la primera
+fuente; la respuesta no lleva `effectiveAtMs`:
+
+```
+PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
+{"params": {"emaFastPeriod": "12"}}
+
+200
+{"runId": "6TzAPiPpsOWwBLdLBZCxwH", "paramsVersion": 2}
 ```
 
 ## Comandos

@@ -5,7 +5,7 @@ order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 7bdf4c1189054efe7316c4c5d5a593eb29ecdf6e
 upstreamPath: docs/signals.md
-lastUpdated: '2026-11-19T23:58:57Z'
+lastUpdated: '2026-11-20T13:06:49Z'
 ---
 
 A **signal channel** carries **notices** from a provider to live runs. A provider is any user, typically a service

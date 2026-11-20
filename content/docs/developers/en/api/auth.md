@@ -3,7 +3,7 @@ title: Authentication and scopes
 description: Exchange your API key for a token, and see what the scopes of your key allow.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: dc2e37beab45ecc9a829dd8735cae4e66e32faae
+upstreamCommit: b730b82dbf370bf69cd52983fde46366d7ba82f2
 upstreamPath: docs/auth.md
 lastUpdated: '2026-11-11T16:38:36Z'
 ---
@@ -98,6 +98,7 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
 | `backtests` | `read`, `write`, `execute` | prepare, run, sweep and cancel backtests; read their status and results |
 | `datasets` | `read`, `write` | list and read your datasets; create, upload, import and delete them |
 | `live` | `read`, `write`, `execute` | read live runs, their signals and paper accounts; change a run; start, stop and command one, and manage its stream |
+| `signals` | `read`, `write` | read your signal channels, their notices, your subscriptions and what they received; create, change and delete a channel, publish a notice, subscribe a run and end a subscription |
 
 `read` lists and gets. `write` creates, changes, cancels or deletes without running anything.
 `execute` starts a run: a backtest, a sweep, a live run.
@@ -141,8 +142,16 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
 | `PATCH /live/{runId}`, `PUT /live/{runId}/params` | `live` : `write` |
 | `POST /strategy/{strategyId}/live`, `DELETE /strategy/{strategyId}/live`, `POST /live/{runId}/commands`, `POST /live/{runId}/stream`, `DELETE /live/{runId}/stream` | `live` : `execute` |
 
+**Signal channels** — [Signal channels](signals)
+
+| Operation | Scope |
+|---|---|
+| `GET /signals/channels`, `GET /signals/channels/{channelId}`, `GET /signals/channels/{channelId}/notices`, `GET /signals/subscriptions`, `GET /signals/subscriptions/{subscriptionId}/deliveries` | `signals` : `read` |
+| `POST /signals/channels`, `PATCH /signals/channels/{channelId}`, `DELETE /signals/channels/{channelId}`, `POST /signals/channels/{channelId}/notices`, `POST /signals/channels/{channelId}/subscriptions`, `DELETE /signals/subscriptions/{subscriptionId}` | `signals` : `write` |
+
 **No scope:** `GET /account` and `GET /account/usage` need a valid token and nothing more;
-`GET /live/public` needs no token at all.
+`GET /live/public` and `GET /signals/channels/public` need no token at all, and
+`POST /signals/hook/{hookKey}` takes the channel's secret address as its credential instead.
 
 ### When a scope is missing
 

@@ -5,7 +5,7 @@ order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: e6897c12d61b431bde7c30bbf34e00640e846864
 upstreamPath: docs/auth.md
-lastUpdated: '2026-11-19T23:58:57Z'
+lastUpdated: '2026-11-20T20:47:04Z'
 ---
 
 Every route except `POST /auth/token` and the public catalogue `GET /live/public` expects a bearer

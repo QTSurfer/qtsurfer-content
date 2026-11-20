@@ -3,7 +3,7 @@ title: Canales de señales
 description: Un proveedor publica avisos sobre un instrumento; las ejecuciones en vivo suscritas al canal lo reciben adjuntado, al instante o tras un retraso.
 order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b730b82dbf370bf69cd52983fde46366d7ba82f2
+upstreamCommit: 7bdf4c1189054efe7316c4c5d5a593eb29ecdf6e
 upstreamPath: docs/signals.md
 lastUpdated: '2026-11-19T23:58:57Z'
 ---
@@ -157,7 +157,9 @@ Se puede suscribir a cualquier canal, `unlisted` o `public`, tuyo o de cualquier
 ## Leer las entregas
 
 `GET /signals/subscriptions/{subscriptionId}/deliveries` lista cada aviso que la suscripción tenía que recibir, el más reciente
-primero, con su `source` y su `data`, y lo que hizo su entrega:
+primero, y lo que hizo su entrega. Una entrega lleva el `source` y el `data` del aviso desde su `dueAtMs`; antes de eso
+dice que viene un aviso y cuándo, no de qué trata, así que una suscripción con retraso no se entera del instrumento antes
+que su nivel.
 
 | `status` | Qué significa |
 |---|---|

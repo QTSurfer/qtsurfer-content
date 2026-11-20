@@ -3,7 +3,7 @@ title: Signal channels
 description: A provider publishes notices about an instrument; live runs subscribed to the channel get it attached, at once or after a delay.
 order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b730b82dbf370bf69cd52983fde46366d7ba82f2
+upstreamCommit: 7bdf4c1189054efe7316c4c5d5a593eb29ecdf6e
 upstreamPath: docs/signals.md
 lastUpdated: '2026-11-19T23:58:57Z'
 ---
@@ -157,7 +157,9 @@ Any channel can be subscribed to, `unlisted` or `public`, yours or anyone's, as 
 ## Reading deliveries
 
 `GET /signals/subscriptions/{subscriptionId}/deliveries` lists every notice the subscription was due to receive,
-most recent first, with its `source` and `data`, and what its delivery did:
+most recent first, and what its delivery did. A delivery carries the notice's `source` and `data` from its `dueAtMs`
+on; before that it says that a notice is coming and when, not what it is about, so a subscription at a delayed level
+learns of the instrument no earlier than its level does.
 
 | `status` | Meaning |
 |---|---|

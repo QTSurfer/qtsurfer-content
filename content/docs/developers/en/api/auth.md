@@ -3,7 +3,7 @@ title: Authentication and scopes
 description: Exchange your API key for a token, and see what the scopes of your key allow.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: e6897c12d61b431bde7c30bbf34e00640e846864
+upstreamCommit: 37ff47bf27e65d70508271d7cb6b60dc7432c1e0
 upstreamPath: docs/auth.md
 lastUpdated: '2026-11-20T20:47:04Z'
 ---

@@ -3,7 +3,7 @@ title: Authentication and scopes
 description: Exchange your API key for a token, and see what the scopes of your key allow.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b730b82dbf370bf69cd52983fde46366d7ba82f2
+upstreamCommit: e6897c12d61b431bde7c30bbf34e00640e846864
 upstreamPath: docs/auth.md
 lastUpdated: '2026-11-19T23:58:57Z'
 ---
@@ -98,7 +98,7 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
 | `backtests` | `read`, `write`, `execute` | prepare, run, sweep and cancel backtests; read their status and results |
 | `datasets` | `read`, `write` | list and read your datasets; create, upload, import and delete them |
 | `live` | `read`, `write`, `execute` | read live runs, their signals and paper accounts; change a run; start, stop and command one, and manage its stream |
-| `signals` | `read`, `write` | read your signal channels, their notices, your subscriptions and what they received; create, change and delete a channel, publish a notice, subscribe a run and end a subscription |
+| `signals` | `read`, `write` | read your signal channels, their notices, offers and codes, your subscriptions and what they received; create, change and delete a channel, publish a notice, create offers, mint and revoke codes, redeem a code, renew or cancel a subscription and feed runs from it |
 
 `read` lists and gets. `write` creates, changes, cancels or deletes without running anything.
 `execute` starts a run: a backtest, a sweep, a live run.
@@ -146,8 +146,8 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
 
 | Operation | Scope |
 |---|---|
-| `GET /signals/channels`, `GET /signals/channels/{channelId}`, `GET /signals/channels/{channelId}/notices`, `GET /signals/subscriptions`, `GET /signals/subscriptions/{subscriptionId}/deliveries` | `signals` : `read` |
-| `POST /signals/channels`, `PATCH /signals/channels/{channelId}`, `DELETE /signals/channels/{channelId}`, `POST /signals/channels/{channelId}/notices`, `POST /signals/channels/{channelId}/subscriptions`, `DELETE /signals/subscriptions/{subscriptionId}` | `signals` : `write` |
+| `GET /signals/channels`, `GET /signals/channels/{channelId}`, `GET /signals/channels/{channelId}/notices`, `GET /signals/channels/{channelId}/offers`, `GET /signals/offers/{offerId}/codes`, `GET /signals/subscriptions`, `GET /signals/subscriptions/{subscriptionId}`, `GET /signals/subscriptions/{subscriptionId}/deliveries` | `signals` : `read` |
+| `POST /signals/channels`, `PATCH /signals/channels/{channelId}`, `DELETE /signals/channels/{channelId}`, `POST /signals/channels/{channelId}/notices`, `POST /signals/channels/{channelId}/offers`, `POST /signals/offers/{offerId}/codes`, `DELETE /signals/codes/{codeId}`, `POST /signals/subscriptions`, `DELETE /signals/subscriptions/{subscriptionId}`, `POST /signals/subscriptions/{subscriptionId}/renew`, `POST /signals/subscriptions/{subscriptionId}/runs`, `DELETE /signals/subscriptions/{subscriptionId}/runs/{runId}` | `signals` : `write` |
 
 **No scope:** `GET /account` and `GET /account/usage` need a valid token and nothing more;
 `GET /live/public` and `GET /signals/channels/public` need no token at all, and

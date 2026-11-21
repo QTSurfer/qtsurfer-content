@@ -3,7 +3,7 @@ title: Curvas de equity
 description: Transforma, retén, recupera y traza curvas de equity de backtests y barridos.
 order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: e1224d410f43ddf65a397a1c0de828036cc50434
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/equity_curves.md
 lastUpdated: '2026-10-22T21:18:46Z'
 ---
@@ -244,8 +244,8 @@ que cambia es que la curva es en vivo y lo que viaja a su lado:
 - **Crece mientras la ejecución corre, y no tiene punto ancla.** El primer punto es el primer valor que registró
   la cuenta. Nada se fija al enviar: un parámetro omitido en la petición significa `ARRAY`, sin remuestreo y sin
   codificación diferencial.
-- **Es una sola serie de equity corriente.** El valor tras cada operación cerrada y, cada minuto de tiempo de
-  mercado mientras haya posiciones abiertas, el valor marcado a mercado.
+- **Es una sola serie de equity corriente.** El valor tras cada operación cerrada y, periódicamente
+  mientras haya posiciones abiertas, el valor marcado a mercado.
 - **`currency` y `gaps` vienen junto a la curva.** `currency` es la cuenta (las cuentas nunca se suman; se puede
   omitir solo cuando la ejecución tiene una única cuenta). `gaps` enumera, como milisegundos de época, los
   momentos en que se perdieron posiciones abiertas porque la ejecución se reinició con ellas abiertas. Un hueco

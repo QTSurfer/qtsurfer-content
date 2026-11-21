@@ -3,7 +3,7 @@ title: Paper trading en ejecuciones en vivo
 description: Ejecuta en simulación las señales de una ejecución en vivo — configúralo, y lee sus cuentas, su curva de equity y sus KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-11-16T20:20:30Z'
 ---
@@ -294,7 +294,7 @@ Es una sola serie de equity corriente, hecha de dos tipos de punto:
 | punto | cuándo | `equity` |
 |---|---|---|
 | operación cerrada | tras cada operación cerrada, de cualquier par | capital más PnL realizado |
-| marca | una vez por minuto de tiempo de mercado, mientras haya alguna posición abierta | capital más PnL realizado más las posiciones abiertas a precio de mercado |
+| marca | periódicamente, mientras haya alguna posición abierta | capital más PnL realizado más las posiciones abiertas a precio de mercado |
 
 Donde la ejecución se reinició con posiciones abiertas, esas posiciones se pierden (consulta [Huecos](#huecos))
 y la curva no tiene valor ahí: ese momento figura en `gaps`, junto a la curva, y no es un punto de ella.
@@ -545,7 +545,7 @@ Cada entrada tiene la forma completa de señal descrita en [Ejecución en vivo](
 | `trade` | una posición se cerró | el par | `side` (`long`/`short`), `entryTsMs`, `enterAmount`, `exitAmount`, `pnl` |
 | `equity` | tras cada operación cerrada | `null` | `currency`, `equity` |
 | `kpi` | tras cada operación cerrada | `null` | `currency` y los KPIs de [Leer una cuenta](#leer-una-cuenta) |
-| `mark` | una vez por minuto de tiempo de mercado mientras hay posiciones abiertas | `null` | `currency`, `equity`, `realisedPnl`, `unrealisedPnl`, `openPositions` (cuántas) y `positions`, una entrada por posición abierta: `instrument`, `base`, `cost`, `markPrice`, `unrealisedPnl` (sus `unrealisedPnl` suman el de la marca) |
+| `mark` | periódicamente mientras hay posiciones abiertas | `null` | `currency`, `equity`, `realisedPnl`, `unrealisedPnl`, `openPositions` (cuántas) y `positions`, una entrada por posición abierta: `instrument`, `base`, `cost`, `markPrice`, `unrealisedPnl` (sus `unrealisedPnl` suman el de la marca) |
 | `gap` | posiciones abiertas perdidas en un reinicio | el par | `currency`, `base`, `cost` |
 
 `equity`, `kpi` y `mark` tratan de una cuenta entera, así que su `instrument` es `null` y

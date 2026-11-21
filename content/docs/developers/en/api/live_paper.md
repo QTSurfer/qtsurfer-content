@@ -3,7 +3,7 @@ title: Paper trading on live runs
 description: Execute a live run's signals in simulation — configure it, read its accounts, equity curve and KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-11-16T20:20:30Z'
 ---
@@ -293,7 +293,7 @@ It is one series of running equity, made of two kinds of point:
 | point | when | `equity` |
 |---|---|---|
 | closed trade | after every closed trade, of any pair | capital plus realised PnL |
-| mark | once a minute of market time, while any position is open | capital plus realised PnL plus the open positions at market price |
+| mark | periodically, while any position is open | capital plus realised PnL plus the open positions at market price |
 
 Where the run was restarted with positions open, those positions are lost (see [Gaps](#gaps)) and the
 curve has no value there: that moment is listed in `gaps`, beside the curve, and is not a point of it.
@@ -544,7 +544,7 @@ shortened here to `…`. `kind` says what the item is:
 | `trade` | a position closed | the pair | `side` (`long`/`short`), `entryTsMs`, `enterAmount`, `exitAmount`, `pnl` |
 | `equity` | after each closed trade | `null` | `currency`, `equity` |
 | `kpi` | after each closed trade | `null` | `currency` and the KPIs of [Reading an account](#reading-an-account) |
-| `mark` | once a minute of market time while positions are open | `null` | `currency`, `equity`, `realisedPnl`, `unrealisedPnl`, `openPositions` (how many) and `positions`, one entry per open position: `instrument`, `base`, `cost`, `markPrice`, `unrealisedPnl` (their `unrealisedPnl` add up to the mark's) |
+| `mark` | periodically while positions are open | `null` | `currency`, `equity`, `realisedPnl`, `unrealisedPnl`, `openPositions` (how many) and `positions`, one entry per open position: `instrument`, `base`, `cost`, `markPrice`, `unrealisedPnl` (their `unrealisedPnl` add up to the mark's) |
 | `gap` | open positions lost at a restart | the pair | `currency`, `base`, `cost` |
 
 `equity`, `kpi` and `mark` are about a whole account, so their `instrument` is `null` and

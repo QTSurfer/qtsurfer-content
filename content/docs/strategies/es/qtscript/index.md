@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-16T20:20:30Z'
 ---
@@ -470,7 +470,7 @@ de una ventana.
 Fijar un `param` o escribir en un `StateStore` desde dentro de `onCommand` surten efecto de inmediato, pero
 ninguno de los dos sobrevive a un reinicio: un `StateStore` es memoria, se pierde en un reinicio igual que un
 campo. Solo [`PUT /live/{runId}/params`](/docs/developers/api/live#parámetros-en-tiempo-de-ejecución) escribe algo de lo que una
-réplica reiniciada realmente parte. `getStateStore(...)` aquí no trata de durabilidad — es cómo `onCommand`
+ejecución reiniciada realmente parte. `getStateStore(...)` aquí no trata de durabilidad — es cómo `onCommand`
 alcanza el estado por instrumento que el cuerpo de una ventana ya lee, ya que un comando no lleva instrumento
 propio.
 
@@ -558,10 +558,10 @@ que recibiste. Los ejes de barrido y `params` usan los nombres de tus líneas `p
 |---|---|---|---|
 | ticker (por defecto) | sí | sí | sí |
 | `kline` | sí | sí | sí |
-| `funding` | sí | aún no | aún no |
+| `funding` | sí | no | no |
 
 Consulta [Fuentes de datos](/docs/developers/api/backtest_execute#fuentes-de-datos) para los detalles, incluido por qué
-una estrategia `funding` se puede registrar y sus datos preparar, pero todavía no ejecutar.
+una estrategia `funding` se puede registrar y sus datos preparar, pero no ejecutar.
 
 ## Cuando algo va mal
 

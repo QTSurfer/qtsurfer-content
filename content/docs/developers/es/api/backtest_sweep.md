@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 19f1e3c6eba937ade198e18dbfa52047cda204e2
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-11-02T12:01:59Z'
 ---
@@ -141,7 +141,7 @@ cuadrícula expandida excede el límite del servidor ·
 `404` `requestId` no encontrado o expirado · `402` la estrategia usa los indicadores pro y tu plan no los incluye,
 consulta [los indicadores pro y tu plan](/docs/strategies/qtscript#los-indicadores-pro-y-tu-plan) · `409` la estrategia, tal como se
 compiló, ya no funciona con la versión actual de la plataforma (una versión quitó algo a lo que llama): no se encola
-nada; registra la estrategia de nuevo y envíala otra vez · `429` cola de barridos o límite de concurrencia por
+nada; registra la estrategia de nuevo y envíala otra vez · `429` capacidad de barridos o límite de concurrencia por
 usuario alcanzado.
 
 ## Sondear el progreso y la clasificación
@@ -178,7 +178,7 @@ que no sobrevive a un pequeño desplazamiento de los parámetros ya no gana por 
 (`New` / `Started` / `Completed` / `Aborted` / `Failed`, derivado de él — `PARTIAL` y `CANCELLED`
 se convierten ambos en `Aborted`, ya que el `PARTIAL` de un barrido ya es terminal, a diferencia
 del `Partial` no terminal en el que puede estar un job simple). `state.completed` son ticks reales
-procesados en un barrido plano; en un barrido walk-forward siempre vale `0` por ahora.
+procesados en un barrido plano; en un barrido walk-forward siempre vale `0`.
 
 `state.size` es una estimación de partida — el rango solicitado frente a la cadencia objetivo de la
 preparación, fijada antes de cargar dato alguno en lugar de medirse sobre él — tanto en una

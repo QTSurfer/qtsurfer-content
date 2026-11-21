@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 19f1e3c6eba937ade198e18dbfa52047cda204e2
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-11-02T12:01:59Z'
 ---
@@ -44,7 +44,7 @@ Un sondeador que sirva a los tres puede leer `(resp.get("state") or resp)["statu
 |---|---|---|---|
 | `ticker` | sí | sí | sí |
 | `kline` | sí | sí | sí |
-| `funding` | sí | aún no | aún no |
+| `funding` | sí | no | no |
 
 Una petición `funding` a `execute` o `executeSweep` se rechaza con `400` antes de encolar nada, y
 el mensaje nombra qué se puede ejecutar: `funding data can be prepared but not executed yet.
@@ -144,9 +144,9 @@ Errores: `400` petición inválida, `from` anterior a la ventana de retención, 
 `cadence` más fina que la cadencia descubierta del conjunto de datos / una preparación `kline` sobre un
 conjunto de datos que no es `klines` / el rango excede el límite de tu plan · `402` `cadence` no es una de las de tu plan ([Cadencias por plan](#cadencias-por-plan)) —
 no aplica a `exchangeId: user` · `404` exchange/tipo no encontrado, o (para `exchangeId: user`) `datasetId`/
-`datasetVersionId` no existe o no es tuyo · `429` cola global al límite o demasiados backtests
-activos — no aplica a `exchangeId: user`, que lee un fichero ya ingerido en lugar de reclamar
-capacidad de worker.
+`datasetVersionId` no existe o no es tuyo · `429` plataforma al límite de capacidad o demasiados backtests
+activos — no aplica a `exchangeId: user`, que lee un fichero ya ingerido en lugar de usar
+capacidad de la plataforma.
 
 ## Sondear el estado de la preparación
 
@@ -242,7 +242,7 @@ valores por defecto de la plataforma (`initialFunding: 100`, `feeRate: 0.001`).
 |---|---|---|
 | `prepareJobId` | string | obligatorio — debe ser un job de preparación `Completed` |
 | `strategyId` | string | obligatorio |
-| `storeSignals` | boolean | por defecto `false`. Cuando es `true`, el worker sube las señales emitidas a almacenamiento de objetos y el resultado gana `signalsUrl`/`signalsId` |
+| `storeSignals` | boolean | por defecto `false`. Cuando es `true`, las señales emitidas se almacenan y el resultado gana `signalsUrl`/`signalsId` |
 | `equityCurve` | [`EquityCurveOptions`](equity_curves#plain-backtests-choose-the-transform-on-submit) | opcional — remodela la curva incrustada en `results.equityCurve` |
 | `baseConfig` | [`SweepBaseConfig`](backtest_sweep#baseconfig--sweepbaseconfig) | opcional — ajustes de capital, comisión y tamaño de posición, misma forma que acepta `executeSweep`. Una única tasa de comisión efectiva: un valor que implique comisiones de compra/venta distintas, o un `feeLeg` distinto del predeterminado, es `400` |
 | `params` | object | opcional, como máximo 64 entradas. Mapa plano de nombre de propiedad de estrategia → escalar (número, cadena o booleano). Las claves son el `name` declarado en `@StrategyProperty` (no necesariamente el campo Java que anota) — `GET`/`POST /strategy` devuelve `declaredProperties` con los nombres válidos. Una clave desconocida hace fallar el job en lugar de ejecutarse silenciosamente con los valores por defecto. Omite una clave para dejarla en su valor por defecto; `null` no es un valor. Los arrays se rechazan — una lista es un eje de barrido, este endpoint ejecuta exactamente un vector. `strategyId`, `storeSignals`, `equityCurve`, `backtestEnabled`, `backtestFakeExecution` están reservados (configuran el job, no la estrategia) |

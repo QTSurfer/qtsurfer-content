@@ -3,7 +3,7 @@ title: Account
 description: Check your tier's limits and your live storage usage against them.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 7df1dbb3a61a122715f5c061ac5b4b56ea23c352
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/account.md
 lastUpdated: '2026-11-17T14:15:14Z'
 ---
@@ -106,7 +106,7 @@ curl https://api.qtsurfer.net/v1/account/usage \
 `maxTotalStorageBytes` is checked when you add new dataset bytes — `POST /datasets/{datasetId}/uploads/{uploadId}/finalize`
 and `POST /datasets/imports` both return `429` if your account is already at or over the limit (see
 [Datasets](datasets) for the exact wording). Strategy-execution signals and registered
-strategies are reported in `storageBytesUsed` but do not themselves trigger a `429` today — delete
+strategies are reported in `storageBytesUsed` but do not themselves trigger a `429` — delete
 a dataset to free space if you're at your limit.
 
 ## Related guides

@@ -3,7 +3,7 @@ title: Signal channels
 description: A provider sells the notices of a channel as offers and single-use codes; the live runs of a subscription get the instrument attached, at once or after a delay.
 order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 37ff47bf27e65d70508271d7cb6b60dc7432c1e0
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/signals.md
 lastUpdated: '2026-11-20T22:11:58Z'
 ---

@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 6eaf29a03b096c793954bfe152e5f7d0d093cdff
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/live.md
 lastUpdated: '2026-11-19T19:30:44Z'
 ---
@@ -93,7 +93,7 @@ desconocido como "en marcha, con algo que mirar".
 
 | `state` | Qué significa |
 |---|---|
-| `STARTING` | Aceptada; ningún runner ha informado todavía sobre ella. |
+| `STARTING` | Aceptada; la plataforma no ha informado todavía sobre ella. |
 | `WAITING` | En marcha sin ninguna fuente de datos de mercado adjuntada: no ocupa plaza en la plataforma y no lee datos hasta que [le adjuntes una](#adjuntar-y-quitar-una-fuente). |
 | `RUNNING` | En marcha con normalidad. |
 | `LAGGING` | En marcha, pero por detrás de los datos de mercado: habitual mientras se pone al día tras arrancar o tras un reinicio de la plataforma. Se despeja sola. |
@@ -155,8 +155,9 @@ en busca de detalle: el texto es para personas.
 
 ## Qué está haciendo una ejecución: `stats`
 
-Mientras una ejecución se está ejecutando, la plataforma guarda sus últimos contadores y los refresca más o
-menos una vez por minuto. `GET /strategy/{strategyId}/live` y `GET /live/{runId}` los devuelven como `stats`:
+Mientras una ejecución se está ejecutando, la plataforma guarda sus últimos contadores y los refresca
+periódicamente (`asOfMs` dice cuándo se escribieron por última vez). `GET /strategy/{strategyId}/live` y
+`GET /live/{runId}` los devuelven como `stats`:
 
 ```json
 "stats": {
@@ -172,11 +173,11 @@ menos una vez por minuto. `GET /strategy/{strategyId}/live` y `GET /live/{runId}
 | Campo | Qué significa |
 |---|---|
 | `processed` | Actualizaciones de instrumentos que la ejecución ha aceptado desde que empezó a ejecutarse. Puede volver a empezar desde cero si la ejecución se reinicia. |
-| `opsPerSecond` | Actualizaciones aceptadas por segundo durante el último refresco. Es un promedio de alrededor de un minuto, así que no salta de una actualización a la siguiente. `0` cuando no llegó ninguna. |
+| `opsPerSecond` | Actualizaciones aceptadas por segundo durante el último intervalo de refresco. Es un promedio, así que no salta de una actualización a la siguiente. `0` cuando no llegó ninguna. |
 | `instrumentsSeen` | Instrumentos distintos de los que la ejecución ha recibido una actualización. |
 | `asOfMs` | Cuándo se escribieron por última vez estos contadores. |
 | `progressedAtMs` | El último refresco en el que `processed` había crecido. Ausente hasta que la ejecución ha procesado algo. |
-| `stale` | `true` cuando se supone que la ejecución está corriendo y sus contadores no se han refrescado durante varios intervalos de refresco. |
+| `stale` | `true` cuando se supone que la ejecución está corriendo y sus contadores no se han refrescado durante mucho más tiempo del habitual. |
 
 Tres cosas que conviene saber:
 
@@ -204,7 +205,7 @@ Tres cosas que conviene saber:
 `exchange` y `segment` son los ids que lista `GET /exchanges`, en minúsculas, y `venueType` es el que ese
 endpoint da al exchange: `cex` para un exchange centralizado y `dex` para uno descentralizado (`cx`, la
 grafía que se usaba antes, se sigue leyendo como `cex`). El segmento tiene que ser uno de los `liveSegments`
-del exchange: los segmentos para los que se publican datos en vivo, hoy `spot` en un exchange centralizado.
+del exchange: los segmentos para los que se publican datos en vivo.
 
 Los tres tienen que ir juntos en esa lista, y un arranque cuya fuente no lo cumple se rechaza con `400`
 indicando lo que la lista tiene, antes de que ocupe plaza: `sources[0].exchange 'coinbase' is not a cex exchange
@@ -225,8 +226,7 @@ nombrando ambas. Una estrategia QTScript es una estrategia ticker salvo que su c
 `AbstractKlineStrategy`).
 
 `type` es `ticker` o `kline`. Ambos se conectan a la cadencia más ligera (más rápida) disponible
-para el exchange — hoy eso es 1 tick/segundo en todos los exchanges soportados; elegir entre
-varias cadencias todavía no está disponible.
+para el exchange; elegir entre varias cadencias no está disponible.
 
 `instruments` se puede omitir. Una estrategia QTScript puede declarar qué instrumentos acepta con una línea
 `instruments` en su código. Cuando la compilación de la estrategia registra esa selección como una lista
@@ -271,14 +271,14 @@ centralizado. Fija `venueType` a `dex`:
 
 | Campo | En una fuente `dex` |
 |---|---|
-| `exchange` | La cadena en la que está la pool: un exchange que `GET /exchanges` lista con `venueType: dex`. Hoy `robinhood` (Robinhood Chain) es el único. |
-| `segment` | El protocolo de la pool, uno de los `segments` de ese exchange. Hoy `uniswap-v3` es el único. |
+| `exchange` | La cadena en la que está la pool o el token: un exchange que `GET /exchanges` lista con `venueType: dex` y un protocolo en sus `liveSegments`, por ejemplo `robinhood` (Robinhood Chain) o `solana`. |
+| `segment` | El protocolo de la pool, uno de los `liveSegments` de ese exchange, por ejemplo `uniswap-v3`; en `solana`, `pumpfun` (consulta [Solana: un token por su mint](#solana-un-token-por-su-mint)). |
 | `type` | Solo `kline`. Una fuente `ticker` no está disponible para una pool, y una estrategia ticker no puede correr sobre una. |
-| `instruments` | Exactamente una entrada: la dirección de la pool, `0x` y 40 cifras hexadecimales, sin distinguir mayúsculas. No se puede omitir y no se acepta `*`. |
+| `instruments` | Exactamente una entrada: la dirección de la pool, `0x` y 40 cifras hexadecimales, sin distinguir mayúsculas; en `solana`, el mint del token, que sí distingue mayúsculas. No se puede omitir y no se acepta `*`. |
 
 Para encontrar pools que ejecutar, lista los instrumentos del exchange: `GET /exchange/robinhood/uniswap-v3/instruments`
-devuelve las 50 pools con más volumen en las últimas 24 horas entre las que tienen al menos 10 000 dólares
-de liquidez, actualizadas cada hora. Cada una trae su `id` (la dirección que va en `instruments`), su par
+devuelve las pools con más volumen en las últimas 24 horas entre las que tienen liquidez suficiente,
+actualizadas periódicamente. Cada una trae su `id` (la dirección que va en `instruments`), su par
 nombrado como lo nombran las señales, su nivel de comisión, su liquidez y su volumen (consulta
 [Pools de un exchange descentralizado](market_data#pools-de-un-exchange-descentralizado)). La lista es un
 punto de partida, no todo el mercado: una ejecución puede leer cualquier pool de Uniswap V3 de la cadena,
@@ -291,8 +291,8 @@ Lo que recibe la estrategia:
   y cero operaciones, de modo que una estrategia que cuenta barras está contando tiempo incluso en una pool
   que opera poco.
 - Una vela se publica cuando su segundo ha terminado y las operaciones tardías han tenido un momento para
-  llegar: hasta unos tres segundos después de que acabe el segundo. Las señales llevan por tanto un retraso
-  sobre el mercado de hasta esa espera más el trabajo propio de la estrategia.
+  llegar. Las señales llevan por tanto un retraso
+  sobre el mercado de esa espera más el trabajo propio de la estrategia.
 - Una pool que no ha operado desde que la plataforma empezó a seguirla no produce velas hasta su primera
   operación: aún no hay precio que repetir.
 - Las señales de la ejecución nombran el par como los tokens de la pool escritos `BASE/QUOTE`, como
@@ -302,11 +302,47 @@ Lo que recibe la estrategia:
 El arranque y el calentamiento funcionan como en cualquier ejecución (consulta
 [Calentar la ejecución](#calentar-la-ejecución-warmfrom)). La plataforma sigue una pool cuando una
 ejecución lo pide y reproduce la historia que pide el `warmFrom` de la ejecución antes de la primera vela en
-vivo, así que una ejecución sobre una pool que nadie más lee se pone al día a unas seis veces la velocidad
-del mercado: el calentamiento por defecto (hasta 15 minutos) tarda hasta unos minutos, y `warmFrom: 3600` unos
-diez. Mientras se pone al día la ejecución puede mostrar `LAGGING`. Una ejecución que arranca sobre una pool
+vivo, así que una ejecución sobre una pool que nadie más lee tarda un rato en ponerse al día: cuanto más
+largo es el calentamiento, más tarda. Mientras se pone al día la ejecución puede mostrar `LAGGING`. Una ejecución que arranca sobre una pool
 que la plataforma ya sigue recibe la historia que existe para ella, que es más corta que su `warmFrom` cuando
 la pool se empezó a seguir hace un momento.
+
+#### Solana: un token por su mint
+
+En `solana` una ejecución lee un **token**, no una pool. Pon `segment` a `pumpfun` e `instruments` al mint del token:
+
+```json
+{
+  "sources": [
+    {"venueType": "dex", "exchange": "solana", "segment": "pumpfun", "type": "kline", "instruments": ["2TngN4B7XaoGSKsYvttq5bFAdM4Z4xCSnuyRwGiFpump"]}
+  ]
+}
+```
+
+El segmento se puede leer en vivo cuando `GET /exchanges` lo lista en los `liveSegments` de `solana`. Todo lo anterior
+sigue valiendo, con estas diferencias:
+
+- **El mint nombra el token.** Es una clave base58 de 32 bytes (de 32 a 44 letras y cifras) y **distingue mayúsculas de
+  minúsculas**: escríbelo exactamente como lo tiene el token. Dos mints que solo se diferencian en mayúsculas son dos
+  tokens distintos, y lo que envías se guarda tal cual.
+- **Una sola serie, de la curva a la pool.** Un token empieza en la curva de enlace (bonding curve) de pump.fun, donde no hay pool;
+  cuando se gradúa opera en la pool de PumpSwap que pump.fun crea para él. Las velas continúan sin corte y con el mismo
+  mint, así que una ejecución no necesita cambios cuando el token se gradúa. Otra pool del mismo token es un mercado
+  distinto y no forma parte de la serie.
+- **Sin lista donde elegir.** Nacen tokens todo el tiempo: `GET /exchange/solana/pumpfun/instruments` responde
+  `404`. Toma el mint de donde se haya encontrado el token.
+- **El par.** El `instrument` de las señales es `BASE/QUOTE`: `BASE` son los 8 primeros caracteres del mint y
+  `QUOTE` es en lo que cotiza el token: `SOL`, `USDC` o `USDT`. Un token que cotiza en cualquier otra cosa no se puede
+  seguir.
+- **No hay historia.** La plataforma no tiene operaciones de un token anteriores a que empezara a seguirlo, así que
+  `warmFrom` no trae velas más antiguas: una ejecución lee el token desde el momento en que la plataforma empieza a
+  seguirlo, que es cuando la primera ejecución lo pide.
+- **Un hueco es un hueco.** Mientras la plataforma no puede seguir un token, no se publican velas para él: un segundo sin
+  vela no se observó, mientras que una vela con volumen cero y cero operaciones es un mercado que no operó.
+- **Un token que no opera se rechaza.** Un mint que no es un token de pump.fun ni de PumpSwap, o un token que no opera
+  durante un tiempo después de que la ejecución lo pida, se rechaza como cualquier pool que la plataforma no puede
+  servir: la ejecución falla con el `reason` habitual (más abajo) y no ocupa plaza. Tarda más que con una pool, porque la
+  plataforma espera a que el token opere antes de rechazarlo.
 
 Una ejecución `dex` cuya pool no se puede servir falla en cuestión de segundos en lugar de esperar velas que
 no van a llegar, y la plataforma la detiene, así que no ocupa plaza (consulta
@@ -314,7 +350,7 @@ no van a llegar, y la plataforma la detiene, así que no ocupa plaza (consulta
 
 - La dirección no es una pool de ese protocolo en esa cadena, o la plataforma no puede leer sus tokens: el
   `reason` es `The run could not start: its pool address is not a pool of that protocol on that chain.` Tarda
-  unos quince segundos. Si arrancas la misma dirección de nuevo enseguida, puede tardar hasta medio minuto.
+  unos segundos. Si arrancas la misma dirección de nuevo enseguida, puede tardar un poco más.
 - La plataforma sigue ya tantas pools como puede: el `reason` es `The run could not start: the platform is
   following as many pools as it can right now. Try again later.` Tarda unos segundos. Arrancar de nuevo
   funciona cuando hay sitio: una pool se libera unos minutos después de que se detenga la última ejecución
@@ -335,9 +371,9 @@ fuente](#adjuntar-y-quitar-una-fuente)). Tienen que estar en la misma cadena y e
 cuántas pools puedes seguir a la vez entre tus ejecuciones (`429`, con el número). Dos cosas son distintas de un arranque:
 
 - **Una pool adjuntada a una ejecución que ya lee otra se lee desde el momento en que surte efecto.** No tiene historia:
-  envía `warmFrom: 0` o déjalo sin enviar, porque cualquier otro valor es un `400`. Su primera señal llega unos 25 segundos
-  después de la petición en nuestras mediciones: el adjuntado surte efecto con 15 segundos de adelanto, y luego vienen la
-  espera de las operaciones tardías (hasta unos tres segundos) y el segundo de la propia vela. Solo la primera fuente de una
+  envía `warmFrom: 0` o déjalo sin enviar, porque cualquier otro valor es un `400`. Su primera señal llega unos segundos
+  después de la petición: el adjuntado surte efecto con algo de adelanto, y luego vienen la
+  espera de las operaciones tardías y el segundo de la propia vela. Solo la primera fuente de una
   ejecución en espera, que es la que la arranca, toma `warmFrom` como lo hace un arranque.
 - **Una pool por par.** La estrategia ve el par (`WETH/USDG`), nunca la pool, así que no podría distinguir dos pools del mismo
   par, y un par suele tener varias (una por nivel de comisión). La primera pool que da una vela del par se la queda. Una pool
@@ -464,7 +500,7 @@ reproducir. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a 
 
 | `warmFrom` | Qué ocurre |
 |---|---|
-| omitido | La plataforma reproduce desde el inicio del bloque de 15 minutos en curso: entre 0 y 900 segundos antes del arranque, según cuándo arranque (0 si arranca justo en un cuarto de hora). La primera barra de una ventana de 15 minutos sale entonces completa. |
+| omitido | La plataforma elige cuánto reproducir hacia atrás, de modo que la primera barra de las ventanas habituales salga completa. El valor que eligió se devuelve como `warmFrom`. |
 | `0` | Sin reproducción. La ejecución empieza en su arranque: entrega su primera señal en cuanto está en marcha, con indicadores que empiezan vacíos y una primera barra de ventana que puede ser parcial. |
 | `1` a `3600` | La estrategia ve esa cantidad de segundos del feed anteriores al arranque y después continúa en vivo. |
 
@@ -472,8 +508,8 @@ reproducir. Se fija en el cuerpo de `POST /strategy/{strategyId}/live`, junto a 
   superior a `3600`, una fracción, texto) se rechaza con `400`.
 - Elígelo según lo que necesite la estrategia. Una estrategia con periodos de indicador largos debería
   pedir al menos el tiempo que tarda en llenarse su indicador más lento: con `0`, sus primeros valores se
-  calculan sobre lo que haya llegado desde el arranque, y si se omite, la reproducción puede ser de solo
-  `0` segundos (una ejecución que arranca justo en un cuarto de hora) y nunca de más de `900`.
+  calculan sobre lo que haya llegado desde el arranque; si se omite, la reproducción la elige la plataforma y
+  depende de cuándo arranque la ejecución.
 - Solo se puede fijar **al arrancar la ejecución**. No es uno de los parámetros que acepta
   `PUT /live/{runId}/params` y no se puede añadir después: para cambiarlo, detén la ejecución y vuelve a
   arrancarla.
@@ -585,9 +621,9 @@ con la que arrancó: registra de nuevo la estrategia (`POST /strategy` con el mi
 compila otra vez) y arranca una ejecución nueva.
 
 El `effectiveAtMs` de la respuesta no es "ahora" — son unos segundos más adelante, el primer
-momento en que el nuevo valor está garantizado que se aplique. Este margen existe para que, si una
-ejecución tiene más de un worker de ejecución detrás, todos adopten el cambio en el mismo punto en
-lugar de que uno lo aplique unos eventos antes que el otro.
+momento en que el nuevo valor está garantizado que se aplique. Este margen existe para que todas
+las ejecuciones del run adopten el cambio en el mismo punto en
+lugar de que una lo aplique unos eventos antes que otra.
 
 ```
 PUT /live/6TzAPiPpsOWwBLdLBZCxwH/params
@@ -621,8 +657,8 @@ objeto `properties` opcional, de tu elección, que viaja sin cambios hasta el pr
 `effectiveAtMs`, la posición de mercado en la que lo aplica cada ejecución detrás del run.
 
 **Un comando es transitorio**, a diferencia de un parámetro: es un evento, no un valor guardado, y nada de él se
-escribe en la ejecución. Una réplica que se reinicia reproduce solo su historial de mercado reciente, así que un
-comando de antes de esa ventana simplemente no le llega — un par que ya estaba corriendo cuando llegó lo aplica, uno
+escribe en la ejecución. No se reproduce cuando una ejecución se reinicia, así que un
+comando de antes de un reinicio simplemente no llega a la ejecución reiniciada — una que ya estaba corriendo cuando llegó lo aplica, una
 que arranca después no. Todo lo que la estrategia necesite recordar entre reinicios va en un parámetro
 (`PUT /live/{runId}/params`), que sí tiene un valor guardado.
 
@@ -755,9 +791,9 @@ y con el `epoch` y el `offset` más reciente que guarda el canal:
 {"id": 5, "history": {"publications": [{"data": {"v": 1, "signalId": "…", …}, "offset": 41}, {"data": {"v": 1, "signalId": "…", …}, "offset": 42}], "epoch": "SQRGfEAq", "offset": 42}}
 ```
 
-- **Qué contiene.** Solo las señales de la etapa `sandbox`: las 300 más recientes, sea cual sea su antigüedad,
-  hasta 5 minutos después de la última señal de `sandbox` de la ejecución, cuando se vacía. No se guarda nada
-  de la etapa `live`: una vez promovida la ejecución, el historial deja de crecer y se vacía 5 minutos después
+- **Qué contiene.** Solo las señales más recientes de la etapa `sandbox`, durante un tiempo limitado después
+  de la última señal de `sandbox` de la ejecución, cuando se vacía. No se guarda nada
+  de la etapa `live`: una vez promovida la ejecución, el historial deja de crecer y se vacía poco después
   de la última señal de `sandbox`. Para leer más atrás, o cualquier señal de `live`, usa
   `GET /live/{runId}/signals` (más abajo).
   Una ejecución que arranca en `live` (consulta [Volver a arrancar no repite la prueba](#volver-a-arrancar-no-repite-la-prueba))
@@ -918,7 +954,7 @@ normalmente en menos de un minuto; si el plan vuelve a permitirte difundir, la m
 ### Rotar y revocar la URL
 
 - `POST /live/{runId}/stream` da a la ejecución una dirección **nueva** y retira la antigua: las conexiones en la
-  dirección antigua se cierran con `1008` en unos 15 segundos. Solo para una ejecución en marcha que se arrancó con
+  dirección antigua se cierran con `1008` poco después. Solo para una ejecución en marcha que se arrancó con
   un flujo.
 - `DELETE /live/{runId}/stream` la revoca **para siempre**: las conexiones se cierran y la dirección responde
   `404`. La ejecución sigue corriendo, y no se le puede volver a añadir un flujo: arranca la ejecución de nuevo con

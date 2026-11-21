@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 82c055136cecf913dedc3c7c8c9476a8d416fda1
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-11-18T21:34:06Z'
 ---
@@ -58,7 +58,7 @@ ciclo de vida como `createdAt`, `currentVersionId`, el rango y la cadencia se ob
   "type": "ticker", "instrument": "BTC/USDT",
   "uploadId": "up_1a2b3c4d5e6f7a8b",
   "upload": {
-    "url": "https://storage.qtsurfer.com/.../uploads/up_1a2b3c4d5e6f7a8b/raw.csv?X-Amz-...",
+    "url": "https://storage.qtsurfer.com/.../uploads/up_1a2b3c4d5e6f7a8b/raw.csv?...",
     "expiresInMinutes": 15
   }
 }
@@ -101,7 +101,7 @@ conjunto de datos alrededor:
 {
   "uploadId": "up_1a2b3c4d5e6f7a8b",
   "upload": {
-    "url": "https://storage.qtsurfer.com/.../uploads/up_1a2b3c4d5e6f7a8b/raw.csv?X-Amz-...",
+    "url": "https://storage.qtsurfer.com/.../uploads/up_1a2b3c4d5e6f7a8b/raw.csv?...",
     "expiresInMinutes": 15
   }
 }
@@ -123,7 +123,7 @@ estén presentes una serie de marca de tiempo y una de cierre. **La cadencia y l
 de tiempo se descubren a partir de los datos, no se declaran,** para las tres.
 
 Una subida CSV se convierte a nuestro formato columnar nativo (`lastra`) para almacenarla. Una
-subida parquet o lastra se guarda hoy tal cual. En ambos casos, consulta `dataFormat` en la
+subida parquet o lastra se guarda tal cual. En ambos casos, consulta `dataFormat` en la
 [versión lista](#datasetversion--una-subida-ingerida-con-éxito) para saber qué recibes de vuelta
 realmente — no lo des por hecho a partir de cómo la subiste (un CSV convertido y un fichero lastra
 subido reportan ambos `dataFormat: "lastra"`).
@@ -229,7 +229,7 @@ puede caducar por sí mismo (ver el caso `404` más abajo).
 
 | Campo | Notas |
 |---|---|
-| `status` | `uploading` (fichero subido con `PUT`, aún no finalizado) → `ingesting` (finalize llamado, el worker analiza/valida) → `ready` (`version` lleva el resultado) \| `failed` (por ejemplo, contrato CSV incorrecto, una [marca de tiempo](#la-columna-timestamp) que no está en ninguna de las formas aceptadas, unidades de marca de tiempo mezcladas, un `.zip` sin fichero dentro o con más de uno) |
+| `status` | `uploading` (fichero subido con `PUT`, aún no finalizado) → `ingesting` (finalize llamado, el fichero se analiza y se valida) → `ready` (`version` lleva el resultado) \| `failed` (por ejemplo, contrato CSV incorrecto, una [marca de tiempo](#la-columna-timestamp) que no está en ninguna de las formas aceptadas, unidades de marca de tiempo mezcladas, un `.zip` sin fichero dentro o con más de uno) |
 | `jobId` | el id del job de ingesta, mientras `status` es `ingesting` |
 | `error` | motivo legible, presente cuando `status` es `failed`. Se registra de forma duradera junto con el fallo — sigue disponible sondees cuando sondees después |
 | `version` | una [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito), presente cuando `status` es `ready` o `failed` |
@@ -260,7 +260,7 @@ curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/uploads/$UPLOAD_ID \
     "datasetId": "ds_3f9a1c2e7b0d4a5f", "id": "dsv_8e2b4f19c6a03d7e",
     "bytes": 4831022, "rows": 86400, "cadence": "1s",
     "timestampUnit": "iso", "gaps": 0, "largestGapSteps": 0,
-    "dataUrl": "https://storage.qtsurfer.com/.../dsv_8e2b4f19c6a03d7e/ticker_BTC_USDT_....lastra?X-Amz-...",
+    "dataUrl": "https://storage.qtsurfer.com/.../dsv_8e2b4f19c6a03d7e/ticker_BTC_USDT_....lastra?...",
     "dataFormat": "lastra"
   }
 }
@@ -312,7 +312,7 @@ Una importación `dex` tiene dos formas de datos:
 | `cadence` | cadena | opcional, las mismas etiquetas que una preparación (de `1s` a `1q`; cualquier otro valor es `400`); una que tu plan no incluye es `402`. Para `dex`: velas a esa anchura en una red que las soporte; omitida/en blanco = la de por defecto del plan, o la cadencia nativa por operación en un plan que incluye la tasa nativa (ver abajo). Para `cex`: consulta [Importar el histórico de un exchange](#importar-el-histórico-de-un-exchange) |
 | `type` | cadena | obligatorio, `"dex"` \| `"cex"` |
 | `dex.network` | cadena | obligatorio, uno de `ethereum` \| `robinhood` \| `solana`. `solana` solo tiene velas (ver abajo) |
-| `dex.id` | cadena | obligatorio solo para la importación por operación (sin `cadence`, en un plan que incluye la tasa nativa); se ignora cuando se construyen velas. `"uniswap"` es el único valor por ahora — qué protocolo DEX on-chain implementa `dex.contract` |
+| `dex.id` | cadena | obligatorio solo para la importación por operación (sin `cadence`, en un plan que incluye la tasa nativa); se ignora cuando se construyen velas. qué protocolo DEX on-chain implementa `dex.contract`, por ejemplo `"uniswap"` |
 | `dex.version` | cadena | obligatorio solo para la importación por operación (sin `cadence`, en un plan que incluye la tasa nativa); se ignora cuando se construyen velas. `"v2"` \| `"v3"` |
 | `dex.contract` | cadena | obligatorio, la dirección del contrato del pool (v3) o par (v2) |
 | `dex.factory` | cadena | opcional — omite para autodescubrirla on-chain a partir de `contract`; indícala solo si ya la conoces o el pool/par pertenece a una factory no canónica. En cualquier caso el pool/par se valida contra la factory que se use antes de buscar nada. Se ignora si una `cadence` de velas realmente se resuelve (ver abajo) |
@@ -325,7 +325,7 @@ más gruesa después, como un paso aparte, si necesitas una a partir de datos on
 a la suya de por defecto, y lo mismo una importación que pide una `cadence`: las barras se construyen a esa anchura directamente —
 pero solo en una red que realmente tenga una fuente de velas detrás. En cualquier otra red, un plan que no incluye datos por operación no
 puede ser atendido y la petición es `402`; en un plan que sí los incluye, la `cadence` se ignora y la importación
-sigue como si nunca se hubiera enviado (nativa, `dex.id`/`dex.version` obligatorios). Qué redes soportan velas hoy
+sigue como si nunca se hubiera enviado (nativa, `dex.id`/`dex.version` obligatorios). Qué redes soportan velas
 no forma parte de este contrato y puede cambiar.
 
 **Solana solo tiene velas.** No hay importación por operación para un pool de Solana, así que no existe
@@ -335,8 +335,8 @@ hacen falta. Se puede pedir cualquier cadencia que tu plan incluya, y una que no
 como en cualquier otro sitio. El `dex.contract` de un pool de Solana es su dirección en base58, que
 distingue mayúsculas de minúsculas: envíala exactamente como está escrita.
 
-**Las velas llegan hasta 180 días atrás.** Una importación de velas — una que indica una `cadence` o
-que recibe la de por defecto del plan — cuyo `from` es anterior a 180 días antes de la petición es
+**Las velas llegan hasta un tiempo limitado atrás.** Una importación de velas — una que indica una `cadence` o
+que recibe la de por defecto del plan — cuyo `from` es anterior a la historia de velas que una importación puede leer es
 `400`, sea cual sea la red; el mensaje dice el instante más antiguo que puede leer. Se rechaza de
 entrada en lugar de aceptarse y fallar después. La ventana no se aplica a una importación por operación
 ni a una de `cex`.
@@ -410,8 +410,8 @@ curl -X POST https://api.qtsurfer.net/v1/datasets/imports \
 subida.
 
 Errores: `400` petición inválida, `instrument` no es un par spot llano, `from >= to`, `cadence`
-presente pero no uno de sus valores soportados, una importación de velas cuyo `from` es anterior a los
-180 días a los que llegan las velas, el rango excede el límite de importación de tu
+presente pero no uno de sus valores soportados, una importación de velas cuyo `from` es anterior a la
+historia de velas que una importación puede leer, el rango excede el límite de importación de tu
 plan, la estimación aproximada de tamaño del rango excede el límite de filas de tu plan,
 `dex.network`/`dex.id` no es uno de sus valores soportados, `dex.contract`/`dex.factory` fallan la
 validación básica de forma, o (cuando se omite `cadence` en un plan que incluye la tasa nativa) falta `dex.id`/`dex.version` (si el
@@ -437,7 +437,7 @@ bytes en el fichero guardado y 88 en memoria. Solo cambia el bloque que dice qu�
 | Campo | Tipo | Notas |
 |---|---|---|
 | `cex.exchange` | cadena | obligatorio, el `id` de un exchange centralizado (`venueType` `cex`) de `GET /exchanges`, en minúsculas. El id de un exchange descentralizado es `400`: usa `type: dex` |
-| `cex.segment` | cadena | obligatorio, uno de los `segments` del exchange. `spot` es el único segmento que admite hoy una importación `cex`, lo que concuerda con que `instrument` sea un par spot llano |
+| `cex.segment` | cadena | obligatorio, uno de los `segments` del exchange. `spot` es el segmento que admite una importación `cex`, lo que concuerda con que `instrument` sea un par spot llano |
 | `cex.dataType` | cadena | obligatorio, `"ticker"` \| `"klines"`. Lo que se trae, y por tanto el `type` del conjunto de datos resultante ([Qué es el `type`](#qué-es-el-type): los tickers llevan el libro, las klines no) |
 
 `cadence` es opcional y admite las mismas etiquetas que la cadencia de una preparación de backtest,
@@ -489,7 +489,7 @@ subida.
 
 | Campo | Notas |
 |---|---|
-| `status` | `fetching` (leyendo de la fuente, nada alojado todavía — el único estado que solo reporta una importación) → `ingesting` (buscado, alojado, el worker analiza/valida) → `ready` (`version` lleva el resultado) \| `failed` |
+| `status` | `fetching` (leyendo de la fuente, nada alojado todavía — el único estado que solo reporta una importación) → `ingesting` (buscado, alojado, se analiza y se valida) → `ready` (`version` lleva el resultado) \| `failed` |
 | `jobId` | el id del job de búsqueda/ingesta, mientras `status` es `fetching` o `ingesting` |
 | `error` | motivo legible, presente cuando `status` es `failed` — un pool/par que no se resuelve, sin datos en el rango pedido, un rango más antiguo de lo que retiene la fuente, una `cadence` `cex` más fina que la que contiene el rango (el mensaje nombra la más fina), la búsqueda superando el límite de tiempo de tu plan, o cualquiera de los motivos del lado de ingesta que puede llevar `DatasetUploadState.error`, una vez que la búsqueda pasa el testigo a esa misma cadena. Se registra de forma duradera, igual que en la vía de subida |
 | `version` | una [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito), presente cuando `status` es `ready` o `failed` |
@@ -507,7 +507,7 @@ curl https://api.qtsurfer.net/v1/datasets/$DATASET_ID/imports/$IMPORT_ID \
     "datasetId": "ds_3f9a1c2e7b0d4a5f", "id": "dsv_8e2b4f19c6a03d7e",
     "bytes": 4831022, "rows": 604800, "cadence": "rt",
     "timestampUnit": "us", "gaps": 0, "largestGapSteps": 0,
-    "dataUrl": "https://storage.qtsurfer.com/.../dsv_8e2b4f19c6a03d7e/ticker_WETH_USDC_....lastra?X-Amz-...",
+    "dataUrl": "https://storage.qtsurfer.com/.../dsv_8e2b4f19c6a03d7e/ticker_WETH_USDC_....lastra?...",
     "dataFormat": "lastra"
   }
 }
@@ -640,8 +640,8 @@ Errores: `404` no existe ese conjunto de datos para este usuario.
 ## Eliminar un conjunto de datos
 
 `DELETE /datasets/{datasetId}` — eliminación suave. Deja de aparecer en los endpoints de listado/
-obtención y ya no puede usarse para preparar, pero sus datos de objeto se recuperan más tarde en
-lugar de purgarse en el acto, así que un backtest ya en marcha contra una de sus versiones no se
+obtención y ya no puede usarse para preparar, pero sus datos no se eliminan en el acto,
+así que un backtest ya en marcha contra una de sus versiones no se
 interrumpe.
 
 ```bash

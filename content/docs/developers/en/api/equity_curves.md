@@ -3,7 +3,7 @@ title: Equity curves
 description: Transform, retain, retrieve, and plot backtest and sweep equity curves.
 order: 5.5
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: e1224d410f43ddf65a397a1c0de828036cc50434
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/equity_curves.md
 lastUpdated: '2026-10-22T21:18:46Z'
 ---
@@ -238,8 +238,8 @@ guard. What differs is that the curve is live and what rides beside it:
 - **It grows while the run runs, and has no anchor point.** The first point is the first value the
   account recorded. Nothing is fixed at submit time: a parameter left out of the request means
   `ARRAY`, no resampling and no differential encoding.
-- **It is one series of running equity.** The value after every closed trade and, every minute of
-  market time while positions are open, the value marked to market.
+- **It is one series of running equity.** The value after every closed trade and, periodically
+  while positions are open, the value marked to market.
 - **`currency` and `gaps` come beside the curve.** `currency` is the account (accounts are never
   summed; it may be left out only when the run has a single account). `gaps` lists, as epoch
   milliseconds, the moments open positions were lost because the run was restarted with them open. A

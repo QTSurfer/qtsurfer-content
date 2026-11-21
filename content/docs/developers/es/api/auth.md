@@ -3,7 +3,7 @@ title: Autenticación y alcances
 description: Cambia tu clave de API por un token y consulta qué permiten los alcances de tu clave.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 37ff47bf27e65d70508271d7cb6b60dc7432c1e0
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/auth.md
 lastUpdated: '2026-11-20T22:11:58Z'
 ---
@@ -49,7 +49,7 @@ envían una.
 Una clave ausente, desconocida, revocada o caducada se responde con `401` y `{"error": "invalid_credentials"}`
 (`AuthTokenRejected` en la referencia de la API). La respuesta es la misma para las cuatro: no dice cuál es, así
 que lee la caducidad de tu clave con antelación, [más abajo](#cuándo-caduca-tu-clave), y no a partir de esta respuesta.
-Donde un despliegue exige alcances, una clave que no lleva ninguno se responde con `403` con el código
+Una clave que no lleva ningún alcance se responde con `403` con el código
 `apikey_without_scopes` y sin token (`AuthTokenError`): crea en la aplicación web una clave con al menos un alcance.
 
 ## Cuándo caduca tu clave

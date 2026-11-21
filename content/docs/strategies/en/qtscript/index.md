@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: A compact language for writing strategies — every section, windows, what's in scope, and how it compiles the same as Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-16T20:20:30Z'
 ---
@@ -455,7 +455,7 @@ are not visible outside `onCommand`'s body, the same way `$indicator` is not vis
 
 Setting a `param` or writing to a `StateStore` from inside `onCommand` both take effect immediately, but
 neither survives a restart: a `StateStore` is memory, gone on a restart the same as a field. Only
-[`PUT /live/{runId}/params`](/docs/developers/api/live#runtime-parameters) writes something a restarted replica actually
+[`PUT /live/{runId}/params`](/docs/developers/api/live#runtime-parameters) writes something a restarted run actually
 starts from. `getStateStore(...)` here is not about durability — it is how `onCommand` reaches the
 per-instrument state a window body already reads, since a command carries no instrument of its own.
 
@@ -539,10 +539,10 @@ A registered QTScript strategy is prepared, executed and swept like any other:
 |---|---|---|---|
 | ticker (default) | yes | yes | yes |
 | `kline` | yes | yes | yes |
-| `funding` | yes | not yet | not yet |
+| `funding` | yes | no | no |
 
 See [Data sources](/docs/developers/api/backtest_execute#data-sources) for the details, including why a `funding`
-strategy can be registered and its data prepared but not yet run.
+strategy can be registered and its data prepared but not run.
 
 ## When something is wrong
 

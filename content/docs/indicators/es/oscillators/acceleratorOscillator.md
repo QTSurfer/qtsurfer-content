@@ -2,7 +2,7 @@
 title: "Oscilador acelerador (AC)"
 description: "Cómo el oscilador acelerador toma la distancia entre el oscilador Awesome y su propia media, de modo que gira antes que él, por qué sus cuatro primeros valores aún no son válidos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.57
-lastUpdated: '2026-11-13T21:28:19Z'
+lastUpdated: '2026-11-22T19:38:50Z'
 ---
 
 El **oscilador acelerador** (AC, por sus siglas en inglés), de Bill Williams, es la distancia entre el [oscilador Awesome](/docs/indicators/oscillators/awesomeOscillator) y su propia media de 5 barras: lo deprisa que cambia el impulso. Se dibuja como un histograma alrededor de cero.

@@ -2,7 +2,7 @@
 title: "Índice de vigor relativo (RVGI)"
 description: "Cómo el índice de vigor relativo contrapone el movimiento ponderado de la apertura al cierre al rango ponderado de las últimas barras, suavizado con medias móviles, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.60
-lastUpdated: '2026-11-13T21:28:19Z'
+lastUpdated: '2026-11-22T19:38:50Z'
 ---
 
 El **índice de vigor relativo** (RVGI, por sus siglas en inglés), de John Ehlers, contrapone el movimiento de la apertura al cierre al rango, ponderado sobre cuatro barras y suavizado: la idea de que en una tendencia alcista los precios cierran más arriba de lo que abren.

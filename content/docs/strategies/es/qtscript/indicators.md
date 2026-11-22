@@ -1,11 +1,11 @@
 ---
 title: Indicadores de QTScript
-description: Todos los indicadores que puede llamar una estrategia QTScript, gratuitos y pro, agrupados por tipo.
+description: Todos los indicadores que puede llamar una estrategia QTScript, pro incluidos, agrupados por tipo.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5d3c0a2df425f77bc377fce133edf2cc706a3193
+upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
-lastUpdated: '2026-11-16T20:20:30Z'
+lastUpdated: "2026-11-16T20:20:30Z"
 ---
 
 Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tipo, con lo que calcula cada uno. Una línea bajo
@@ -13,7 +13,7 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 
 - **Los argumentos que acepta cada nombre** son las formas de la tabla bajo «Qué va bajo `setup:`» en
   [la guía de QTScript](/docs/strategies/qtscript#qué-va-bajo-setup). Esta página no las repite.
-- Los nombres **gratuitos** funcionan en todos los planes. Hay 39.
+- Los nombres que no son pro funcionan en todos los planes. Hay 39.
 - Los nombres **pro** vienen con los planes Pro y Elite y necesitan una línea `uses` (consulta «Los indicadores pro: `uses`» en
   [la guía de QTScript](/docs/strategies/qtscript#los-indicadores-pro-uses), que trae sus formas y los nombres que
   registran). Hay 12.
@@ -22,17 +22,17 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 - Un nombre que no está en ninguna de las dos listas, y un nombre pro cuya línea `uses` falta, se rechaza como
   `unknown indicator '<nombre>'`.
 
-| Grupo              | Nombres gratuitos |
-| ------------------ | ----------------: |
-| Medias             |                 7 |
-| Osciladores        |                 4 |
-| Bandas             |                 3 |
-| Volatilidad        |                 5 |
-| Distancia y cambio |                 4 |
-| Conteo y extremos  |                 5 |
-| Aritmética         |                 3 |
-| Transformaciones   |                 2 |
-| Comparaciones      |                 6 |
+| Grupo              | Nombres |
+| ------------------ | ------: |
+| Medias             |       7 |
+| Osciladores        |       4 |
+| Bandas             |       3 |
+| Volatilidad        |       5 |
+| Distancia y cambio |       4 |
+| Conteo y extremos  |       5 |
+| Aritmética         |       3 |
+| Transformaciones   |       2 |
+| Comparaciones      |       6 |
 
 ## Medias
 
@@ -65,32 +65,32 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 
 ## Volatilidad
 
-| Nombre              | Qué es                                            | Notas                                                                                                                                                                                                     |
-| ------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `atr`               | Rango verdadero medio, con el suavizado de Wilder | **Lee barras completas: úsalo en una estrategia `kline`.** En una estrategia `ticker` sus valores no son los de la barra y no significan nada. `atr()` registra `atr14`. Es gratuito: no existe `pro.atr` |
-| `stdDev`            | Desviación típica                                 |                                                                                                                                                                                                           |
-| `variance`          | Varianza                                          |                                                                                                                                                                                                           |
-| `volatility`        | Media de la frecuencia con que cambia el precio   | `volatility(5)` registra `vol5`                                                                                                                                                                           |
-| `percentVolatility` | Lo mismo, como porcentaje                         | `percentVolatility(5)` registra `pvol5`                                                                                                                                                                   |
+| Nombre              | Qué es                                            | Notas                                                                                                                                                                                        |
+| ------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `atr`               | Rango verdadero medio, con el suavizado de Wilder | **Lee barras completas: úsalo en una estrategia `kline`.** En una estrategia `ticker` sus valores no son los de la barra y no significan nada. `atr()` registra `atr14`. No existe `pro.atr` |
+| `stdDev`            | Desviación típica                                 |                                                                                                                                                                                              |
+| `variance`          | Varianza                                          |                                                                                                                                                                                              |
+| `volatility`        | Media de la frecuencia con que cambia el precio   | `volatility(5)` registra `vol5`                                                                                                                                                              |
+| `percentVolatility` | Lo mismo, como porcentaje                         | `percentVolatility(5)` registra `pvol5`                                                                                                                                                      |
 
 ## Distancia y cambio
 
-| Nombre          | Qué es                                                      | Notas                                   |
-| --------------- | ----------------------------------------------------------- | --------------------------------------- |
-| `distance`      | Distancia entre dos indicadores, `(a - b) / b`              |                                         |
-| `distanceMa`    | Distancia del precio a una media móvil, `(close - ma) / ma` |                                         |
-| `rateChange`    | Tasa de cambio                                              | La forma con `boolean` elige porcentaje |
-| `percentChange` | Cambio porcentual, tick a tick                              |                                         |
+| Nombre          | Qué es                                                                                 | Notas                                                                                                                                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `distance`      | Distancia entre dos indicadores en porcentaje, `100 * (a - b) / b`                     |                                                                                                                                                                                                        |
+| `distanceMa`    | Distancia del precio a una media móvil en porcentaje, `100 * (precio - media) / media` | Admite una SMA, una EMA o una MMA; `distanceMa("ema9")` registra `distema9`                                                                                                                            |
+| `rateChange`    | Cambio desde la actualización anterior, como fracción: 0.1 es un 10%                   | Una actualización atrás, sin periodo; la forma con `boolean` elige porcentaje. Dale un nombre: por defecto él y `percentChange` registran `chgprice` para el precio, y el segundo sustituye al primero |
+| `percentChange` | Cambio desde la actualización anterior, en porcentaje: 10 es un 10%                    | `rateChange` por 100. Dale un nombre, distinto de `chg`, que registra una estrategia ticker                                                                                                            |
 
 ## Conteo y extremos
 
-| Nombre | Qué es                            | Notas |
-| ------ | --------------------------------- | ----- |
-| `gain` | Periodos consecutivos de ganancia |       |
-| `loss` | Periodos consecutivos de pérdida  |       |
-| `max`  | Máximo acumulado                  |       |
-| `min`  | Mínimo acumulado                  |       |
-| `sum`  | Suma acumulada                    |       |
+| Nombre | Qué es                                                               | Notas                                                                                                                                                                 |
+| ------ | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gain` | La subida desde la actualización anterior, o 0                       | Un importe, no un recuento: el recuento de subidas consecutivas es `getPeriodCount()` en Java. Dale un nombre: `gain("price")` registra `_gainprice`, que está oculto |
+| `loss` | La bajada desde la actualización anterior, como número positivo, o 0 | Un importe, no un recuento, como `gain`. `loss("price")` registra `_lossprice`, que está oculto                                                                       |
+| `max`  | El valor más alto desde el inicio                                    | Sin ventana; `max("price")` registra `maxprice`. Sobre otro indicador incluye su calentamiento                                                                        |
+| `min`  | El valor más bajo desde el inicio                                    | Sin ventana; `min("price")` registra `minprice`. Sobre otro indicador incluye su calentamiento: el mínimo de un RSI es 0                                              |
+| `sum`  | El total desde el inicio                                             | Sin ventana; `sum("price")` registra `sumprice`. Sobre otro indicador incluye su calentamiento                                                                        |
 
 ## Aritmética, transformaciones y comparaciones
 
@@ -147,5 +147,5 @@ Cada uno recibe un factor de anualización como último argumento, opcional.
 
 Los métodos del builder que reciben una función (`predicate`, `fun`, `decorate`, `periodCount`) y `conditional` solo se pueden
 escribir en una estrategia Java. También las clases de indicadores que no son nombres del builder: el motor Java tiene muchas
-más, gratuitas y pro (un z-score, Aroon, el ratio de Sharpe y otras), y el
+más, pro incluidas (un z-score, Aroon, el ratio de Sharpe y otras), y el
 [catálogo de indicadores Java](/docs/strategies/java/indicators) las lista con el paquete de cada una.

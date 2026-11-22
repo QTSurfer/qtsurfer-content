@@ -68,6 +68,12 @@ The pages are grouped as the catalogues group the indicators:
   [Sortino ratio](/docs/indicators/risk/sortinoRatio), [omega ratio](/docs/indicators/risk/omegaRatio),
   [Calmar ratio](/docs/indicators/risk/calmarRatio), [maximum drawdown](/docs/indicators/risk/maxDrawdown),
   [Ulcer index](/docs/indicators/risk/ulcerIndex) and [tail ratio](/docs/indicators/risk/tailRatio).
+- [Distance and change](/docs/indicators/change): the [change rate](/docs/indicators/change/rateChange) and the
+  [percent change](/docs/indicators/change/percentChange) since the update before, the [distance](/docs/indicators/change/distance) between two
+  indicators and the [distance from an average](/docs/indicators/change/distanceMa).
+- [Gains, losses and extremes](/docs/indicators/extremes): the [gain](/docs/indicators/extremes/gain), the [loss](/docs/indicators/extremes/loss), and the
+  [maximum](/docs/indicators/extremes/max), the [minimum](/docs/indicators/extremes/min) and the [sum](/docs/indicators/extremes/sum) since the start.
+- [Operators](/docs/indicators/operators): add, subtract, multiply, limit and round indicators, on one page with no chart.
 
 For every indicator a strategy can call, with its forms and the names it registers, see the catalogues:
 [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators).

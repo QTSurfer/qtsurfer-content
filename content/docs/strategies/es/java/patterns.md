@@ -4,7 +4,7 @@ description: Aplica filtros, salidas, transiciones de estado y cálculos a nivel
 order: 4
 lastUpdated: '2026-11-16T20:20:30Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5d3c0a2df425f77bc377fce133edf2cc706a3193
+upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
 ---
 
@@ -24,14 +24,18 @@ señal cruda
 
 ```java
 indicators
-    .add("cruda", TickerValueSource.Close)
+    .ema("ema60", 60)
+    .ema("ema500", 500)
     .distance("distemas", "ema60", "ema500")
-    .clamp("distemas", v -> Math.abs(v) <= 0.1, 0.0)
-    .percentChange("cambioDistemas")
-    .conditional("suaveDistemas", "cambioDistemas", v -> v != 0,
-        indicators.getReadOnlyExisting("ema500"), zeroIndicator)
+    .clamp("distemasLimpia", "distemas", v -> Math.abs(v) <= 0.1, 0.0)
+    .percentChange("cambioDistemas", "distemasLimpia")
+    .conditional("suaveDistemas", "cambioDistemas", ind -> ind.getValue() != 0, new EmaRTIndicator(500))
     .window("suaveDistemas", WindowTime.s1, new DetectorListener(this, indicators));
 ```
+
+La media es una instancia propia (`com.wualabs.qtsurfer.engine.indicators.averages.EmaRTIndicator`): una vista de solo
+lectura de un indicador registrado ignora lo que se le da. Sin rama alternativa el resultado conserva su valor mientras el
+cambio es 0.
 
 **Por qué:** las señales crudas de distancia entre EMA tienen demasiado ruido para decisiones
 fiables. El condicional evita que el relleno con ceros diluya la EMA cuando no hay un cambio
@@ -49,12 +53,17 @@ indicators
     .ema("ema60", 60)
     .ema("ema500", 500)
     .ema("ema2500", 2500)
+    .ema("ema7500", 7500)
     .distance("distCorta", "ema60", "ema500")   // momento a corto plazo
     .distance("distLarga", "ema500", "ema2500") // tendencia a medio plazo
-    .gain("rachaLarga", "ema7500");               // tendencia alcista macro
+    .gain("subidaLarga", "ema7500");              // tendencia alcista macro
+
+// El valor de una subida es su tamaño. La racha es su contador:
+long rachaMacro = ((GainRTIndicator) indicators.getExisting("subidaLarga")).getPeriodCount();
 ```
 
-**Puerta de entrada:** `distLarga >= 0,35` Y `distCorta` en subida Y racha macro >= 300.
+**Puerta de entrada:** `distLarga >= 0,35` Y `distCorta` en subida Y racha macro >= 300, con la racha leída en el
+listener en cada cambio (`GainRTIndicator` está en `com.wualabs.qtsurfer.engine.indicators.helpers`).
 
 ---
 

@@ -7,7 +7,7 @@ lastUpdated: '2026-11-12T21:10:07Z'
 
 En los catálogos de QTSurfer, las estadísticas son `exactVariance`, `exactStdDev`, `zScore`, `skewness`, `kurtosis`, `linearRegressionSlope`, `simpleLinearRegression`, `rollingPercentile`, `valueAtRisk`, `autocorrelation` y `hurstExponent`: describen cómo se reparten y qué forma tienen los últimos precios, o los últimos rendimientos. Todas son indicadores pro: vienen con los planes Pro y Elite, y una estrategia los trae con una línea `uses`. Leen un solo precio, así que sirven en una estrategia `ticker` o `kline`.
 
-- [Varianza exacta](/docs/indicators/statistics/exactVariance) y [desviación típica exacta](/docs/indicators/statistics/exactStdDev): la dispersión de los últimos precios, dividiendo por `N` donde las libres dividen por `N − 1`.
+- [Varianza exacta](/docs/indicators/statistics/exactVariance) y [desviación típica exacta](/docs/indicators/statistics/exactStdDev): la dispersión de los últimos precios, dividiendo por `N` donde `variance` y `stdDev` dividen por `N − 1`.
 - [Puntuación z](/docs/indicators/statistics/zScore): a cuántas desviaciones está el último precio de la media de la ventana.
 - [Asimetría](/docs/indicators/statistics/skewness) y [curtosis](/docs/indicators/statistics/kurtosis): cuán desequilibrada está la ventana, y cuán pesadas son sus colas, frente a una distribución normal.
 - [Pendiente de la regresión lineal](/docs/indicators/statistics/linearRegressionSlope) y [regresión lineal simple](/docs/indicators/statistics/simpleLinearRegression): la recta que mejor ajusta la ventana, y lo bien que ajusta.

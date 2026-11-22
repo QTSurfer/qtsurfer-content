@@ -1,11 +1,10 @@
 ---
 title: QTScript indicators
-description: Every indicator a QTScript strategy can call, free and pro, grouped by kind.
+description: Every indicator a QTScript strategy can call, pro ones included, grouped by kind.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5d3c0a2df425f77bc377fce133edf2cc706a3193
+upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
-lastUpdated: '2026-11-16T20:20:30Z'
 ---
 
 Every indicator a `.qtscript` file can call, grouped by kind, with what each one computes. A line under `setup:` writes one
@@ -13,24 +12,24 @@ call by its bare name, like `ema(20)` or `atr(14)`.
 
 - **The arguments each name accepts** are the forms in the table under "What goes under `setup:`" in [the QTScript guide](/docs/strategies/qtscript#what-goes-under-setup).
   This page does not repeat them.
-- **Free** names work on every plan. There are 39.
+- The names that are not pro work on every plan. There are 39.
 - **Pro** names come with the Pro and Elite plans and need a `uses` line (see "The pro indicators: `uses`" in
   [the QTScript guide](/docs/strategies/qtscript#the-pro-indicators-uses), which has their forms and the names they register). There are 12.
 - Called without a name of its own, an indicator registers a name made from its own and its parameters: `rsi(14)` registers
   `rsi14`, `ema(9)` registers `ema9`, `wma(5)` registers `wma5`. Where the name is not that obvious, the notes give it.
 - A name that is on neither list, and a pro name whose `uses` line is missing, is rejected as `unknown indicator '<name>'`.
 
-| Group                 | Free names |
-| --------------------- | ---------: |
-| Averages              |          7 |
-| Oscillators           |          4 |
-| Bands                 |          3 |
-| Volatility            |          5 |
-| Distance and change   |          4 |
-| Counting and extremes |          5 |
-| Arithmetic            |          3 |
-| Transformations       |          2 |
-| Comparisons           |          6 |
+| Group                 | Names |
+| --------------------- | ----: |
+| Averages              |     7 |
+| Oscillators           |     4 |
+| Bands                 |     3 |
+| Volatility            |     5 |
+| Distance and change   |     4 |
+| Counting and extremes |     5 |
+| Arithmetic            |     3 |
+| Transformations       |     2 |
+| Comparisons           |     6 |
 
 ## Averages
 
@@ -63,32 +62,32 @@ call by its bare name, like `ema(20)` or `atr(14)`.
 
 ## Volatility
 
-| Name                | What it is                                  | Notes                                                                                                                                                                                  |
-| ------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `atr`               | Average true range, with Wilder's smoothing | **Reads whole bars: use it in a `kline` strategy.** On a `ticker` strategy its values are not the bar's and mean nothing. `atr()` registers `atr14`. It is free: there is no `pro.atr` |
-| `stdDev`            | Standard deviation                          |                                                                                                                                                                                        |
-| `variance`          | Variance                                    |                                                                                                                                                                                        |
-| `volatility`        | Average of how often the price changes      | `volatility(5)` registers `vol5`                                                                                                                                                       |
-| `percentVolatility` | The same as a percentage                    | `percentVolatility(5)` registers `pvol5`                                                                                                                                               |
+| Name                | What it is                                  | Notes                                                                                                                                                                      |
+| ------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `atr`               | Average true range, with Wilder's smoothing | **Reads whole bars: use it in a `kline` strategy.** On a `ticker` strategy its values are not the bar's and mean nothing. `atr()` registers `atr14`. There is no `pro.atr` |
+| `stdDev`            | Standard deviation                          |                                                                                                                                                                            |
+| `variance`          | Variance                                    |                                                                                                                                                                            |
+| `volatility`        | Average of how often the price changes      | `volatility(5)` registers `vol5`                                                                                                                                           |
+| `percentVolatility` | The same as a percentage                    | `percentVolatility(5)` registers `pvol5`                                                                                                                                   |
 
 ## Distance and change
 
-| Name            | What it is                                                       | Notes                              |
-| --------------- | ---------------------------------------------------------------- | ---------------------------------- |
-| `distance`      | Distance between two indicators, `(a - b) / b`                   |                                    |
-| `distanceMa`    | Distance of the price from a moving average, `(close - ma) / ma` |                                    |
-| `rateChange`    | Rate of change                                                   | The `boolean` form chooses percent |
-| `percentChange` | Percent change, tick over tick                                   |                                    |
+| Name            | What it is                                                                        | Notes                                                                                                                                                                                       |
+| --------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `distance`      | Distance between two indicators in percent, `100 * (a - b) / b`                   |                                                                                                                                                                                             |
+| `distanceMa`    | Distance of the price from a moving average in percent, `100 * (price - ma) / ma` | Takes an SMA, an EMA or an MMA; `distanceMa("ema9")` registers `distema9`                                                                                                                   |
+| `rateChange`    | Change from the update before, as a fraction: 0.1 is 10%                          | One update back, no period; the `boolean` form chooses percent. Give it a name: by default it and `percentChange` both register `chgprice` for the price, and the second replaces the first |
+| `percentChange` | Change from the update before, in percent: 10 is 10%                              | `rateChange` times 100. Give it a name, other than `chg`, which a ticker strategy registers                                                                                                 |
 
 ## Counting and extremes
 
-| Name   | What it is                  | Notes |
-| ------ | --------------------------- | ----- |
-| `gain` | Consecutive periods of gain |       |
-| `loss` | Consecutive periods of loss |       |
-| `max`  | Running maximum             |       |
-| `min`  | Running minimum             |       |
-| `sum`  | Running sum                 |       |
+| Name   | What it is                                                   | Notes                                                                                                                                                         |
+| ------ | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gain` | The rise since the update before, or 0                       | An amount, not a count: the count of consecutive rises is `getPeriodCount()` in Java. Give it a name: `gain("price")` registers `_gainprice`, which is hidden |
+| `loss` | The fall since the update before, as a positive number, or 0 | An amount, not a count, like `gain`. `loss("price")` registers `_lossprice`, which is hidden                                                                  |
+| `max`  | The highest value since the start                            | No window; `max("price")` registers `maxprice`. Over another indicator it includes its warm-up                                                                |
+| `min`  | The lowest value since the start                             | No window; `min("price")` registers `minprice`. Over another indicator it includes its warm-up: the minimum of an RSI is 0                                    |
+| `sum`  | The total since the start                                    | No window; `sum("price")` registers `sumprice`. Over another indicator it includes its warm-up                                                                |
 
 ## Arithmetic, transformations and comparisons
 
@@ -147,6 +146,6 @@ Each takes an annualization factor as its last, optional argument.
 ## What QTScript cannot call
 
 The builder methods that take a function (`predicate`, `fun`, `decorate`, `periodCount`) and `conditional` can only be written
-in a Java strategy. So can the indicator classes that are not builder names: the Java engine has many more, free and pro (a
+in a Java strategy. So can the indicator classes that are not builder names: the Java engine has many more, pro ones included (a
 z-score, Aroon, the Sharpe ratio and others), and the [Java indicator catalogue](/docs/strategies/java/indicators) lists them with the
 package each lives in.

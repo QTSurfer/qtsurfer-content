@@ -3,9 +3,8 @@ title: Strategy examples
 description: Use complete Java strategies that demonstrate the supported lifecycle.
 order: 5
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5d3c0a2df425f77bc377fce133edf2cc706a3193
+upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-java-strategy/references/examples.md
-lastUpdated: '2026-11-16T20:20:30Z'
 ---
 
 ## 1. EMA Crossover (update loop)

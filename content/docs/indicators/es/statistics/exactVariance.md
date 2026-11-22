@@ -1,6 +1,6 @@
 ---
 title: "Varianza exacta"
-description: "Cómo la varianza exacta mide la dispersión de los últimos precios, dividiendo por N donde la varianza libre divide por N menos 1, y cómo usarla en una estrategia de QTSurfer."
+description: "Cómo la varianza exacta mide la dispersión de los últimos precios, dividiendo por N donde variance divide por N menos 1, y cómo usarla en una estrategia de QTSurfer."
 order: 7.01
 lastUpdated: '2026-11-12T18:54:41Z'
 ---
@@ -23,7 +23,7 @@ El motor la calcula a partir de los últimos `N` precios en cada actualización,
 
 ## Cómo leerla
 
-- **Es la varianza libre vista desde el otro lado.** La [varianza](/docs/indicators/volatility/variance) libre es esta multiplicada por `N / (N − 1)`: 1,053 con periodo 20, en cada barra de las series reales del gráfico.
+- **Es `variance` vista desde el otro lado.** La [varianza](/docs/indicators/volatility/variance) de `variance` es esta multiplicada por `N / (N − 1)`: 1,053 con periodo 20, en cada barra de las series reales del gráfico.
 - **Rara vez se lee por sí sola.** Sus unidades son el cuadrado de las del precio, así que su tamaño dice poco a simple vista; la [desviación típica exacta](/docs/indicators/statistics/exactStdDev) es su raíz cuadrada, en las unidades del precio.
 - **Nunca baja de 0**, y vale 0 en una ventana que no se mueve.
 
@@ -35,7 +35,7 @@ setup:
   exactVariance(20)
 ```
 
-`exactVariance(20)` registra `xvar20`. El motor divide por `N − 1` en su lugar cuando se activa su indicador de muestra (`withSampleVariance(true)` en Java), lo que da la varianza libre. En Java la clase es `VarianceRTIndicator`, en `com.wualabs.qtsurfer.engine.indicators.statistics.pro`, y un grupo la recibe con `indicators.add("xvar20", new VarianceRTIndicator(20))`.
+`exactVariance(20)` registra `xvar20`. El motor divide por `N − 1` en su lugar cuando se activa su indicador de muestra (`withSampleVariance(true)` en Java), lo que da el valor de `variance`. En Java la clase es `VarianceRTIndicator`, en `com.wualabs.qtsurfer.engine.indicators.statistics.pro`, y un grupo la recibe con `indicators.add("xvar20", new VarianceRTIndicator(20))`.
 
 Este es un indicador pro: viene con los planes Pro y Elite, y una estrategia lo trae con una línea `uses` (consulta [la guía de QTScript](/docs/strategies/qtscript#the-pro-indicators-uses)). Lee un solo precio, el último de un ticker o el cierre de una vela, así que sirve en los dos tipos de estrategia.
 
@@ -43,7 +43,7 @@ El periodo es un parámetro, así que un [barrido de parámetros](/learn/article
 
 ## Relacionado
 
-- [Varianza](/docs/indicators/volatility/variance): la varianza libre, que divide por N − 1.
+- [Varianza](/docs/indicators/volatility/variance): `variance`, que divide por N − 1.
 - [Desviación típica exacta](/docs/indicators/statistics/exactStdDev): su raíz cuadrada, en las unidades del precio.
 - [Puntuación z](/docs/indicators/statistics/zScore): cuánto se aleja el último precio de la media, en desviaciones.
 - [Indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators): todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran.

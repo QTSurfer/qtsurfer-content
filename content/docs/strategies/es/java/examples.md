@@ -4,7 +4,7 @@ description: Usa estrategias Java completas que muestran el ciclo de vida admiti
 order: 5
 lastUpdated: '2026-11-16T20:20:30Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5d3c0a2df425f77bc377fce133edf2cc706a3193
+upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-java-strategy/references/examples.md
 ---
 

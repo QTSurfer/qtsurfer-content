@@ -68,6 +68,12 @@ Las páginas se agrupan como los catálogos agrupan los indicadores:
   [ratio de Sortino](/docs/indicators/risk/sortinoRatio), [ratio omega](/docs/indicators/risk/omegaRatio),
   [ratio de Calmar](/docs/indicators/risk/calmarRatio), [caída máxima](/docs/indicators/risk/maxDrawdown),
   [índice de úlcera](/docs/indicators/risk/ulcerIndex) y [ratio de colas](/docs/indicators/risk/tailRatio).
+- [Distancia y cambio](/docs/indicators/change): la [tasa de cambio](/docs/indicators/change/rateChange) y el
+  [cambio porcentual](/docs/indicators/change/percentChange) desde la actualización anterior, la [distancia](/docs/indicators/change/distance) entre dos
+  indicadores y la [distancia a una media](/docs/indicators/change/distanceMa).
+- [Subidas, bajadas y extremos](/docs/indicators/extremes): la [subida](/docs/indicators/extremes/gain), la [bajada](/docs/indicators/extremes/loss), y el
+  [máximo](/docs/indicators/extremes/max), el [mínimo](/docs/indicators/extremes/min) y la [suma](/docs/indicators/extremes/sum) desde el inicio.
+- [Operadores](/docs/indicators/operators): sumar, restar, multiplicar, limitar y redondear indicadores, en una página sin gráfico.
 
 Para todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran, consulta los
 catálogos: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e

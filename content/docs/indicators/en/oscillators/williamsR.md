@@ -25,7 +25,7 @@ It is the raw `%K` of the [stochastic oscillator](/docs/indicators/oscillators/s
 
 - **0 is a close at the top of the range and −100 a close at the bottom**, and −50 is the middle: a doji in the middle of its range reads −50.
 - **It has no smoothing, so it is nervous.** On the real series of the chart, at period 14, it is at or above −20 on 9 % to 21 % of the bars and at or below −80 on 14 % to 20 %.
-- **It is the stochastic oscillator before the averages**, so it reacts to every bar and, unlike the stochastic of the engine, it does not move in steps.
+- **It is the stochastic oscillator before the averages**, so it moves faster and is noisier than the smoothed `%K`.
 
 ## In a strategy
 

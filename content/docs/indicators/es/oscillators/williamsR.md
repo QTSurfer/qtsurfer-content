@@ -25,7 +25,7 @@ Es el `%K` bruto del [oscilador estocástico](/docs/indicators/oscillators/stoch
 
 - **0 es un cierre en lo alto del rango y −100 un cierre en el fondo**, y −50 es el medio: un doji a media altura de su rango lee −50.
 - **No tiene suavizado, así que es nervioso.** En las series reales del gráfico, con periodo 14, está en −20 o por encima en del 9 % al 21 % de las barras y en −80 o por debajo en del 14 % al 20 %.
-- **Es el oscilador estocástico antes de las medias**, así que reacciona a cada barra y, a diferencia del estocástico del motor, no se mueve a saltos.
+- **Es el oscilador estocástico antes de las medias**, así que se mueve más deprisa y es más ruidoso que el `%K` suavizado.
 
 ## En una estrategia
 

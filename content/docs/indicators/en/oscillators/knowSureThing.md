@@ -1,6 +1,6 @@
 ---
 title: "Know sure thing (KST)"
-description: "How the know sure thing adds four smoothed rates of change of different lengths, with its signal line, why the engine's version moves in steps, and how to use it in a QTSurfer strategy."
+description: "How the know sure thing adds four smoothed rates of change of different lengths, with its signal line, from which update both are warm, and how to use it in a QTSurfer strategy."
 order: 2.47
 lastUpdated: '2026-11-12T21:21:22Z'
 ---
@@ -20,13 +20,13 @@ KST    = 1 × SMA₁₀(ROC₁₀) + 2 × SMA₁₀(ROC₁₅) + 3 × SMA₁₀(
 Signal = SMA₉(KST)
 ```
 
-The first value is on update 31, when the longest rate of change is ready, and the chart draws from there. **The engine smooths with its default simple average, the [discrete](/docs/indicators/averages/sma) one**, which takes the mean of a complete block and holds it until the next block is complete, where Pring's design uses a moving average. So the KST and its signal move in steps: on the real series of the chart, 87 % of the bars repeat the previous value of the KST, and 89 % that of the signal.
+The first value is on update 31, when the longest rate of change is ready, and the chart draws from there. The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in Pring's design. **They are not warm yet on update 31**: they still hold the zeros the rates give while warming up. The KST is Pring's from update 45 and its signal from 53, so leave the values before those out of a rule.
 
 ## Reading it
 
 - **The zero line is the sign of the combined momentum**, and the longest rate counts four times what the shortest does, so the KST follows the slow trend more than the fast one.
-- **The signal is its average.** The KST crossing its signal is the usual trigger; on the real series of the chart the two cross 15 to 18 times in the 270 bars drawn.
-- **Its scale depends on the instrument**: on the real series of the chart it goes from −178 to 171 on the daily BTC/USDT and from −40 to 11 on the 15-minute ETH/USDT.
+- **The signal is its average.** The KST crossing its signal is the usual trigger. On the real series of the chart the two cross 13 to 16 times in the 248 bars from update 53.
+- **Its scale depends on the instrument**: on the real series of the chart, from update 45, it goes from −178 to 210 on the daily BTC/USDT and from −33 to 11 on the 15-minute ETH/USDT.
 
 ## In a strategy
 
@@ -43,6 +43,6 @@ This is a pro indicator: it comes with the Pro and Elite plans, and a strategy b
 ## Related
 
 - [Rate of change](/docs/indicators/oscillators/roc): the rate of change it adds four times.
-- [Simple moving average](/docs/indicators/averages/sma): the discrete average it smooths with, explained there.
+- [Simple moving average](/docs/indicators/averages/sma): the average it smooths with, in its moving mode.
 - [Coppock curve](/docs/indicators/oscillators/coppockCurve): another sum of smoothed rates of change.
 - [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators): every indicator a strategy can call, with its forms and the names it registers.

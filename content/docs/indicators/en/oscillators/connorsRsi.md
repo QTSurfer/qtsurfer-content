@@ -17,11 +17,11 @@ The series are samples, synthetic ones and real crypto ones. They show how the i
 
 ```text
 streak = consecutive closes up (+1, +2, …) or down (−1, −2, …), 0 when the close is unchanged
-rank   = 100 × (the number of the last N returns at or below the latest − 1) / (N − 1)
+rank   = 100 × (the number of the last N returns strictly below the latest) / (N − 1)
 CRSI   = (RSI(price, 3) + RSI(streak, 2) + rank) / 3
 ```
 
-`N` is the rank period, 100 by default. The two RSIs are the engine's default [RSI](/docs/indicators/oscillators/rsi). The first value is on update `N + 1`, 101 with the defaults, and the chart draws from there; before it the line reads 0.
+`N` is the rank period, 100 by default. A return equal to the latest does not count as below it, so when all the returns are the same the rank is 0. The two RSIs are the engine's default [RSI](/docs/indicators/oscillators/rsi). The first value is on update `N + 1`, 101 with the defaults, and the chart draws from there; before it the line reads 0.
 
 ## Reading it
 

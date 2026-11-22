@@ -17,7 +17,7 @@ con sus parámetros de orden y, cuando una estrategia los necesita, `update()` e
 clases de indicador propias y tipos auxiliares.
 
 - [Estrategias en Java](/docs/strategies/java): el modelo, las clases base, la configuración, el estado, las señales y las propiedades.
-- [Indicadores en Java](/docs/strategies/java/indicators): el catálogo de indicadores gratuitos y pro, y cómo escribir el tuyo.
+- [Indicadores en Java](/docs/strategies/java/indicators): el catálogo de indicadores, pro incluidos, y cómo escribir el tuyo.
 - [Patrones de estrategia](/docs/strategies/java/patterns) y [ejemplos de estrategias](/docs/strategies/java/examples).
 - [Programar estrategias en Java](/docs/strategies/java/strategy_coding): la guía de la API para escribir Java.
 

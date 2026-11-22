@@ -18,7 +18,7 @@ order parameters and, when a strategy needs them, `update()` on every tick, logi
 classes and helper types.
 
 - [Java strategies](/docs/strategies/java): the model, base classes, setup, state, signals and properties.
-- [Java indicators](/docs/strategies/java/indicators): the catalogue of free and pro indicators, and how to write your own.
+- [Java indicators](/docs/strategies/java/indicators): the catalogue of indicators, pro ones included, and how to write your own.
 - [Strategy patterns](/docs/strategies/java/patterns) and [strategy examples](/docs/strategies/java/examples).
 - [Coding Java strategies](/docs/strategies/java/strategy_coding): the Java authoring guide of the API.
 

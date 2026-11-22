@@ -3,9 +3,8 @@ title: Strategy patterns
 description: Apply reusable filters, exits, state transitions, and market-wide calculations.
 order: 4
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5d3c0a2df425f77bc377fce133edf2cc706a3193
+upstreamCommit: cd69d1caa9f746d577cda3a2e43288de679e7702
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
-lastUpdated: '2026-11-16T20:20:30Z'
 ---
 
 Proven patterns extracted from production and backtested legacy strategies.
@@ -23,14 +22,17 @@ raw signal
 
 ```java
 indicators
-    .add("raw", TickerValueSource.Close)
+    .ema("ema60", 60)
+    .ema("ema500", 500)
     .distance("distemas", "ema60", "ema500")
-    .clamp("distemas", v -> Math.abs(v) <= 0.1, 0.0)
-    .percentChange("chgDistemas")
-    .conditional("smoothDistemas", "chgDistemas", v -> v != 0,
-        indicators.getReadOnlyExisting("ema500"), zeroIndicator)
+    .clamp("cleanDistemas", "distemas", v -> Math.abs(v) <= 0.1, 0.0)
+    .percentChange("chgDistemas", "cleanDistemas")
+    .conditional("smoothDistemas", "chgDistemas", ind -> ind.getValue() != 0, new EmaRTIndicator(500))
     .window("smoothDistemas", WindowTime.s1, new DetectorListener(this, indicators));
 ```
+
+The average is an instance of its own (`com.wualabs.qtsurfer.engine.indicators.averages.EmaRTIndicator`): a read-only view
+of a registered indicator ignores what it is fed. With no else branch the result keeps its value while the change is 0.
 
 **Why:** Raw EMA-distance signals have too much noise for reliable decisions. The conditional prevents zero-padding from diluting the EMA when there's no meaningful change.
 
@@ -45,12 +47,17 @@ indicators
     .ema("ema60", 60)
     .ema("ema500", 500)
     .ema("ema2500", 2500)
+    .ema("ema7500", 7500)
     .distance("shortDistemas", "ema60", "ema500")   // short-term momentum
     .distance("longDistemas",  "ema500", "ema2500") // medium-term trend
-    .gain("longStreakCount", "ema7500");              // macro uptrend
+    .gain("longGain", "ema7500");                     // macro uptrend
+
+// The value of a gain is the size of the rise. The streak is its counter:
+long macroStreak = ((GainRTIndicator) indicators.getExisting("longGain")).getPeriodCount();
 ```
 
-**Entry gate:** `longDistemas >= 0.35` AND `shortDistemas` rising AND macro streak >= 300.
+**Entry gate:** `longDistemas >= 0.35` AND `shortDistemas` rising AND macro streak >= 300, with the streak read in the
+listener on each change (`GainRTIndicator` is in `com.wualabs.qtsurfer.engine.indicators.helpers`).
 
 ---
 

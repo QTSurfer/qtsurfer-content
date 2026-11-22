@@ -3,7 +3,7 @@ title: Indicadores de QTScript
 description: Todos los indicadores que puede llamar una estrategia QTScript, pro incluidos, agrupados por tipo.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: cd69d1caa9f746d577cda3a2e43288de679e7702
+upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
 lastUpdated: "2026-11-16T20:20:30Z"
 ---

@@ -3,7 +3,7 @@ title: Strategy patterns
 description: Apply reusable filters, exits, state transitions, and market-wide calculations.
 order: 4
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: cd69d1caa9f746d577cda3a2e43288de679e7702
+upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
 ---
 

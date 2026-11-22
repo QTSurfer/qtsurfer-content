@@ -1,6 +1,6 @@
 ---
 title: "Suma"
-description: "Cómo sum acumula todos los valores desde el inicio, sobre qué fuentes tiene sentido y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo la suma acumula todos los valores desde el inicio, sobre qué fuentes tiene sentido y cómo usarla en una estrategia de QTSurfer."
 order: 10.05
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

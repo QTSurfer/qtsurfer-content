@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: 189eafeebe6c73cb7c491c928d95665f8ee86320
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---
@@ -154,35 +154,108 @@ ocurre con `value("nombre")`, que lee un indicador dentro de un cuerpo `{ }` y n
 Los indicadores pro no están en la lista de arriba. Un fichero los trae con una línea `uses`, y luego los llama en `setup:`
 por su nombre sin más, como cualquier otro indicador.
 
-- `uses pro.*` trae los doce. `uses pro.adx, pro.ichimoku` trae solo esos. Varias líneas `uses` se suman. Escríbelas junto
+- `uses pro.*` trae los setenta y seis. `uses pro.adx, pro.ichimoku` trae solo esos. Varias líneas `uses` se suman. Escríbelas junto
   a `param` e `instruments`, antes de `setup:`.
 - Solo los nombres que trae una línea `uses` son pro. Con `uses pro.obv`, una llamada a `adx(14)` sigue siendo `unknown
   indicator 'adx'`, indicado en la línea de la llamada. Los nombres propios del builder (`ema`, `rsi` y el resto de la
   lista de arriba) nunca son pro.
 - `pro` es el único conjunto que existe. `uses` es una palabra reservada: un fichero no puede tener un `param` ni una
   sección llamados `uses`.
-- Once de los doce indicadores pro leen barras enteras, así que úsalos en una estrategia [`kline`](#velas). En una estrategia
-  `ticker` sus valores no son los de la barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del
-  motor que lo dice. `kurtosis` es la excepción: lee el cierre, así que significa algo en una estrategia `ticker` y no emite
-  aviso.
+- Treinta y seis de los setenta y seis indicadores pro leen barras enteras (la última columna de la tabla dice cuáles), así que
+  úsalos en una estrategia [`kline`](#velas). En una estrategia `ticker` sus valores no son los de la barra y no significan nada,
+  y validar o ejecutar la estrategia devuelve un aviso del motor que lo dice. Los otros cuarenta leen el cierre, así que
+  significan algo en una estrategia `ticker` y no emiten aviso.
 - Una línea pro es una línea `setup:` normal: una llamada por línea, con una ventana detrás como de costumbre.
 - Los backtests, los barridos (con walk-forward incluido), [`validate`](/docs/developers/api/strategy#comprobar-que-realmente-funciona) y las
   ejecuciones en vivo ejecutan los indicadores pro.
 
-| Indicador | Formas | Registra, con los argumentos por defecto | También registra |
-|---|---|---|---|
-| `adx` | `adx()` · `adx(int)` · `adx(String, int)` | `adx14` | `adx14PlusDI` · `adx14MinusDI` |
-| `superTrend` | `superTrend()` · `superTrend(int, double)` · `superTrend(String)` · `superTrend(String, int, double)` | `st10_3` | `st10_3Upper` · `st10_3Lower` |
-| `ichimoku` | `ichimoku()` · `ichimoku(int, int, int)` · `ichimoku(String)` · `ichimoku(String, int, int, int)` | `ichi9_26_52`, la línea Tenkan | `ichi9_26_52Kijun` · `ichi9_26_52SenkouA` · `ichi9_26_52SenkouB` · `ichi9_26_52Chikou` |
-| `obv` | `obv()` · `obv(String)` | `obv` | |
-| `vwap` | `vwap()` · `vwap(String)` | `vwap` | |
-| `mfi` | `mfi()` · `mfi(int)` · `mfi(String, int)` | `mfi14` | |
-| `cmf` | `cmf()` · `cmf(int)` · `cmf(String, int)` | `cmf20` | |
-| `kurtosis` | `kurtosis(int)` · `kurtosis(String, int)` | `kurt20` (el periodo es obligatorio; lee el cierre) | |
-| `parkinson` | `parkinson(int)` · `parkinson(String, int)` · `parkinson(String, int, double)` | `park20` | |
-| `garmanKlass` | `garmanKlass(int)` · `garmanKlass(String, int)` · `garmanKlass(String, int, double)` | `gk20` | |
-| `rogersSatchell` | `rogersSatchell(int)` · `rogersSatchell(String, int)` · `rogersSatchell(String, int, double)` | `rs20` | |
-| `yangZhang` | `yangZhang(int)` · `yangZhang(String, int)` · `yangZhang(String, int, double)` | `yz20` | |
+| Indicador | Formas | Registra, con los argumentos por defecto | También registra | Lee |
+|---|---|---|---|---|
+| `acceleratorOscillator` | `acceleratorOscillator()` · `acceleratorOscillator(String)` · `acceleratorOscillator(String, boolean)` | `acc` |  | barras |
+| `adaptiveFisherTransform` | `adaptiveFisherTransform()` · `adaptiveFisherTransform(String)` · `adaptiveFisherTransform(int, int, int)` · `adaptiveFisherTransform(String, int, int, int)` | `afisher10_5_20` |  | cierre |
+| `adl` | `adl()` · `adl(String)` | `adl` |  | barras |
+| `adx` | `adx()` · `adx(int)` · `adx(String, int)` | `adx14` | `adx14PlusDI` · `adx14MinusDI` | barras |
+| `alma` | `alma(int)` · `alma(String, int)` · `alma(String, int, double, double)` | `alma14`, de `alma(14)` (no hay forma sin argumentos) |  | cierre |
+| `aroon` | `aroon()` · `aroon(String)` · `aroon(int)` · `aroon(String, int)` | `aroon25` | `aroon25Up` · `aroon25Down` | barras |
+| `autocorrelation` | `autocorrelation(int)` · `autocorrelation(String, int)` | `acf14`, de `autocorrelation(14)` (no hay forma sin argumentos) |  | cierre |
+| `awesomeOscillator` | `awesomeOscillator()` · `awesomeOscillator(String)` · `awesomeOscillator(int, int)` · `awesomeOscillator(String, int, int)` · `awesomeOscillator(String, int, int, boolean)` | `ao5_34` |  | barras |
+| `balanceOfPower` | `balanceOfPower()` · `balanceOfPower(String)` | `bop` |  | barras |
+| `bullBearPower` | `bullBearPower()` · `bullBearPower(String)` · `bullBearPower(int)` · `bullBearPower(String, int)` | `bbp13` | `bbp13Bull` · `bbp13Bear` | barras |
+| `calmarRatio` | `calmarRatio(int)` · `calmarRatio(String, int)` · `calmarRatio(String, int, double)` | `calmar14`, de `calmarRatio(14)` (no hay forma sin argumentos) |  | cierre |
+| `chaikinOscillator` | `chaikinOscillator()` · `chaikinOscillator(String)` · `chaikinOscillator(int, int)` · `chaikinOscillator(String, int, int)` | `chaikin3_10` |  | barras |
+| `chandeForecastOscillator` | `chandeForecastOscillator()` · `chandeForecastOscillator(String)` · `chandeForecastOscillator(int)` · `chandeForecastOscillator(String, int)` | `cfo14` |  | cierre |
+| `chandeKrollStop` | `chandeKrollStop()` · `chandeKrollStop(String)` · `chandeKrollStop(int, double, int, int)` · `chandeKrollStop(String, int, double, int, int)` | `cks10_1_9_9` | `cks10_1_9_9StopShort` | barras |
+| `chandelierExit` | `chandelierExit()` · `chandelierExit(String)` · `chandelierExit(int, double)` · `chandelierExit(String, int, double)` | `chand22_3` | `chand22_3ShortExit` | barras |
+| `choppinessIndex` | `choppinessIndex()` · `choppinessIndex(String)` · `choppinessIndex(int)` · `choppinessIndex(String, int)` | `chop14` |  | barras |
+| `cmf` | `cmf()` · `cmf(int)` · `cmf(String, int)` | `cmf20` |  | barras |
+| `cmo` | `cmo()` · `cmo(String)` · `cmo(int)` · `cmo(String, int)` | `cmo14` |  | cierre |
+| `connorsRsi` | `connorsRsi()` · `connorsRsi(String)` · `connorsRsi(int, int, int)` · `connorsRsi(String, int, int, int)` · `connorsRsi(String, int, int, int, boolean)` | `crsi3_2_100` |  | cierre |
+| `coppockCurve` | `coppockCurve()` · `coppockCurve(String)` · `coppockCurve(int, int, int)` · `coppockCurve(String, int, int, int)` | `coppock14_11_10` |  | cierre |
+| `dema` | `dema(int)` · `dema(String, int)` | `dema14`, de `dema(14)` (no hay forma sin argumentos) |  | cierre |
+| `detrendedPriceOscillator` | `detrendedPriceOscillator()` · `detrendedPriceOscillator(String)` · `detrendedPriceOscillator(int)` · `detrendedPriceOscillator(String, int)` | `dpo20` |  | cierre |
+| `donchianChannel` | `donchianChannel()` · `donchianChannel(String)` · `donchianChannel(int)` · `donchianChannel(String, int)` | `donch20` | `donch20Upper` · `donch20Lower` | barras |
+| `easeOfMovement` | `easeOfMovement()` · `easeOfMovement(String)` · `easeOfMovement(int)` · `easeOfMovement(String, int)` | `eom14` |  | barras |
+| `efficiencyRatio` | `efficiencyRatio()` · `efficiencyRatio(String)` · `efficiencyRatio(int)` · `efficiencyRatio(String, int)` | `er10` |  | cierre |
+| `elderForceIndex` | `elderForceIndex()` · `elderForceIndex(String)` · `elderForceIndex(int)` · `elderForceIndex(String, int)` | `efi13` |  | barras |
+| `envelopes` | `envelopes()` · `envelopes(String)` · `envelopes(int, double)` · `envelopes(String, int, double)` | `env20_2.5` | `env20_2.5Upper` · `env20_2.5Lower` | cierre |
+| `ewmaVolatility` | `ewmaVolatility()` · `ewmaVolatility(String)` · `ewmaVolatility(double)` · `ewmaVolatility(String, double)` · `ewmaVolatility(String, double, double)` | `ewma0.94` |  | cierre |
+| `exactStdDev` | `exactStdDev(int)` · `exactStdDev(String, int)` · `exactStdDev(String, int, boolean)` | `xstd14`, de `exactStdDev(14)` (no hay forma sin argumentos) |  | cierre |
+| `exactVariance` | `exactVariance(int)` · `exactVariance(String, int)` · `exactVariance(String, int, boolean)` | `xvar14`, de `exactVariance(14)` (no hay forma sin argumentos) |  | cierre |
+| `fisherTransform` | `fisherTransform()` · `fisherTransform(String)` · `fisherTransform(int)` · `fisherTransform(String, int)` | `fisher10` |  | cierre |
+| `frama` | `frama()` · `frama(String)` · `frama(int)` · `frama(String, int)` | `frama20` |  | cierre |
+| `garmanKlass` | `garmanKlass(int)` · `garmanKlass(String, int)` · `garmanKlass(String, int, double)` | `gk14`, de `garmanKlass(14)` (no hay forma sin argumentos) |  | barras |
+| `hurstExponent` | `hurstExponent(int)` · `hurstExponent(String, int)` | `hurst14`, de `hurstExponent(14)` (no hay forma sin argumentos) |  | cierre |
+| `ichimoku` | `ichimoku()` · `ichimoku(String)` · `ichimoku(int, int, int)` · `ichimoku(String, int, int, int)` | `ichi9_26_52` | `ichi9_26_52Kijun` · `ichi9_26_52SenkouA` · `ichi9_26_52SenkouB` · `ichi9_26_52Chikou` | barras |
+| `keltnerChannel` | `keltnerChannel()` · `keltnerChannel(String)` · `keltnerChannel(int, int, double)` · `keltnerChannel(String, int, int, double)` | `kc20_10_1.5` | `kc20_10_1.5Upper` · `kc20_10_1.5Lower` | barras |
+| `klingerOscillator` | `klingerOscillator()` · `klingerOscillator(String)` | `klinger` | `klingerSignal` | barras |
+| `knowSureThing` | `knowSureThing()` · `knowSureThing(String)` · `knowSureThing(String, int[], int[], double[], int)` · `knowSureThing(String, int[], int[], double[], int, boolean)` | `kst` | `kstSignal` | cierre |
+| `kurtosis` | `kurtosis(int)` · `kurtosis(String, int)` | `kurt14`, de `kurtosis(14)` (no hay forma sin argumentos) |  | cierre |
+| `leastSquaresMovingAverage` | `leastSquaresMovingAverage()` · `leastSquaresMovingAverage(String)` · `leastSquaresMovingAverage(int)` · `leastSquaresMovingAverage(String, int)` | `lsma25` |  | cierre |
+| `linearRegressionSlope` | `linearRegressionSlope(int)` · `linearRegressionSlope(String, int)` | `lrs14`, de `linearRegressionSlope(14)` (no hay forma sin argumentos) | `lrs14Intercept` | cierre |
+| `massIndex` | `massIndex()` · `massIndex(String)` · `massIndex(int, int)` · `massIndex(String, int, int)` | `mass25_9` |  | barras |
+| `maxDrawdown` | `maxDrawdown()` · `maxDrawdown(String)` | `maxDd` | `maxDdCurrent` | cierre |
+| `mcGinleyDynamic` | `mcGinleyDynamic()` · `mcGinleyDynamic(String)` · `mcGinleyDynamic(int)` · `mcGinleyDynamic(String, int)` | `mcg14` |  | cierre |
+| `mfi` | `mfi()` · `mfi(int)` · `mfi(String, int)` | `mfi14` |  | barras |
+| `momentum` | `momentum()` · `momentum(String)` · `momentum(int)` · `momentum(String, int)` | `mom10` |  | cierre |
+| `natr` | `natr(int)` · `natr(String, int)` | `natr14`, de `natr(14)` (no hay forma sin argumentos) |  | barras |
+| `negativeVolumeIndex` | `negativeVolumeIndex()` · `negativeVolumeIndex(String)` | `nvi` |  | barras |
+| `obv` | `obv()` · `obv(String)` | `obv` |  | barras |
+| `omegaRatio` | `omegaRatio(int)` · `omegaRatio(String, int)` · `omegaRatio(String, int, double)` | `omega14`, de `omegaRatio(14)` (no hay forma sin argumentos) |  | cierre |
+| `parabolicSar` | `parabolicSar()` · `parabolicSar(String)` · `parabolicSar(double, double)` · `parabolicSar(String, double, double)` | `psar0.02_0.2` |  | barras |
+| `parkinson` | `parkinson(int)` · `parkinson(String, int)` · `parkinson(String, int, double)` | `park14`, de `parkinson(14)` (no hay forma sin argumentos) |  | barras |
+| `pvt` | `pvt()` · `pvt(String)` | `pvt` |  | barras |
+| `realizedVolatility` | `realizedVolatility(int)` · `realizedVolatility(String, int)` · `realizedVolatility(String, int, double)` | `rvol14`, de `realizedVolatility(14)` (no hay forma sin argumentos) |  | cierre |
+| `relativeVigorIndex` | `relativeVigorIndex()` · `relativeVigorIndex(String)` · `relativeVigorIndex(int)` · `relativeVigorIndex(String, int)` · `relativeVigorIndex(String, int, boolean)` | `rvgi10` |  | barras |
+| `relativeVolatilityIndex` | `relativeVolatilityIndex()` · `relativeVolatilityIndex(String)` · `relativeVolatilityIndex(int, int)` · `relativeVolatilityIndex(String, int, int)` | `rvi10_14` |  | cierre |
+| `roc` | `roc()` · `roc(String)` · `roc(int)` · `roc(String, int)` | `roc12` |  | cierre |
+| `rogersSatchell` | `rogersSatchell(int)` · `rogersSatchell(String, int)` · `rogersSatchell(String, int, double)` | `rs14`, de `rogersSatchell(14)` (no hay forma sin argumentos) |  | barras |
+| `rollingPercentile` | `rollingPercentile(int, double)` · `rollingPercentile(String, int, double)` | `pctl14_0.5`, de `rollingPercentile(14, 0.5)` (no hay forma sin argumentos) | `pctl14_0.5Median` · `pctl14_0.5Min` · `pctl14_0.5Max` | cierre |
+| `sharpeRatio` | `sharpeRatio(int)` · `sharpeRatio(String, int)` · `sharpeRatio(String, int, double)` · `sharpeRatio(String, int, double, double)` | `sharpe14`, de `sharpeRatio(14)` (no hay forma sin argumentos) |  | cierre |
+| `simpleLinearRegression` | `simpleLinearRegression(int)` · `simpleLinearRegression(String, int)` | `slr14`, de `simpleLinearRegression(14)` (no hay forma sin argumentos) | `slr14Intercept` · `slr14RSquared` · `slr14StandardError` | cierre |
+| `skewness` | `skewness(int)` · `skewness(String, int)` | `skew14`, de `skewness(14)` (no hay forma sin argumentos) |  | cierre |
+| `sortinoRatio` | `sortinoRatio(int)` · `sortinoRatio(String, int)` · `sortinoRatio(String, int, double)` · `sortinoRatio(String, int, double, double)` | `sortino14`, de `sortinoRatio(14)` (no hay forma sin argumentos) |  | cierre |
+| `stochasticOscillator` | `stochasticOscillator()` · `stochasticOscillator(String)` · `stochasticOscillator(int, int, int)` · `stochasticOscillator(String, int, int, int)` · `stochasticOscillator(String, int, int, int, boolean)` | `stoch14_3_3` | `stoch14_3_3D` | barras |
+| `superTrend` | `superTrend()` · `superTrend(String)` · `superTrend(int, double)` · `superTrend(String, int, double)` | `st10_3` | `st10_3Upper` · `st10_3Lower` | barras |
+| `tailRatio` | `tailRatio(int)` · `tailRatio(String, int)` · `tailRatio(String, int, double, double)` | `tail14`, de `tailRatio(14)` (no hay forma sin argumentos) |  | cierre |
+| `trix` | `trix()` · `trix(String)` · `trix(int)` · `trix(String, int)` | `trix15` |  | cierre |
+| `trueStrengthIndex` | `trueStrengthIndex()` · `trueStrengthIndex(String)` · `trueStrengthIndex(int, int)` · `trueStrengthIndex(String, int, int)` | `tsi25_13` |  | cierre |
+| `ulcerIndex` | `ulcerIndex(int)` · `ulcerIndex(String, int)` | `ulcer14`, de `ulcerIndex(14)` (no hay forma sin argumentos) |  | cierre |
+| `ultimateOscillator` | `ultimateOscillator()` · `ultimateOscillator(String)` | `uo` |  | barras |
+| `valueAtRisk` | `valueAtRisk(int)` · `valueAtRisk(String, int)` · `valueAtRisk(String, int, double)` · `valueAtRisk(String, int, double, double)` | `valRisk14`, de `valueAtRisk(14)` (no hay forma sin argumentos) |  | cierre |
+| `vortex` | `vortex()` · `vortex(String)` · `vortex(int)` · `vortex(String, int)` | `vortex14` | `vortex14ViPlus` · `vortex14ViMinus` | barras |
+| `vwap` | `vwap()` · `vwap(String)` | `vwap` |  | barras |
+| `williamsR` | `williamsR()` · `williamsR(String)` · `williamsR(int)` · `williamsR(String, int)` | `willr14` |  | barras |
+| `yangZhang` | `yangZhang(int)` · `yangZhang(String, int)` · `yangZhang(String, int, double)` | `yz14`, de `yangZhang(14)` (no hay forma sin argumentos) |  | barras |
+| `zScore` | `zScore(int)` · `zScore(String, int)` | `zscore14`, de `zScore(14)` (no hay forma sin argumentos) |  | cierre |
+
+`Lee` dice qué recibe el indicador: `barras` son barras enteras (apertura, máximo, mínimo, cierre y volumen) y `cierre` es el cierre de la
+barra, o el último precio en una estrategia `ticker`. Una fila que dice «no hay forma sin argumentos» no tiene una llamada con los paréntesis
+vacíos: el id que muestra es el que registra la llamada escrita ahí.
+
+Cinco de ellos, `knowSureThing`, `acceleratorOscillator`, `awesomeOscillator`, `relativeVigorIndex` y `stochasticOscillator`, suavizan con
+medias móviles por defecto. Su forma con un `boolean` al final conserva en su lugar las medias discretas cuando el valor es `true`, y `false`
+es el valor por defecto. `connorsRsi` suaviza sus dos RSI con las medias de Wilder por defecto; su forma con un `boolean` al final toma en su lugar las medias simples de Cutler cuando
+el valor es `true`, y `false` es el valor por defecto. En su rango percentil cuenta solo los valores estrictamente menores que el actual.
 
 El `double` de los cuatro estimadores de volatilidad es el factor de anualización. Con otros argumentos el nombre sigue el
 mismo patrón: `mfi(20)` registra `mfi20`, `kurtosis(30)` registra `kurt30`, `ichimoku(7, 22, 44)` registra

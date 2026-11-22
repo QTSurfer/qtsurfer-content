@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: 189eafeebe6c73cb7c491c928d95665f8ee86320
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---
@@ -498,7 +498,7 @@ en `com.wualabs.qtsurfer.engine.indicators.pro`: `Pro.on(indicators)` recibe el 
 [tabla de QTScript](/docs/strategies/qtscript#los-indicadores-pro-uses). `Pro.on(indicators).adx(14)` registra `adx14` y, a su lado,
 `adx14PlusDI` y `adx14MinusDI`. Una ventana va sobre el principal (`adx14`), y el listener lee los demás por nombre.
 
-Once de los doce leen barras enteras (`kurtosis` lee el cierre), así que úsalos en una estrategia kline. Esta compra cuando el
+Treinta y seis de los setenta y seis leen barras enteras (la [tabla de QTScript](/docs/strategies/qtscript#los-indicadores-pro-uses) dice cuáles), así que úsalos en una estrategia kline. Esta compra cuando el
 ADX dice que hay tendencia y la línea plus está por encima de la minus, y vende cuando está por debajo:
 
 ```java
@@ -548,9 +548,9 @@ public class AdxTrend extends AbstractKlineStrategy {
 }
 ```
 
-En una estrategia `ticker`, un indicador pro no se rechaza. Para los once que leen barras enteras, los valores no son los de la
-barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor que lo dice; `kurtosis` lee el
-cierre, así que significa algo ahí y no emite aviso.
+En una estrategia `ticker`, un indicador pro no se rechaza. Para los treinta y seis que leen barras enteras, los valores no son
+los de la barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor que lo dice; los otros
+cuarenta leen el cierre, así que significan algo ahí y no emiten aviso.
 
 Registrar una estrategia que los usa se acepta en cualquier plan, y la respuesta de `POST /strategy` lleva
 `requires: ["indicators.pro"]`. Ejecutarla en un plan que no los incluye se rechaza con `402`, al validarla, al lanzar un

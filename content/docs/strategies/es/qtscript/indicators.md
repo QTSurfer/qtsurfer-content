@@ -3,7 +3,7 @@ title: Indicadores de QTScript
 description: Todos los indicadores que puede llamar una estrategia QTScript, pro incluidos, agrupados por tipo.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
+upstreamCommit: 54e8f0b90d6634cd246861f39991dd2165eb5b2e
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
 lastUpdated: '2026-11-22T19:18:49Z'
 ---
@@ -16,7 +16,7 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 - Los nombres que no son pro funcionan en todos los planes. Hay 39.
 - Los nombres **pro** vienen con los planes Pro y Elite y necesitan una línea `uses` (consulta «Los indicadores pro: `uses`» en
   [la guía de QTScript](/docs/strategies/qtscript#los-indicadores-pro-uses), que trae sus formas y los nombres que
-  registran). Hay 12.
+  registran). Hay 76; las secciones de abajo describen doce, y esa tabla los lista todos.
 - Llamado sin un nombre propio, un indicador registra un nombre formado por el suyo y sus parámetros: `rsi(14)` registra
   `rsi14`, `ema(9)` registra `ema9` y `wma(5)` registra `wma5`. Cuando el nombre no es tan evidente, las notas lo dan.
 - Un nombre que no está en ninguna de las dos listas, y un nombre pro cuya línea `uses` falta, se rechaza como
@@ -105,9 +105,9 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 
 ## Los indicadores pro
 
-Una línea `uses` los trae: `uses pro.adx, pro.obv` para esos dos, `uses pro.*` para los doce, y varias líneas `uses` se suman. Un plan sin ellos puede registrar la estrategia, pero no ejecutarla (`402`).
+Una línea `uses` los trae: `uses pro.adx, pro.obv` para esos dos, `uses pro.*` para los setenta y seis, y varias líneas `uses` se suman. Un plan sin ellos puede registrar la estrategia, pero no ejecutarla (`402`).
 
-Once de los doce leen barras completas, no un solo valor, así que van en una estrategia `kline`: en una estrategia `ticker` sus valores no son los de la barra y no significan nada. `kurtosis` es la excepción, porque lee un solo valor, el precio del grupo (el cierre en una vela), así que significa algo en una estrategia `ticker` y no emite aviso.
+Treinta y seis de los setenta y seis leen barras completas, no un solo valor, así que van en una estrategia `kline`: en una estrategia `ticker` sus valores no son los de la barra y no significan nada. Los otros cuarenta leen un solo valor, el precio del grupo (el cierre en una vela), así que significan algo en una estrategia `ticker` y no emiten aviso. La última columna de la tabla de [la guía de QTScript](/docs/strategies/qtscript#los-indicadores-pro-uses) dice cuáles son cuáles.
 
 ### Tendencia
 

@@ -1,6 +1,6 @@
 ---
 title: "Distance"
-description: "How distance measures the gap between two indicators as a percentage of the second, why its zero line is a crossover, and how to use it in a QTSurfer strategy."
+description: "How the distance measures the gap between two indicators as a percentage of the second, why its zero line is a crossover, and how to use it in a QTSurfer strategy."
 order: 9.03
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

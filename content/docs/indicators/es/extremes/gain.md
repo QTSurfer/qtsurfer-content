@@ -1,6 +1,6 @@
 ---
 title: "Subida"
-description: "Cómo gain da el tamaño de cada subida y cuenta las subidas seguidas, por qué necesita un nombre y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo la subida mide cuánto sube un valor en cada actualización y cuenta las subidas seguidas, por qué necesita un nombre y cómo usarla en una estrategia de QTSurfer."
 order: 10.01
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

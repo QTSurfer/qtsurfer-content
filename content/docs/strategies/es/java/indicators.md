@@ -4,7 +4,7 @@ description: Configura, compón y amplía el pipeline de indicadores en tiempo r
 order: 3
 lastUpdated: '2026-11-22T19:18:49Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
+upstreamCommit: 54e8f0b90d6634cd246861f39991dd2165eb5b2e
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 ---
 
@@ -182,11 +182,10 @@ indicador sin pasar por el grupo. Úsalo cuando ya tienes una referencia al obje
 Los indicadores pro vienen con los planes Pro y Elite. En Java son los métodos de `Pro`,
 en `com.wualabs.qtsurfer.engine.indicators.pro`: `Pro.on(indicators)` recibe el grupo de indicadores que recibe
 `setupIndicators`, y cada llamada registra un indicador pro con los mismos nombres, formas e ids que lista la
-tabla bajo "The pro indicators: `uses`" de la skill `qtsurfer-qtscript-strategy` (`adx`, `cmf`,
-`garmanKlass`, `ichimoku`, `kurtosis`, `mfi`, `obv`, `parkinson`, `rogersSatchell`, `superTrend`, `vwap`, `yangZhang`). `Pro.on(indicators).adx(14)` registra `adx14` y, a su lado,
+tabla bajo "The pro indicators: `uses`" de la skill `qtsurfer-qtscript-strategy`, uno por cada una de las 76 factorías de `Pro`. `Pro.on(indicators).adx(14)` registra `adx14` y, a su lado,
 `adx14PlusDI` y `adx14MinusDI`. Una ventana va sobre el principal (`adx14`), y el listener lee los demás por nombre.
 
-Once de los doce leen barras enteras (`kurtosis` lee el cierre), así que úsalos en una estrategia kline. Esta compra cuando el
+Treinta y seis de los setenta y seis leen barras enteras (la tabla de la skill `qtsurfer-qtscript-strategy` dice cuáles), así que úsalos en una estrategia kline. Esta compra cuando el
 ADX dice que hay tendencia y la línea plus está por encima de la minus, y vende cuando está por debajo:
 
 ```java
@@ -236,9 +235,9 @@ public class AdxTrend extends AbstractKlineStrategy {
 }
 ```
 
-En una estrategia `ticker`, un indicador pro no se rechaza. Para los once que leen barras enteras, los valores no son los de la
-barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor que lo dice; `kurtosis` lee el
-cierre, así que significa algo ahí y no emite aviso.
+En una estrategia `ticker`, un indicador pro no se rechaza. Para los treinta y seis que leen barras enteras, los valores no son
+los de la barra y no significan nada, y validar o ejecutar la estrategia devuelve un aviso del motor que lo dice; los otros
+cuarenta leen el cierre, así que significan algo ahí y no emiten aviso.
 
 Registrar una estrategia que los usa se acepta en cualquier plan, y la respuesta de `POST /strategy` lleva
 `requires: ["indicators.pro"]`. Ejecutarla en un plan que no los incluye se rechaza con `402`, al validarla, al lanzar un

@@ -104,8 +104,8 @@ en cuanto la cobertura supere un umbral elegido, en lugar de esperar horas que q
 
 El histórico se almacena y se sirve de hora en hora UTC. Cada segmento horario puede descargarse como
 eventos de ticker en bruto o como klines nativas del exchange, en el formato columnar propio de
-QTSurfer, **Lastra**, o convertido bajo demanda a Parquet. Las descargas horarias cubren los últimos
-7 días, y la hora en curso puede servirse de forma provisional, marcada como tal y sustituida por la
+QTSurfer, **Lastra**, o convertido bajo demanda a Parquet. Las descargas horarias cubren solo las horas
+recientes, y la hora en curso puede servirse de forma provisional, marcada como tal y sustituida por la
 hora almacenada en cuanto existe. El histórico más antiguo, o un rango, se importa como un dataset del
 histórico del exchange y se descarga como cualquier otro dataset.
 

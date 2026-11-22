@@ -3,7 +3,7 @@ title: Authentication and scopes
 description: Exchange your API key for a token, and see what the scopes of your key allow.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 37ff47bf27e65d70508271d7cb6b60dc7432c1e0
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/auth.md
 lastUpdated: '2026-11-20T22:11:58Z'
 ---
@@ -48,7 +48,7 @@ header, the name of your tool is enough, and send the request again. `curl` and 
 A key that is missing, unknown, revoked or expired is answered `401` with `{"error": "invalid_credentials"}`
 (`AuthTokenRejected` in the API reference). The answer is the same for all four: it does not say which, so
 read the expiry of your key ahead of time, [below](#when-your-key-expires), rather than from this answer.
-Where a deployment requires scopes, a key that carries none is answered `403` with the code
+A key that carries no scopes is answered `403` with the code
 `apikey_without_scopes` and no token (`AuthTokenError`): create a key with at least one scope in the web app.
 
 ## When your key expires

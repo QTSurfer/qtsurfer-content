@@ -3,7 +3,7 @@ title: Cuenta
 description: Consulta los límites de tu plan y tu uso de almacenamiento en vivo frente a ellos.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 7df1dbb3a61a122715f5c061ac5b4b56ea23c352
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/account.md
 lastUpdated: '2026-11-17T14:15:14Z'
 ---
@@ -109,7 +109,7 @@ curl https://api.qtsurfer.net/v1/account/usage \
 `POST /datasets/{datasetId}/uploads/{uploadId}/finalize` y `POST /datasets/imports` devuelven
 ambos `429` si tu cuenta ya está en el límite o por encima (consulta [Conjuntos de datos](datasets)
 para el texto exacto). Las señales de ejecución de estrategia y las estrategias registradas se
-reflejan en `storageBytesUsed` pero no disparan un `429` por sí mismas hoy — elimina un conjunto de
+reflejan en `storageBytesUsed` pero no disparan un `429` por sí mismas — elimina un conjunto de
 datos para liberar espacio si estás en tu límite.
 
 ## Guías relacionadas

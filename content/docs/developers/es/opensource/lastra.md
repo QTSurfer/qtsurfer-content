@@ -41,7 +41,7 @@ documento de formato de la implementación de referencia, [lastra-java](https://
 Las dos rutas horarias devuelven un fichero. `format=lastra` es el valor por defecto;
 `format=parquet` convierte el mismo segmento al vuelo. Consulta [Datos de
 mercado](/docs/developers/api/market_data) para las rutas, el parámetro `hour` y las horas que
-sirven (los últimos 7 días).
+sirven (solo las recientes).
 
 ```bash
 curl --fail --remote-name \
@@ -49,7 +49,7 @@ curl --fail --remote-name \
   -H "Authorization: Bearer $QTSURFER_JWT"
 ```
 
-Usa en `hour` una hora de los últimos 7 días: la de arriba es solo un ejemplo, y las secciones
+Usa en `hour` una hora reciente: la de arriba es solo un ejemplo, y las secciones
 siguientes leen un segmento guardado antes. Las klines son mucho más pequeñas que los tickers; pide
 el segmento de klines cuando baste con datos a nivel de barra.
 

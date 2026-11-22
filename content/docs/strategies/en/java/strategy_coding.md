@@ -3,7 +3,7 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-16T20:20:30Z'
 ---
@@ -384,8 +384,8 @@ command's own text is kept separately (`getCommand()` reads it, unaffected by an
 value keeps whatever JSON type it arrived as, so assigning it to a `String` field when the caller sent a
 number or an object throws a `ClassCastException` inside `handle`; a QTScript `onCommand` body reads the
 same value with `$command.<key>` instead, which always widens it to a `String` (`null` for an absent key,
-never a cast failure). A command, and its properties, are not stored as part of the run: a replica that
-restarts replays only the last stretch of market data, and a command from before that window simply never
+never a cast failure). A command, and its properties, are not stored as part of the run: a restarted execution
+does not replay them, and a command from before the restart simply never
 reaches it.
 
 A command has no instrument attached the way `update()` does; when its own properties name one, reach that
@@ -403,7 +403,7 @@ public void handle(CommandRequest request) {
 
 **Neither a `@StrategyProperty` field nor a `StateStore` written from inside `handle` is durable.** Both
 change immediately, in memory, the same as any other assignment, but neither is written to the run's
-stored parameter set — a replica that restarts (or one that starts later, and never ran `handle` for that
+stored parameter set — an execution that restarts (or one that starts later, and never ran `handle` for that
 command) starts from whatever `PUT /live/{runId}/params` last set, not from what a command assigned. The
 only durable write is a real `PUT /live/{runId}/params` call, from outside the run — a strategy cannot
 call its own REST API from inside `handle`.

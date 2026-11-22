@@ -3,7 +3,7 @@ title: Canales de señales
 description: Un proveedor vende los avisos de un canal como ofertas y códigos de un solo uso; las ejecuciones en vivo de una suscripción reciben el instrumento adjuntado, al instante o tras un retraso.
 order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 37ff47bf27e65d70508271d7cb6b60dc7432c1e0
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/signals.md
 lastUpdated: '2026-11-20T22:11:58Z'
 ---

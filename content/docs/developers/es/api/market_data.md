@@ -3,7 +3,7 @@ title: Datos de mercado
 description: Descubre exchanges, instrumentos y datos históricos de mercado a través de la API REST.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-10-18T10:27:25Z'
 ---
@@ -29,8 +29,8 @@ minúsculas, escritos igual allí donde la API los toma:
 
 `venueType` es `cex` para un exchange centralizado y `dex` para uno descentralizado. Los `segments` de un
 exchange `cex` son los segmentos de mercado bajo los que se listan sus instrumentos; `liveSegments` son los
-de entre ellos que una ejecución en vivo puede leer, porque se publican datos en vivo para ellos (hoy
-`spot`). En un exchange `dex` ambos son los protocolos cuyas pools puede leer una ejecución en vivo
+de entre ellos que una ejecución en vivo puede leer, porque se publican datos en vivo para ellos.
+En un exchange `dex` ambos son los protocolos cuyas pools puede leer una ejecución en vivo
 (consulta [Pools DEX](live#pools-dex)). Un exchange `dex` no tiene archivos por hora, datasets ni
 backtests, así que su id da `400` en toda ruta que tome un `exchangeId` salvo las dos rutas de instrumentos,
 que listan sus pools. Usa cualquiera de las dos rutas de instrumentos con el id de cualquier exchange que
@@ -64,11 +64,10 @@ un solo tipo.
 | `settle` | Moneda de liquidación de un instrumento de futuros | solo instrumentos de futuros |
 | `baseAddress`, `quoteAddress`, `feePercent`, `tvlUsd`, `volume24hUsd`, `createdAt` | Direcciones de los tokens, nivel de comisión, liquidez y volumen en dólares, fecha de creación | solo pools |
 
-El `lastPrice` y el `volume24h` de un instrumento se refrescan cada pocos minutos; los de una pool son los
-de `meta.updatedAt`, que se refresca cada hora, así que el precio de una pool puede tener hasta una hora de
-antigüedad.
+El `lastPrice` y el `volume24h` son los del último refresco del listado: `meta.updatedAt` dice cuándo fue, así que
+léelo para saber qué antigüedad tienen.
 
-Un campo sin dato se omite de la entrada, nunca se envía como `null`: lee un `lastPrice`, un `volume24h` o
+Un campo sin dato se omite de la entrada, nunca se envía como `null`: lee un `lastPrice`, un `volume24h`, un `feePercent` o
 un `createdAt` ausentes como «no se conoce».
 
 ```bash
@@ -103,7 +102,8 @@ curl https://api.qtsurfer.net/v1/exchange/robinhood/uniswap-v3/instruments \
 }
 ```
 
-El `id` de una pool es su dirección, en minúsculas. `symbol` es el par tal como lo nombran las señales de una
+El `id` de una pool es su dirección: en minúsculas en Robinhood Chain y, en Solana, una dirección base58, que distingue
+mayúsculas de minúsculas, así que úsala exactamente como se lista. `symbol` es el par tal como lo nombran las señales de una
 ejecución, que no siempre es el orden en que lo muestran otros sitios (la misma pool puede aparecer como
 `USDG / WETH` en otro lugar), así que identifica una pool por su dirección. Un protocolo puede tener varias
 pools del mismo par, una por nivel de comisión (`feePercent`).
@@ -111,12 +111,41 @@ pools del mismo par, una por nivel de comisión (`feePercent`).
 `lastPrice` es el precio de una unidad de la base en el token de cotización (`2411.285967` USDG por un WETH
 en el ejemplo) y `volume24h` es lo operado en las últimas 24 horas en ese token de cotización; `volume24hUsd`
 es el mismo volumen en dólares, y por él se ordena el listado. Cualquiera de los dos puede estar ausente. Son
-los de `meta.updatedAt`, con hasta una hora de antigüedad.
+los de `meta.updatedAt`.
 
-El listado trae las 50 pools con más volumen en las últimas 24 horas (`volume24hUsd`) entre las que tienen al
-menos 10 000 dólares de liquidez (`tvlUsd`), y se actualiza cada hora (`meta.updatedAt`); `meta` indica ambos
-límites. Es un punto de partida, no todo el mercado: una ejecución en vivo puede leer cualquier pool del
+El listado trae las pools con más volumen en las últimas 24 horas (`volume24hUsd`) entre las que tienen
+liquidez suficiente (`tvlUsd`): `meta.limit` es el máximo que contiene y `meta.minTvlUsd` la liquidez mínima, en
+dólares, de una pool listada. Se actualiza periódicamente (`meta.updatedAt`). Es un punto de partida, no todo el mercado: una ejecución en vivo puede leer cualquier pool del
 protocolo, esté listada o no. `404` significa que el listado no está disponible en este momento.
+
+### Solana
+
+`solana` es un exchange descentralizado cuyos segmentos son sus protocolos: `orca`, `raydium`, `raydium-clmm`,
+`meteora`, `pumpswap` y `pumpfun`. `GET /exchange/solana/{segment}/instruments` lista las pools de cada uno del
+mismo modo, salvo `pumpfun`: sigue un token por su mint, así que no tiene listado y la petición responde `404`
+(consulta [Pools DEX](live#pools-dex)). Los listados tienen estas diferencias:
+
+- Una dirección, de una pool o de un token, es base58 y distingue mayúsculas de minúsculas: úsala exactamente
+  como se lista.
+- `feePercent` falta en la mayoría de las pools: no se conoce para ellas. Léelo como «no se conoce».
+- Un par se nombra `BASE/QUOTE` como en cualquier pool: lee `base` y `quote` de la entrada en lugar de
+  deducirlos del símbolo. Un segmento puede listar menos pools que `meta.limit`, cuando pocas de sus pools
+  más operadas tienen liquidez suficiente.
+- Las pools sirven para importarlas como conjuntos de datos (`dex.network: solana`, solo velas: consulta
+  [Conjuntos de datos](datasets)) y para backtesting. Una ejecución en vivo lee un segmento de `solana` solo cuando
+  `GET /exchanges` lo lista en `liveSegments`; `pumpfun` se lee por el mint de un token (consulta [Pools DEX](live#pools-dex)).
+
+```json
+{
+  "data": [
+    {"id": "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE", "symbol": "SOL/USDC", "base": "SOL", "quote": "USDC",
+     "baseAddress": "So11111111111111111111111111111111111111112",
+     "quoteAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+     "lastPrice": 68.95790853, "volume24h": 120200136, "tvlUsd": 16478497.45, "volume24hUsd": 119896016.58}
+  ],
+  "meta": {"updatedAt": "2026-11-21T00:33:30Z", "exchange": "solana", "segment": "orca", "venueType": "dex", "minTvlUsd": 10000, "limit": 50}
+}
+```
 
 ## Descargar segmentos horarios
 
@@ -128,15 +157,15 @@ Dos rutas devuelven bytes en lugar de JSON:
 | `GET /exchange/{exchangeId}/klines/{base}/{quote}` | Klines nativas del exchange agregadas de una hora UTC |
 
 Ambas requieren el parámetro de consulta `hour` en forma UTC `YYYY-MM-DDTHH`. Por ejemplo,
-`2026-10-15T10` cubre `[2026-10-15T10:00:00Z, 2026-10-15T11:00:00Z)` (la hora tiene que estar
-dentro de los últimos 7 días, ver más abajo: lee el ejemplo como la forma del valor). El valor por
+`2026-10-15T10` cubre `[2026-10-15T10:00:00Z, 2026-10-15T11:00:00Z)` (la hora tiene que ser
+reciente, ver más abajo: lee el ejemplo como la forma del valor). El valor por
 defecto `format=lastra` es el formato columnar compacto propio de QTSurfer; `format=parquet` le pide al
 servicio que convierta el mismo segmento al vuelo. La respuesta es respectivamente
 `application/vnd.qtsurfer.lastra` o `application/vnd.apache.parquet`, y `Content-Disposition` aporta un
 nombre de fichero útil.
 
 ```bash
-# the hour has to be one of the last 7 days
+# the hour has to be a recent one
 curl --fail --remote-name \
   "https://api.qtsurfer.net/v1/exchange/binance/tickers/BTC/USDT?hour=2026-10-15T10&format=parquet" \
   -H "Authorization: Bearer $QTSURFER_JWT"
@@ -148,7 +177,7 @@ compatible en lugar de acumular una hora entera en memoria.
 
 ### Qué horas
 
-Los últimos 7 días: una hora que empezó como mucho 7 días antes de la petición y ya ha terminado.
+Solo horas recientes: una hora que ha terminado y no es demasiado antigua; una más antigua es `400` con `reason: OUTSIDE_WINDOW`.
 Las rutas dan una hora de un instrumento, rápido; no son la forma de obtener histórico más antiguo
 ni un rango. Para eso, [importa un conjunto de datos](datasets#importar-un-conjunto-de-datos-en-lugar-de-subirlo)
 con el histórico del exchange (`POST /datasets/imports` con `type: "cex"`) y descárgalo como se
@@ -159,7 +188,7 @@ descarga cualquier conjunto de datos.
 La hora en curso, y una hora que ya ha terminado pero todavía no está almacenada, pueden
 responderse con lo recibido hasta ese momento: `200` con `X-Data-Status: provisional` y
 `X-Data-Through`, el instante de la última fila (una hora UTC ISO-8601, sea cual sea la unidad de
-`ts`). No todos los despliegues del servicio dan respuestas provisionales: donde no las dan, esas
+`ts`). El servicio no siempre da respuestas provisionales: cuando no las da, esas
 horas son `404` con `NOT_YET_AVAILABLE` y un `Retry-After`, y un cliente que las necesite maneja
 ambos casos. Las columnas, la unidad de tiempo y los formatos son los de cualquier otra hora. Una respuesta provisional todavía
 puede crecer y la hora almacenada la sustituye en cuanto existe: úsala para la punta del mercado, no
@@ -185,7 +214,7 @@ cliente se ramifica según `reason`, no según el texto de `message`.
 | Estado | `reason` | Significado | Qué hacer |
 | --- | --- | --- | --- |
 | `400` | ninguno | `hour` ausente o no `YYYY-MM-DDTHH`, `format` desconocido, o una hora en el futuro | corrige la petición |
-| `400` | `OUTSIDE_WINDOW` | la hora es anterior a los últimos 7 días | envía `next`: la petición `POST /datasets/imports` que importa exactamente esa hora (añade un `name`) |
+| `400` | `OUTSIDE_WINDOW` | la hora es anterior a las horas que sirven estas rutas | envía `next`: la petición `POST /datasets/imports` que importa exactamente esa hora (añade un `name`) |
 | `404` | `NOT_YET_AVAILABLE` | la hora todavía no está almacenada y no se dio una respuesta provisional para ella; lleva `Retry-After` | vuelve a preguntar pasados esos segundos |
 | `404` | `NO_DATA` | la hora está almacenada y no contiene nada para este instrumento | ninguna: no hay datos que obtener |
 | `503` | `TEMPORARILY_UNAVAILABLE` | se están limitando las lecturas (almacenadas o provisionales) y esta no se sirvió; lleva `Retry-After` | vuelve a preguntar pasados esos segundos |
@@ -194,7 +223,7 @@ cliente se ramifica según `reason`, no según el texto de `message`.
 ```json
 {
   "code": 400,
-  "message": "Hour older than 7 days: import it as a dataset",
+  "message": "Hour too old: import it as a dataset",
   "reason": "OUTSIDE_WINDOW",
   "next": {
     "method": "POST",

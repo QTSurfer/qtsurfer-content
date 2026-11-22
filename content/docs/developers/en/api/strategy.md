@@ -3,7 +3,7 @@ title: Strategy API
 description: Compile, validate, inspect, retrieve, and delete Java or QTScript (beta) strategies through the REST API.
 order: 5.2
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: b9b8e971764fe4805b884b7a618eeae02a38f1b9
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/strategy.md
 lastUpdated: '2026-11-02T14:41:16Z'
 ---

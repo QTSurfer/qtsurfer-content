@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: d96b0e18ad0582cb8ab50f75b13a9047b6024919
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-16T20:20:30Z'
 ---
@@ -398,8 +398,8 @@ el tipo JSON con el que llegó, así que asignarlo a un campo `String` cuando qu
 o un objeto lanza un `ClassCastException` dentro de `handle`; un cuerpo `onCommand` de QTScript lee el
 mismo valor con `$command.<clave>` en su lugar, que siempre lo ensancha a un `String` (`null` para una
 clave ausente, nunca un fallo de conversión). Un comando, y sus propiedades, no se guardan como parte de
-la ejecución: una réplica que se reinicia reproduce solo el último tramo de datos de mercado, y un
-comando de antes de esa ventana simplemente no le llega.
+la ejecución: una ejecución reiniciada no los reproduce, y un
+comando de antes del reinicio simplemente no le llega.
 
 Un comando no lleva instrumento asociado como sí lo hace `update()`; cuando sus propias propiedades
 nombran uno, alcanza el store de ese instrumento con `getStateStore(String)`:
@@ -416,7 +416,7 @@ public void handle(CommandRequest request) {
 
 **Ni un campo `@StrategyProperty` ni un `StateStore` escrito desde dentro de `handle` son duraderos.**
 Ambos cambian de inmediato, en memoria, igual que cualquier otra asignación, pero ninguno se escribe en
-el conjunto de parámetros guardado de la ejecución — una réplica que se reinicia (o una que arranca
+el conjunto de parámetros guardado de la ejecución — una ejecución que se reinicia (o una que arranca
 después, y nunca corrió `handle` para ese comando) parte de lo último que fijó `PUT /live/{runId}/params`,
 no de lo que asignó un comando. La única escritura duradera es una llamada real a
 `PUT /live/{runId}/params`, desde fuera de la ejecución — una estrategia no puede llamar a su propia API

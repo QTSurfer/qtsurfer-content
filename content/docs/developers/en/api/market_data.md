@@ -3,7 +3,7 @@ title: Market data
 description: Discover exchanges, instruments, and historical market data through the REST API.
 order: 5.7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 2816b264c2398991c87e618a70a433b2d4d8de3e
+upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
 upstreamPath: docs/market_data.md
 lastUpdated: '2026-10-18T10:27:25Z'
 ---
@@ -28,7 +28,7 @@ way wherever the API takes them:
 
 `venueType` is `cex` for a centralized exchange and `dex` for a decentralized one. The `segments` of a `cex`
 exchange are the market segments its instruments are listed under; `liveSegments` are the ones among them a
-live run can read, because live data is published for them (`spot` today). For a `dex` exchange both are the
+live run can read, because live data is published for them. For a `dex` exchange both are the
 protocols whose pools a live run can read (see [DEX pools](live#dex-pools)). A `dex` exchange has no
 hourly files, datasets or backtests, so its id is `400` in every route that takes an `exchangeId` except the
 two instrument routes, which list its pools. Use either instrument route with the id of any exchange
@@ -61,11 +61,11 @@ the fields below mean the same in each, and the rest belong to one kind only.
 | `settle` | Settlement currency of a futures instrument | futures instruments only |
 | `baseAddress`, `quoteAddress`, `feePercent`, `tvlUsd`, `volume24hUsd`, `createdAt` | Token addresses, fee tier, liquidity and volume in US dollars, creation date | pools only |
 
-`lastPrice` and `volume24h` of an instrument are refreshed every few minutes; those of a pool are as of
-`meta.updatedAt`, which is refreshed every hour, so a pool's price can be up to one hour old.
+`lastPrice` and `volume24h` are as of the last refresh of the listing: `meta.updatedAt` tells when it was, so
+read it to know how old they are.
 
 A field with no data is left out of the entry, never sent as `null`: read an absent `lastPrice`,
-`volume24h` or `createdAt` as "not known".
+`volume24h`, `feePercent` or `createdAt` as "not known".
 
 ```bash
 curl https://api.qtsurfer.net/v1/exchange/binance/spot/instruments \
@@ -99,19 +99,48 @@ curl https://api.qtsurfer.net/v1/exchange/robinhood/uniswap-v3/instruments \
 }
 ```
 
-A pool's `id` is its address, in lower case. `symbol` is the pair as the signals of a run name it, which is
+A pool's `id` is its address: in lower case on Robinhood Chain, and on Solana a base58 address, which is
+case-sensitive, so use it exactly as listed. `symbol` is the pair as the signals of a run name it, which is
 not always the order other sites show it in (the same pool can read `USDG / WETH` elsewhere), so identify a
 pool by its address. A protocol can have several pools of one pair, one per fee tier (`feePercent`).
 
 `lastPrice` is the price of one base in the quote token (`2411.285967` USDG for one WETH above) and
 `volume24h` is what traded over the last 24 hours in that quote token; `volume24hUsd` is the same volume in
-US dollars, and the listing is ranked by it. Either can be absent. They are as of `meta.updatedAt`, up to one
-hour old.
+US dollars, and the listing is ranked by it. Either can be absent. They are as of `meta.updatedAt`.
 
-The listing has the 50 pools with the most volume over the last 24 hours (`volume24hUsd`) among those with at
-least 10,000 US dollars of liquidity (`tvlUsd`), and is refreshed every hour (`meta.updatedAt`); `meta`
-states both limits. It is a place to start, not the whole market: a live run can read any pool of the
-protocol, listed or not. `404` means the listing is not available at the moment.
+The listing has the pools with the most volume over the last 24 hours (`volume24hUsd`) among those with enough
+liquidity (`tvlUsd`): `meta.limit` is the most it holds and `meta.minTvlUsd` the least liquidity, in US dollars,
+a listed pool has. It is refreshed periodically (`meta.updatedAt`). It is a place to start, not the whole market:
+a live run can read any pool of the protocol, listed or not. `404` means the listing is not available at the
+moment.
+
+### Solana
+
+`solana` is a decentralized exchange whose segments are its protocols: `orca`, `raydium`, `raydium-clmm`,
+`meteora`, `pumpswap` and `pumpfun`. `GET /exchange/solana/{segment}/instruments` lists the pools of each the
+same way, except `pumpfun`: it follows a token by its mint, so it has no listing and the request answers `404`
+(see [DEX pools](live#dex-pools)). The listings have these differences:
+
+- An address, of a pool or of a token, is base58 and case-sensitive: use it exactly as listed.
+- `feePercent` is absent from most pools: it is not known for them. Read it as "not known".
+- A pair is named `BASE/QUOTE` as for any pool: read `base` and `quote` of the entry rather than working them
+  out from the symbol. A segment can list fewer pools than `meta.limit`, when few of its most traded pools
+  have enough liquidity.
+- The pools are for importing as datasets (`dex.network: solana`, candles only: see
+  [Datasets](datasets)) and for backtesting. A live run reads a `solana` segment only when `GET /exchanges`
+  lists it in `liveSegments`; `pumpfun` is read by the mint of a token (see [DEX pools](live#dex-pools)).
+
+```json
+{
+  "data": [
+    {"id": "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE", "symbol": "SOL/USDC", "base": "SOL", "quote": "USDC",
+     "baseAddress": "So11111111111111111111111111111111111111112",
+     "quoteAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+     "lastPrice": 68.95790853, "volume24h": 120200136, "tvlUsd": 16478497.45, "volume24hUsd": 119896016.58}
+  ],
+  "meta": {"updatedAt": "2026-11-21T00:33:30Z", "exchange": "solana", "segment": "orca", "venueType": "dex", "minTvlUsd": 10000, "limit": 50}
+}
+```
 
 ## Download hourly segments
 
@@ -123,14 +152,14 @@ Two routes return bytes rather than JSON:
 | `GET /exchange/{exchangeId}/klines/{base}/{quote}` | Aggregated exchange-native klines for one UTC hour |
 
 Both require the `hour` query parameter in `YYYY-MM-DDTHH` UTC form. For example,
-`2026-10-15T10` covers `[2026-10-15T10:00:00Z, 2026-10-15T11:00:00Z)` (the hour has to be one of the last
-7 days, see below: read the example as the shape of the value). The default
+`2026-10-15T10` covers `[2026-10-15T10:00:00Z, 2026-10-15T11:00:00Z)` (the hour has to be a recent one,
+see below: read the example as the shape of the value). The default
 `format=lastra` is QTSurfer's compact columnar format; `format=parquet` asks the service to convert
 the same segment on demand. The response is respectively `application/vnd.qtsurfer.lastra` or
 `application/vnd.apache.parquet`, and `Content-Disposition` supplies a useful filename.
 
 ```bash
-# the hour has to be one of the last 7 days
+# the hour has to be a recent one
 curl --fail --remote-name \
   "https://api.qtsurfer.net/v1/exchange/binance/tickers/BTC/USDT?hour=2026-10-15T10&format=parquet" \
   -H "Authorization: Bearer $QTSURFER_JWT"
@@ -141,7 +170,7 @@ should stream the response to disk or a compatible reader instead of buffering a
 
 ### Which hours
 
-The last 7 days: an hour that started no more than 7 days before the request and has ended. The
+Recent hours only: an hour that has ended and is not too old; an older one is `400` with `reason: OUTSIDE_WINDOW`. The
 routes give one hour of one instrument, fast; they are not how to get older history or a range.
 For those, [import a dataset](datasets#importing-a-dataset-instead-of-uploading-one) of the
 exchange's history (`POST /datasets/imports` with `type: "cex"`) and download it the way any dataset is
@@ -151,8 +180,8 @@ downloaded.
 
 The hour in progress, and an hour that has ended but is not stored yet, can be answered with what
 has been received so far: `200` with `X-Data-Status: provisional` and `X-Data-Through`, the instant of
-the last row (an ISO-8601 UTC time, whatever the unit of `ts`). Not every deployment of the service
-gives provisional answers: where it does not, those hours are `404` with `NOT_YET_AVAILABLE` and a
+the last row (an ISO-8601 UTC time, whatever the unit of `ts`). The service does not always
+give provisional answers: when it does not, those hours are `404` with `NOT_YET_AVAILABLE` and a
 `Retry-After`, and a client that needs them handles both. The columns, the time unit and the formats
 are those of any other hour. A provisional answer can still grow and the stored hour replaces it once
 there is one: use it for the tip of the market, not as the record of an hour. It takes seconds to
@@ -177,7 +206,7 @@ branches on `reason`, not on the text of `message`.
 | Status | `reason` | Meaning | What to do |
 | --- | --- | --- | --- |
 | `400` | none | `hour` missing or not `YYYY-MM-DDTHH`, `format` unknown, or an hour in the future | fix the request |
-| `400` | `OUTSIDE_WINDOW` | the hour is older than the last 7 days | send `next`: the `POST /datasets/imports` request that imports exactly that hour (add a `name`) |
+| `400` | `OUTSIDE_WINDOW` | the hour is older than the hours these routes serve | send `next`: the `POST /datasets/imports` request that imports exactly that hour (add a `name`) |
 | `404` | `NOT_YET_AVAILABLE` | the hour is not stored yet and no provisional answer was given for it; carries `Retry-After` | ask again after that many seconds |
 | `404` | `NO_DATA` | the hour is stored and holds nothing for this instrument | none: there is no data to get |
 | `503` | `TEMPORARILY_UNAVAILABLE` | reads are being limited (stored or provisional) and this one was not served; carries `Retry-After` | ask again after that many seconds |
@@ -186,7 +215,7 @@ branches on `reason`, not on the text of `message`.
 ```json
 {
   "code": 400,
-  "message": "Hour older than 7 days: import it as a dataset",
+  "message": "Hour too old: import it as a dataset",
   "reason": "OUTSIDE_WINDOW",
   "next": {
     "method": "POST",

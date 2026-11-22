@@ -38,7 +38,7 @@ implementation, [lastra-java](https://github.com/QTSurfer/lastra-java).
 
 Both hourly routes return a file. `format=lastra` is the default; `format=parquet` converts the same
 segment on demand. See [Market data](/docs/developers/api/market_data) for the routes, the
-`hour` parameter, and the hours they serve (the last 7 days).
+`hour` parameter, and the hours they serve (recent ones only).
 
 ```bash
 curl --fail --remote-name \
@@ -46,7 +46,7 @@ curl --fail --remote-name \
   -H "Authorization: Bearer $QTSURFER_JWT"
 ```
 
-Use an `hour` from the last 7 days: the one above is only an example, and the sections below read a
+Use a recent `hour`: the one above is only an example, and the sections below read a
 segment that was saved earlier. Klines are much smaller than tickers; ask for the kline segment when
 bar-level data is enough.
 

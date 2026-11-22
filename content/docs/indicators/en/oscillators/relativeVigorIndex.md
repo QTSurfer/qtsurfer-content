@@ -1,6 +1,6 @@
 ---
 title: "Relative vigor index (RVGI)"
-description: "How the relative vigor index sets the weighted move from the open to the close against the weighted range of the last bars, why the engine's line moves in steps, and how to use it in a QTSurfer strategy."
+description: "How the relative vigor index sets the weighted move from the open to the close against the weighted range of the last bars, smoothed with moving averages, and how to use it in a QTSurfer strategy."
 order: 2.60
 lastUpdated: '2026-11-13T21:28:19Z'
 ---
@@ -21,12 +21,12 @@ den = ((high − low)   + 2 (high₁ − low₁)   + 2 (high₂ − low₂)   + 
 RVGI = SMA(num, N) / SMA(den, N)
 ```
 
-The engine's simple averages are its default **discrete** ones, which hold the mean of a complete block until the next block is complete (the [SMA page](/docs/indicators/averages/sma) explains it). So the line moves in steps: 90 % of its bars repeat the previous value, on the real series of the chart. The original adds a signal line; the engine does not. A window with no range gives 0. The first value is on update `N + 3`, 13 with the default period 10, and the chart draws from there.
+The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in the original. The original adds a signal line; the engine does not. A window with no range gives 0. The first value is on update `N + 3`, 13 with the default period 10, and the chart draws from there.
 
 ## Reading it
 
 - **It reads 1 when every bar opens at its low and closes at its high, −1 in the opposite case**, and 0 for bars that close where they open.
-- **It is small in practice.** On the real series of the chart, at period 10, it goes from −0.52 to 0.53, and it is positive on 41 % to 48 % of the bars.
+- **It is small in practice.** On the real series of the chart, at period 10, it goes from −0.53 to 0.55, and it is positive on 45 % to 52 % of the bars.
 - **It is slow.** The four-bar weighting and the average of `N` values of both parts make it turn well after the price has turned.
 
 ## In a strategy
@@ -47,5 +47,5 @@ The period is a parameter, so a [parameter sweep](/learn/articles/parameter-swee
 
 - [Balance of power](/docs/indicators/oscillators/balanceOfPower): the same body against the range, bar by bar.
 - [Stochastic oscillator](/docs/indicators/oscillators/stochasticOscillator): the close placed in the range of the last bars.
-- [Simple moving average](/docs/indicators/averages/sma): the discrete average it smooths with, explained there.
+- [Simple moving average](/docs/indicators/averages/sma): the average it smooths with, in its moving mode.
 - [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators): every indicator a strategy can call, with its forms and the names it registers.

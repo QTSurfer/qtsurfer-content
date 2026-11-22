@@ -1,6 +1,6 @@
 ---
 title: "Índice de vigor relativo (RVGI)"
-description: "Cómo el índice de vigor relativo contrapone el movimiento ponderado de la apertura al cierre al rango ponderado de las últimas barras, por qué la línea del motor se mueve a saltos, y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el índice de vigor relativo contrapone el movimiento ponderado de la apertura al cierre al rango ponderado de las últimas barras, suavizado con medias móviles, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.60
 lastUpdated: '2026-11-13T21:28:19Z'
 ---
@@ -21,12 +21,12 @@ den = ((máximo − mínimo)   + 2 (máximo₁ − mínimo₁)   + 2 (máximo₂
 RVGI = SMA(num, N) / SMA(den, N)
 ```
 
-Las medias simples del motor son las **discretas** por defecto, que mantienen la media de un bloque completo hasta que se completa el siguiente (la [página de la SMA](/docs/indicators/averages/sma) lo explica). Así que la línea se mueve a saltos: el 90 % de sus barras repite el valor anterior, en las series reales del gráfico. El original añade una línea de señal; el motor no. Una ventana sin rango da 0. El primer valor llega en la actualización `N + 3`, la 13 con el periodo 10 por defecto, y el gráfico dibuja desde ahí.
+Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en el original. El original añade una línea de señal; el motor no. Una ventana sin rango da 0. El primer valor llega en la actualización `N + 3`, la 13 con el periodo 10 por defecto, y el gráfico dibuja desde ahí.
 
 ## Cómo leerlo
 
 - **Lee 1 cuando todas las barras abren en su mínimo y cierran en su máximo, −1 en el caso contrario**, y 0 para barras que cierran donde abren.
-- **En la práctica es pequeño.** En las series reales del gráfico, con periodo 10, va de −0,52 a 0,53, y es positivo en del 41 % al 48 % de las barras.
+- **En la práctica es pequeño.** En las series reales del gráfico, con periodo 10, va de −0,53 a 0,55, y es positivo en del 45 % al 52 % de las barras.
 - **Es lento.** La ponderación de cuatro barras y la media de `N` valores de las dos partes hacen que gire mucho después de que el precio haya girado.
 
 ## En una estrategia
@@ -47,5 +47,5 @@ El periodo es un parámetro, así que un [barrido de parámetros](/learn/article
 
 - [Balance de poder](/docs/indicators/oscillators/balanceOfPower): el mismo cuerpo frente al rango, barra a barra.
 - [Oscilador estocástico](/docs/indicators/oscillators/stochasticOscillator): el cierre situado en el rango de las últimas barras.
-- [Media móvil simple](/docs/indicators/averages/sma): la media discreta con la que suaviza, explicada allí.
+- [Media móvil simple](/docs/indicators/averages/sma): la media con la que suaviza, en su modo móvil.
 - [Indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators): todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran.

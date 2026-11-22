@@ -1,6 +1,6 @@
 ---
 title: "Stochastic oscillator"
-description: "How the stochastic oscillator places the close in the range of the last bars, with its smoothed %K and its %D, why the engine's lines move in steps, and how to use it in a QTSurfer strategy."
+description: "How the stochastic oscillator places the close in the range of the last bars, with its smoothed %K and its %D, from which update both are warm, and how to use it in a QTSurfer strategy."
 order: 2.53
 lastUpdated: '2026-11-13T21:28:19Z'
 ---
@@ -21,13 +21,13 @@ raw %K = 100 × (close − lowest low) / (highest high − lowest low)        ov
 %D     = SMA(%K, dSmooth)
 ```
 
-The periods are 14, 3 and 3 by default. A window with no range gives a raw `%K` of 50. The first value is on update `k`, and the chart draws from there. The engine's simple averages are its default **discrete** ones, which hold the mean of a complete block until the next block is complete (the [SMA page](/docs/indicators/averages/sma) explains it). So `%K` and `%D` move in steps: 66 % of the bars repeat the previous value, on the real series of the chart.
+The periods are 14, 3 and 3 by default. A window with no range gives a raw `%K` of 50. The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in the textbook. The first value is on update `k`, 14 with the defaults, and the chart draws from there, but the smoothing still holds raw values of shorter windows: `%K` is the textbook one from update 16 and `%D` from 18.
 
 ## Reading it
 
 - **0 is a close at the bottom of the range and 100 a close at the top**, and it reads 50 on a bar with no range or a doji in the middle. A straight rise of bars that close at their high reads 100.
-- **The levels 80 and 20 are reached often.** On the real series of the chart, at the defaults, `%K` is at or above 80 on 7 % to 16 % of the bars and at or below 20 on 10 % to 18 %.
-- **The lines are in steps.** The textbook smooths with moving averages and the line changes with every bar; here `%K` and `%D` hold a value for a block of 3 bars. A rule that crosses `%K` over `%D` sees the crossing only at the end of a block.
+- **The levels 80 and 20 are reached often.** On the real series of the chart, at the defaults, `%K` is at or above 80 on 7 % to 17 % of the bars and at or below 20 on 12 % to 18 %.
+- **`%K` crosses `%D` often**, since both follow every bar. A rule on that crossing usually asks also where it happens, below 20 or above 80.
 
 ## In a strategy
 

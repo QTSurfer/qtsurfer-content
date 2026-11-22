@@ -1,6 +1,6 @@
 ---
 title: "Know Sure Thing (KST)"
-description: "Cómo el Know Sure Thing suma cuatro tasas de cambio suavizadas de longitudes distintas, con su línea de señal, por qué la versión del motor se mueve a saltos, y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el Know Sure Thing suma cuatro tasas de cambio suavizadas de longitudes distintas, con su línea de señal, desde qué actualización están calientes las dos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.47
 lastUpdated: '2026-11-12T21:21:22Z'
 ---
@@ -20,13 +20,13 @@ KST    = 1 × SMA₁₀(ROC₁₀) + 2 × SMA₁₀(ROC₁₅) + 3 × SMA₁₀(
 Señal  = SMA₉(KST)
 ```
 
-El primer valor llega en la actualización 31, cuando la tasa de cambio más larga está lista, y el gráfico dibuja desde ahí. **El motor suaviza con su media simple por defecto, la [discreta](/docs/indicators/averages/sma)**, que toma la media de un bloque completo y la mantiene hasta que se completa el siguiente, donde el diseño de Pring usa una media móvil. Así que el KST y su señal se mueven a saltos: en las series reales del gráfico, el 87 % de las barras repite el valor anterior del KST, y el 89 % el de la señal.
+El primer valor llega en la actualización 31, cuando la tasa de cambio más larga está lista, y el gráfico dibuja desde ahí. Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en el diseño de Pring. **En la actualización 31 aún no están calientes**: conservan los ceros que dan las tasas mientras se calientan. El KST es el de Pring desde la actualización 45 y su señal desde la 53, así que deja fuera de una regla los valores anteriores.
 
 ## Cómo leerlo
 
 - **La línea de cero es el signo del momento combinado**, y la tasa más larga cuenta cuatro veces lo que la más corta, así que el KST sigue más la tendencia lenta que la rápida.
-- **La señal es su media.** El KST cruzando su señal es el disparador habitual; en las series reales del gráfico se cruzan de 15 a 18 veces en las 270 barras dibujadas.
-- **Su escala depende del instrumento**: en las series reales del gráfico va de −178 a 171 en la diaria BTC/USDT y de −40 a 11 en la de 15 minutos ETH/USDT.
+- **La señal es su media.** El KST cruzando su señal es el disparador habitual. En las series reales del gráfico se cruzan de 13 a 16 veces en las 248 barras desde la actualización 53.
+- **Su escala depende del instrumento**: en las series reales del gráfico, desde la actualización 45, va de −178 a 210 en la diaria BTC/USDT y de −33 a 11 en la de 15 minutos ETH/USDT.
 
 ## En una estrategia
 
@@ -43,6 +43,6 @@ Este es un indicador pro: viene con los planes Pro y Elite, y una estrategia lo 
 ## Relacionado
 
 - [Tasa de cambio](/docs/indicators/oscillators/roc): la tasa de cambio que suma cuatro veces.
-- [Media móvil simple](/docs/indicators/averages/sma): la media discreta con la que suaviza, explicada allí.
+- [Media móvil simple](/docs/indicators/averages/sma): la media con la que suaviza, en su modo móvil.
 - [Curva de Coppock](/docs/indicators/oscillators/coppockCurve): otra suma de tasas de cambio suavizadas.
 - [Indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators): todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran.

@@ -1,6 +1,6 @@
 ---
 title: "Oscilador estocástico"
-description: "Cómo el oscilador estocástico sitúa el cierre en el rango de las últimas barras, con su %K suavizado y su %D, por qué las líneas del motor se mueven a saltos, y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el oscilador estocástico sitúa el cierre en el rango de las últimas barras, con su %K suavizado y su %D, desde qué actualización están calientes los dos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.53
 lastUpdated: '2026-11-13T21:28:19Z'
 ---
@@ -21,13 +21,13 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 %D       = SMA(%K, dSuav)
 ```
 
-Los periodos son 14, 3 y 3 por defecto. Una ventana sin rango da un `%K` bruto de 50. El primer valor llega en la actualización `k`, y el gráfico dibuja desde ahí. Las medias simples del motor son las **discretas** por defecto, que mantienen la media de un bloque completo hasta que se completa el siguiente (la [página de la SMA](/docs/indicators/averages/sma) lo explica). Así que `%K` y `%D` se mueven a saltos: el 66 % de las barras repite el valor anterior, en las series reales del gráfico.
+Los periodos son 14, 3 y 3 por defecto. Una ventana sin rango da un `%K` bruto de 50. Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en los manuales. El primer valor llega en la actualización `k`, la 14 con los valores por defecto, y el gráfico dibuja desde ahí, pero el suavizado todavía conserva valores brutos de ventanas más cortas: `%K` es el de los manuales desde la actualización 16 y `%D` desde la 18.
 
 ## Cómo leerlo
 
 - **0 es un cierre en el fondo del rango y 100 un cierre en lo alto**, y lee 50 en una barra sin rango o en un doji a media altura. Una subida recta de barras que cierran en su máximo lee 100.
-- **Los niveles 80 y 20 se alcanzan a menudo.** En las series reales del gráfico, con los valores por defecto, `%K` está en 80 o por encima en del 7 % al 16 % de las barras y en 20 o por debajo en del 10 % al 18 %.
-- **Las líneas van a saltos.** El libro suaviza con medias móviles y la línea cambia con cada barra; aquí `%K` y `%D` mantienen un valor durante un bloque de 3 barras. Una regla que cruza `%K` sobre `%D` ve el cruce solo al final de un bloque.
+- **Los niveles 80 y 20 se alcanzan a menudo.** En las series reales del gráfico, con los valores por defecto, `%K` está en 80 o por encima en del 7 % al 17 % de las barras y en 20 o por debajo en del 12 % al 18 %.
+- **`%K` cruza `%D` a menudo**, porque los dos siguen cada barra. Una regla sobre ese cruce suele mirar además dónde ocurre, por debajo de 20 o por encima de 80.
 
 ## En una estrategia
 

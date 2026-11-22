@@ -17,11 +17,11 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 
 ```text
 racha = cierres consecutivos al alza (+1, +2, …) o a la baja (−1, −2, …), 0 si el cierre no cambia
-rango = 100 × (el número de los últimos N rendimientos iguales o menores que el último − 1) / (N − 1)
+rango = 100 × (el número de los últimos N rendimientos estrictamente menores que el último) / (N − 1)
 CRSI  = (RSI(precio, 3) + RSI(racha, 2) + rango) / 3
 ```
 
-`N` es el periodo del rango, 100 por defecto. Los dos RSI son el [RSI](/docs/indicators/oscillators/rsi) por defecto del motor. El primer valor llega en la actualización `N + 1`, la 101 con los valores por defecto, y el gráfico dibuja desde ahí; antes la línea lee 0.
+`N` es el periodo del rango, 100 por defecto. Un rendimiento igual al último no cuenta como menor, así que cuando todos los rendimientos son iguales el rango es 0. Los dos RSI son el [RSI](/docs/indicators/oscillators/rsi) por defecto del motor. El primer valor llega en la actualización `N + 1`, la 101 con los valores por defecto, y el gráfico dibuja desde ahí; antes la línea lee 0.
 
 ## Cómo leerlo
 

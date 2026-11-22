@@ -2,6 +2,7 @@
 title: "Operators"
 description: "How to add, subtract, multiply, limit and round indicators in a QTSurfer strategy, with the names each operator registers."
 order: 11
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 The operators build an indicator out of others: `add`, `diff`, `mul`, `clamp` and `round`. Each reads indicators by their names, so register those first, and its result is an indicator like any other: a window can watch it and another operator can read it. They have no chart, since they draw whatever they are given.

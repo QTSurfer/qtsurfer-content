@@ -2,6 +2,7 @@
 title: "Change rate (one update)"
 description: "How rateChange gives the change of a value since the update before as a fraction, how it differs from the rate of change over N bars, and how to use it in a QTSurfer strategy."
 order: 9.01
+lastUpdated: '2026-11-22T19:12:13Z'
 ---
 
 The **change rate** is how much a value changed since the update before, as a fraction of that value: 0.01 is a rise of 1 %. It has no period: it always looks exactly one update back.

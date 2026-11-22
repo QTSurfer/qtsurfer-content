@@ -2,6 +2,7 @@
 title: "Subidas, bajadas y extremos"
 description: "El tamaño de cada subida y bajada con su racha, y lo acumulado desde el inicio: la subida, la bajada, el máximo, el mínimo y la suma."
 order: 10
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 En los catálogos de QTSurfer, los indicadores de conteo y extremos son `gain`, `loss`, `max`, `min` y `sum`: siguen un valor actualización a actualización y guardan lo que una regla suele necesitar, el tamaño de un movimiento, su racha o lo acumulado desde el inicio. Leen un indicador por su nombre, como `price`, y sirven en una estrategia `ticker` o `kline`.

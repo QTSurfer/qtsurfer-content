@@ -2,6 +2,7 @@
 title: "Distancia y cambio"
 description: "Cuánto se aleja un valor de otro y cuánto cambió desde la actualización anterior: la tasa de cambio, el cambio porcentual y las dos distancias."
 order: 9
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 En los catálogos de QTSurfer, los indicadores de distancia y cambio son `rateChange`, `percentChange`, `distance` y `distanceMa`: piezas pequeñas que convierten uno o dos valores en una medida relativa, comparable entre instrumentos. Leen un indicador por su nombre, como `price`, y sirven en una estrategia `ticker` o `kline`.

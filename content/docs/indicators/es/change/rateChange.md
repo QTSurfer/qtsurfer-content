@@ -2,6 +2,7 @@
 title: "Tasa de cambio (una actualización)"
 description: "Cómo rateChange da el cambio de un valor desde la actualización anterior como fracción, en qué se diferencia de la tasa de cambio sobre N barras y cómo usarlo en una estrategia de QTSurfer."
 order: 9.01
+lastUpdated: '2026-11-22T19:12:13Z'
 ---
 
 La **tasa de cambio** es cuánto cambió un valor desde la actualización anterior, como fracción de ese valor: 0,01 es una subida del 1 %. No tiene periodo: mira siempre exactamente una actualización atrás.

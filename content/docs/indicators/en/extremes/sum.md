@@ -2,6 +2,7 @@
 title: "Sum"
 description: "How sum accumulates every value since the start, which sources it makes sense over, and how to use it in a QTSurfer strategy."
 order: 10.05
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 The **sum** is the total of every value since the start of the run.

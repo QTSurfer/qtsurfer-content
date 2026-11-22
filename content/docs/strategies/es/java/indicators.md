@@ -2,7 +2,7 @@
 title: Indicadores en Java
 description: Configura, compón y amplía el pipeline de indicadores en tiempo real de QTSurfer.
 order: 3
-lastUpdated: "2026-11-16T20:20:30Z"
+lastUpdated: '2026-11-22T19:18:49Z'
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md

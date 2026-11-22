@@ -2,6 +2,7 @@
 title: "Maximum"
 description: "How max keeps the highest value since the start, why it has no window, and how to use it in a QTSurfer strategy."
 order: 10.03
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 The **maximum** is the highest value seen since the start of the run. It only goes up.

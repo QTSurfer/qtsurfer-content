@@ -2,6 +2,7 @@
 title: "Distancia"
 description: "Cómo distance mide la separación entre dos indicadores en porcentaje del segundo, por qué su línea de cero es un cruce y cómo usarlo en una estrategia de QTSurfer."
 order: 9.03
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 La **distancia** es la separación entre dos indicadores, en porcentaje del segundo, la base. Entre dos medias dice cuál está encima y por cuánto.

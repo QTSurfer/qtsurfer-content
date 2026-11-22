@@ -2,6 +2,7 @@
 title: "Distance and change"
 description: "How far one value is from another, and how much a value changed since the update before: the change rate, the percent change and the two distances."
 order: 9
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 In the QTSurfer catalogues, the indicators of distance and change are `rateChange`, `percentChange`, `distance` and `distanceMa`: small building blocks that turn one or two values into a relative measure, which compares across instruments. They read an indicator by its name, such as `price`, and work in a `ticker` or a `kline` strategy.

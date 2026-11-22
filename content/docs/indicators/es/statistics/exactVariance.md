@@ -2,7 +2,7 @@
 title: "Varianza exacta"
 description: "Cómo la varianza exacta mide la dispersión de los últimos precios, dividiendo por N donde variance divide por N menos 1, y cómo usarla en una estrategia de QTSurfer."
 order: 7.01
-lastUpdated: '2026-11-12T18:54:41Z'
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 La **varianza exacta** es la media de los cuadrados de las distancias de los últimos `N` precios a su media. Es la contrapartida pro de la [varianza](/docs/indicators/volatility/variance): divide por `N`, donde aquella divide por `N − 1`.

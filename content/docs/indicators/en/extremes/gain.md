@@ -2,6 +2,7 @@
 title: "Gain"
 description: "How gain gives the size of each rise and keeps the count of rises in a row, why it needs a name, and how to use it in a QTSurfer strategy."
 order: 10.01
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 The **gain** is the size of the rise since the update before, in the units of what it reads, and 0 when there is no rise. Beside the value it keeps a counter: how many rises have come in a row.

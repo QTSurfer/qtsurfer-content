@@ -2,6 +2,7 @@
 title: "Bajada"
 description: "Cómo loss da el tamaño de cada bajada como número positivo y cuenta las bajadas seguidas, por qué necesita un nombre y cómo usarlo en una estrategia de QTSurfer."
 order: 10.02
+lastUpdated: '2026-11-22T19:06:11Z'
 ---
 
 La **bajada** es cuánto bajó el valor desde la actualización anterior, como número positivo en las unidades de lo que lee, y 0 cuando no baja. Junto al valor guarda un contador: cuántas bajadas han llegado seguidas.

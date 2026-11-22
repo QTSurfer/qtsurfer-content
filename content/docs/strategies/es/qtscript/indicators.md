@@ -5,7 +5,7 @@ order: 8
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: c9df53595dccfa26c6d81ba9799a17d285ea05b4
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
-lastUpdated: "2026-11-16T20:20:30Z"
+lastUpdated: '2026-11-22T19:18:49Z'
 ---
 
 Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tipo, con lo que calcula cada uno. Una línea bajo

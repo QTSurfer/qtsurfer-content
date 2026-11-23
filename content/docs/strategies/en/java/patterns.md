@@ -5,6 +5,7 @@ order: 4
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
 upstreamPath: skills/qtsurfer-java-strategy/references/patterns.md
+lastUpdated: '2026-11-23T00:30:55Z'
 ---
 
 Proven patterns extracted from production and backtested legacy strategies.

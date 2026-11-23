@@ -5,6 +5,7 @@ order: 2
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
+lastUpdated: '2026-11-23T00:30:55Z'
 ---
 
 A QTSurfer strategy is a plain Java class (no framework annotations required) that extends a strategy base class — most commonly `AbstractTickerStrategy` (see [Strategy base classes](#strategy-base-classes) for the kline, funding-rate, and multi-source siblings). It receives real-time market data, configures technical indicators, and emits buy/sell signals. The engine compiles strategies server-side — no local toolchain needed.

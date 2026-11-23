@@ -3,7 +3,7 @@ title: Backtests
 description: Prepare historical data, execute a strategy, poll its result, and inspect its equity curve.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---

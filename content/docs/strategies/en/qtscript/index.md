@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: A compact language for writing strategies — every section, windows, what's in scope, and how it compiles the same as Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 189eafeebe6c73cb7c491c928d95665f8ee86320
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-22T23:27:04Z'
 ---
@@ -66,7 +66,7 @@ on a one-minute window, emitting a signal on each threshold.
 | `init { }` | Optional. Plain Java run once when the strategy is built — engine setters | `init { setPercentGain(0.5); }` |
 | `instruments` | Optional. Which markets: pairs (`BASE/QUOTE`, either side may be `*`), regular expressions (`~"..."`, matched against the whole symbol), or a Java body for full control | `instruments */usdt` · `instruments btc/usdt, eth/*` |
 | `uses` | Optional. Brings the [pro indicators](#the-pro-indicators-uses) into the file, so `setup:` can call them by their bare name. Several `uses` lines add up | `uses pro.*` · `uses pro.adx, pro.ichimoku` |
-| `setup:` | The indicators, **one builder call per line** (the free catalogue of the builder a Java strategy uses, [listed below](#what-goes-under-setup)). The lines under `setup:` are indented, and the first line back at column 0 ends the section | `ema(12)` · `bollinger(20, 2)` |
+| `setup:` | The indicators, **one builder call per line** (the catalogue of the builder a Java strategy uses, [listed below](#what-goes-under-setup)). The lines under `setup:` are indented, and the first line back at column 0 ends the section | `ema(12)` · `bollinger(20, 2)` |
 | Windows | Where the logic goes — see below | `rsi(14) window m1 { ... }` |
 | `onCommand { }` | Optional, at most one per file. Runs when the run receives a [command](/docs/developers/api/live#commands) — see below | `onCommand { if ("flatten".equals($command)) ... }` |
 
@@ -442,6 +442,7 @@ Your Java, plus what is already in scope — nothing needs importing:
 | `value("name")` | any other indicator's current value |
 | `$indicator` | the name of the indicator this window is on, as a `String` — [see above](#which-indicator-a-window-is-on) |
 | `store` | the per-instrument state shared by every window of that instrument |
+| `$globalStore` | the strategy's own state, for what belongs to no single instrument — [see below](#the-global-store-globalstore) |
 | `emitBuy(price)`, `emitSell(price)`, `emitInfo(key, values…)`, `emitSignal(signal)` | signal emission |
 | every `param` | readable by its name |
 
@@ -472,6 +473,32 @@ setup:
 
 `value("ema" + fast)` reads any registered indicator by name; `store` is the same store every window of
 the instrument shares.
+
+### The global store: `$globalStore`
+
+`store` is one instrument's. State that belongs to the strategy as a whole (a count across every instrument, a flag that a command
+sets) goes in the **global store**, `$globalStore`: one store for the strategy, the same object in every window of every instrument
+and in the hooks.
+
+- It is in scope in a window body, in `onCommand { }`, in `onAttach { }` and in `onDetach { }`.
+- It is a namespace of its own: a key set through `$globalStore` is never seen through `store` or through
+  `getStateStore("<symbol>")`, and the other way round.
+- It is not in scope in `init { }` or `instruments { }`, which run before the platform starts the strategy: using it there is a
+  compile error that says so.
+- Like any `StateStore` it is memory: a restart empties it.
+
+```
+setup:
+  rsi(14) window m5 {
+    if (actual < 30 && !$globalStore.is("long")) {
+      $globalStore.set("long");
+      emitBuy(price);
+    }
+  }
+onCommand {
+  if ("flatten".equals($command)) $globalStore.set("flat");
+}
+```
 
 ## Candles
 
@@ -555,7 +582,13 @@ Inside either body `$context` is the attachment, with these accessors and nothin
 | `$context.getInstrumentCount()`, `$context.getInstrument(i)` | how many instruments the attachment reads, and the `i`th as a symbol |
 | `$context.hasInstrument("BTC/USDT")` | whether it reads that instrument |
 | `$context.isWarmingUp()` | whether the attachment has a warm-up to replay (`warmFrom` above `0`) |
-| `$context.getReason()` | never `null`: `""` in `onAttach`; in `onDetach` one of `"OWNER"`, `"REFUSED"`, `"POOL_GONE"`, `"CAPACITY"` or `"FUNDS"`. A source dropped for lack of data, and a `dex` pool of a pair the run already reads (`SAME_PAIR` on the attachment), arrive as `"REFUSED"` |
+| `$context.getReason()` | never `null`: `""` in `onAttach`; in `onDetach` one of `"OWNER"`, `"REFUSED"`, `"POOL_GONE"`, `"CAPACITY"`, `"FUNDS"` or `"STRATEGY"`. A source dropped for lack of data, and a `dex` pool of a pair the run already reads (`SAME_PAIR` on the attachment), arrive as `"REFUSED"` |
+
+For a `dex` source the attachment reads one instrument, the pair the pool's candles carry (`Rocco/WETH`), and `onAttach`
+runs when the pool delivers its first candle, just before it ([The instrument of a pool](/docs/developers/api/live#the-instrument-of-a-pool)).
+Attached with `resolveInstrument: false`, `onAttach` runs at once and `$context.getInstrument(0)` is a stand-in,
+`<address>/<exchange>:<segment>`; `onDetach` then carries the pair if the pool delivered one. Pair the two hooks by
+`$context.getId()`, the same in both.
 
 Compare with `"OWNER".equals($context.getReason())`, which reads the same whatever the value. As in `onCommand`, nothing
 a window body has (`actual`, `$indicator`, `value(...)`, the ambient `store`) is in scope, because the attachment is
@@ -588,6 +621,24 @@ out of time or failed).
 why. It does **not** run when the run stops or fails: a stop is not a point in the run's data, so nothing a hook emitted
 then could be tied to the events the run had read. To act before a run ends, closing its open positions for instance, send
 it a command ([Handling a command](#handling-a-command)) and stop the run once the command has been applied.
+
+### A strategy that leaves a source
+
+`detach();` asks the platform to detach a source, because the strategy has finished with it ([A strategy that leaves a
+source](/docs/developers/api/live#a-strategy-that-leaves-a-source)):
+
+- in a **window** body it ends the source that reads the instrument the window is about;
+- in `onAttach { }` it ends the attachment the hook is told of: `detach();` is the same as `detach($context);`;
+- in `onDetach { }` it may be called and does nothing: the source is already going.
+
+```
+strategy "Quick look" kline
+
+setup:
+  window close m5 { emitInfo("seen", close); detach(); }
+```
+
+The request is applied before the next event and the strategy's `onDetach` is told `"STRATEGY"`; a backtest ignores it.
 
 A Java strategy overrides the same two methods of `Strategy` - see [Coding Java
 strategies](/docs/strategies/java/strategy_coding#attaching-and-detaching-a-source).

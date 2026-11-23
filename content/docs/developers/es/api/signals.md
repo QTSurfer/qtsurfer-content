@@ -3,7 +3,7 @@ title: Canales de señales
 description: Un proveedor vende los avisos de un canal como ofertas y códigos de un solo uso; las ejecuciones en vivo de una suscripción reciben el instrumento adjuntado, al instante o tras un retraso.
 order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/signals.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---
@@ -224,6 +224,7 @@ POST /signals/subscriptions/{subscriptionId}/runs
 | `runId` | Obligatorio. Una de tus ejecuciones en vivo. |
 | `type` | Opcional, `ticker` o `kline`, `kline` por defecto. Cómo lee la ejecución el instrumento de un exchange centralizado; tiene que ser uno que consuma la estrategia de la ejecución. Una pool se lee siempre como `kline`. |
 | `warmFrom` | Opcional, de `0` a `3600`, `0` por defecto: el calentamiento de cada adjuntado que hace una entrega (consulta [Calentar la ejecución](live#calentar-la-ejecución-warmfrom)). Con `0` la estrategia lee desde el momento de la entrega, que es la forma más rápida de actuar sobre un aviso. Una pool entregada a una ejecución que ya lee otra se lee desde ese momento, diga lo que diga esto. |
+| `resolveInstrument` | Opcional, `true` por defecto. Para una pool: si a la estrategia se le avisa de ella cuando la pool entrega su primera vela (`true`) o enseguida, con un instrumento provisional (`false`), como con [un adjuntado](live#el-instrumento-de-una-pool). |
 
 Una suscripción alimenta como mucho sus `maxRuns` ejecuciones a la vez (`429` con `reason: SUBSCRIPTION_RUNS_LIMIT` si se pasa),
 y una ejecución la alimenta a la vez una sola suscripción de un canal (`409` con `reason: RUN_FED_BY_ANOTHER`). `DELETE

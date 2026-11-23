@@ -3,7 +3,7 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 189eafeebe6c73cb7c491c928d95665f8ee86320
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-22T23:27:04Z'
 ---
@@ -311,6 +311,35 @@ warm-up period, such as an RSI or an EMA, has not settled in its first windows e
 a window cannot hand you: a flag, a counter, a value from several windows ago. A listener that only needs the
 store, `prev` and `actual` can be a lambda; one that emits a signal extends `AbstractWindowListener`, as above.
 
+## The global store
+
+`store` is one instrument's. State of the strategy as a whole (a count across every instrument, a flag that a command sets) goes in the
+**global store**: `getStateStore()` with no argument, on the strategy, returns it. It is never `null` and never an `Optional`, unlike
+`getStateStore(Instrument)`, which is an instrument's. A window listener that extends `AbstractWindowListener` reaches the same store
+with `getGlobalState()`.
+
+It is a namespace of its own: a key set in one is never seen through the other. It is memory, like any `StateStore`: a restart empties
+it. The platform binds it when it starts the strategy, so read it from a listener, `update()`, `handle(CommandRequest)`, `onAttach` or
+`onDetach`, not from the constructor.
+
+```java
+@Override
+public void handle(CommandRequest request) {
+    getStateStore().set("flatten");            // the strategy's own store
+}
+
+// in a listener that extends AbstractWindowListener
+@Override
+public void onChange(StateStore store, double prev, double actual) {
+    if (getGlobalState().is("flatten")) {
+        return;
+    }
+    store.set("seen");                         // this instrument's store
+}
+```
+
+[QTScript](/docs/strategies/qtscript#the-global-store-globalstore) writes the same store as `$globalStore`.
+
 ## Reading indicators from update()
 
 A strategy that overrides `update()` instead of using windows advances the indicators itself with
@@ -451,8 +480,14 @@ without segments); `getVenueType()` (the enum `VenueType`: `CEX`, `DEX`) and `ge
 `Ticker`, `KLine`, `FundingRate`), with `getVenueTypeName()` (`"cex"` or `"dex"`) and `getTypeName()` (`"ticker"`,
 `"kline"` or `"funding"`) as the same values in text; `getInstrumentCount()`, `getInstrument(int)` (the symbol),
 `hasInstrument(String)` and `instrumentList()`; `isWarmingUp()`; and `getReason()`, never `null`: `""` on an attach and, on
-a detach, one of `REASON_OWNER`, `REASON_REFUSED`, `REASON_POOL_GONE`, `REASON_CAPACITY` or `REASON_FUNDS` (as text:
+a detach, one of `REASON_OWNER`, `REASON_REFUSED`, `REASON_POOL_GONE`, `REASON_CAPACITY`, `REASON_FUNDS` or `REASON_STRATEGY` (as text:
 `"OWNER"`, ...). A source dropped for lack of data, and a `dex` pool of a pair the run already reads (`SAME_PAIR` on the attachment), arrive as `REASON_REFUSED`.
+
+For a `dex` source the attachment reads one instrument, the pair the pool's candles carry (`Rocco/WETH`): `getInstrument(0)` is
+its symbol and `instrumentList().get(0)` the `Instrument`, which `createInfoStrategySignal` takes. `onAttach` runs when the pool
+delivers its first candle, just before it ([The instrument of a pool](/docs/developers/api/live#the-instrument-of-a-pool)). Attached with
+`resolveInstrument: false`, it runs at once and the instrument is a stand-in, `<address>/<exchange>:<segment>`; `onDetach` then
+carries the pair if the pool delivered one. Pair the two methods by `getId()`, the same in both.
 
 Both methods run on the same thread as `update()`, right before the first market event of the new source (or, for a
 detach, before the first event the run no longer reads), so they see the strategy's state exactly as it was at that point
@@ -469,6 +504,26 @@ and `onDetach` once after its last, also when it ends before its data does (canc
 why. It does **not** run when the run stops or fails: a stop is not a point in the run's data, so nothing a hook emitted
 then could be tied to the events the run had read. To act before a run ends, closing its open positions for instance, send
 it a command ([Receiving commands](#receiving-commands)) and stop the run once the command has been applied.
+
+### A strategy that leaves a source
+
+A strategy that has finished with a source asks the platform to detach it ([A strategy that leaves a
+source](/docs/developers/api/live#a-strategy-that-leaves-a-source)):
+
+```java
+@Override
+public void update(Kline kline) {
+    super.update(kline);
+    if (seenLongEnough(kline)) {
+        detach(kline.getInstrument()); // the source that reads this instrument
+    }
+}
+```
+
+`detach(Instrument)` ends the source that reads the instrument; `detach(StrategyContext)`, called from `onAttach` or `onDetach`, ends
+the attachment the context describes, by its id; in a window listener, `detach()` ends the source of the window's instrument. The
+request is applied before the next event and `onDetach` is told `REASON_STRATEGY`; a backtest ignores it. Called from
+`onDetach`, `detach` is allowed and does nothing: the source is already going.
 
 A QTScript strategy does the same with `onAttach { }` and `onDetach { }` - see
 [QTScript](/docs/strategies/qtscript#attaching-and-detaching-a-source).

@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 2
 lastUpdated: '2026-11-22T23:27:04Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 54e8f0b90d6634cd246861f39991dd2165eb5b2e
+upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -317,6 +317,12 @@ en un listener enganchado a un indicador simple lanza una excepción.
 
 ## Gestión de estado
 
+La estrategia tiene además un **almacén global** para el estado que no pertenece a un solo instrumento: `getStateStore()` sin argumento lo
+devuelve (nunca `null`, nunca un `Optional`), y un listener que extiende `AbstractWindowListener` llega al mismo almacén con
+`getGlobalState()`. Es un espacio de nombres propio, una clave puesta en uno nunca se ve a través del otro, y es memoria como cualquier
+`StateStore`. La plataforma lo enlaza al arrancar la estrategia: léelo desde un listener, `update()`, `handle(CommandRequest)`, `onAttach`
+u `onDetach`, no desde el constructor. QTScript lo escribe como `$globalStore`.
+
 `StateStore` es por instrumento y lo comparten todos los listeners del grupo de indicadores de ese
 instrumento (un único store, no uno por ventana). Se crea de forma perezosa — una ventana que nadie
 escucha nunca lo toca. Dentro de un window listener llega como primer parámetro de `onChange`; fuera
@@ -496,8 +502,21 @@ sin segmentos); `getVenueType()` (el enum `VenueType`: `CEX`, `DEX`) y `getType(
 `KLine`, `FundingRate`), con `getVenueTypeName()` (`"cex"` o `"dex"`) y `getTypeName()` (`"ticker"`, `"kline"` o `"funding"`)
 como los mismos valores en texto; `getInstrumentCount()`, `getInstrument(int)` (el símbolo), `hasInstrument(String)` e
 `instrumentList()`; `isWarmingUp()`; y `getReason()`, nunca `null`: `""` en un adjuntado y, en un quitado, uno de
-`REASON_OWNER`, `REASON_REFUSED`, `REASON_POOL_GONE`, `REASON_CAPACITY` o `REASON_FUNDS` (como texto: `"OWNER"`, ...). Una
+`REASON_OWNER`, `REASON_REFUSED`, `REASON_POOL_GONE`, `REASON_CAPACITY`, `REASON_FUNDS` o `REASON_STRATEGY` (como texto: `"OWNER"`, ...). Una
 fuente retirada por falta de datos, y una pool `dex` de un par que la ejecución ya lee, llegan como `REASON_REFUSED`.
+
+Para una fuente `dex` el adjuntado lee un instrumento, el par que llevan las velas de la pool (`Rocco/WETH`): `getInstrument(0)` es
+su símbolo e `instrumentList().get(0)` el `Instrument`, que `createInfoStrategySignal` acepta. `onAttach` corre cuando la pool
+entrega su primera vela, justo antes de ella (la guía de ejecución en vivo, «El instrumento de una pool»). Adjuntada con
+`resolveInstrument: false`, corre enseguida y el instrumento es un provisional, `<dirección>/<exchange>:<segmento>`; `onDetach` lleva
+entonces el par si la pool entregó uno. Empareja los dos métodos por `getId()`, el mismo en los dos. Un símbolo no identifica un
+token: cada señal de una ejecución `dex` lleva el contrato como `instrument.id`.
+
+Una estrategia que ha acabado con una fuente pide a la plataforma que la quite (la guía de ejecución en vivo, «Una estrategia que deja una
+fuente»): `detach(Instrument)` termina la fuente que lee el instrumento; `detach(StrategyContext)`, llamado desde `onAttach` u
+`onDetach`, termina el adjuntado que describe el contexto, por su id; en un listener de ventana, `detach()` termina la fuente del
+instrumento de la ventana. La petición se aplica antes del siguiente evento y a `onDetach` se le dice `REASON_STRATEGY`; un backtest la
+ignora. Llamado desde `onDetach`, `detach` está permitido y no hace nada: la fuente ya se está yendo.
 
 Los dos métodos corren en el mismo hilo que `update()`, justo antes del primer evento de mercado de la fuente nueva (o,
 en un quitado, antes del primer evento que la ejecución ya no lee), así que ven el estado de la estrategia exactamente como

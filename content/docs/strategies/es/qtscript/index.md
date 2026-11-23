@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 189eafeebe6c73cb7c491c928d95665f8ee86320
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-22T23:27:04Z'
 ---
@@ -68,7 +68,7 @@ vigila en una ventana de un minuto, emitiendo una señal en cada umbral.
 | `init { }` | Opcional. Java tal cual, se ejecuta una vez al construir la estrategia — setters del motor | `init { setPercentGain(0.5); }` |
 | `instruments` | Opcional. Qué mercados: pares (`BASE/QUOTE`, cualquiera de los dos lados puede ser `*`), expresiones regulares (`~"..."`, comparadas contra el símbolo completo), o un cuerpo Java para control total | `instruments */usdt` · `instruments btc/usdt, eth/*` |
 | `uses` | Opcional. Trae los [indicadores pro](#los-indicadores-pro-uses) al fichero, de modo que `setup:` pueda llamarlos por su nombre sin más. Varias líneas `uses` se suman | `uses pro.*` · `uses pro.adx, pro.ichimoku` |
-| `setup:` | Los indicadores, **una llamada al builder por línea** (el catálogo libre del builder que usa una estrategia Java, [listado abajo](#qué-va-bajo-setup)). Las líneas bajo `setup:` van indentadas, y la primera línea que vuelve a la columna 0 cierra la sección | `ema(12)` · `bollinger(20, 2)` |
+| `setup:` | Los indicadores, **una llamada al builder por línea** (el catálogo del builder que usa una estrategia Java, [listado abajo](#qué-va-bajo-setup)). Las líneas bajo `setup:` van indentadas, y la primera línea que vuelve a la columna 0 cierra la sección | `ema(12)` · `bollinger(20, 2)` |
 | Ventanas | Donde va la lógica — consulta abajo | `rsi(14) window m1 { ... }` |
 | `onCommand { }` | Opcional, como mucho una por fichero. Corre cuando la ejecución recibe un [comando](/docs/developers/api/live#comandos) — consulta abajo | `onCommand { if ("flatten".equals($command)) ... }` |
 
@@ -451,6 +451,7 @@ Tu Java, más lo que ya está en ámbito — nada necesita importarse:
 | `value("nombre")` | el valor actual de cualquier otro indicador |
 | `$indicator` | el nombre del indicador en el que está esta ventana, como un `String` — [ver arriba](#en-qué-indicador-está-una-ventana) |
 | `store` | el estado por instrumento que comparten todas las ventanas de ese instrumento |
+| `$globalStore` | el estado propio de la estrategia, para lo que no pertenece a un solo instrumento — [ver abajo](#el-almacén-global-globalstore) |
 | `emitBuy(price)`, `emitSell(price)`, `emitInfo(clave, valores…)`, `emitSignal(signal)` | emisión de señales |
 | cada `param` | legible por su nombre |
 
@@ -481,6 +482,32 @@ setup:
 
 `value("ema" + rapida)` lee cualquier indicador registrado por nombre; `store` es el mismo store
 que comparte cada ventana del instrumento.
+
+### El almacén global: `$globalStore`
+
+`store` es el de un instrumento. El estado que pertenece a la estrategia entera (un recuento entre todos los instrumentos, una marca
+que pone un comando) va en el **almacén global**, `$globalStore`: un solo almacén para la estrategia, el mismo objeto en cada ventana
+de cada instrumento y en los ganchos.
+
+- Está en el ámbito en un cuerpo de ventana, en `onCommand { }`, en `onAttach { }` y en `onDetach { }`.
+- Es un espacio de nombres propio: una clave puesta con `$globalStore` nunca se ve a través de `store` ni de
+  `getStateStore("<símbolo>")`, y al revés.
+- No está en el ámbito en `init { }` ni en `instruments { }`, que corren antes de que la plataforma arranque la estrategia: usarlo ahí
+  es un error de compilación que lo dice.
+- Como cualquier `StateStore` es memoria: un reinicio lo vacía.
+
+```
+setup:
+  rsi(14) window m5 {
+    if (actual < 30 && !$globalStore.is("long")) {
+      $globalStore.set("long");
+      emitBuy(price);
+    }
+  }
+onCommand {
+  if ("flatten".equals($command)) $globalStore.set("flat");
+}
+```
 
 ## Velas
 
@@ -570,7 +597,13 @@ Dentro de cualquiera de los dos cuerpos, `$context` es el adjuntado, con estos a
 | `$context.getInstrumentCount()`, `$context.getInstrument(i)` | cuántos instrumentos lee el adjuntado, y el `i`-ésimo como símbolo |
 | `$context.hasInstrument("BTC/USDT")` | si lee ese instrumento |
 | `$context.isWarmingUp()` | si el adjuntado tiene un calentamiento que reproducir (`warmFrom` por encima de `0`) |
-| `$context.getReason()` | nunca `null`: `""` en `onAttach`; en `onDetach`, uno de `"OWNER"`, `"REFUSED"`, `"POOL_GONE"`, `"CAPACITY"` o `"FUNDS"`. Una fuente retirada por falta de datos, y una pool `dex` de un par que la ejecución ya lee (`SAME_PAIR` en el adjuntado), llegan como `"REFUSED"` |
+| `$context.getReason()` | nunca `null`: `""` en `onAttach`; en `onDetach`, uno de `"OWNER"`, `"REFUSED"`, `"POOL_GONE"`, `"CAPACITY"`, `"FUNDS"` o `"STRATEGY"`. Una fuente retirada por falta de datos, y una pool `dex` de un par que la ejecución ya lee (`SAME_PAIR` en el adjuntado), llegan como `"REFUSED"` |
+
+Para una fuente `dex` el adjuntado lee un instrumento, el par que llevan las velas de la pool (`Rocco/WETH`), y `onAttach`
+corre cuando la pool entrega su primera vela, justo antes de ella ([El instrumento de una pool](/docs/developers/api/live#el-instrumento-de-una-pool)).
+Adjuntada con `resolveInstrument: false`, `onAttach` corre enseguida y `$context.getInstrument(0)` es un provisional,
+`<dirección>/<exchange>:<segmento>`; `onDetach` lleva entonces el par si la pool entregó uno. Empareja los dos ganchos por
+`$context.getId()`, el mismo en los dos.
 
 Compara con `"OWNER".equals($context.getReason())`, que se lee igual sea cual sea el valor. Como en `onCommand`, nada de lo que
 tiene un cuerpo de ventana (`actual`, `$indicator`, `value(...)`, el `store` ambiente) está en el ámbito, porque el adjuntado
@@ -604,6 +637,24 @@ por qué. **No** corre cuando la ejecución se detiene o falla: una detención n
 que nada de lo que un gancho emitiera entonces podría atarse a los eventos que la ejecución había leído. Para actuar antes de
 que termine una ejecución, cerrando sus posiciones abiertas por ejemplo, envíale un comando ([Manejar un
 comando](#manejar-un-comando)) y detén la ejecución una vez aplicado el comando.
+
+### Una estrategia que deja una fuente
+
+`detach();` pide a la plataforma que quite una fuente, porque la estrategia ha acabado con ella ([Una estrategia que deja una
+fuente](/docs/developers/api/live#una-estrategia-que-deja-una-fuente)):
+
+- en un cuerpo de **ventana** termina la fuente que lee el instrumento sobre el que trata la ventana;
+- en `onAttach { }` termina el adjuntado del que informa el gancho: `detach();` es lo mismo que `detach($context);`;
+- en `onDetach { }` se puede llamar y no hace nada: la fuente ya se está yendo.
+
+```
+strategy "Quick look" kline
+
+setup:
+  window close m5 { emitInfo("seen", close); detach(); }
+```
+
+La petición se aplica antes del siguiente evento y a `onDetach` de la estrategia se le dice `"STRATEGY"`; un backtest la ignora.
 
 Una estrategia Java sobrescribe los mismos dos métodos de `Strategy` - consulta [Programar estrategias en
 Java](/docs/strategies/java/strategy_coding#adjuntar-y-quitar-una-fuente).

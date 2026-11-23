@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/live.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---
@@ -369,6 +369,25 @@ how many pools you can follow at once across your runs (`429`, with the number).
   half a minute of taking effect, and none of its candles reaches the strategy. Attach it to another run, or detach the first
   pool.
 
+#### The instrument of a pool
+
+A pool is named by its address, but the strategy sees the pair its candles carry (`Rocco/WETH`), which is known only once
+the pool has delivered a candle. So by default, with `resolveInstrument` `true` when you
+[attach](#attaching-and-detaching-a-source) it, the strategy's `onAttach` is told when the pool delivers its first candle,
+and just before that candle, with the pair as the attachment's instrument. A pool the platform refuses before then was never
+told of, and nothing is told of its end.
+
+With `resolveInstrument` `false`, `onAttach` runs at once, when the source takes effect, with a stand-in instrument built
+from what the attach says: the pool's address as its base and `<exchange>:<segment>` as its quote, such as
+`0x52e65b17fb6e5ba00ed806f37afcd2daa50271ca/robinhood:uniswap-v3`. The stand-in is not the pair of the candles, so a strategy
+that keys its state by the pair of its candles pairs `onAttach` and `onDetach` by the attachment's id, the same in both;
+`onDetach` carries the pair if the pool delivered one. A source given when a run starts has no choice: it is told as with
+`true`. To choose, start the run with no source and attach it.
+
+A symbol does not identify a token: another can be issued under the same one. Identify it by its address, which every signal of
+a `dex` run carries as `instrument.id`. A first candle needs the platform to be following the pool, so with `true` the
+strategy hears of a pool some seconds after the attach takes effect, and of a token of pump.fun when it next trades.
+
 ## Attaching and detaching a source
 
 A run does not have to start on a market feed. Start it with no `sources` and it **waits** (`state: WAITING`): it
@@ -396,6 +415,7 @@ source attached for you.
 |---|---|
 | `source` | Required. The same entry `sources` takes at start, checked the same way: exchange, segment and type, and its instruments (a `dex` source is exactly one pool). See [Sources](#sources). |
 | `warmFrom` | Optional. How many seconds of the feed before the attachment the strategy sees first, `0` to `3600`, as [at start](#warming-up-warmfrom) but for this source only. Left out, the same default as at start. A `dex` pool attached to a run that already reads another is read from now on: `0`, or left out, are the only values it takes (see [Several pools in one run](#several-pools-in-one-run)). |
+| `resolveInstrument` | Optional, `true` by default; only a `dex` pool reads it. `true`: the strategy is told of the source, with the pair the pool's candles carry, when the pool delivers its first candle, and before that candle. `false`: it is told at once, with a stand-in instrument made of the pool's address and `<exchange>:<segment>`. See [The instrument of a pool](#the-instrument-of-a-pool). A `cex` source accepts the field and ignores it. |
 | `ref` | Optional. A string of yours, up to 64 characters. Sending the same `ref` to the same run answers the attachment it already made instead of making another one, so a retried request, or an alert that arrives twice, is safe. Sending a source the run already has attached, or is attaching, answers that attachment too, whatever its `ref`. |
 
 **Every source attached to a run at the same time is on the same market feed**: the same exchange for a `cex`, the same
@@ -409,7 +429,7 @@ acceptance; `state` says when it has happened.
 ### Reading the attachments
 
 `attachments` is a list on the run, in `GET /strategy/{strategyId}/live` and `GET /live/{runId}`: for each one its
-`attachmentId`, the `source` as the platform holds it, `warmFrom`, your `ref`, `state`, `reason` and `message` when
+`attachmentId`, the `source` as the platform holds it, `warmFrom`, `resolveInstrument`, your `ref`, `state`, `reason` and `message` when
 there is something to say, `createdAtMs` and `effectiveAtMs`. The run's `sources` are the sources of its attachments that
 are `ATTACHING` or `ATTACHED`, and empty while it waits.
 
@@ -423,7 +443,7 @@ are `ATTACHING` or `ATTACHED`, and empty while it waits.
 
 `reason` is a string that may gain values: `OWNER` (you detached it), `REFUSED` (the platform refused it), `POOL_GONE` (a
 `dex` pool stopped being followed), `CAPACITY` (the platform has no room to follow it), `SAME_PAIR` (a `dex` pool of a pair the run
-already reads through another pool) and `NO_DATA` (the instrument,
+already reads through another pool), `STRATEGY` (the strategy asked for it) and `NO_DATA` (the instrument,
 of a centralized exchange, sent nothing for five minutes: it may be one that the platform does not capture). A run started with a `dex`
 source that the platform will not follow fails as it always has (see [Why a run failed or
 stopped](#why-a-run-failed-or-stopped)), and so does one whose first source, attached while it waited, is such a pool. A pool
@@ -438,11 +458,32 @@ an error. On a run that has stopped there is nothing to tell, and the attachment
 gaps. When the last source is detached the run waits again: the strategy's memory is released, so the next attach
 starts it clean, and the paper accounts are kept.
 
+### A strategy that leaves a source
+
+A strategy can end a source by itself, when it has finished with the token or the pool: it asks, and the platform detaches it. In
+[QTScript](/docs/strategies/qtscript#a-strategy-that-leaves-a-source) a window body, `onAttach { }` or `onDetach { }` calls `detach()`; a Java
+strategy calls `detach(instrument)`, `detach(context)` or, in a window, `detach()` ([Coding Java
+strategies](/docs/strategies/java/strategy_coding#a-strategy-that-leaves-a-source)).
+
+- **It is a request, applied before the next event.** The source is read up to the event the strategy was processing when it asked,
+  and the platform ends it before the first event after that one, the same on every execution of the run, as for a
+  [command](#commands). A run that reads several sources may hand the strategy one more event of that source than the one it asked at.
+- **A source is detached whole.** A `cex` source that reads several instruments goes with all of them: `detach` ends the source that
+  reads the instrument.
+- **From `onDetach` it does nothing.** A strategy may call `detach` there, for instance from closing code it shares with the
+  other hooks, and the platform ignores the request: the source is already going.
+- **It ends like any detach.** The attachment becomes `DETACHED` with the `reason` `STRATEGY`, the strategy's `onDetach` is told
+  `STRATEGY`, and when it was the last source the run waits again, so that the next attach, a new notice for instance, starts it.
+- **It is a signal of the type `system`**, `kind` `DETACH`, with the attachment in its `data`. It is in the run's history,
+  `GET /live/{runId}/signals?type=system`: without `type` the history does not carry it, so a client that does not know the type never
+  sees it. It is never pushed on the channel.
+- **A backtest ignores it:** a backtest reads the data it was given.
+
 ### What can refuse an attach
 
 | Status | When |
 |---|---|
-| `400` | The body: no `source`, a `warmFrom` outside `0` to `3600`, a `ref` longer than 64 characters; or a source a start would refuse, with the same messages (a malformed one, a pool that is not one address, a type the strategy cannot consume, a segment with no live data); or a `warmFrom` above `0` for a `dex` pool attached to a run that already reads another; or a wildcard instrument (`*`, or a pair with a `*` on one side) on a run started with `paper.accounts: instrument`, on every plan (that run opens one account for each instrument it reads, so they have to be named: attach one at a time, or a list). |
+| `400` | The body: no `source`, a `warmFrom` outside `0` to `3600`, a `ref` longer than 64 characters, a `resolveInstrument` that is not `true` or `false`; or a source a start would refuse, with the same messages (a malformed one, a pool that is not one address, a type the strategy cannot consume, a segment with no live data); or a `warmFrom` above `0` for a `dex` pool attached to a run that already reads another; or a wildcard instrument (`*`, or a pair with a `*` on one side) on a run started with `paper.accounts: instrument`, on every plan (that run opens one account for each instrument it reads, so they have to be named: attach one at a time, or a list). |
 | `402` | A wildcard instrument on a plan that does not include it. |
 | `404` | No such run, or it is not yours; on a detach, no such attachment. |
 | `409` | The run is not running, or the source is on another market feed than the ones already attached. |
@@ -817,10 +858,11 @@ Each signal pushed on a `sig:<runId>` channel (the `pub.data` of the `push` fram
 | `signalId` | Stable id for this exact signal — dedupe on it if your connection ever reconnects mid-stream. |
 | `stage` | `sandbox` or `live`: the stage the run was in when it produced the signal. Only you receive a `sandbox` signal on this channel; everyone allowed onto the channel receives `live` ones. |
 | `paramsVersion` | The parameter set in force when this signal was produced. |
-| `type` | `hint`, `info`, `marker`, or `command` — plus `paper` when reading a `mix` run's history (see [Paper trading](live_paper#output-separate-or-mix); paper items are never pushed on this channel). |
-| `kind` | `BUY`/`SELL` for a `hint`; the command name for a `command`; absent otherwise. |
+| `type` | `hint`, `info`, `marker`, or `command` — plus `paper` when reading a `mix` run's history, and `system` when a strategy asks the platform to detach a source (never pushed on this channel, see [A strategy that leaves a source](#a-strategy-that-leaves-a-source)); the history carries `system` only when `type` asks for it (see [Paper trading](live_paper#output-separate-or-mix); paper items are never pushed on this channel). |
+| `kind` | `BUY`/`SELL` for a `hint`; the command name for a `command`; `DETACH` for a `system`; absent otherwise. |
 | `eventTsMs` | Market time the signal was produced. |
 | `emittedAtMs` | Time it was published — always ≥ `eventTsMs`. |
+| `instrument` | The instrument the signal is about: `exchange`, `segment` and `symbol` (`BTC/USDT`). For a `dex` run also `id`, the contract: the address of the pool, or the mint of the token. The `symbol` is the pair as the candles name it and does not identify a token, so act on `id`. |
 | `order` | Present only for a `hint`. |
 | `data` | The signal's own free-form payload: what the strategy put there with `signal.set(...)`. Whoever may read the run may read it, so on a `public` run it is public. A signal whose `data` is over 8 KiB (8,192 bytes of its JSON) is not pushed on this channel; [the history route](#reading-signals-a-run-already-produced) returns it whole. |
 | `regenerated` | `true` only for a signal republished to fill a gap in the historical record — always `false` for a signal you are seeing for the first time. |
@@ -969,7 +1011,7 @@ run's own `sources`, or in a signal's `instrument.symbol`).
 ### Filtering by type
 
 `type` narrows to one or more signal types, comma-separated: `hint`, `info`, `marker`, `command`,
-`paper`. It combines with `instrument` — `?type=hint&instrument=*/USDT` is every hint on a USDT pair.
+`paper`, `system`. With no `type` the first five are returned and `system` is not. It combines with `instrument` — `?type=hint&instrument=*/USDT` is every hint on a USDT pair.
 Both filters are carried over into `_links.next`, so following it keeps the same selection.
 
 ### The window moves, and cursors expire

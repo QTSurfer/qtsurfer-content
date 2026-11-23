@@ -1,6 +1,6 @@
 ---
 title: "Know Sure Thing (KST)"
-description: "Cómo el Know Sure Thing suma cuatro tasas de cambio suavizadas de longitudes distintas, con su línea de señal, desde qué actualización están calientes las dos, y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el Know Sure Thing suma cuatro tasas de cambio suavizadas de longitudes distintas, con su línea de señal, desde qué actualización están listas las dos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.47
 lastUpdated: '2026-11-22T19:38:50Z'
 ---
@@ -20,13 +20,13 @@ KST    = 1 × SMA₁₀(ROC₁₀) + 2 × SMA₁₀(ROC₁₅) + 3 × SMA₁₀(
 Señal  = SMA₉(KST)
 ```
 
-El primer valor llega en la actualización 31, cuando la tasa de cambio más larga está lista, y el gráfico dibuja desde ahí. Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en el diseño de Pring. **En la actualización 31 aún no están calientes**: conservan los ceros que dan las tasas mientras se calientan. El KST es el de Pring desde la actualización 45 y su señal desde la 53, así que deja fuera de una regla los valores anteriores.
+El primer valor llega en la actualización 53, cuando el KST y su señal están listos, y el gráfico dibuja desde ahí. Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en el diseño de Pring. El KST solo ya es el de Pring desde la actualización 45, pero el motor lo da por listo junto con su señal, así que una regla que lea cualquiera de los dos recibe valores desde la 53.
 
 ## Cómo leerlo
 
 - **La línea de cero es el signo del momento combinado**, y la tasa más larga cuenta cuatro veces lo que la más corta, así que el KST sigue más la tendencia lenta que la rápida.
 - **La señal es su media.** El KST cruzando su señal es el disparador habitual. En las series reales del gráfico se cruzan de 13 a 16 veces en las 248 barras desde la actualización 53.
-- **Su escala depende del instrumento**: en las series reales del gráfico, desde la actualización 45, va de −178 a 210 en la diaria BTC/USDT y de −33 a 11 en la de 15 minutos ETH/USDT.
+- **Su escala depende del instrumento**: en las series reales del gráfico, desde la actualización 53, va de −178 a 210 en la diaria BTC/USDT y de −32 a 11 en la de 15 minutos ETH/USDT.
 
 ## En una estrategia
 

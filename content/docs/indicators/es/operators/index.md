@@ -20,7 +20,7 @@ Todos admiten además el nombre que registran como primer argumento: `diff("gap"
 
 ## Qué vigilar
 
-- **Da un nombre a cada uno.** El nombre por defecto lleva las entradas y no los números, así que `mul("price", 2)` y `mul("price", 3)` registran los dos `mulprice`, y el segundo que se registra sustituye al primero.
+- **Da un nombre a cada uno.** El nombre por defecto lleva las entradas y no los números, así que `mul("price", 2)` y `mul("price", 3)` registran los dos `mulprice`, y el segundo que se registra sustituye al primero. El motor avisa en el registro cuando un nombre pasa a leer otro indicador, pero no se detiene.
 - **La mitad se redondea hacia arriba**, también bajo cero: 2,5 se redondea a 3 y −2,5 a −2.
 - **Están listos cuando lo está lo que leen**, así que un operador sobre una media espera a la media.
 - **Una diferencia está en las unidades de sus entradas.** Para comparar instrumentos, usa la [distancia](/docs/indicators/change/distance), que es un porcentaje.

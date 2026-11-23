@@ -19,7 +19,7 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 suma = suma anterior + valor        desde la primera actualización
 ```
 
-No tiene ventana y suma todos los valores que recibe, incluidos los del calentamiento de su fuente.
+No tiene ventana y suma todos los valores desde el primero que su fuente está lista para dar: el calentamiento de un indicador no se suma.
 
 ## Cómo leerla
 

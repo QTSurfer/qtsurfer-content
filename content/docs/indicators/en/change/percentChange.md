@@ -36,7 +36,7 @@ setup:
 
 That registers `pc`. In Java, `.percentChange("pc", "price")` on the builder.
 
-Give it a name. `percentChange("price")` registers `chgprice`, the name `rateChange("price")` registers too, and the second one registered replaces the first. Avoid `chg`, which a ticker strategy already registers.
+Give it a name. Without one, `percentChange("price")` registers `pchgprice`, and `rateChange("price")` registers `chgprice`: they are two names, so both can live together. Avoid `chg`, which a ticker strategy already registers.
 
 ## Related
 

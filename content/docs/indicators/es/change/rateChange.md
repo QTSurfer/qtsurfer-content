@@ -36,7 +36,7 @@ setup:
 
 Eso registra `rc`, la fracción. Con `true` en lugar de `false` es el [cambio porcentual](/docs/indicators/change/percentChange). En Java, `.rateChange("rc", "price", false)` en el builder.
 
-Dale un nombre. `rateChange("price")` registra `chgprice`, igual que `percentChange("price")`: el segundo que se registra sustituye al primero. Tampoco lo llames `chg`, porque una estrategia ticker ya registra ese nombre.
+Dale un nombre. Sin él, `rateChange("price")` registra `chgprice`, y `percentChange("price")` registra `pchgprice`: son dos nombres, así que pueden convivir. Tampoco lo llames `chg`, porque una estrategia ticker ya registra ese nombre.
 
 ## Relacionado
 

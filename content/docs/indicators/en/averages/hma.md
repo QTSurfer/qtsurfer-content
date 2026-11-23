@@ -20,7 +20,7 @@ raw = 2 × WMA(price, ⌊N / 2⌋) − WMA(price, N)
 HMA = WMA(raw, round(√N))
 ```
 
-`⌊N / 2⌋` is half the period rounded down and `round(√N)` the square root of the period rounded to the nearest whole number: 4 for `N = 20`. The three are the weighted averages of the [WMA](/docs/indicators/averages/wma) page. The engine reports the HMA ready after `N` updates, and the chart draws from there.
+`⌊N / 2⌋` is half the period rounded down and `round(√N)` the square root of the period rounded to the nearest whole number: 4 for `N = 20`. The three are the weighted averages of the [WMA](/docs/indicators/averages/wma) page. The engine reports the HMA ready after `N + round(√N) − 1` updates, 23 for `N = 20`, which is when the last weighted average has a full window, and the chart draws from there.
 
 ## Reading it
 

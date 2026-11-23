@@ -1,6 +1,6 @@
 ---
 title: "Oscilador estocástico"
-description: "Cómo el oscilador estocástico sitúa el cierre en el rango de las últimas barras, con su %K suavizado y su %D, desde qué actualización están calientes los dos, y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el oscilador estocástico sitúa el cierre en el rango de las últimas barras, con su %K suavizado y su %D, desde qué actualización están listos los dos, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.53
 lastUpdated: '2026-11-22T19:38:50Z'
 ---
@@ -21,7 +21,7 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 %D       = SMA(%K, dSuav)
 ```
 
-Los periodos son 14, 3 y 3 por defecto. Una ventana sin rango da un `%K` bruto de 50. Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en los manuales. El primer valor llega en la actualización `k`, la 14 con los valores por defecto, y el gráfico dibuja desde ahí, pero el suavizado todavía conserva valores brutos de ventanas más cortas: `%K` es el de los manuales desde la actualización 16 y `%D` desde la 18.
+Los periodos son 14, 3 y 3 por defecto. Una ventana sin rango da un `%K` bruto de 50. Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en los manuales. El motor da el oscilador por listo en la actualización 18 con los valores por defecto, cuando `%D` tiene una ventana completa de `%K`, y el gráfico dibuja desde ahí. `%K` solo es el de los manuales desde la 16, pero una regla no recibe ninguno de los dos antes de la 18.
 
 ## Cómo leerlo
 

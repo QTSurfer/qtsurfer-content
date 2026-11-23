@@ -1,6 +1,6 @@
 ---
 title: "Oscilador acelerador (AC)"
-description: "Cómo el oscilador acelerador toma la distancia entre el oscilador Awesome y su propia media, de modo que gira antes que él, por qué sus cuatro primeros valores aún no son válidos, y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el oscilador acelerador toma la distancia entre el oscilador Awesome y su propia media, de modo que gira antes que él, desde qué actualización está listo, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.57
 lastUpdated: '2026-11-22T19:38:50Z'
 ---
@@ -21,7 +21,7 @@ AO    = SMA(medio, 5) − SMA(medio, 34)
 AC    = AO − SMA(AO, 5)
 ```
 
-Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en el diseño de Williams. El primer valor llega en la actualización 34, y el gráfico dibuja desde ahí. **Los cuatro primeros valores son un pico del calentamiento**: la media del AO todavía conserva valores de antes de que el AO estuviera listo. En la diaria BTC/USDT el primero es 13 264, el triple del más alto de los que siguen. El AC es el de los manuales desde la actualización 38, así que deja fuera de una regla los cuatro anteriores.
+Las medias simples son las [móviles](/docs/indicators/averages/sma), que toman un valor nuevo en cada actualización, como en el diseño de Williams. El primer valor llega en la actualización 38, cuando la media del AO tiene una ventana completa de él, y el gráfico dibuja desde ahí.
 
 ## Cómo leerlo
 

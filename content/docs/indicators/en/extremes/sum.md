@@ -19,7 +19,7 @@ The series are samples, synthetic ones and real crypto ones. They show how the i
 sum = previous sum + value        from the first update
 ```
 
-It has no window and it adds every value it receives, those of the warm-up of its source included.
+It has no window and it adds every value from the first one its source is ready to give: the warm-up of an indicator is not added.
 
 ## Reading it
 

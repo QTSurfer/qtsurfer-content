@@ -20,7 +20,7 @@ bruta = 2 × WMA(precio, ⌊N / 2⌋) − WMA(precio, N)
 HMA   = WMA(bruta, round(√N))
 ```
 
-`⌊N / 2⌋` es la mitad del periodo redondeada hacia abajo y `round(√N)` la raíz cuadrada del periodo redondeada al entero más próximo: 4 con `N = 20`. Las tres son las medias ponderadas de la página de la [WMA](/docs/indicators/averages/wma). El motor da la HMA por lista tras `N` actualizaciones, y el gráfico dibuja desde ahí.
+`⌊N / 2⌋` es la mitad del periodo redondeada hacia abajo y `round(√N)` la raíz cuadrada del periodo redondeada al entero más próximo: 4 con `N = 20`. Las tres son las medias ponderadas de la página de la [WMA](/docs/indicators/averages/wma). El motor da la HMA por lista tras `N + round(√N) − 1` actualizaciones, 23 con `N = 20`, que es cuando la última media ponderada tiene una ventana completa, y el gráfico dibuja desde ahí.
 
 ## Cómo leerla
 

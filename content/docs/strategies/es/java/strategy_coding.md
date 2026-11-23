@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 189eafeebe6c73cb7c491c928d95665f8ee86320
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-22T23:27:04Z'
 ---
@@ -321,6 +321,35 @@ primeras ventanas. Reserva el `StateStore` para lo que una ventana no te puede d
 de varias ventanas atrás. Un listener que solo necesita el store, `prev` y `actual` puede ser una lambda; uno que
 emite una señal extiende `AbstractWindowListener`, como arriba.
 
+## El almacén global
+
+`store` es el de un instrumento. El estado de la estrategia entera (un recuento entre todos los instrumentos, una marca que pone un comando)
+va en el **almacén global**: `getStateStore()` sin argumento, en la estrategia, lo devuelve. Nunca es `null` ni un `Optional`, a diferencia de
+`getStateStore(Instrument)`, que es el de un instrumento. Un listener de ventana que extiende `AbstractWindowListener` llega al mismo almacén
+con `getGlobalState()`.
+
+Es un espacio de nombres propio: una clave puesta en uno nunca se ve a través del otro. Es memoria, como cualquier `StateStore`: un reinicio
+lo vacía. La plataforma lo enlaza al arrancar la estrategia, así que léelo desde un listener, `update()`, `handle(CommandRequest)`, `onAttach` u
+`onDetach`, no desde el constructor.
+
+```java
+@Override
+public void handle(CommandRequest request) {
+    getStateStore().set("flatten");            // the strategy's own store
+}
+
+// in a listener that extends AbstractWindowListener
+@Override
+public void onChange(StateStore store, double prev, double actual) {
+    if (getGlobalState().is("flatten")) {
+        return;
+    }
+    store.set("seen");                         // this instrument's store
+}
+```
+
+[QTScript](/docs/strategies/qtscript#el-almacén-global-globalstore) escribe el mismo almacén como `$globalStore`.
+
 ## Leer indicadores desde update()
 
 Una estrategia que sobrescribe `update()` en lugar de usar ventanas avanza ella misma los indicadores con
@@ -465,8 +494,14 @@ sin segmentos); `getVenueType()` (el enum `VenueType`: `CEX`, `DEX`) y `getType(
 `KLine`, `FundingRate`), con `getVenueTypeName()` (`"cex"` o `"dex"`) y `getTypeName()` (`"ticker"`, `"kline"` o `"funding"`)
 como los mismos valores en texto; `getInstrumentCount()`, `getInstrument(int)` (el símbolo), `hasInstrument(String)` e
 `instrumentList()`; `isWarmingUp()`; y `getReason()`, nunca `null`: `""` en un adjuntado y, en un quitado, uno de
-`REASON_OWNER`, `REASON_REFUSED`, `REASON_POOL_GONE`, `REASON_CAPACITY` o `REASON_FUNDS` (como texto: `"OWNER"`, ...). Una
+`REASON_OWNER`, `REASON_REFUSED`, `REASON_POOL_GONE`, `REASON_CAPACITY`, `REASON_FUNDS` o `REASON_STRATEGY` (como texto: `"OWNER"`, ...). Una
 fuente retirada por falta de datos, y una pool `dex` de un par que la ejecución ya lee (`SAME_PAIR` en el adjuntado), llegan como `REASON_REFUSED`.
+
+Para una fuente `dex` el adjuntado lee un instrumento, el par que llevan las velas de la pool (`Rocco/WETH`): `getInstrument(0)` es
+su símbolo e `instrumentList().get(0)` el `Instrument`, que `createInfoStrategySignal` acepta. `onAttach` corre cuando la pool
+entrega su primera vela, justo antes de ella ([El instrumento de una pool](/docs/developers/api/live#el-instrumento-de-una-pool)). Adjuntada con
+`resolveInstrument: false`, corre enseguida y el instrumento es un provisional, `<dirección>/<exchange>:<segmento>`; `onDetach` lleva
+entonces el par si la pool entregó uno. Empareja los dos métodos por `getId()`, el mismo en los dos.
 
 Los dos métodos corren en el mismo hilo que `update()`, justo antes del primer evento de mercado de la fuente nueva (o,
 en un quitado, antes del primer evento que la ejecución ya no lee), así que ven el estado de la estrategia exactamente como
@@ -486,6 +521,26 @@ corre cuando la ejecución se detiene o falla: una detención no es un punto de 
 que un gancho emitiera entonces podría atarse a los eventos que la ejecución había leído. Para actuar antes de que termine
 una ejecución, cerrando sus posiciones abiertas por ejemplo, envíale un comando ([Recibir comandos](#recibir-comandos)) y detén la ejecución una vez
 aplicado el comando.
+
+### Una estrategia que deja una fuente
+
+Una estrategia que ha acabado con una fuente pide a la plataforma que la quite ([Una estrategia que deja una
+fuente](/docs/developers/api/live#una-estrategia-que-deja-una-fuente)):
+
+```java
+@Override
+public void update(Kline kline) {
+    super.update(kline);
+    if (seenLongEnough(kline)) {
+        detach(kline.getInstrument()); // the source that reads this instrument
+    }
+}
+```
+
+`detach(Instrument)` termina la fuente que lee el instrumento; `detach(StrategyContext)`, llamado desde `onAttach` u `onDetach`, termina
+el adjuntado que describe el contexto, por su id; en un listener de ventana, `detach()` termina la fuente del instrumento de la ventana. La
+petición se aplica antes del siguiente evento y a `onDetach` se le dice `REASON_STRATEGY`; un backtest la ignora. Llamado desde
+`onDetach`, `detach` está permitido y no hace nada: la fuente ya se está yendo.
 
 Una estrategia QTScript hace lo mismo con `onAttach { }` y `onDetach { }` - consulta
 [QTScript](/docs/strategies/qtscript#adjuntar-y-quitar-una-fuente).

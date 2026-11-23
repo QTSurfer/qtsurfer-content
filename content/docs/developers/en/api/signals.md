@@ -3,7 +3,7 @@ title: Signal channels
 description: A provider sells the notices of a channel as offers and single-use codes; the live runs of a subscription get the instrument attached, at once or after a delay.
 order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/signals.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---
@@ -224,6 +224,7 @@ POST /signals/subscriptions/{subscriptionId}/runs
 | `runId` | Required. One of your live runs. |
 | `type` | Optional, `ticker` or `kline`, `kline` by default. How the run reads a centralized exchange's instrument; it must be one the run's strategy consumes. A pool is always read as `kline`. |
 | `warmFrom` | Optional, `0` to `3600`, `0` by default: the warm-up of each attachment a delivery makes (see [Warming up](live#warming-up-warmfrom)). With `0` the strategy reads from the moment of the delivery, which is the fastest way to act on a notice. A pool delivered to a run that already reads another is read from that moment, whatever this says. |
+| `resolveInstrument` | Optional, `true` by default. For a pool: whether the strategy is told of it when the pool delivers its first candle (`true`) or at once, with a stand-in instrument (`false`), as for [an attachment](live#the-instrument-of-a-pool). |
 
 A subscription feeds at most its `maxRuns` runs at once (`429` with `reason: SUBSCRIPTION_RUNS_LIMIT` past it), and a
 run is fed by one subscription of a channel at a time (`409` with `reason: RUN_FED_BY_ANOTHER`). `DELETE

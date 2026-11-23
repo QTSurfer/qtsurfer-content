@@ -3,7 +3,7 @@ title: Paper trading on live runs
 description: Execute a live run's signals in simulation — configure it, read its accounts, equity curve and KPIs.
 order: 5.46
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/live_paper.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---

@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
 upstreamPath: docs/live.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---
@@ -381,6 +381,26 @@ cuántas pools puedes seguir a la vez entre tus ejecuciones (`429`, con el núme
   hora desde que surte efecto, y ninguna de sus velas llega a la estrategia. Adjúntala a otra ejecución, o quita la primera
   pool.
 
+#### El instrumento de una pool
+
+Una pool se nombra por su dirección, pero la estrategia ve el par que llevan sus velas (`Rocco/WETH`), que solo se conoce
+cuando la pool ha entregado una vela. Así que por defecto, con `resolveInstrument` a `true` al
+[adjuntarla](#adjuntar-y-quitar-una-fuente), a la estrategia se le avisa en `onAttach` cuando la pool entrega su primera vela,
+justo antes de esa vela, con el par como instrumento del adjuntado. De una pool que la plataforma rechaza antes de eso nunca se
+avisó, y de su final tampoco.
+
+Con `resolveInstrument` a `false`, `onAttach` corre enseguida, cuando la fuente surte efecto, con un instrumento provisional
+construido con lo que dice el adjuntado: la dirección de la pool como base y `<exchange>:<segmento>` como cotizada, como
+`0x52e65b17fb6e5ba00ed806f37afcd2daa50271ca/robinhood:uniswap-v3`. El provisional no es el par de las velas, así que una estrategia
+que guarda su estado por el par de sus velas empareja `onAttach` y `onDetach` por el id del adjuntado, el mismo en los dos;
+`onDetach` lleva el par si la pool entregó uno. Una fuente dada al arrancar una ejecución no tiene elección: se le avisa como con
+`true`. Para elegir, arranca la ejecución sin fuente y adjúntala.
+
+Un símbolo no identifica un token: se puede emitir otro con el mismo. Identifícalo por su dirección, que lleva cada señal de
+una ejecución `dex` como `instrument.id`. Una primera vela necesita que la plataforma esté siguiendo la pool, así que con `true`
+la estrategia se entera de una pool unos segundos después de que el adjuntado surta efecto, y de un token de pump.fun cuando
+vuelve a operar.
+
 ## Adjuntar y quitar una fuente
 
 Una ejecución no tiene por qué arrancar sobre un mercado. Arráncala sin `sources` y **espera** (`state: WAITING`): existe,
@@ -408,6 +428,7 @@ fuente ya adjuntada por ti.
 |---|---|
 | `source` | Obligatorio. La misma entrada que toma `sources` al arrancar, comprobada igual: exchange, segmento y tipo, y sus instrumentos (una fuente `dex` es exactamente una pool). Consulta [Fuentes](#fuentes). |
 | `warmFrom` | Opcional. Cuántos segundos del flujo anteriores al adjuntado ve primero la estrategia, de `0` a `3600`, [como al arrancar](#calentar-la-ejecución-warmfrom) pero solo para esta fuente. Si se omite, el mismo valor por defecto que al arrancar. Una pool `dex` adjuntada a una ejecución que ya lee otra se lee desde ahora: `0`, u omitirlo, son los únicos valores que admite (consulta [Varias pools en una ejecución](#varias-pools-en-una-ejecución)). |
+| `resolveInstrument` | Opcional, `true` por defecto; solo lo lee una pool `dex`. `true`: a la estrategia se le avisa de la fuente, con el par que llevan las velas de la pool, cuando la pool entrega su primera vela, y antes de esa vela. `false`: se le avisa enseguida, con un instrumento provisional hecho con la dirección de la pool y `<exchange>:<segmento>`. Consulta [El instrumento de una pool](#el-instrumento-de-una-pool). Una fuente `cex` acepta el campo y lo ignora. |
 | `ref` | Opcional. Una cadena tuya, de hasta 64 caracteres. Enviar el mismo `ref` a la misma ejecución devuelve el adjuntado que ya hizo en lugar de hacer otro, así que una petición reintentada, o una alerta que llega dos veces, es segura. Enviar una fuente que la ejecución ya tiene adjuntada, o está adjuntando, devuelve también ese adjuntado, sea cual sea su `ref`. |
 
 **Toda fuente adjuntada a la vez a una ejecución está en el mismo mercado**: el mismo exchange para un `cex`, la misma
@@ -422,7 +443,7 @@ detrás de la ejecución aplican en la misma posición del mercado, de modo que 
 ### Leer los adjuntados
 
 `attachments` es una lista en la ejecución, en `GET /strategy/{strategyId}/live` y `GET /live/{runId}`: de cada uno, su
-`attachmentId`, la `source` tal como la tiene la plataforma, `warmFrom`, tu `ref`, `state`, `reason` y `message` cuando hay
+`attachmentId`, la `source` tal como la tiene la plataforma, `warmFrom`, `resolveInstrument`, tu `ref`, `state`, `reason` y `message` cuando hay
 algo que decir, `createdAtMs` y `effectiveAtMs`. Las `sources` de la ejecución son las fuentes de sus adjuntados que están
 `ATTACHING` o `ATTACHED`, y están vacías mientras espera.
 
@@ -436,7 +457,7 @@ algo que decir, `createdAtMs` y `effectiveAtMs`. Las `sources` de la ejecución 
 
 `reason` es una cadena que puede ganar valores: `OWNER` (lo quitaste tú), `REFUSED` (la plataforma lo rechazó), `POOL_GONE`
 (una pool `dex` dejó de seguirse), `CAPACITY` (la plataforma no tiene sitio para seguirla), `SAME_PAIR` (una pool `dex` de un
-par que la ejecución ya lee a través de otra pool) y `NO_DATA` (el instrumento, de un exchange centralizado, no envió nada
+par que la ejecución ya lee a través de otra pool), `STRATEGY` (la estrategia lo pidió) y `NO_DATA` (el instrumento, de un exchange centralizado, no envió nada
 en cinco minutos: puede ser uno que la plataforma no captura). Una ejecución arrancada con una fuente `dex` que la
 plataforma no seguirá falla como siempre (consulta [Por qué una ejecución falló o se
 detuvo](#por-qué-una-ejecución-falló-o-se-detuvo)), y lo mismo una cuya primera fuente, adjuntada mientras esperaba, es una
@@ -453,11 +474,32 @@ que una [cuenta de paper trading](live_paper#huecos) tenía abiertas en los inst
 huecos. Cuando se quita la última fuente la ejecución vuelve a esperar: la memoria de la estrategia se libera, así que el
 siguiente adjuntado la arranca limpia, y las cuentas de paper trading se conservan.
 
+### Una estrategia que deja una fuente
+
+Una estrategia puede terminar una fuente por sí sola, cuando ha acabado con el token o la pool: lo pide y la plataforma la quita. En
+[QTScript](/docs/strategies/qtscript#una-estrategia-que-deja-una-fuente) un cuerpo de ventana, `onAttach { }` u `onDetach { }` llama a `detach()`; una
+estrategia Java llama a `detach(instrument)`, `detach(context)` o, en una ventana, `detach()` ([Programar estrategias en
+Java](/docs/strategies/java/strategy_coding#una-estrategia-que-deja-una-fuente)).
+
+- **Es una petición, que se aplica antes del siguiente evento.** La fuente se lee hasta el evento que la estrategia estaba procesando
+  cuando la pidió, y la plataforma la termina antes del primer evento posterior a ese, igual en cada ejecución del run, como con un
+  [comando](#comandos). Una ejecución que lee varias fuentes puede entregar a la estrategia un evento más de esa fuente que aquel en que la pidió.
+- **Una fuente se quita entera.** Una fuente `cex` que lee varios instrumentos se va con todos: `detach` termina la fuente que
+  lee el instrumento.
+- **Desde `onDetach` no hace nada.** Una estrategia puede llamar a `detach` ahí, por ejemplo desde un código de cierre que comparte con
+  los demás ganchos, y la plataforma ignora la petición: la fuente ya se está yendo.
+- **Termina como cualquier quitado.** El adjuntado pasa a `DETACHED` con el `reason` `STRATEGY`, a `onDetach` de la estrategia se le
+  dice `STRATEGY`, y cuando era la última fuente la ejecución vuelve a esperar, de modo que el siguiente adjuntado, un aviso nuevo por ejemplo, la arranca.
+- **Es una señal del tipo `system`**, `kind` `DETACH`, con el adjuntado en su `data`. Está en el histórico de la ejecución,
+  `GET /live/{runId}/signals?type=system`: sin `type` el histórico no la lleva, así que un cliente que no conoce el tipo
+  nunca la ve. Nunca se empuja por el canal.
+- **Un backtest la ignora:** un backtest lee los datos que se le dieron.
+
 ### Qué puede rechazar un adjuntado
 
 | Estado | Cuándo |
 |---|---|
-| `400` | El cuerpo: sin `source`, un `warmFrom` fuera de `0` a `3600`, un `ref` de más de 64 caracteres; o una fuente que un arranque rechazaría, con los mismos mensajes (una mal formada, una pool que no es una sola dirección, un tipo que la estrategia no puede consumir, un segmento sin datos en vivo); o un `warmFrom` por encima de `0` para una pool `dex` adjuntada a una ejecución que ya lee otra. o un instrumento comodín (`*`, o un par con `*` en un lado) en una ejecución arrancada con `paper.accounts: instrument`, en todos los planes (esa ejecución abre una cuenta por cada instrumento que lee, así que hay que nombrarlos: adjunta uno a uno, o una lista). |
+| `400` | El cuerpo: sin `source`, un `warmFrom` fuera de `0` a `3600`, un `ref` de más de 64 caracteres, un `resolveInstrument` que no es `true` ni `false`; o una fuente que un arranque rechazaría, con los mismos mensajes (una mal formada, una pool que no es una sola dirección, un tipo que la estrategia no puede consumir, un segmento sin datos en vivo); o un `warmFrom` por encima de `0` para una pool `dex` adjuntada a una ejecución que ya lee otra. o un instrumento comodín (`*`, o un par con `*` en un lado) en una ejecución arrancada con `paper.accounts: instrument`, en todos los planes (esa ejecución abre una cuenta por cada instrumento que lee, así que hay que nombrarlos: adjunta uno a uno, o una lista). |
 | `402` | Un instrumento comodín en un plan que no lo incluye. |
 | `404` | No existe esa ejecución, o no es tuya; en un quitado, no existe ese adjuntado. |
 | `409` | La ejecución no está corriendo, o la fuente está en otro mercado distinto de los ya adjuntados. |
@@ -845,10 +887,11 @@ Cada señal empujada en un canal `sig:<runId>` (el `pub.data` de la trama `push`
 | `signalId` | Id estable de esta señal exacta — deduplica con él si tu conexión se reconecta a mitad de flujo. |
 | `stage` | `sandbox` o `live`: la etapa en la que estaba la ejecución cuando produjo la señal. Solo tú recibes una señal `sandbox` por este canal; todos los admitidos en el canal reciben las `live`. |
 | `paramsVersion` | El conjunto de parámetros vigente cuando se produjo esta señal. |
-| `type` | `hint`, `info`, `marker`, o `command` — más `paper` al leer el histórico de una ejecución `mix` (consulta [Paper trading](live_paper#salida-separate-o-mix); los elementos paper nunca se empujan por este canal). |
-| `kind` | `BUY`/`SELL` para un `hint`; el nombre del comando para un `command`; ausente en otro caso. |
+| `type` | `hint`, `info`, `marker`, o `command` — más `paper` al leer el histórico de una ejecución `mix`, y `system` cuando una estrategia pide a la plataforma que quite una fuente (nunca se empuja por este canal, consulta [Una estrategia que deja una fuente](#una-estrategia-que-deja-una-fuente)); el histórico lleva `system` solo cuando `type` lo pide (consulta [Paper trading](live_paper#salida-separate-o-mix); los elementos paper nunca se empujan por este canal). |
+| `kind` | `BUY`/`SELL` para un `hint`; el nombre del comando para un `command`; `DETACH` para un `system`; ausente en otro caso. |
 | `eventTsMs` | Hora de mercado en que se produjo la señal. |
 | `emittedAtMs` | Hora en que se publicó — siempre ≥ `eventTsMs`. |
+| `instrument` | El instrumento sobre el que trata la señal: `exchange`, `segment` y `symbol` (`BTC/USDT`). Para una ejecución `dex` también `id`, el contrato: la dirección de la pool, o el mint del token. El `symbol` es el par tal como lo nombran las velas y no identifica un token, así que actúa sobre `id`. |
 | `order` | Presente solo para un `hint`. |
 | `data` | El payload de forma libre propio de la señal: lo que la estrategia puso ahí con `signal.set(...)`. Quien pueda leer la ejecución puede leerlo, así que en una ejecución `public` es público. Una señal cuyo `data` pese más de 8 KiB (8.192 bytes de su JSON) no se empuja por este canal; [la ruta de historial](#leer-las-señales-que-una-ejecución-ya-produjo) la devuelve entera. |
 | `regenerated` | `true` solo para una señal republicada para rellenar un hueco en el histórico registrado — siempre `false` para una señal que ves por primera vez. |
@@ -1004,7 +1047,7 @@ Los símbolos coinciden exactamente, mayúsculas incluidas — pásalos tal como
 ### Filtrar por tipo
 
 `type` reduce a uno o más tipos de señal, separados por comas: `hint`, `info`, `marker`, `command`,
-`paper`. Se combina con `instrument` — `?type=hint&instrument=*/USDT` son todos los hints de un par
+`paper`, `system`. Sin `type` se devuelven los cinco primeros y `system` no. Se combina con `instrument` — `?type=hint&instrument=*/USDT` son todos los hints de un par
 USDT. Ambos filtros se arrastran en `_links.next`, así que seguirlo mantiene la misma selección.
 
 ### La ventana se mueve, y los cursores caducan

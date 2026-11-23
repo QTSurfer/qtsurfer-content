@@ -1,6 +1,6 @@
 ---
 title: "Distance from an average"
-description: "How distanceMa measures how far the price is from a moving average in percent, which averages it takes, and how to use it in a QTSurfer strategy."
+description: "How the distance from an average measures how far the price is from a moving average in percent, which averages it takes, and how to use it in a QTSurfer strategy."
 order: 9.04
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

@@ -1,6 +1,6 @@
 ---
 title: "Loss"
-description: "How loss gives the size of each fall as a positive number and keeps the count of falls in a row, why it needs a name, and how to use it in a QTSurfer strategy."
+description: "How the loss gives the size of each fall as a positive number and keeps the count of falls in a row, why it needs a name, and how to use it in a QTSurfer strategy."
 order: 10.02
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

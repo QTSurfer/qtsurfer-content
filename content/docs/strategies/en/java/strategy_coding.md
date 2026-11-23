@@ -3,7 +3,7 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 13d7c2c09d40f69e6768bbd3372768780d4d80da
+upstreamCommit: 189eafeebe6c73cb7c491c928d95665f8ee86320
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-22T13:53:56Z'
 ---
@@ -481,7 +481,7 @@ receives, and each call registers one pro indicator with the same names, forms a
 [QTScript table](/docs/strategies/qtscript#the-pro-indicators-uses) lists. `Pro.on(indicators).adx(14)` registers `adx14` and, beside it,
 `adx14PlusDI` and `adx14MinusDI`. A window goes on the main one (`adx14`), and the listener reads the others by name.
 
-Eleven of the twelve read whole bars (`kurtosis` reads the close), so use them in a kline strategy. This one buys when the ADX says there is a trend and the plus line is
+Thirty-six of the seventy-six read whole bars (the [QTScript table](/docs/strategies/qtscript#the-pro-indicators-uses) says which), so use them in a kline strategy. This one buys when the ADX says there is a trend and the plus line is
 above the minus line, and sells when it is below:
 
 ```java
@@ -531,9 +531,9 @@ public class AdxTrend extends AbstractKlineStrategy {
 }
 ```
 
-On a `ticker` strategy a pro indicator is not refused. For the eleven that read whole bars the values are not the bar's and
-mean nothing, and validating or running the strategy returns an engine notice that says so; `kurtosis` reads the close, so it
-means something there and raises no notice.
+On a `ticker` strategy a pro indicator is not refused. For the thirty-six that read whole bars the values are not the bar's and
+mean nothing, and validating or running the strategy returns an engine notice that says so; the other forty read the close,
+so they mean something there and raise no notice.
 
 Registering a strategy that uses them is accepted on every plan, and the answer of `POST /strategy` carries
 `requires: ["indicators.pro"]`. Running it on a plan that does not include them is refused with `402`, when validating it,

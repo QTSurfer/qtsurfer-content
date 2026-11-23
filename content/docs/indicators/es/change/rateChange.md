@@ -1,6 +1,6 @@
 ---
 title: "Tasa de cambio (una actualización)"
-description: "Cómo rateChange da el cambio de un valor desde la actualización anterior como fracción, en qué se diferencia de la tasa de cambio sobre N barras y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo la tasa de cambio da el cambio de un valor desde la actualización anterior como fracción, en qué se diferencia de la tasa de cambio sobre N barras y cómo usarla en una estrategia de QTSurfer."
 order: 9.01
 lastUpdated: '2026-11-22T19:12:13Z'
 ---

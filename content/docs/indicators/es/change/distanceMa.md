@@ -1,6 +1,6 @@
 ---
 title: "Distancia a una media"
-description: "Cómo distanceMa mide cuánto se aleja el precio de una media móvil en porcentaje, qué medias admite y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo la distancia a una media mide cuánto se aleja el precio de una media móvil en porcentaje, qué medias admite y cómo usarla en una estrategia de QTSurfer."
 order: 9.04
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

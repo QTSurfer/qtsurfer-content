@@ -1,6 +1,6 @@
 ---
 title: "Cambio porcentual"
-description: "Cómo percentChange da el cambio de un valor desde la actualización anterior en porcentaje, cuál es su tamaño típico y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el cambio porcentual da el cambio de un valor desde la actualización anterior en porcentaje, cuál es su tamaño típico y cómo usarlo en una estrategia de QTSurfer."
 order: 9.02
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

@@ -1,6 +1,6 @@
 ---
 title: "Máximo"
-description: "Cómo max guarda el valor más alto desde el inicio, por qué no tiene ventana y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el máximo guarda el valor más alto desde el inicio, por qué no tiene ventana y cómo usarlo en una estrategia de QTSurfer."
 order: 10.03
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

@@ -1,6 +1,6 @@
 ---
 title: "Percent change"
-description: "How percentChange gives the change of a value since the update before in percent, what its typical size is, and how to use it in a QTSurfer strategy."
+description: "How the percent change gives the change of a value since the update before in percent, what its typical size is, and how to use it in a QTSurfer strategy."
 order: 9.02
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

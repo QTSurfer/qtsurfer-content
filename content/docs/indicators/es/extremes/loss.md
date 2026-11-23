@@ -1,6 +1,6 @@
 ---
 title: "Bajada"
-description: "Cómo loss da el tamaño de cada bajada como número positivo y cuenta las bajadas seguidas, por qué necesita un nombre y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo la bajada mide cuánto cae un valor en cada actualización, como número positivo, y cuenta las caídas seguidas, por qué necesita un nombre y cómo usarla en una estrategia de QTSurfer."
 order: 10.02
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

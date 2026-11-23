@@ -1,6 +1,6 @@
 ---
 title: "Minimum"
-description: "How min keeps the lowest value since the start, what the warm-up of its source does to it, and how to use it in a QTSurfer strategy."
+description: "How the minimum keeps the lowest value since the start, what the warm-up of its source does to it, and how to use it in a QTSurfer strategy."
 order: 10.04
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

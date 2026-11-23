@@ -1,6 +1,6 @@
 ---
 title: "Gain"
-description: "How gain gives the size of each rise and keeps the count of rises in a row, why it needs a name, and how to use it in a QTSurfer strategy."
+description: "How the gain gives the size of each rise and keeps the count of rises in a row, why it needs a name, and how to use it in a QTSurfer strategy."
 order: 10.01
 lastUpdated: '2026-11-22T19:06:11Z'
 ---

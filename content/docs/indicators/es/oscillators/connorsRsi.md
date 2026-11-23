@@ -2,7 +2,7 @@
 title: "RSI de Connors"
 description: "Cómo el RSI de Connors promedia el RSI del precio, el RSI de la racha de subidas o caídas y el rango percentil del último rendimiento, con el suavizado de Wilder por defecto, y cómo usarlo en una estrategia de QTSurfer."
 order: 2.52
-lastUpdated: '2026-11-22T19:38:50Z'
+lastUpdated: '2026-11-22T22:57:41Z'
 ---
 
 El **RSI de Connors**, de Larry Connors, promedia tres cosas: el RSI del precio, el RSI de la racha de subidas o caídas consecutivas y el puesto que ocupa el último rendimiento entre los recientes. Va de 0 a 100.

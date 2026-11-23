@@ -2,7 +2,7 @@
 title: "Loss"
 description: "How the loss gives the size of each fall as a positive number and keeps the count of falls in a row, why it needs a name, and how to use it in a QTSurfer strategy."
 order: 10.02
-lastUpdated: '2026-11-22T19:06:11Z'
+lastUpdated: '2026-11-22T23:27:04Z'
 ---
 
 The **loss** is the size of the fall since the update before, as a positive number in the units of what it reads, and 0 when there is no fall. Beside the value it keeps a counter: how many falls have come in a row.

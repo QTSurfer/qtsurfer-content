@@ -2,7 +2,7 @@
 title: "Connors RSI"
 description: "How the Connors RSI averages the RSI of the price, the RSI of the streak of rises or falls and the percent rank of the latest return, with Wilder's smoothing by default, and how to use it in a QTSurfer strategy."
 order: 2.52
-lastUpdated: '2026-11-22T19:38:50Z'
+lastUpdated: '2026-11-22T22:57:41Z'
 ---
 
 The **Connors RSI**, by Larry Connors, averages three things: the RSI of the price, the RSI of the streak of consecutive rises or falls, and where the latest return ranks among the recent ones. It runs from 0 to 100.

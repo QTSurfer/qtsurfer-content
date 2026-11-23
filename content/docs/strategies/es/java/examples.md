@@ -2,7 +2,7 @@
 title: Ejemplos de estrategias
 description: Usa estrategias Java completas que muestran el ciclo de vida admitido.
 order: 5
-lastUpdated: '2026-11-22T19:18:49Z'
+lastUpdated: '2026-11-22T23:27:04Z'
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 54e8f0b90d6634cd246861f39991dd2165eb5b2e
 upstreamPath: skills/qtsurfer-java-strategy/references/examples.md

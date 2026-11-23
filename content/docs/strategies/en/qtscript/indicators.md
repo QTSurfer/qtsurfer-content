@@ -5,6 +5,7 @@ order: 8
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 54e8f0b90d6634cd246861f39991dd2165eb5b2e
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
+lastUpdated: '2026-11-22T23:27:04Z'
 ---
 
 Every indicator a `.qtscript` file can call, grouped by kind, with what each one computes. A line under `setup:` writes one

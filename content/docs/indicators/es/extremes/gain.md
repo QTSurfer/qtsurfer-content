@@ -2,7 +2,7 @@
 title: "Subida"
 description: "Cómo la subida mide cuánto sube un valor en cada actualización y cuenta las subidas seguidas, por qué necesita un nombre y cómo usarla en una estrategia de QTSurfer."
 order: 10.01
-lastUpdated: '2026-11-22T19:06:11Z'
+lastUpdated: '2026-11-22T23:27:04Z'
 ---
 
 La **subida** es cuánto subió el valor desde la actualización anterior, en las unidades de lo que lee, y 0 cuando no sube. Junto al valor guarda un contador: cuántas subidas han llegado seguidas.

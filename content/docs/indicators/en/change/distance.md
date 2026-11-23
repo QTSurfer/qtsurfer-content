@@ -2,7 +2,7 @@
 title: "Distance"
 description: "How the distance measures the gap between two indicators as a percentage of the second, why its zero line is a crossover, and how to use it in a QTSurfer strategy."
 order: 9.03
-lastUpdated: '2026-11-22T19:06:11Z'
+lastUpdated: '2026-11-22T23:27:04Z'
 ---
 
 The **distance** is the gap between two indicators, in percent of the second one, the base. Between two averages it says which one is on top and by how much.

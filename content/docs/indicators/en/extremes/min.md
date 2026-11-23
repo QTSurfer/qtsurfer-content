@@ -2,7 +2,7 @@
 title: "Minimum"
 description: "How the minimum keeps the lowest value since the start, what the warm-up of its source does to it, and how to use it in a QTSurfer strategy."
 order: 10.04
-lastUpdated: '2026-11-22T19:06:11Z'
+lastUpdated: '2026-11-22T23:27:04Z'
 ---
 
 The **minimum** is the lowest value seen since the start of the run. It only goes down.

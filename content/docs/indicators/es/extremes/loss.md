@@ -2,7 +2,7 @@
 title: "Bajada"
 description: "Cómo la bajada mide cuánto cae un valor en cada actualización, como número positivo, y cuenta las caídas seguidas, por qué necesita un nombre y cómo usarla en una estrategia de QTSurfer."
 order: 10.02
-lastUpdated: '2026-11-22T19:06:11Z'
+lastUpdated: '2026-11-22T23:27:04Z'
 ---
 
 La **bajada** es cuánto bajó el valor desde la actualización anterior, como número positivo en las unidades de lo que lee, y 0 cuando no baja. Junto al valor guarda un contador: cuántas bajadas han llegado seguidas.

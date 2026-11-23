@@ -2,7 +2,7 @@
 title: "Máximo"
 description: "Cómo el máximo guarda el valor más alto desde el inicio, por qué no tiene ventana y cómo usarlo en una estrategia de QTSurfer."
 order: 10.03
-lastUpdated: '2026-11-22T19:06:11Z'
+lastUpdated: '2026-11-22T23:27:04Z'
 ---
 
 El **máximo** es el valor más alto visto desde el inicio de la ejecución. Solo sube.

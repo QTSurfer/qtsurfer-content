@@ -2,7 +2,7 @@
 title: "Suma"
 description: "Cómo la suma acumula todos los valores desde el inicio, sobre qué fuentes tiene sentido y cómo usarla en una estrategia de QTSurfer."
 order: 10.05
-lastUpdated: '2026-11-22T19:06:11Z'
+lastUpdated: '2026-11-22T23:27:04Z'
 ---
 
 La **suma** es el total de todos los valores desde el inicio de la ejecución.

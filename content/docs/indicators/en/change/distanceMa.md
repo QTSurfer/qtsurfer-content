@@ -19,7 +19,7 @@ The series are samples, synthetic ones and real crypto ones. They show how the i
 distance from the average = 100 × (price − average) / average
 ```
 
-It takes an [SMA](/docs/indicators/averages/sma), an [EMA](/docs/indicators/averages/ema), an [MMA](/docs/indicators/averages/mma), a [WMA](/docs/indicators/averages/wma), an [HMA](/docs/indicators/averages/hma), a [TEMA](/docs/indicators/averages/tema) or a [KAMA](/docs/indicators/averages/kama), and the chart lets you choose between them. The engine also takes the incremental WMA, which the builder has no method to register. It refuses any other indicator with `Not a moving average indicator: <name>`. It is ready when the average is, and it gives 0 when the average is 0.
+It takes an [SMA](/docs/indicators/averages/sma), an [EMA](/docs/indicators/averages/ema), an [MMA](/docs/indicators/averages/mma), a [WMA](/docs/indicators/averages/wma), an [HMA](/docs/indicators/averages/hma), a [TEMA](/docs/indicators/averages/tema) or a [KAMA](/docs/indicators/averages/kama), and the chart lets you choose between them. It refuses any other indicator with `Not a moving average indicator: <name>`. It is ready when the average is, and it gives 0 when the average is 0.
 
 ## Reading it
 

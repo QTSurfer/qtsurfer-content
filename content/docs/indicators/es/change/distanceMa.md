@@ -19,7 +19,7 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 distancia a la media = 100 × (precio − media) / media
 ```
 
-Admite una [SMA](/docs/indicators/averages/sma), una [EMA](/docs/indicators/averages/ema), una [MMA](/docs/indicators/averages/mma), una [WMA](/docs/indicators/averages/wma), una [HMA](/docs/indicators/averages/hma), una [TEMA](/docs/indicators/averages/tema) o una [KAMA](/docs/indicators/averages/kama), y el gráfico deja elegir entre ellas. El motor admite también la WMA incremental, que el builder no tiene método para registrar. Rechaza cualquier otro indicador con `Not a moving average indicator: <nombre>`. Está lista cuando lo está la media, y da 0 cuando la media es 0.
+Admite una [SMA](/docs/indicators/averages/sma), una [EMA](/docs/indicators/averages/ema), una [MMA](/docs/indicators/averages/mma), una [WMA](/docs/indicators/averages/wma), una [HMA](/docs/indicators/averages/hma), una [TEMA](/docs/indicators/averages/tema) o una [KAMA](/docs/indicators/averages/kama), y el gráfico deja elegir entre ellas. Rechaza cualquier otro indicador con `Not a moving average indicator: <nombre>`. Está lista cuando lo está la media, y da 0 cuando la media es 0.
 
 ## Cómo leerla
 

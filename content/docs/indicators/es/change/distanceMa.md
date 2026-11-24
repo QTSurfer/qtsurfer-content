@@ -7,7 +7,7 @@ lastUpdated: '2026-11-22T23:27:04Z'
 
 La **distancia a una media** es cuánto se aleja el precio de una media móvil, en porcentaje de la media: positiva por encima, negativa por debajo.
 
-Pruébala en una serie, frente a una EMA, y cambia su periodo.
+Pruébala en una serie, frente a la media que elijas, y cambia su periodo.
 
 <div data-indicator-chart="distanceMa"></div>
 
@@ -19,7 +19,7 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 distancia a la media = 100 × (precio − media) / media
 ```
 
-Admite una [SMA](/docs/indicators/averages/sma), una [EMA](/docs/indicators/averages/ema) o una [MMA](/docs/indicators/averages/mma), y rechaza cualquier otro indicador. Está lista cuando lo está la media, y da 0 cuando la media es 0.
+Admite una [SMA](/docs/indicators/averages/sma), una [EMA](/docs/indicators/averages/ema), una [MMA](/docs/indicators/averages/mma), una [WMA](/docs/indicators/averages/wma), una [HMA](/docs/indicators/averages/hma), una [TEMA](/docs/indicators/averages/tema) o una [KAMA](/docs/indicators/averages/kama), y el gráfico deja elegir entre ellas. Rechaza cualquier otro indicador con `Not a moving average indicator: <nombre>`. Está lista cuando lo está la media, y da 0 cuando la media es 0.
 
 ## Cómo leerla
 
@@ -35,7 +35,7 @@ setup:
   distanceMa("ema20")
 ```
 
-`distanceMa("ema20")` registra `distema20`, y la media tiene que registrarse antes. En Java, `.distanceMa("ema20")` en el builder.
+`distanceMa("ema20")` registra `distema20`, y la media tiene que registrarse antes. Con otra media es igual: `hma(20)` y luego `distanceMa("hma20")`. El gráfico da a su media el nombre `avg`, y la línea que dibuja es `distavg`. En Java, `.distanceMa("ema20")` en el builder.
 
 ## Relacionado
 

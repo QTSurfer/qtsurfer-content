@@ -20,7 +20,7 @@ Every one also takes the name to register as its first argument: `diff("gap", "a
 
 ## What to watch
 
-- **Give each one a name.** The default name carries the inputs and not the numbers, so `mul("price", 2)` and `mul("price", 3)` both register `mulprice`, and the second one registered replaces the first.
+- **Give each one a name.** The default name carries the inputs and not the numbers, so `mul("price", 2)` and `mul("price", 3)` both register `mulprice`, and the second one registered replaces the first. The engine logs a warning when a name starts to read a different indicator, but it does not stop.
 - **A half rounds upwards**, also below zero: 2.5 rounds to 3 and −2.5 to −2.
 - **They are ready when what they read is**, so an operator over an average waits for the average.
 - **A difference is in the units of its inputs.** To compare instruments, use the [distance](/docs/indicators/change/distance), which is a percentage.

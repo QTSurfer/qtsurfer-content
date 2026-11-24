@@ -1,6 +1,6 @@
 ---
 title: "Accelerator oscillator (AC)"
-description: "How the accelerator oscillator takes the gap between the awesome oscillator and its own average, so that it turns before it, why its first four values are not valid yet, and how to use it in a QTSurfer strategy."
+description: "How the accelerator oscillator takes the gap between the awesome oscillator and its own average, so that it turns before it, from which update it is ready, and how to use it in a QTSurfer strategy."
 order: 2.57
 lastUpdated: '2026-11-22T19:38:50Z'
 ---
@@ -21,7 +21,7 @@ AO     = SMA(middle, 5) − SMA(middle, 34)
 AC     = AO − SMA(AO, 5)
 ```
 
-The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in Williams' design. The first value is on update 34, and the chart draws from there. **The first four values are a warm-up spike**: the average of the AO still holds values from before the AO was ready. On the daily BTC/USDT the first one is 13,264, three times the highest that follows. The AC is the textbook one from update 38, so leave the four before it out of a rule.
+The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in Williams' design. The first value is on update 38, when the average of the AO has a full window of it, and the chart draws from there.
 
 ## Reading it
 

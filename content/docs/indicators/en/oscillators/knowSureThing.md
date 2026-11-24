@@ -1,6 +1,6 @@
 ---
 title: "Know sure thing (KST)"
-description: "How the know sure thing adds four smoothed rates of change of different lengths, with its signal line, from which update both are warm, and how to use it in a QTSurfer strategy."
+description: "How the know sure thing adds four smoothed rates of change of different lengths, with its signal line, from which update both are ready, and how to use it in a QTSurfer strategy."
 order: 2.47
 lastUpdated: '2026-11-22T19:38:50Z'
 ---
@@ -20,13 +20,13 @@ KST    = 1 × SMA₁₀(ROC₁₀) + 2 × SMA₁₀(ROC₁₅) + 3 × SMA₁₀(
 Signal = SMA₉(KST)
 ```
 
-The first value is on update 31, when the longest rate of change is ready, and the chart draws from there. The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in Pring's design. **They are not warm yet on update 31**: they still hold the zeros the rates give while warming up. The KST is Pring's from update 45 and its signal from 53, so leave the values before those out of a rule.
+The first value is on update 53, when the KST and its signal are both ready, and the chart draws from there. The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in Pring's design. The KST alone is already Pring's from update 45, but the engine reports it ready together with its signal, so a rule that reads either gets values from 53 on.
 
 ## Reading it
 
 - **The zero line is the sign of the combined momentum**, and the longest rate counts four times what the shortest does, so the KST follows the slow trend more than the fast one.
 - **The signal is its average.** The KST crossing its signal is the usual trigger. On the real series of the chart the two cross 13 to 16 times in the 248 bars from update 53.
-- **Its scale depends on the instrument**: on the real series of the chart, from update 45, it goes from −178 to 210 on the daily BTC/USDT and from −33 to 11 on the 15-minute ETH/USDT.
+- **Its scale depends on the instrument**: on the real series of the chart, from update 53, it goes from −178 to 210 on the daily BTC/USDT and from −32 to 11 on the 15-minute ETH/USDT.
 
 ## In a strategy
 

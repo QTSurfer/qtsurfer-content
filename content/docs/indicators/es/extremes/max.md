@@ -19,7 +19,7 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 máximo = max(máximo, valor)        desde la primera actualización
 ```
 
-No tiene ventana y empieza con el primer valor que recibe. Sobre otro indicador ese primer valor es de su calentamiento, y cuenta.
+No tiene ventana y empieza con el primer valor que su fuente está lista para dar. Sobre otro indicador se deja fuera el calentamiento: el máximo empieza en el primer valor con el indicador listo.
 
 ## Cómo leerlo
 

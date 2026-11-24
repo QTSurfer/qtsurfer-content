@@ -19,7 +19,7 @@ The series are samples, synthetic ones and real crypto ones. They show how the i
 maximum = max(maximum, value)        from the first update
 ```
 
-It has no window and it starts with the first value it receives. Over another indicator that first value is one of its warm-up, and it counts.
+It has no window and it starts with the first value its source is ready to give. Over another indicator the warm-up is left out: the maximum starts at the first value the indicator is ready.
 
 ## Reading it
 

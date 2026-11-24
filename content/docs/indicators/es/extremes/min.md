@@ -1,6 +1,6 @@
 ---
 title: "Mínimo"
-description: "Cómo el mínimo guarda el valor más bajo desde el inicio, qué le hace el calentamiento de su fuente y cómo usarlo en una estrategia de QTSurfer."
+description: "Cómo el mínimo guarda el valor más bajo desde el inicio, dónde empieza cuando su fuente es un indicador y cómo usarlo en una estrategia de QTSurfer."
 order: 10.04
 lastUpdated: '2026-11-22T23:27:04Z'
 ---
@@ -19,12 +19,12 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 mínimo = min(mínimo, valor)        desde la primera actualización
 ```
 
-No tiene ventana y empieza con el primer valor que recibe. Sobre otro indicador ese primer valor es de su calentamiento, y cuenta: un RSI da 0 mientras arranca, así que el mínimo de un RSI es 0 durante toda la ejecución.
+No tiene ventana y empieza con el primer valor que su fuente está lista para dar. Sobre otro indicador se deja fuera el calentamiento: el mínimo de un RSI es lo más bajo que el RSI ha llegado desde que estuvo listo, no el 0 que tiene mientras arranca.
 
 ## Cómo leerlo
 
 - **Es un récord, no un canal.** Cuando el precio marca un mínimo, la línea se queda ahí hasta otro más bajo.
-- **Úsalo sobre el precio**, o sobre un indicador cuyos primeros valores estén en el rango de los posteriores.
+- **Sobre un indicador es su lectura más baja**, contada desde la actualización en que el indicador está listo.
 - **Para el más bajo de las últimas `N` barras**, usa el [canal de Donchian](/docs/indicators/bands/donchianChannel), que olvida.
 
 ## En una estrategia
@@ -40,5 +40,5 @@ setup:
 
 - [Máximo](/docs/indicators/extremes/max): el valor más alto desde el inicio.
 - [Canal de Donchian](/docs/indicators/bands/donchianChannel): los extremos de las últimas `N` barras.
-- [RSI](/docs/indicators/oscillators/rsi): por qué su mínimo acumulado es 0.
+- [RSI](/docs/indicators/oscillators/rsi): un indicador cuya lectura más baja puede guardar un mínimo.
 - [Indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators): todos los indicadores que puede llamar una estrategia, con sus formas y los nombres que registran.

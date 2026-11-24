@@ -7,7 +7,7 @@ lastUpdated: '2026-11-22T23:27:04Z'
 
 The **distance from an average** is how far the price is from a moving average, in percent of the average: positive above it, negative below.
 
-Try it on a series below, against an EMA, and change its period.
+Try it on a series below, against the average you choose, and change its period.
 
 <div data-indicator-chart="distanceMa"></div>
 
@@ -19,13 +19,13 @@ The series are samples, synthetic ones and real crypto ones. They show how the i
 distance from the average = 100 × (price − average) / average
 ```
 
-It takes an [SMA](/docs/indicators/averages/sma), an [EMA](/docs/indicators/averages/ema) or an [MMA](/docs/indicators/averages/mma), and refuses any other indicator. It is ready when the average is, and it gives 0 when the average is 0.
+It takes an [SMA](/docs/indicators/averages/sma), an [EMA](/docs/indicators/averages/ema), an [MMA](/docs/indicators/averages/mma), a [WMA](/docs/indicators/averages/wma), an [HMA](/docs/indicators/averages/hma), a [TEMA](/docs/indicators/averages/tema) or a [KAMA](/docs/indicators/averages/kama), and the chart lets you choose between them. It refuses any other indicator with `Not a moving average indicator: <name>`. It is ready when the average is, and it gives 0 when the average is 0.
 
 ## Reading it
 
 - **Zero is the price crossing its average.** The sign is the side the price is on.
 - **A large distance is a stretched price.** It says how far the price has gone from its usual level, not that it will come back: in a strong trend it stays large for a long time.
-- **For another average, use the [distance](/docs/indicators/change/distance)**: `distance("gap", "price", "hma20")` measures the price against any indicator.
+- **For an indicator that is not an average, use the [distance](/docs/indicators/change/distance)**: `distance("gap", "price", "rsi14")` measures the price against any indicator.
 
 ## In a strategy
 
@@ -35,7 +35,7 @@ setup:
   distanceMa("ema20")
 ```
 
-`distanceMa("ema20")` registers `distema20`, and the average has to be registered before it. In Java, `.distanceMa("ema20")` on the builder.
+`distanceMa("ema20")` registers `distema20`, and the average has to be registered before it. With another average it is the same: `hma(20)` then `distanceMa("hma20")`. The chart gives its average the name `avg`, and the line it draws is `distavg`. In Java, `.distanceMa("ema20")` on the builder.
 
 ## Related
 

@@ -19,7 +19,7 @@ The series are samples, synthetic ones and real crypto ones. They show how the i
 stochRSI = 100 × (RSI − lowest RSI of the last N) / (highest RSI of the last N − lowest RSI of the last N)
 ```
 
-The RSI is the one of the [RSI page](/docs/indicators/oscillators/rsi), with Wilder's smoothing, and `N` is both its period and the length of the window: the engine uses one period for the two. The RSI is not defined on the first bar, so the window starts on the second: the first value of the line, on update `N`, is taken over `N − 1` values of the RSI, and the chart draws from there. Where the window has no spread, as on a price that does not move or that only rises, the value reads 0.
+The RSI is the one of the [RSI page](/docs/indicators/oscillators/rsi), with Wilder's smoothing, and `N` is both its period and the length of the window: the engine uses one period for the two. The RSI is ready after `N` updates, and the engine reports the stochastic RSI ready when the window holds `N` values of it: the first value of the line is on update `2N − 1`, 27 with the default 14, and the chart draws from there. Where the window has no spread, as on a price that does not move or that only rises, the value reads 0.
 
 ## Reading it
 

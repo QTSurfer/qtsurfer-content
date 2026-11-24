@@ -1,6 +1,6 @@
 ---
 title: "Stochastic oscillator"
-description: "How the stochastic oscillator places the close in the range of the last bars, with its smoothed %K and its %D, from which update both are warm, and how to use it in a QTSurfer strategy."
+description: "How the stochastic oscillator places the close in the range of the last bars, with its smoothed %K and its %D, from which update both are ready, and how to use it in a QTSurfer strategy."
 order: 2.53
 lastUpdated: '2026-11-22T19:38:50Z'
 ---
@@ -21,7 +21,7 @@ raw %K = 100 × (close − lowest low) / (highest high − lowest low)        ov
 %D     = SMA(%K, dSmooth)
 ```
 
-The periods are 14, 3 and 3 by default. A window with no range gives a raw `%K` of 50. The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in the textbook. The first value is on update `k`, 14 with the defaults, and the chart draws from there, but the smoothing still holds raw values of shorter windows: `%K` is the textbook one from update 16 and `%D` from 18.
+The periods are 14, 3 and 3 by default. A window with no range gives a raw `%K` of 50. The simple averages are the [moving](/docs/indicators/averages/sma) ones, which take a new value with every update, as in the textbook. The engine reports the oscillator ready on update 18 with the defaults, when `%D` has a full window of `%K`, and the chart draws from there. `%K` alone is the textbook one from update 16, but a rule gets neither of the two before 18.
 
 ## Reading it
 

@@ -19,7 +19,7 @@ Las series son muestras, sintéticas y reales de criptomonedas. Sirven para ver 
 stochRSI = 100 × (RSI − RSI más bajo de los últimos N) / (RSI más alto de los últimos N − RSI más bajo de los últimos N)
 ```
 
-El RSI es el de la [página del RSI](/docs/indicators/oscillators/rsi), con el suavizado de Wilder, y `N` es a la vez su periodo y la longitud de la ventana: el motor usa un solo periodo para los dos. El RSI no está definido en la primera barra, así que la ventana empieza en la segunda: el primer valor de la línea, en la actualización `N`, se toma sobre `N − 1` valores del RSI, y el gráfico dibuja desde ahí. Donde la ventana no tiene dispersión, como en un precio que no se mueve o que solo sube, el valor es 0.
+El RSI es el de la [página del RSI](/docs/indicators/oscillators/rsi), con el suavizado de Wilder, y `N` es a la vez su periodo y la longitud de la ventana: el motor usa un solo periodo para los dos. El RSI está listo tras `N` actualizaciones, y el motor da el RSI estocástico por listo cuando la ventana tiene `N` valores suyos: el primer valor de la línea llega en la actualización `2N − 1`, la 27 con el 14 por defecto, y el gráfico dibuja desde ahí. Donde la ventana no tiene dispersión, como en un precio que no se mueve o que solo sube, el valor es 0.
 
 ## Cómo leerlo
 

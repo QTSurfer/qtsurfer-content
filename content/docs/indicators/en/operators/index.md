@@ -5,7 +5,7 @@ order: 11
 lastUpdated: '2026-11-24T09:41:50Z'
 ---
 
-The operators build an indicator out of others: `add`, `diff`, `mul`, `clamp` and `round`. Each reads indicators by their names, so register those first, and its result is an indicator like any other: a window can watch it and another operator can read it. They have no chart, since they draw whatever they are given.
+The operators build an indicator out of others: `add`, `diff`, `mul`, `clamp` and `round`. Each reads indicators by their names, so register those first, and its result is an indicator like any other: a window can watch it and another operator can read it. They have no chart of their own, since they draw whatever they are given: the demo below shows four of them on a pair of averages.
 
 | Operator | What it computes | With no name of its own it registers |
 | --- | --- | --- |
@@ -17,6 +17,14 @@ The operators build an indicator out of others: `add`, `diff`, `mul`, `clamp` an
 | `round("a", 2)` | `a`, rounded to 2 decimals | `rounda` |
 
 Every one also takes the name to register as its first argument: `diff("gap", "a", "b")` registers `gap`.
+
+## Try them
+
+Choose an operator and move the controls. The two grey lines are a fast and a slow [EMA](/docs/indicators/averages/ema), and the line in colour is what the operator registers. The lines under the chart are the strategy that draws it: change a control and they change with it. The default is `round` on a series priced near 100, where its steps show.
+
+<div data-indicator-demo="operators"></div>
+
+The series are samples, synthetic ones and real crypto ones. The lines are computed in your browser by the engine's own indicator classes, so they are the lines a strategy reads. On a series priced in the tens of thousands, rounding the gap to a few decimals changes nothing you can see.
 
 ## What to watch
 

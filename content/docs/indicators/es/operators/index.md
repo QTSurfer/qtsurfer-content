@@ -5,7 +5,7 @@ order: 11
 lastUpdated: '2026-11-24T09:41:50Z'
 ---
 
-Los operadores construyen un indicador a partir de otros: `add`, `diff`, `mul`, `clamp` y `round`. Cada uno lee indicadores por su nombre, así que regístralos antes, y su resultado es un indicador como cualquier otro: una ventana puede vigilarlo y otro operador puede leerlo. No tienen gráfico, porque dibujan lo que se les dé.
+Los operadores construyen un indicador a partir de otros: `add`, `diff`, `mul`, `clamp` y `round`. Cada uno lee indicadores por su nombre, así que regístralos antes, y su resultado es un indicador como cualquier otro: una ventana puede vigilarlo y otro operador puede leerlo. No tienen gráfico propio, porque dibujan lo que se les dé: el demo de abajo muestra cuatro de ellos sobre un par de medias.
 
 | Operador | Qué calcula | Sin nombre propio registra |
 | --- | --- | --- |
@@ -17,6 +17,14 @@ Los operadores construyen un indicador a partir de otros: `add`, `diff`, `mul`, 
 | `round("a", 2)` | `a`, redondeado a 2 decimales | `rounda` |
 
 Todos admiten además el nombre que registran como primer argumento: `diff("gap", "a", "b")` registra `gap`.
+
+## Pruébalos
+
+Elige un operador y mueve los controles. Las dos líneas grises son una [EMA](/docs/indicators/averages/ema) rápida y otra lenta, y la línea de color es lo que registra el operador. Las líneas bajo el gráfico son la estrategia que lo dibuja: cambia un control y cambian con él. Por defecto sale `round` sobre una serie con precios cerca de 100, donde se ven sus escalones.
+
+<div data-indicator-demo="operators"></div>
+
+Las series son muestras, sintéticas y reales de criptomonedas. Las líneas las calcula tu navegador con las propias clases de indicadores del motor, así que son las líneas que lee una estrategia. En una serie con precios de decenas de miles, redondear la distancia a unos pocos decimales no cambia nada que se vea.
 
 ## Qué vigilar
 

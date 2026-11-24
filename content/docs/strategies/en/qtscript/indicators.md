@@ -3,9 +3,8 @@ title: QTScript indicators
 description: Every indicator a QTScript strategy can call, pro ones included, grouped by kind.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
+upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
-lastUpdated: '2026-11-23T00:30:55Z'
 ---
 
 Every indicator a `.qtscript` file can call, grouped by kind, with what each one computes. A line under `setup:` writes one
@@ -93,14 +92,15 @@ call by its bare name, like `ema(20)` or `atr(14)`.
 
 ## Arithmetic, transformations and comparisons
 
-| Name                                                                        | What it is                                                    | Notes                                                                                                                                                                         |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `add`                                                                       | Sum of two indicators                                         |                                                                                                                                                                               |
-| `diff`                                                                      | First indicator minus the second                              |                                                                                                                                                                               |
-| `mul`                                                                       | An indicator scaled by a number, or two indicators multiplied |                                                                                                                                                                               |
-| `clamp`                                                                     | An indicator held to a range                                  |                                                                                                                                                                               |
-| `round`                                                                     | An indicator rounded to a number of decimals                  |                                                                                                                                                                               |
-| `equal`, `notEqual`, `greatThan`, `greatOrEqual`, `lessThan`, `lessOrEqual` | An indicator compared with a number, as a boolean indicator   | The five-argument forms choose between two indicators: `equal("selected", "signal", 1, "emaFast", "emaSlow")` gives `emaFast` while `signal` equals 1 and `emaSlow` otherwise |
+| Name                                                                                    | What it is                                                                                   | Notes                                                                                                                                                                                     |
+| --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `add`                                                                                   | Sum of two indicators                                                                        |                                                                                                                                                                                           |
+| `diff`                                                                                  | First indicator minus the second                                                             |                                                                                                                                                                                           |
+| `mul`                                                                                   | An indicator scaled by a number, or two indicators multiplied                                |                                                                                                                                                                                           |
+| `clamp`                                                                                 | An indicator held to a range                                                                 |                                                                                                                                                                                           |
+| `round`                                                                                 | An indicator rounded to a number of decimals                                                 |                                                                                                                                                                                           |
+| `equal`, `notEqual`, `greatThan`, `greatOrEqual`, `lessThan`, `lessOrEqual`             | An indicator compared with a number, as a boolean indicator                                  | The five-argument forms choose between two indicators: `equal("selected", "signal", 1, "emaFast", "emaSlow")` gives `emaFast` while `signal` equals 1 and `emaSlow` otherwise             |
+| `isEqual`, `isNotEqual`, `isGreatThan`, `isGreatOrEqual`, `isLessThan`, `isLessOrEqual` | An indicator compared with a number, as a condition that a body reads with `isValue("name")` | Three arguments: the name it registers, the indicator it reads, the number. `isValue` is `false` until the indicator it reads has a value. `isTrue`, which takes a function, is Java only |
 
 ## The pro indicators
 

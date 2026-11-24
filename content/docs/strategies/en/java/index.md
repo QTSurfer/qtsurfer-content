@@ -3,9 +3,8 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 2
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
+upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
-lastUpdated: '2026-11-23T00:30:55Z'
 ---
 
 A QTSurfer strategy is a plain Java class (no framework annotations required) that extends a strategy base class — most commonly `AbstractTickerStrategy` (see [Strategy base classes](#strategy-base-classes) for the kline, funding-rate, and multi-source siblings). It receives real-time market data, configures technical indicators, and emits buy/sell signals. The engine compiles strategies server-side — no local toolchain needed.
@@ -200,6 +199,7 @@ public class MyStrategy extends AbstractTickerStrategy {
 - `emitBuy(price)` / `emitSell(price)` / `emitSignal(signal)`
 - `getPrevInstant()` / `getCurrInstant()` — when the window that just fired opened / closed
 - `getEngineVersion()` / `getEngineVersionMajor()` / `getEngineVersionMinor()` — the running engine version (see [Engine version](#engine-version))
+- `isValue(name)` — whether an indicator has a value that is not 0, `false` until it has one: how a listener reads a condition (see [Conditions and `isValue`](#conditions-and-isvalue))
 - `this.instrument` — current instrument
 - `this.indicators` — indicator group
 
@@ -292,6 +292,60 @@ the same store every listener on this instrument shares (see [State management](
 below); `getPrevInstant()`/`getCurrInstant()` only resolve when the listener is registered on a
 window (via `.window(...)`, as above) — calling them on a listener attached to a plain indicator
 throws.
+
+## Conditions and `isValue`
+
+A comparison that a listener reads as true or false is written in `setupIndicators` with `isEqual`, `isNotEqual`, `isGreatThan`,
+`isGreatOrEqual`, `isLessThan` or `isLessOrEqual`. Each takes three arguments: the name it registers, the indicator it reads, and
+the number it compares with. `isLessThan("oversold", "rsi14", 30)` registers `oversold`, which holds while `rsi14` is below 30.
+`isTrue(name, indicator, predicate)` registers a condition from a function instead of a number.
+
+In an `AbstractWindowListener`, `isValue("oversold")` is `true` when the condition holds and `false` when it does not. It is `false`
+too until `rsi14` has a value, and in that stretch `indicators.getValue("oversold")` can already read 1: read a condition with
+`isValue`. `isValue` takes the name of any indicator, not only a condition, and is `true` when the indicator has a value and that
+value is not 0.
+
+```java
+import com.wualabs.qtsurfer.engine.core.state.StateStore;
+import com.wualabs.qtsurfer.engine.indicators.helpers.WindowTimeRTIndicator.WindowTime;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.strategy.AbstractTickerStrategy;
+import com.wualabs.qtsurfer.engine.strategy.AbstractWindowListener;
+
+public class OversoldTouch extends AbstractTickerStrategy {
+
+    @Override
+    protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
+        indicators
+            .addPrice()
+            .rsi(14)
+            .isLessThan("oversold", "rsi14", 30)
+            .isTrue("calm", "rsi14", v -> v > 40 && v < 60)
+            .window("oversold", WindowTime.m1, new Touch(this, indicators));
+    }
+
+    private class Touch extends AbstractWindowListener {
+
+        public Touch(AbstractTickerStrategy strategy, InstrumentGroupRTIndicator indicators) {
+            super(strategy, indicators);
+        }
+
+        @Override
+        public void onChange(StateStore store, double prev, double actual) {
+            if (isValue("oversold") && !store.is("long")) {
+                store.set("long");
+                emitBuy(indicators.getValue("price"));
+            }
+            if (!isValue("oversold") && store.is("long")) {
+                store.unset("long");
+                emitSell(indicators.getValue("price"));
+            }
+        }
+    }
+}
+```
+
+The same strategy in QTScript, without `isTrue`, is in "A condition: `isValue`" of the QTScript skill.
 
 ## State management
 
@@ -523,15 +577,14 @@ For non-trading strategies that emit **computed fields** (analytics, metrics) ra
 buy/sell, build an `InfoStrategySignal` and attach arbitrary key/values, then `emitSignal`.
 The type is in `com.wualabs.qtsurfer.engine.strategy.event.signal`, next to `BuySignal` and `SellSignal`, and a
 strategy that names it imports it from there — `import com.wualabs.qtsurfer.engine.strategy.event.signal.InfoStrategySignal;`.
-`emitInfo(key, values…)` never names the type and needs no import. Two constructors, matching the `emitBuy`
-convention:
+`emitInfo(key, values…)` never names the type and needs no import, and neither does `var signal = createInfoStrategySignal(...)`:
+the type is whatever the call returns, so write `var` and leave the import out, as the two examples below do. Two constructors,
+matching the `emitBuy` convention:
 
 - **Top-level strategy (`update()`) — `createInfoStrategySignal(instrument)`**, instrument explicit:
 
 ```java
-import com.wualabs.qtsurfer.engine.strategy.event.signal.InfoStrategySignal;
-
-InfoStrategySignal signal = createInfoStrategySignal(instrument);  // from AbstractTickerStrategy
+var signal = createInfoStrategySignal(instrument);  // from AbstractTickerStrategy
 signal.set("interval", "1m");
 signal.set("zscore", z);
 signal.set("vwap", vwap);
@@ -541,7 +594,7 @@ emitSignal(signal);
 - **Inside a window listener (`AbstractWindowListener.onChange`) — `createInfoSignal()`**, instrument implicit:
 
 ```java
-InfoStrategySignal signal = createInfoSignal();  // listener knows its instrument
+var signal = createInfoSignal();  // listener knows its instrument
 signal.set("interval", "1m");
 signal.set("zscore", z);
 signal.set("vwap", vwap);

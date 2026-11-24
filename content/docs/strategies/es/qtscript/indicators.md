@@ -3,7 +3,7 @@ title: Indicadores de QTScript
 description: Todos los indicadores que puede llamar una estrategia QTScript, pro incluidos, agrupados por tipo.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
+upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -102,6 +102,7 @@ Todos los indicadores que puede llamar un fichero `.qtscript`, agrupados por tip
 | `clamp`                                                                     | Un indicador limitado a un rango                                     |                                                                                                                                                                                         |
 | `round`                                                                     | Un indicador redondeado a un número de decimales                     |                                                                                                                                                                                         |
 | `equal`, `notEqual`, `greatThan`, `greatOrEqual`, `lessThan`, `lessOrEqual` | Un indicador comparado con un número, como indicador booleano        | Las formas de cinco argumentos eligen entre dos indicadores: `equal("selected", "signal", 1, "emaFast", "emaSlow")` da `emaFast` mientras `signal` vale 1 y `emaSlow` en caso contrario |
+| `isEqual`, `isNotEqual`, `isGreatThan`, `isGreatOrEqual`, `isLessThan`, `isLessOrEqual` | Un indicador comparado con un número, como una condición que un cuerpo lee con `isValue("nombre")` | Tres argumentos: el nombre que registra, el indicador que lee y el número. `isValue` es `false` hasta que el indicador que lee tiene un valor. `isTrue`, que recibe una función, es solo de Java |
 
 ## Los indicadores pro
 

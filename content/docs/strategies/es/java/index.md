@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 2
 lastUpdated: '2026-11-23T00:30:55Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
+upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -217,6 +217,7 @@ public class MyStrategy extends AbstractTickerStrategy {
 
 - `emitBuy(price)` / `emitSell(price)` / `emitSignal(signal)`
 - `getPrevInstant()` / `getCurrInstant()` — cuándo se abrió / cerró la ventana que acaba de dispararse
+- `isValue(nombre)` — si un indicador tiene un valor que no es 0, `false` hasta que lo tiene: así lee una condición un listener (mira [Condiciones e `isValue`](#condiciones-e-isvalue))
 - `getEngineVersion()` / `getEngineVersionMajor()` / `getEngineVersionMinor()` — la versión del
   motor en ejecución (consulta [Versión del motor](#versión-del-motor))
 - `this.instrument` — instrumento actual
@@ -314,6 +315,60 @@ mismo store que comparten todos los listeners de este instrumento (consulta [Ges
 estado](#gestión-de-estado) más abajo); `getPrevInstant()`/`getCurrInstant()` solo se resuelven
 cuando el listener está registrado en una ventana (mediante `.window(...)`, como arriba) — llamarlos
 en un listener enganchado a un indicador simple lanza una excepción.
+
+## Condiciones e `isValue`
+
+Una comparación que un listener lee como verdadera o falsa se escribe en `setupIndicators` con `isEqual`, `isNotEqual`, `isGreatThan`,
+`isGreatOrEqual`, `isLessThan` o `isLessOrEqual`. Cada una recibe tres argumentos: el nombre que registra, el indicador que lee y
+el número con el que compara. `isLessThan("oversold", "rsi14", 30)` registra `oversold`, que se cumple mientras `rsi14` esté por debajo de 30.
+`isTrue(name, indicator, predicate)` registra una condición a partir de una función en lugar de un número.
+
+En un `AbstractWindowListener`, `isValue("oversold")` es `true` cuando la condición se cumple y `false` cuando no. También es `false`
+hasta que `rsi14` tiene un valor, y en ese tramo `indicators.getValue("oversold")` ya puede leer 1: lee una condición con
+`isValue`. `isValue` acepta el nombre de cualquier indicador, no solo el de una condición, y es `true` cuando el indicador tiene un valor y ese
+valor no es 0.
+
+```java
+import com.wualabs.qtsurfer.engine.core.state.StateStore;
+import com.wualabs.qtsurfer.engine.indicators.helpers.WindowTimeRTIndicator.WindowTime;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.strategy.AbstractTickerStrategy;
+import com.wualabs.qtsurfer.engine.strategy.AbstractWindowListener;
+
+public class OversoldTouch extends AbstractTickerStrategy {
+
+    @Override
+    protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
+        indicators
+            .addPrice()
+            .rsi(14)
+            .isLessThan("oversold", "rsi14", 30)
+            .isTrue("calm", "rsi14", v -> v > 40 && v < 60)
+            .window("oversold", WindowTime.m1, new Touch(this, indicators));
+    }
+
+    private class Touch extends AbstractWindowListener {
+
+        public Touch(AbstractTickerStrategy strategy, InstrumentGroupRTIndicator indicators) {
+            super(strategy, indicators);
+        }
+
+        @Override
+        public void onChange(StateStore store, double prev, double actual) {
+            if (isValue("oversold") && !store.is("long")) {
+                store.set("long");
+                emitBuy(indicators.getValue("price"));
+            }
+            if (!isValue("oversold") && store.is("long")) {
+                store.unset("long");
+                emitSell(indicators.getValue("price"));
+            }
+        }
+    }
+}
+```
+
+La misma estrategia en QTScript, sin `isTrue`, está en «Una condición: `isValue`» de la skill de QTScript.
 
 ## Gestión de estado
 
@@ -557,14 +612,14 @@ compra/venta, construye un `InfoStrategySignal`, adjúntale pares clave/valor ar
 `emitSignal`. El tipo está en `com.wualabs.qtsurfer.engine.strategy.event.signal`, junto a `BuySignal` y
 `SellSignal`, y una estrategia que lo nombra lo importa desde ahí —
 `import com.wualabs.qtsurfer.engine.strategy.event.signal.InfoStrategySignal;`. `emitInfo(key, values…)` nunca
-nombra el tipo y no necesita ningún import. Hay dos constructores, siguiendo la misma convención que `emitBuy`:
+nombra el tipo y no necesita ningún import, y tampoco `var signal = createInfoStrategySignal(...)`:
+el tipo es lo que devuelva la llamada, así que escribe `var` y deja fuera el import, como hacen los dos ejemplos de abajo.
+Hay dos constructores, siguiendo la misma convención que `emitBuy`:
 
 - **Nivel de estrategia (`update()`) — `createInfoStrategySignal(instrument)`**, instrumento explícito:
 
 ```java
-import com.wualabs.qtsurfer.engine.strategy.event.signal.InfoStrategySignal;
-
-InfoStrategySignal signal = createInfoStrategySignal(instrument);  // de AbstractTickerStrategy
+var signal = createInfoStrategySignal(instrument);  // de AbstractTickerStrategy
 signal.set("interval", "1m");
 signal.set("zscore", z);
 signal.set("vwap", vwap);
@@ -574,7 +629,7 @@ emitSignal(signal);
 - **Dentro de un window listener (`AbstractWindowListener.onChange`) — `createInfoSignal()`**, instrumento implícito:
 
 ```java
-InfoStrategySignal signal = createInfoSignal();  // el listener ya conoce su instrumento
+var signal = createInfoSignal();  // el listener ya conoce su instrumento
 signal.set("interval", "1m");
 signal.set("zscore", z);
 signal.set("vwap", vwap);

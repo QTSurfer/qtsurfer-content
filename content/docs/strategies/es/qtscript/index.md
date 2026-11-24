@@ -5,7 +5,7 @@ order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 9790da1777de21660f69104f3d5d6ad6b26a4bd1
 upstreamPath: docs/qtscript.md
-lastUpdated: '2026-11-23T00:30:55Z'
+lastUpdated: '2026-11-24T11:52:27Z'
 ---
 
 QTScript es una forma compacta de escribir una estrategia: conservas la parte que es tuya —

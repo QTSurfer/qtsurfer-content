@@ -2,6 +2,7 @@
 title: "Conditions"
 description: "How the conditions isLessThan, isGreatThan and the rest compare an indicator with a number and give 1 or 0, how a strategy reads them with isValue, and how to use them in a QTSurfer strategy."
 order: 11.01
+lastUpdated: '2026-11-24T11:52:27Z'
 ---
 
 A **condition** compares an indicator with a number and gives 1 while the comparison holds and 0 while it does not. There are six, one per comparison: `isEqual`, `isNotEqual`, `isGreatThan`, `isGreatOrEqual`, `isLessThan` and `isLessOrEqual`.

@@ -2,7 +2,7 @@
 title: "Percent change"
 description: "How the percent change gives the change of a value since the update before in percent, what its typical size is, and how to use it in a QTSurfer strategy."
 order: 9.02
-lastUpdated: '2026-11-22T23:27:04Z'
+lastUpdated: '2026-11-24T09:41:50Z'
 ---
 
 The **percent change** is how much a value changed since the update before, in percent: 1 is a rise of 1 %. It is the change rate times 100, with no period.

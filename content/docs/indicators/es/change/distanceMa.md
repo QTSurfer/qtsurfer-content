@@ -2,7 +2,7 @@
 title: "Distancia a una media"
 description: "Cómo la distancia a una media mide cuánto se aleja el precio de una media móvil en porcentaje, qué medias admite y cómo usarla en una estrategia de QTSurfer."
 order: 9.04
-lastUpdated: '2026-11-22T23:27:04Z'
+lastUpdated: '2026-11-24T09:41:50Z'
 ---
 
 La **distancia a una media** es cuánto se aleja el precio de una media móvil, en porcentaje de la media: positiva por encima, negativa por debajo.

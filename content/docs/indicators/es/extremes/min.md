@@ -2,7 +2,7 @@
 title: "Mínimo"
 description: "Cómo el mínimo guarda el valor más bajo desde el inicio, dónde empieza cuando su fuente es un indicador y cómo usarlo en una estrategia de QTSurfer."
 order: 10.04
-lastUpdated: '2026-11-22T23:27:04Z'
+lastUpdated: '2026-11-24T09:41:50Z'
 ---
 
 El **mínimo** es el valor más bajo visto desde el inicio de la ejecución. Solo baja.

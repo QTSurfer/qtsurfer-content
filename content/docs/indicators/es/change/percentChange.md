@@ -2,7 +2,7 @@
 title: "Cambio porcentual"
 description: "Cómo el cambio porcentual da el cambio de un valor desde la actualización anterior en porcentaje, cuál es su tamaño típico y cómo usarlo en una estrategia de QTSurfer."
 order: 9.02
-lastUpdated: '2026-11-22T23:27:04Z'
+lastUpdated: '2026-11-24T09:41:50Z'
 ---
 
 El **cambio porcentual** es cuánto cambió un valor desde la actualización anterior, en porcentaje: 1 es una subida del 1 %. Es la tasa de cambio multiplicada por 100, sin periodo.

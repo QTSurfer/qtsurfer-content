@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 9790da1777de21660f69104f3d5d6ad6b26a4bd1
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -81,7 +81,7 @@ escrita sin el punto. Estos son los nombres que funcionan:
 `add` `bollinger` `bollingerBandwidth` `cci` `clamp` `diff` `distance` `distanceMa` `ema` `equal`
 `gain` `greatOrEqual` `greatThan` `lessOrEqual` `lessThan` `loss` `macd` `max` `min` `mul` `notEqual`
 `percentChange` `rateChange` `round` `rsi` `sma` `stochRsi` `sum` `wma` `tema` `hma` `mma` `kama` `stdDev` `variance`
-`volatility` `percentVolatility` `bollingerPercentB` `atr`
+`volatility` `percentVolatility` `bollingerPercentB` `atr` `isEqual` `isNotEqual` `isGreatThan` `isGreatOrEqual` `isLessThan` `isLessOrEqual`
 
 Estas son las formas de cada nombre que una línea de QTScript puede escribir: un `String` es el nombre de un indicador,
 o bien uno que lee o bien el que registra, y un `Number` es un número entero o un decimal. Qué significa cada argumento
@@ -128,13 +128,20 @@ está en el Javadoc del builder.
 | `percentVolatility` | `percentVolatility(int)` · `percentVolatility(String, int)` |
 | `bollingerPercentB` | `bollingerPercentB()` · `bollingerPercentB(int)` · `bollingerPercentB(int, Number)` · `bollingerPercentB(String, int, Number)` |
 | `atr` | `atr()` · `atr(int)` · `atr(String, int)` |
+| `isEqual` | `isEqual(String, String, Number)` |
+| `isNotEqual` | `isNotEqual(String, String, Number)` |
+| `isGreatThan` | `isGreatThan(String, String, Number)` |
+| `isGreatOrEqual` | `isGreatOrEqual(String, String, Number)` |
+| `isLessThan` | `isLessThan(String, String, Number)` |
+| `isLessOrEqual` | `isLessOrEqual(String, String, Number)` |
 
 Una llamada cuyos argumentos no encajan con
 ninguna de sus formas se rechaza indicando las que sí existen: `ema(1, 2, 3)` responde que sus formas son
 `ema(int)`, `ema(String, int)` y `ema(String, String, int)`. Los métodos del builder que reciben una función
-(`predicate`, `fun`, `decorate`, `periodCount`) y `conditional`, que recibe una función e indicadores como objetos, solo se
+(`predicate`, `fun`, `decorate`, `periodCount`, `isTrue`) y `conditional`, que recibe una función e indicadores como objetos, solo se
 pueden escribir en Java. Para comparar un indicador con un número, usa `equal`, `notEqual`, `greatThan`, `greatOrEqual`,
-`lessThan` o `lessOrEqual`.
+`lessThan` o `lessOrEqual`. Para leer la comparación como verdadera o falsa dentro de un cuerpo `{ }`, usa `isEqual`,
+`isNotEqual`, `isGreatThan`, `isGreatOrEqual`, `isLessThan` o `isLessOrEqual`: [una condición](#una-condición-isvalue).
 
 Llamados sin un nombre propio, los más nuevos registran `atr14`, `wma5`, `tema4`, `hma6`, `mma7`, `kama10_2_30`,
 `stdDev5`, `variance5`, `vol5` (`volatility`), `pvol5` (`percentVolatility`) y `pctB20_2` (`bollingerPercentB`); un
@@ -449,6 +456,7 @@ Tu Java, más lo que ya está en ámbito — nada necesita importarse:
 | `actual`, `prev` | el valor nuevo de la ventana y el que tenía cuando cerró la ventana anterior — [consulta arriba](#la-ventana-te-da-el-valor-anterior) |
 | `price` (ticker) · `price open high low close volume` (kline) · `rate` (funding) | los valores actuales, como variables normales |
 | `value("nombre")` | el valor actual de cualquier otro indicador |
+| `isValue("nombre")` | si un indicador tiene un valor que no es 0, `false` hasta que lo tiene — [una condición](#una-condición-isvalue) |
 | `$indicator` | el nombre del indicador en el que está esta ventana, como un `String` — [ver arriba](#en-qué-indicador-está-una-ventana) |
 | `store` | el estado por instrumento que comparten todas las ventanas de ese instrumento |
 | `$globalStore` | el estado propio de la estrategia, para lo que no pertenece a un solo instrumento — [ver abajo](#el-almacén-global-globalstore) |
@@ -482,6 +490,36 @@ setup:
 
 `value("ema" + rapida)` lee cualquier indicador registrado por nombre; `store` es el mismo store
 que comparte cada ventana del instrumento.
+
+### Una condición: `isValue`
+
+Una comparación que un cuerpo lee como verdadera o falsa se escribe en una línea de `setup:` con `isEqual`, `isNotEqual`, `isGreatThan`,
+`isGreatOrEqual`, `isLessThan` o `isLessOrEqual`. Cada una recibe tres argumentos: el nombre que registra, el indicador que lee y
+el número con el que compara. `isLessThan("oversold", "rsi14", 30)` registra `oversold`, que se cumple mientras `rsi14` esté por debajo de 30.
+
+En un cuerpo, `isValue("oversold")` es `true` cuando la condición se cumple y `false` cuando no. También es `false` hasta que `rsi14` tiene
+un valor, y en ese tramo `value("oversold")` ya puede leer 1: lee una condición con `isValue`. `isValue` acepta el nombre de
+cualquier indicador, no solo el de una condición, y es `true` cuando el indicador tiene un valor y ese valor no es 0.
+
+```
+strategy "Oversold touch"
+
+setup:
+  rsi(14)
+  isLessThan("oversold", "rsi14", 30)
+  window oversold m1 {
+    if (isValue("oversold") && !store.is("long")) {
+      store.set("long");
+      emitBuy(price);
+    }
+    if (!isValue("oversold") && store.is("long")) {
+      store.unset("long");
+      emitSell(price);
+    }
+  }
+```
+
+`isTrue`, que recibe una función, solo se puede escribir en Java: [mira la guía de Java](/docs/strategies/java/strategy_coding#condiciones-e-isvalue).
 
 ### El almacén global: `$globalStore`
 

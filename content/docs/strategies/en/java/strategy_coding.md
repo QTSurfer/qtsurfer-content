@@ -3,7 +3,7 @@ title: Coding Java strategies
 description: Emit trades and information signals, configure orders, and attach chart metadata.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 9790da1777de21660f69104f3d5d6ad6b26a4bd1
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -310,6 +310,60 @@ that first window opened. A rule that needs two real closes should let the first
 warm-up period, such as an RSI or an EMA, has not settled in its first windows either. Keep the `StateStore` for what
 a window cannot hand you: a flag, a counter, a value from several windows ago. A listener that only needs the
 store, `prev` and `actual` can be a lambda; one that emits a signal extends `AbstractWindowListener`, as above.
+
+## Conditions and `isValue`
+
+A comparison that a listener reads as true or false is written in `setupIndicators` with `isEqual`, `isNotEqual`, `isGreatThan`,
+`isGreatOrEqual`, `isLessThan` or `isLessOrEqual`. Each takes three arguments: the name it registers, the indicator it reads, and
+the number it compares with. `isLessThan("oversold", "rsi14", 30)` registers `oversold`, which holds while `rsi14` is below 30.
+`isTrue(name, indicator, predicate)` registers a condition from a function instead of a number.
+
+In an `AbstractWindowListener`, `isValue("oversold")` is `true` when the condition holds and `false` when it does not. It is `false`
+too until `rsi14` has a value, and in that stretch `indicators.getValue("oversold")` can already read 1: read a condition with
+`isValue`. `isValue` takes the name of any indicator, not only a condition, and is `true` when the indicator has a value and that
+value is not 0.
+
+```java
+import com.wualabs.qtsurfer.engine.core.state.StateStore;
+import com.wualabs.qtsurfer.engine.indicators.helpers.WindowTimeRTIndicator.WindowTime;
+import com.wualabs.qtsurfer.engine.indicators.helpers.group.InstrumentGroupRTIndicator;
+import com.wualabs.qtsurfer.engine.strategy.AbstractTickerStrategy;
+import com.wualabs.qtsurfer.engine.strategy.AbstractWindowListener;
+
+public class OversoldTouch extends AbstractTickerStrategy {
+
+    @Override
+    protected void setupIndicators(InstrumentGroupRTIndicator indicators) {
+        indicators
+            .addPrice()
+            .rsi(14)
+            .isLessThan("oversold", "rsi14", 30)
+            .isTrue("calm", "rsi14", v -> v > 40 && v < 60)
+            .window("oversold", WindowTime.m1, new Touch(this, indicators));
+    }
+
+    private class Touch extends AbstractWindowListener {
+
+        public Touch(AbstractTickerStrategy strategy, InstrumentGroupRTIndicator indicators) {
+            super(strategy, indicators);
+        }
+
+        @Override
+        public void onChange(StateStore store, double prev, double actual) {
+            if (isValue("oversold") && !store.is("long")) {
+                store.set("long");
+                emitBuy(indicators.getValue("price"));
+            }
+            if (!isValue("oversold") && store.is("long")) {
+                store.unset("long");
+                emitSell(indicators.getValue("price"));
+            }
+        }
+    }
+}
+```
+
+The same strategy in QTScript, without `isTrue`, is in [A condition: `isValue`](/docs/strategies/qtscript#a-condition-isvalue).
 
 ## The global store
 

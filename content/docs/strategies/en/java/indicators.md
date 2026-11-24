@@ -3,9 +3,8 @@ title: Java indicators
 description: Configure, compose, and extend the QTSurfer real-time indicator pipeline.
 order: 3
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
+upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
-lastUpdated: '2026-11-23T00:30:55Z'
 ---
 
 All methods below are on `InstrumentGroupRTIndicator` and return `this` for chaining.
@@ -120,6 +119,9 @@ values it gives while it warms up: the `min` of an RSI is 0 from the start.
 .lessOrEqual("le", "price", 50000)
 .equal("eq", "price", 100)
 .notEqual("ne", "price", 100)
+.isLessThan("oversold", "rsi14", 30)   // a condition a listener reads with isValue("oversold"); also isEqual,
+                                         // isNotEqual, isGreatThan, isGreatOrEqual, isLessOrEqual (name, indicator, number)
+.isTrue("calm", "rsi14", v -> v > 40 && v < 60)   // the same, from a function
 .predicate("custom", "price", v -> v > 0 && v < 100)
 .periodCount("cnt", "oversold", v -> v > 0)  // count consecutive true periods
 ```

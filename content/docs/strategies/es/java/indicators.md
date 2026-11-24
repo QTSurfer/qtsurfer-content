@@ -4,7 +4,7 @@ description: Configura, compón y amplía el pipeline de indicadores en tiempo r
 order: 3
 lastUpdated: '2026-11-23T00:30:55Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 49b9db79aaed7a693bcb98a49ca3bceffefb1951
+upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
 upstreamPath: skills/qtsurfer-java-strategy/references/indicators.md
 ---
 
@@ -122,6 +122,9 @@ que da mientras se calienta: el `min` de un RSI es 0 desde el inicio.
 .lessOrEqual("le", "price", 50000)
 .equal("eq", "price", 100)
 .notEqual("ne", "price", 100)
+.isLessThan("oversold", "rsi14", 30)   // una condición que un listener lee con isValue("oversold"); también isEqual,
+                                         // isNotEqual, isGreatThan, isGreatOrEqual, isLessOrEqual (nombre, indicador, número)
+.isTrue("calm", "rsi14", v -> v > 40 && v < 60)   // lo mismo, desde una función
 .predicate("personalizada", "price", v -> v > 0 && v < 100)
 .periodCount("cnt", "sobrevendido", v -> v > 0)  // cuenta periodos consecutivos en true
 ```

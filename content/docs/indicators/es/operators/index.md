@@ -2,7 +2,7 @@
 title: "Operadores"
 description: "Cómo sumar, restar, multiplicar, limitar y redondear indicadores en una estrategia de QTSurfer, con los nombres que registra cada operador."
 order: 11
-lastUpdated: '2026-11-24T09:41:50Z'
+lastUpdated: '2026-11-24T10:50:33Z'
 ---
 
 Los operadores construyen un indicador a partir de otros: `add`, `diff`, `mul`, `clamp` y `round`. Cada uno lee indicadores por su nombre, así que regístralos antes, y su resultado es un indicador como cualquier otro: una ventana puede vigilarlo y otro operador puede leerlo. No tienen gráfico propio, porque dibujan lo que se les dé: el demo de abajo muestra cuatro de ellos sobre un par de medias.

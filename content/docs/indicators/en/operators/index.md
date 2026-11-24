@@ -46,3 +46,5 @@ setup:
 That registers the gap between the two averages and the same rounded to two decimals. In Java they are the methods of the same names on the builder, and `clamp` also takes a condition and the value to put when it holds.
 
 The catalogues have them with their forms: [QTScript indicators](/docs/strategies/qtscript/indicators) and [Java indicators](/docs/strategies/java/indicators).
+
+A comparison of an indicator with a number, which gives 1 or 0, is not an operator but a condition: it has [its own page](/docs/indicators/operators/conditions).

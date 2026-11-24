@@ -46,3 +46,5 @@ setup:
 Eso registra la separación entre las dos medias y la misma redondeada a dos decimales. En Java son los métodos del mismo nombre en el builder, y `clamp` admite además una condición y el valor que pone cuando se cumple.
 
 Los catálogos los tienen con sus formas: [indicadores de QTScript](/docs/strategies/qtscript/indicators) e [indicadores de Java](/docs/strategies/java/indicators).
+
+La comparación de un indicador con un número, que da 1 o 0, no es un operador sino una condición: tiene [su propia página](/docs/indicators/operators/conditions).

@@ -3,7 +3,7 @@ title: Parameter sweeps
 description: Run parameter grids, rank trials, and validate results with walk-forward folds.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -252,6 +252,12 @@ curl "https://api.qtsurfer.net/v1/backtest/binance/ticker/executeSweep/$PREPARE_
 ```
 
 Errors: `404` sweep not found or expired.
+
+### A strategy that detaches
+
+A trial whose strategy asks to leave its source with `detach` stops reading there, as a [backtest](backtest_execute#a-strategy-can-end-its-backtest-early)
+does: its row counts the trades of what it read and ranks like any other. In a grid sweep, `state.completed` adds up the data points the
+trials were given, so it can be below `state.size` while the sweep is `COMPLETED`; `progress` counts trials and is complete either way.
 
 ## Walk-forward validation
 

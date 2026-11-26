@@ -3,7 +3,7 @@ title: Backtests
 description: Prepara datos históricos, ejecuta una estrategia, sondea su resultado e inspecciona su curva de equity.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -235,6 +235,14 @@ comisión efectiva, no las dos patas independientes de compra/venta de un barrid
 que resuelva en tasas de compra/venta distintas, o que fije un `feeLeg` distinto del predeterminado,
 se rechaza con `400` en vez de colapsarse silenciosamente a un lado. Omítelo para ejecutar con los
 valores por defecto de la plataforma (`initialFunding: 100`, `feeRate: 0.001`).
+
+### Una estrategia puede terminar su backtest antes
+
+Una estrategia que pide dejar su fuente con `detach` ([QTScript](/docs/strategies/qtscript#una-estrategia-que-deja-una-fuente), [Java](/docs/strategies/java/strategy_coding#adjuntar-y-quitar-una-fuente))
+detiene ahí el backtest: no se lee el dato posterior a ese punto, a `onDetach` se le dice `STRATEGY` y el job termina `Completed` con los resultados de
+lo que la estrategia leyó. Su `state.completed` es el número de puntos de datos que recibió la estrategia, por debajo de `state.size`: una ejecución que
+acaba así no es parcial ni fallida. Un backtest lee un solo instrumento, así que quitarlo termina la ejecución. Una estrategia que nunca hace `detach`
+lee todo el rango, como antes. Una estrategia para un pump y su dump puede tomar su beneficio, hacer `detach` y costarle a un backtest solo lo que leyó.
 
 ### Cuerpo de la petición
 

@@ -3,7 +3,7 @@ title: Programar estrategias en Java
 description: Emite señales de operación e información, configura órdenes y adjunta metadatos de gráfico.
 order: 6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9790da1777de21660f69104f3d5d6ad6b26a4bd1
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/strategy_coding.md
 lastUpdated: '2026-11-24T11:52:27Z'
 ---
@@ -593,8 +593,17 @@ public void update(Kline kline) {
 
 `detach(Instrument)` termina la fuente que lee el instrumento; `detach(StrategyContext)`, llamado desde `onAttach` u `onDetach`, termina
 el adjuntado que describe el contexto, por su id; en un listener de ventana, `detach()` termina la fuente del instrumento de la ventana. La
-petición se aplica antes del siguiente evento y a `onDetach` se le dice `REASON_STRATEGY`; un backtest la ignora. Llamado desde
+petición se aplica antes del siguiente evento y a `onDetach` se le dice `REASON_STRATEGY`. Un backtest, o una ejecución de barrido, deja de leer ahí también y
+termina `Completed` con los resultados de lo que leyó ([Backtests](/docs/developers/api/backtest_execute#una-estrategia-puede-terminar-su-backtest-antes)). Llamado desde
 `onDetach`, `detach` está permitido y no hace nada: la fuente ya se está yendo.
+
+`detach` no cierra nada ni cancela nada: la estrategia cierra su posición, y resuelve sus órdenes, antes de irse. Vende primero, haz `detach` después:
+
+```java
+Instrument instrument = kline.getInstrument();
+emitSignal(new SellSignal(this, instrument, price)); // close what the strategy holds first
+detach(instrument);                                  // then leave the source
+```
 
 Una estrategia QTScript hace lo mismo con `onAttach { }` y `onDetach { }` - consulta
 [QTScript](/docs/strategies/qtscript#adjuntar-y-quitar-una-fuente).

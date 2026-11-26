@@ -4,7 +4,7 @@ description: Construye estrategias QTSurfer con indicadores, window listeners, e
 order: 2
 lastUpdated: '2026-11-24T11:52:27Z'
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
+upstreamCommit: 0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
 ---
 
@@ -570,8 +570,16 @@ token: cada señal de una ejecución `dex` lleva el contrato como `instrument.id
 Una estrategia que ha acabado con una fuente pide a la plataforma que la quite (la guía de ejecución en vivo, «Una estrategia que deja una
 fuente»): `detach(Instrument)` termina la fuente que lee el instrumento; `detach(StrategyContext)`, llamado desde `onAttach` u
 `onDetach`, termina el adjuntado que describe el contexto, por su id; en un listener de ventana, `detach()` termina la fuente del
-instrumento de la ventana. La petición se aplica antes del siguiente evento y a `onDetach` se le dice `REASON_STRATEGY`; un backtest la
-ignora. Llamado desde `onDetach`, `detach` está permitido y no hace nada: la fuente ya se está yendo.
+instrumento de la ventana. La petición se aplica antes del siguiente evento y a `onDetach` se le dice `REASON_STRATEGY`. Un backtest, o una ejecución de barrido, deja de leer ahí también y termina `Completed` con los resultados de lo que leyó. Llamado desde
+`onDetach`, `detach` está permitido y no hace nada: la fuente ya se está yendo.
+
+`detach` no cierra nada ni cancela nada: la estrategia cierra su posición, y resuelve sus órdenes, antes de irse. Vende primero, haz `detach` después:
+
+```java
+Instrument instrument = kline.getInstrument();
+emitSignal(new SellSignal(this, instrument, price)); // close what the strategy holds first
+detach(instrument);                                  // then leave the source
+```
 
 Los dos métodos corren en el mismo hilo que `update()`, justo antes del primer evento de mercado de la fuente nueva (o,
 en un quitado, antes del primer evento que la ejecución ya no lee), así que ven el estado de la estrategia exactamente como
@@ -584,7 +592,7 @@ flujo a la estrategia antes de su primer evento en vivo, como al arrancar, y `is
 la estrategia (campos, un `StateStore`) dura mientras la ejecución tiene al menos una fuente adjuntada; cuando se quita la
 última se libera, y el siguiente adjuntado empieza limpio. Un backtest llama a `onAttach` una vez antes de su primer evento,
 con su propia fuente, y a `onDetach` una vez después del último, también cuando termina antes que sus datos (cancelado, sin
-tiempo o fallado).
+tiempo, fallado, o porque la estrategia hizo `detach`, lo que le dice `REASON_STRATEGY`).
 
 `onDetach` corre cuando se quita una fuente mientras la ejecución sigue: por el propietario, o por la plataforma, con el motivo que dice por qué. **No**
 corre cuando la ejecución se detiene o falla: una detención no es un punto de los datos de la ejecución, así que nada de lo

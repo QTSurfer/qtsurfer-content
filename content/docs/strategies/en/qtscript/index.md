@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: A compact language for writing strategies — every section, windows, what's in scope, and how it compiles the same as Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9790da1777de21660f69104f3d5d6ad6b26a4bd1
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-24T11:52:27Z'
 ---
@@ -654,7 +654,7 @@ onDetach {
 The strategy's memory (a `param` you changed, a `StateStore`) lasts while the run has at least one source attached; when
 the last one is detached it is released, and the next attach starts clean. A backtest calls `onAttach` once before its
 first event, with its own source, and `onDetach` once after its last, also when it ends before its data does (cancelled,
-out of time or failed).
+out of time, failed, or because the strategy detached, which tells it `"STRATEGY"`).
 
 `onDetach` runs when a source is detached while the run goes on: by you, or by the platform, with the reason that says
 why. It does **not** run when the run stops or fails: a stop is not a point in the run's data, so nothing a hook emitted
@@ -677,7 +677,25 @@ setup:
   window close m5 { emitInfo("seen", close); detach(); }
 ```
 
-The request is applied before the next event and the strategy's `onDetach` is told `"STRATEGY"`; a backtest ignores it.
+The request is applied before the next event and the strategy's `onDetach` is told `"STRATEGY"`. A backtest, or a sweep run, stops reading
+there too and ends `Completed` with the results of what it read ([Backtests](/docs/developers/api/backtest_execute#a-strategy-can-end-its-backtest-early)).
+
+`detach` closes nothing and cancels nothing: the position the strategy holds, and the orders it has placed, are its own to deal with before it
+leaves. A strategy that takes its profit and does not want to hear of the token again sells first and detaches after, in that order:
+
+```
+strategy "Take profit and leave"
+
+param takeProfit = 1.25 "Price at which it sells and leaves"
+
+setup:
+  window price m1 {
+    if (price >= takeProfit) {
+      emitSell(price);
+      detach();
+    }
+  }
+```
 
 A Java strategy overrides the same two methods of `Strategy` - see [Coding Java
 strategies](/docs/strategies/java/strategy_coding#attaching-and-detaching-a-source).

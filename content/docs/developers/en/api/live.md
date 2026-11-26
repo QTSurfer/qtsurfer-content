@@ -3,7 +3,7 @@ title: Live execution
 description: Run a strategy continuously against a live market feed — stream its signals and update parameters over WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/live.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -472,12 +472,15 @@ strategies](/docs/strategies/java/strategy_coding#a-strategy-that-leaves-a-sourc
   reads the instrument.
 - **From `onDetach` it does nothing.** A strategy may call `detach` there, for instance from closing code it shares with the
   other hooks, and the platform ignores the request: the source is already going.
+- **It closes nothing and cancels nothing.** A position the strategy holds is its own to close: it signals the sell, then detaches, in that
+  order, as in [A strategy that leaves a source](/docs/strategies/qtscript#a-strategy-that-leaves-a-source).
+- **A backtest stops there too.** In a [backtest](backtest_execute#a-strategy-can-end-its-backtest-early) or a sweep run the strategy stops
+  reading where it asks, and the job ends `Completed`; a backtest reads one instrument, so detaching it ends the run.
 - **It ends like any detach.** The attachment becomes `DETACHED` with the `reason` `STRATEGY`, the strategy's `onDetach` is told
   `STRATEGY`, and when it was the last source the run waits again, so that the next attach, a new notice for instance, starts it.
 - **It is a signal of the type `system`**, `kind` `DETACH`, with the attachment in its `data`. It is in the run's history,
   `GET /live/{runId}/signals?type=system`: without `type` the history does not carry it, so a client that does not know the type never
   sees it. It is never pushed on the channel.
-- **A backtest ignores it:** a backtest reads the data it was given.
 
 ### What can refuse an attach
 

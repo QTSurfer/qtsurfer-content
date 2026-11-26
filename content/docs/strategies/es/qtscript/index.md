@@ -3,7 +3,7 @@ title: QTScript (beta)
 description: Un lenguaje compacto para escribir estrategias — cada sección, las ventanas, qué hay en su ámbito, y cómo compila igual que Java.
 order: 7
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 9790da1777de21660f69104f3d5d6ad6b26a4bd1
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/qtscript.md
 lastUpdated: '2026-11-24T11:52:27Z'
 ---
@@ -668,7 +668,7 @@ onDetach {
 La memoria de la estrategia (un `param` que cambiaste, un `StateStore`) dura mientras la ejecución tiene al menos una fuente
 adjuntada; cuando se quita la última se libera, y el siguiente adjuntado empieza limpio. Un backtest llama a `onAttach` una
 vez antes de su primer evento, con su propia fuente, y a `onDetach` una vez después del último, también cuando termina antes
-que sus datos (cancelado, sin tiempo o fallado).
+que sus datos (cancelado, sin tiempo, fallado, o porque la estrategia hizo `detach`, lo que le dice `"STRATEGY"`).
 
 `onDetach` corre cuando se quita una fuente mientras la ejecución sigue: por ti, o por la plataforma, con el motivo que dice
 por qué. **No** corre cuando la ejecución se detiene o falla: una detención no es un punto de los datos de la ejecución, así
@@ -692,7 +692,25 @@ setup:
   window close m5 { emitInfo("seen", close); detach(); }
 ```
 
-La petición se aplica antes del siguiente evento y a `onDetach` de la estrategia se le dice `"STRATEGY"`; un backtest la ignora.
+La petición se aplica antes del siguiente evento y a `onDetach` de la estrategia se le dice `"STRATEGY"`. Un backtest, o una ejecución de barrido, deja de leer
+ahí también y termina `Completed` con los resultados de lo que leyó ([Backtests](/docs/developers/api/backtest_execute#una-estrategia-puede-terminar-su-backtest-antes)).
+
+`detach` no cierra nada ni cancela nada: la posición que tiene la estrategia, y las órdenes que ha puesto, son suyas para resolverlas antes de irse.
+Una estrategia que toma su beneficio y no quiere saber más del token vende primero y hace `detach` después, en ese orden:
+
+```
+strategy "Take profit and leave"
+
+param takeProfit = 1.25 "Price at which it sells and leaves"
+
+setup:
+  window price m1 {
+    if (price >= takeProfit) {
+      emitSell(price);
+      detach();
+    }
+  }
+```
 
 Una estrategia Java sobrescribe los mismos dos métodos de `Strategy` - consulta [Programar estrategias en
 Java](/docs/strategies/java/strategy_coding#adjuntar-y-quitar-una-fuente).

@@ -3,7 +3,7 @@ title: Barridos de parámetros
 description: Ejecuta cuadrículas de parámetros, clasifica ensayos y valida resultados con pliegues walk-forward.
 order: 5.4
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/backtest_sweep.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -257,6 +257,12 @@ curl "https://api.qtsurfer.net/v1/backtest/binance/ticker/executeSweep/$PREPARE_
 ```
 
 Errores: `404` barrido no encontrado o expirado.
+
+### Una estrategia que hace `detach`
+
+Una prueba cuya estrategia pide dejar su fuente con `detach` deja de leer ahí, como un [backtest](backtest_execute#una-estrategia-puede-terminar-su-backtest-antes)
+: su fila cuenta las operaciones de lo que leyó y se clasifica como cualquier otra. En un barrido de rejilla, `state.completed` suma los puntos de datos que
+recibieron las pruebas, así que puede estar por debajo de `state.size` mientras el barrido está `COMPLETED`; `progress` cuenta pruebas y está completo de las dos maneras.
 
 ## Validación walk-forward
 

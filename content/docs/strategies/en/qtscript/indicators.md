@@ -3,9 +3,8 @@ title: QTScript indicators
 description: Every indicator a QTScript strategy can call, pro ones included, grouped by kind.
 order: 8
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
+upstreamCommit: 0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/indicators.md
-lastUpdated: '2026-11-24T11:52:27Z'
 ---
 
 Every indicator a `.qtscript` file can call, grouped by kind, with what each one computes. A line under `setup:` writes one

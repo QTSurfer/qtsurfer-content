@@ -3,7 +3,7 @@ title: Ejecución en vivo
 description: Ejecuta una estrategia de forma continua contra un flujo de mercado en vivo — recibe sus señales y actualiza parámetros por WebSocket.
 order: 5.45
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/live.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -488,12 +488,15 @@ Java](/docs/strategies/java/strategy_coding#una-estrategia-que-deja-una-fuente))
   lee el instrumento.
 - **Desde `onDetach` no hace nada.** Una estrategia puede llamar a `detach` ahí, por ejemplo desde un código de cierre que comparte con
   los demás ganchos, y la plataforma ignora la petición: la fuente ya se está yendo.
+- **No cierra nada ni cancela nada.** Una posición que tiene la estrategia es suya para cerrarla: emite la venta y después hace `detach`, en ese
+  orden, como en [Una estrategia que deja una fuente](/docs/strategies/qtscript#una-estrategia-que-deja-una-fuente).
+- **Un backtest se detiene ahí también.** En un [backtest](backtest_execute#una-estrategia-puede-terminar-su-backtest-antes) o en una ejecución de barrido la estrategia deja de
+  leer donde lo pide, y el job termina `Completed`; un backtest lee un solo instrumento, así que quitarlo termina la ejecución.
 - **Termina como cualquier quitado.** El adjuntado pasa a `DETACHED` con el `reason` `STRATEGY`, a `onDetach` de la estrategia se le
   dice `STRATEGY`, y cuando era la última fuente la ejecución vuelve a esperar, de modo que el siguiente adjuntado, un aviso nuevo por ejemplo, la arranca.
 - **Es una señal del tipo `system`**, `kind` `DETACH`, con el adjuntado en su `data`. Está en el histórico de la ejecución,
   `GET /live/{runId}/signals?type=system`: sin `type` el histórico no la lleva, así que un cliente que no conoce el tipo
   nunca la ve. Nunca se empuja por el canal.
-- **Un backtest la ignora:** un backtest lee los datos que se le dieron.
 
 ### Qué puede rechazar un adjuntado
 

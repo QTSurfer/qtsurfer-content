@@ -3,9 +3,8 @@ title: Java strategies
 description: Build QTSurfer strategies with indicators, window listeners, state, and signals.
 order: 2
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 5a7039965279f3c630e68de8b5d95dc97355e2f4
+upstreamCommit: 0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f
 upstreamPath: skills/qtsurfer-java-strategy/SKILL.md
-lastUpdated: '2026-11-24T11:52:27Z'
 ---
 
 A QTSurfer strategy is a plain Java class (no framework annotations required) that extends a strategy base class — most commonly `AbstractTickerStrategy` (see [Strategy base classes](#strategy-base-classes) for the kline, funding-rate, and multi-source siblings). It receives real-time market data, configures technical indicators, and emits buy/sell signals. The engine compiles strategies server-side — no local toolchain needed.
@@ -540,8 +539,16 @@ token: every signal of a `dex` run carries the contract as `instrument.id`.
 A strategy that has finished with a source asks the platform to detach it (the live execution guide, "A strategy that leaves a
 source"): `detach(Instrument)` ends the source that reads the instrument; `detach(StrategyContext)`, called from `onAttach` or
 `onDetach`, ends the attachment the context describes, by its id; in a window listener, `detach()` ends the source of the window's
-instrument. The request is applied before the next event and `onDetach` is told `REASON_STRATEGY`; a backtest ignores it. Called from
+instrument. The request is applied before the next event and `onDetach` is told `REASON_STRATEGY`. A backtest, or a sweep run, stops reading there too and ends `Completed` with the results of what it read. Called from
 `onDetach`, `detach` is allowed and does nothing: the source is already going.
+
+`detach` closes nothing and cancels nothing: the strategy closes its position, and deals with its orders, before it leaves. Sell first, detach after:
+
+```java
+Instrument instrument = kline.getInstrument();
+emitSignal(new SellSignal(this, instrument, price)); // close what the strategy holds first
+detach(instrument);                                  // then leave the source
+```
 
 Both methods run on the same thread as `update()`, right before the first market event of the new source (or, for a
 detach, before the first event the run no longer reads), so they see the strategy's state exactly as it was at that point
@@ -552,7 +559,7 @@ Indicators of a new instrument start empty: a source attached with `warmFrom` re
 strategy before its first live event, as at start, and `isWarmingUp()` tells you it is coming. The strategy's memory
 (fields, a `StateStore`) lasts while the run has at least one source attached; when the last one is detached it is
 released, and the next attach starts clean. A backtest calls `onAttach` once before its first event, with its own source,
-and `onDetach` once after its last, also when it ends before its data does (cancelled, out of time or failed).
+and `onDetach` once after its last, also when it ends before its data does (cancelled, out of time, failed, or because the strategy detached, which tells it `REASON_STRATEGY`).
 
 `onDetach` runs when a source is detached while the run goes on: by the owner, or by the platform, with the reason that
 says why. It does **not** run when the run stops or fails: a stop is not a point in the run's data, so nothing a hook

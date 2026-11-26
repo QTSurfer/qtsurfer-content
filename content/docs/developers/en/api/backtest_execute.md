@@ -3,7 +3,7 @@ title: Backtests
 description: Prepare historical data, execute a strategy, poll its result, and inspect its equity curve.
 order: 5.3
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 93b8076c98cfbb780a45e013df14725d5584d283
 upstreamPath: docs/backtest_execute.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -227,6 +227,14 @@ send the same object to either endpoint. This endpoint has one effective fee rat
 sweep's independent buy/sell legs: a `baseConfig` that resolves to different buy/sell rates, or
 sets a non-default `feeLeg`, is rejected with `400` instead of silently collapsed to one side. Omit
 it to run at the platform defaults (`initialFunding: 100`, `feeRate: 0.001`).
+
+### A strategy can end its backtest early
+
+A strategy that asks to leave its source with `detach` ([QTScript](/docs/strategies/qtscript#a-strategy-that-leaves-a-source), [Java](/docs/strategies/java/strategy_coding#attaching-and-detaching-a-source))
+stops the backtest there: the data after that point is not read, `onDetach` is told `STRATEGY`, and the job ends `Completed` with the results of
+what the strategy read. Its `state.completed` is the number of data points the strategy was given, below `state.size`: a run that ends this way is
+not partial and not failed. A backtest reads one instrument, so detaching it ends the run. A strategy that never detaches reads the whole range,
+as before. A strategy for a pump and its dump can take its profit, detach, and cost a backtest only what it read.
 
 ### Request body
 

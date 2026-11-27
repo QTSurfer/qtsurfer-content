@@ -3,7 +3,7 @@ title: Canales de señales
 description: Un proveedor vende los avisos de un canal como ofertas y códigos de un solo uso; las ejecuciones en vivo de una suscripción reciben el instrumento adjuntado, al instante o tras un retraso.
 order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 8fd7c0742c8940b7643f4e899aef9e51a1cd2ade
 upstreamPath: docs/signals.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -167,13 +167,32 @@ POST /signals/channels/{channelId}/notices
 | Campo | Qué significa |
 |---|---|
 | `source` | Obligatorio. El instrumento: una fuente como la toma un arranque (consulta [Fuentes](live#fuentes)), sin `type` y con los instrumentos nombrados uno a uno. Para una fuente `cex`, de 1 a 10 pares, sin `*`. Para una fuente `dex`, exactamente una pool. |
-| `ref` | Opcional, hasta 64 caracteres. El mismo `ref` al mismo canal devuelve el aviso que ya hizo, así que una petición reintentada o una alerta repetida es segura. Una repetición no cuenta contra la tasa del canal. |
+| `ref` | Opcional, hasta 64 caracteres. Nombra la alerta, no el instrumento: el instrumento ya está en `source`. El mismo `ref` al mismo canal devuelve el aviso que hizo mientras ese aviso no ha caducado (antes de su `expiresAtMs`), así que una petición reintentada o una alerta repetida es segura, y esa repetición no cuenta contra la tasa del canal. Cuando el aviso ha caducado, el mismo `ref` hace un aviso nuevo, que cuenta contra la tasa como cualquier otro: una alerta sobre el mismo instrumento un rato después se entrega. |
 | `expiresIn` | Opcional, de `1` a `3600` segundos, `300` por defecto. Una entrega no hecha para entonces queda `EXPIRED`. Una suscripción cuyo retraso es mayor que esto nunca recibe el aviso. |
 | `data` | Opcional. Texto para que lo lean los compradores junto al aviso: hasta 16 entradas. Las claves van en minúsculas (letras, dígitos, `_`, partes separadas por `.`), de hasta 64 caracteres. Los valores tienen de 1 a 256 caracteres, sin caracteres de control. No llega a la estrategia. |
 
 `deliveries` es a cuántas ejecuciones va el aviso: las alimentadas, cuando se publica, por una suscripción activa y sin caducar.
 Lo que hizo cada entrega le toca leerlo al comprador; `GET /signals/channels/{channelId}/notices` te muestra los recuentos por
 estado.
+
+### Qué nombra `source`, por mercado
+
+`source` es el instrumento del que trata el aviso, e `instruments` es cómo se nombra. Cada campo se lee exactamente como se leen las
+[fuentes de una ejecución](live#fuentes), y una fuente que ninguna ejecución podría leer es `400`.
+
+| Mercado | `venueType`, `exchange`, `segment` | `instruments` |
+|---|---|---|
+| Un exchange centralizado | `cex`, un exchange y uno de sus segmentos, como `binance` y `spot` | De 1 a 10 pares escritos `BASE/QUOTE`, sin `*`: `["SOL/USDT"]` |
+| Una pool en una cadena EVM | `dex`, la cadena y el protocolo de la pool, como `robinhood` y `uniswap-v3` | Exactamente una entrada: la dirección de la pool, `["0x3f4e0b2c8e1a4b6d9c0f1a2b3c4d5e6f708192a3"]` |
+| Un token en `solana` | `dex`, `solana` y `pumpfun` | Exactamente una entrada: el mint del token, en base58, **sensible a mayúsculas**, escrito exactamente como lo tiene el token: `["2TngN4B7XaoGSKsYvttq5bFAdM4Z4xCSnuyRwGiFpump"]` |
+
+En `solana` el aviso nombra el **token**, no una pool: el mint es el único identificador, y la ejecución lee el token desde su
+curva de bonding hasta la pool que pump.fun crea para él, como una sola serie (consulta [Solana: un token por su
+mint](live#solana-un-token-por-su-mint)). Así que un proveedor no elige una pool, y no envía ninguna: cualquier otro campo, en el cuerpo
+o en `source`, es `400`. Dos tokens pueden compartir nombre o símbolo; solo el mint los distingue, por eso es el
+instrumento y el `ref` no lo es.
+
+Lo demás que un comprador deba leer junto a la alerta, como el nombre del token, va en `data`.
 
 ### Por la dirección de webhook
 
@@ -214,6 +233,13 @@ Un código se usa una vez. Enviar tú mismo el mismo código otra vez devuelve l
 petición reintentada es segura; un código que canjeó otra persona es `409` con `reason: CODE_USED`. Un código que no existe,
 se revocó, o cuyo canal se borró es `404`.
 
+Tienes una sola suscripción a un canal a la vez. Un código de un canal al que ya estás suscrito es `409` con
+`reason: ALREADY_SUBSCRIBED`, y el código **no se usa**: sigue siendo válido, así que renueva la suscripción que tienes con un
+código de su propia oferta (mira más abajo), o cancélala primero para suscribirte con otra oferta. Una suscripción `EXPIRED` sigue
+teniendo el canal, porque renovarla es para lo que sirve (no cuenta contra el límite de tu plan, que es una
+cuenta distinta); una que cancelaste, o que se revocó, no lo tiene, así que puedes volver a suscribirte al canal.
+Esto se comprueba antes del límite de tu plan.
+
 ```json
 POST /signals/subscriptions/{subscriptionId}/runs
 { "runId": "5t5oAmQ4PD0lQRoCU58uE0", "type": "ticker" }
@@ -227,15 +253,16 @@ POST /signals/subscriptions/{subscriptionId}/runs
 | `resolveInstrument` | Opcional, `true` por defecto. Para una pool: si a la estrategia se le avisa de ella cuando la pool entrega su primera vela (`true`) o enseguida, con un instrumento provisional (`false`), como con [un adjuntado](live#el-instrumento-de-una-pool). |
 
 Una suscripción alimenta como mucho sus `maxRuns` ejecuciones a la vez (`429` con `reason: SUBSCRIPTION_RUNS_LIMIT` si se pasa),
-y una ejecución la alimenta a la vez una sola suscripción de un canal (`409` con `reason: RUN_FED_BY_ANOTHER`). `DELETE
+y una ejecución la alimenta a la vez una sola suscripción de un canal (`409` con `reason: RUN_FED_BY_ANOTHER`, que solo puede causar una segunda
+suscripción al mismo canal, hecha antes de que se te limitara a una). `DELETE
 /signals/subscriptions/{subscriptionId}/runs/{runId}` deja de alimentar una ejecución; `DELETE
 /signals/subscriptions/{subscriptionId}` cancela la suscripción. Lo que ya se adjuntó se queda adjuntado.
 
-Una suscripción pasado su `expiresAtMs` queda `EXPIRED`: no alimenta nada y no cuenta contra tu plan, y sus ejecuciones pueden
-alimentarse desde otra suscripción del canal. `POST /signals/subscriptions/{subscriptionId}/renew` con otro código de **la misma
+Una suscripción pasado su `expiresAtMs` queda `EXPIRED`: no alimenta nada y no cuenta contra el límite de tu plan, pero
+sigue siendo tu suscripción a su canal hasta que la canceles. `POST /signals/subscriptions/{subscriptionId}/renew` con otro código de **la misma
 oferta** mueve su caducidad en la duración de la oferta, desde su caducidad actual o, si ya caducó, desde ahora; una suscripción
 caducada se reanuda con las ejecuciones que alimentaba, y vuelve a contar contra tu plan (`429` con `reason: PLAN_LIMIT` si estás
-en su límite). Un código de otra oferta es `409` con `reason: OTHER_OFFER`; una suscripción revocada o cancelada no se puede
+en su límite). Un código de otra oferta es `409` con `reason: OTHER_OFFER`: para pasar a esa oferta, cancela la suscripción y canjea el código; una suscripción revocada o cancelada no se puede
 renovar (`SUBSCRIPTION_INACTIVE`), ni una cuya oferta no caduca (`DOES_NOT_EXPIRE`).
 
 ## Leer las entregas
@@ -289,7 +316,7 @@ oferta, no del plan.
 | `400` | Un campo fuera de sus reglas; un `source` de aviso que no es un instrumento o una pool de un mercado que se pueda seguir en vivo; un `type` de ejecución que su estrategia no consume; un `purchaseUrl` que no es `https`. |
 | `402` | Tu plan no lo incluye (consulta [Límites por plan](#límites-por-plan)). |
 | `404` | No existe ese canal, oferta, código, ejecución o suscripción tuya (o el canal se borró), o una dirección de webhook que no es la actual. |
-| `409` | `CODE_USED`, `OTHER_OFFER`, `SUBSCRIPTION_INACTIVE`, `DOES_NOT_EXPIRE`, `RUN_FED_BY_ANOTHER`; un canal con 10 ofertas (`OFFER_LIMIT`) o una oferta con 10 000 códigos (`CODE_LIMIT`). |
+| `409` | `CODE_USED`, `ALREADY_SUBSCRIBED`, `OTHER_OFFER`, `SUBSCRIPTION_INACTIVE`, `DOES_NOT_EXPIRE`, `RUN_FED_BY_ANOTHER`; un canal con 10 ofertas (`OFFER_LIMIT`) o una oferta con 10 000 códigos (`CODE_LIMIT`). |
 | `429` | `PLAN_LIMIT`, `SUBSCRIPTION_RUNS_LIMIT` o `NOTICE_RATE_LIMIT`, como arriba. |
 
 ## Guías relacionadas

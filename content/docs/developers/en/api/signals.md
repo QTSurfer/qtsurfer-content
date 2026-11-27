@@ -3,7 +3,7 @@ title: Signal channels
 description: A provider sells the notices of a channel as offers and single-use codes; the live runs of a subscription get the instrument attached, at once or after a delay.
 order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 8fd7c0742c8940b7643f4e899aef9e51a1cd2ade
 upstreamPath: docs/signals.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -167,13 +167,32 @@ POST /signals/channels/{channelId}/notices
 | Field | Meaning |
 |---|---|
 | `source` | Required. The instrument: a source as a start takes it (see [Sources](live#sources)), without `type` and with the instruments named one by one. For a `cex` source, 1 to 10 pairs, with no `*`. For a `dex` source, exactly one pool. |
-| `ref` | Optional, up to 64 characters. The same `ref` to the same channel answers the notice it already made, so a retried request or a repeated alert is safe. A repeat does not count against the channel's rate. |
+| `ref` | Optional, up to 64 characters. It names the alert, not the instrument: the instrument is already in `source`. The same `ref` to the same channel answers the notice it made while that notice has not expired (before its `expiresAtMs`), so a retried request or a repeated alert is safe, and that repeat does not count against the channel's rate. Once the notice has expired, the same `ref` makes a new notice, which counts against the rate like any other: an alert about the same instrument a while later is delivered. |
 | `expiresIn` | Optional, `1` to `3600` seconds, `300` by default. A delivery not made by then is `EXPIRED`. A subscription whose delay is longer than this never receives the notice. |
 | `data` | Optional. Text for buyers to read with the notice: up to 16 entries. Keys are lower case (letters, digits, `_`, parts separated by `.`), up to 64 characters. Values are 1 to 256 characters with no control characters. It does not reach the strategy. |
 
 `deliveries` is how many runs the notice goes to: those fed, when it is published, by a subscription that is active
 and not expired. What each delivery did is the buyer's to read; `GET /signals/channels/{channelId}/notices` shows you
 the counts by status.
+
+### What `source` names, by market
+
+`source` is the instrument the notice is about, and `instruments` is how it is named. Every field is read exactly as the
+[sources of a run](live#sources) are, and a source that no run could read is `400`.
+
+| Market | `venueType`, `exchange`, `segment` | `instruments` |
+|---|---|---|
+| A centralized exchange | `cex`, an exchange and one of its segments, such as `binance` and `spot` | 1 to 10 pairs written `BASE/QUOTE`, with no `*`: `["SOL/USDT"]` |
+| A pool on an EVM chain | `dex`, the chain and the protocol of the pool, such as `robinhood` and `uniswap-v3` | Exactly one entry: the address of the pool, `["0x3f4e0b2c8e1a4b6d9c0f1a2b3c4d5e6f708192a3"]` |
+| A token on `solana` | `dex`, `solana` and `pumpfun` | Exactly one entry: the mint of the token, in base58, **case-sensitive**, written exactly as the token has it: `["2TngN4B7XaoGSKsYvttq5bFAdM4Z4xCSnuyRwGiFpump"]` |
+
+On `solana` the notice names the **token**, not a pool: the mint is the one identifier, and the run reads the token from its
+bonding curve to the pool that pump.fun creates for it, as one series (see [Solana: a token by its
+mint](live#solana-a-token-by-its-mint)). So a provider does not choose a pool, and does not send one: any other field, in the body
+or in `source`, is `400`. Two tokens can share a name or a symbol; only the mint tells them apart, which is why it is the
+instrument and the `ref` is not.
+
+What else a buyer should read with the alert, such as the token's name, goes in `data`.
 
 ### Through the webhook address
 
@@ -214,6 +233,13 @@ A code is used once. Sending the same code again yourself answers the subscripti
 request is safe; a code someone else redeemed is `409` with `reason: CODE_USED`. A code that does not exist, was
 revoked, or whose channel was deleted is `404`.
 
+You hold one subscription to a channel at a time. A code of a channel you already subscribe to is `409` with
+`reason: ALREADY_SUBSCRIBED`, and the code is **not used**: it stays valid, so renew the subscription you hold with a
+code of its own offer (see below), or cancel it first to subscribe with another offer. An `EXPIRED` subscription still
+holds the channel, because renewing it is what it is for (it does not count against your plan's limit, which is a
+different count); one you cancelled, or that was revoked, does not hold it, so you can subscribe to the channel again.
+This is checked before your plan's limit.
+
 ```json
 POST /signals/subscriptions/{subscriptionId}/runs
 { "runId": "5t5oAmQ4PD0lQRoCU58uE0", "type": "ticker" }
@@ -227,17 +253,18 @@ POST /signals/subscriptions/{subscriptionId}/runs
 | `resolveInstrument` | Optional, `true` by default. For a pool: whether the strategy is told of it when the pool delivers its first candle (`true`) or at once, with a stand-in instrument (`false`), as for [an attachment](live#the-instrument-of-a-pool). |
 
 A subscription feeds at most its `maxRuns` runs at once (`429` with `reason: SUBSCRIPTION_RUNS_LIMIT` past it), and a
-run is fed by one subscription of a channel at a time (`409` with `reason: RUN_FED_BY_ANOTHER`). `DELETE
+run is fed by one subscription of a channel at a time (`409` with `reason: RUN_FED_BY_ANOTHER`, which only a second
+subscription to the same channel, made before you were held to one, can cause). `DELETE
 /signals/subscriptions/{subscriptionId}/runs/{runId}` stops feeding a run; `DELETE
 /signals/subscriptions/{subscriptionId}` cancels the subscription. What was already attached stays attached.
 
-A subscription past its `expiresAtMs` is `EXPIRED`: it feeds nothing and does not count against your plan, and its
-runs can be fed by another subscription of the channel. `POST /signals/subscriptions/{subscriptionId}/renew` with
+A subscription past its `expiresAtMs` is `EXPIRED`: it feeds nothing and does not count against your plan's limit, but
+it is still your subscription to its channel until you cancel it. `POST /signals/subscriptions/{subscriptionId}/renew` with
 another code of **the same offer** moves its expiry by the offer's duration, from its current expiry or, if it has
 already expired, from now; an expired subscription resumes with the runs it fed, and counts against your plan again
 (`429` with `reason: PLAN_LIMIT` if you are at its limit). A code of another offer is `409`
-with `reason: OTHER_OFFER`; a revoked or cancelled subscription cannot be renewed (`SUBSCRIPTION_INACTIVE`), nor one
-whose offer does not expire (`DOES_NOT_EXPIRE`).
+with `reason: OTHER_OFFER`: to move to that offer, cancel the subscription and redeem the code; a revoked or cancelled
+subscription cannot be renewed (`SUBSCRIPTION_INACTIVE`), nor one whose offer does not expire (`DOES_NOT_EXPIRE`).
 
 ## Reading deliveries
 
@@ -290,7 +317,7 @@ fits. How many runs a subscription feeds is the offer's, not the plan's.
 | `400` | A field outside its rules; a notice's `source` that is not one instrument or pool of a market that can be followed live; a run's `type` that its strategy does not consume; a `purchaseUrl` that is not `https`. |
 | `402` | Your plan does not include it (see [Limits by plan](#limits-by-plan)). |
 | `404` | No such channel, offer, code, run or subscription of yours (or the channel was deleted), or a webhook address that is not current. |
-| `409` | `CODE_USED`, `OTHER_OFFER`, `SUBSCRIPTION_INACTIVE`, `DOES_NOT_EXPIRE`, `RUN_FED_BY_ANOTHER`; a channel with 10 offers (`OFFER_LIMIT`) or an offer with 10 000 codes (`CODE_LIMIT`). |
+| `409` | `CODE_USED`, `ALREADY_SUBSCRIBED`, `OTHER_OFFER`, `SUBSCRIPTION_INACTIVE`, `DOES_NOT_EXPIRE`, `RUN_FED_BY_ANOTHER`; a channel with 10 offers (`OFFER_LIMIT`) or an offer with 10 000 codes (`CODE_LIMIT`). |
 | `429` | `PLAN_LIMIT`, `SUBSCRIPTION_RUNS_LIMIT` or `NOTICE_RATE_LIMIT`, as above. |
 
 ## Related guides

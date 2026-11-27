@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 8fd7c0742c8940b7643f4e899aef9e51a1cd2ade
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -18,12 +18,18 @@ costumbre pero con el `exchangeId: user` reservado.
 | `POST` | `/datasets` | Crear un conjunto de datos + primera sesión de subida |
 | `GET` | `/datasets` | Listar tus conjuntos de datos |
 | `GET` | `/datasets/{datasetId}` | Obtener uno |
+| `PATCH` | `/datasets/{datasetId}` | Mover a una [colección](#colecciones), o de vuelta a la raíz |
 | `DELETE` | `/datasets/{datasetId}` | Eliminar |
 | `POST` | `/datasets/{datasetId}/uploads` | Abrir una nueva sesión de subida para un conjunto de datos existente |
 | `POST` | `/datasets/{datasetId}/uploads/{uploadId}/finalize` | Disparar la ingesta |
 | `GET` | `/datasets/{datasetId}/uploads/{uploadId}` | Sondear el estado de subida/ingesta |
 | `POST` | `/datasets/imports` | Crear un conjunto de datos buscando el histórico en lugar de subirlo |
 | `GET` | `/datasets/{datasetId}/imports/{importId}` | Sondear el estado de búsqueda/ingesta |
+| `POST` | `/collections` | Crear una [colección](#colecciones) |
+| `GET` | `/collections` | Listar tus colecciones |
+| `GET` | `/collections/{collectionId}` | Obtener una |
+| `PATCH` | `/collections/{collectionId}` | Renombrarla o cambiar su descripción |
+| `DELETE` | `/collections/{collectionId}` | Eliminarla, conservando sus conjuntos de datos |
 
 Un conjunto de datos contiene un instrumento, y su `type` — `ticker` o `klines` — dice qué son sus filas: se
 lee de los datos cuando una subida o una importación se ha ingerido, consulta [Qué es el `type`](#qué-es-el-type). `instrument` debe ser
@@ -39,6 +45,7 @@ credenciales de la API implicadas en ese `PUT`.
 |---|---|---|
 | `name` | string | obligatorio, único entre tus conjuntos de datos. `409` si ya está en uso |
 | `instrument` | string | obligatorio, par spot llano |
+| `collectionId` | string | opcional, la [colección](#colecciones) en la que crear el conjunto de datos. `404` si no es una tuya |
 
 ```bash
 curl -X POST https://api.qtsurfer.net/v1/datasets \
@@ -569,6 +576,7 @@ conjunto de datos.
 | `bytes`, `rows`, `gaps`, `largestGapSteps` | el tamaño almacenado, el número de filas, el número de huecos y el mayor hueco (en pasos de su cadencia) propios de la versión actual. **Presentes solo cuando `status` es `ready`** — consulta [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito) para saber qué mide `bytes` exactamente |
 | `error` | por qué falló el intento más reciente. **Presente solo cuando `status` es `failed`** |
 | `meta` | cómo nació el conjunto de datos, un mapa plano de texto a texto (consulta [`meta`](#meta--cómo-nació-un-conjunto-de-datos)). **Siempre presente**, `{}` cuando no se registró nada |
+| `collectionId` | la [colección](#colecciones) en la que está el conjunto de datos. **Ausente cuando el conjunto de datos está en la raíz**, nunca `null` |
 
 `GET /datasets/{datasetId}` por sí solo añade `dataUrl`/`dataFormat` (con el mismo significado que
 en [`DatasetVersion`](#datasetversion--una-subida-ingerida-con-éxito)) una vez que la versión
@@ -626,6 +634,85 @@ curl https://api.qtsurfer.net/v1/datasets -H "Authorization: Bearer $TOKEN"
 `GET /datasets?includeDeleted=true` lista también los conjuntos de datos que has eliminado, cada uno
 con el `deletedAt` en que se eliminó — útil para mantener tu propia copia de la lista sincronizada,
 de modo que un conjunto eliminado aparezca como eliminado en lugar de limitarse a desaparecer.
+
+`GET /datasets?collectionId=dc_3f9a1c2e7b0d4a5f` lista los conjuntos de datos de una [colección](#colecciones);
+`collectionId=none` lista los que no están en ninguna colección. Los conjuntos de datos creados en el mismo instante conservan
+el mismo orden de una llamada a la siguiente, así que un listado limitado a una colección es el orden completo,
+filtrado. El parámetro se combina con `includeDeleted`.
+
+## Colecciones
+
+Una colección es una carpeta para tus conjuntos de datos. Tiene un solo nivel: contiene conjuntos de datos, nunca otras
+colecciones.
+
+* Un conjunto de datos está en **como máximo una** colección. El que no está en ninguna está en la **raíz**.
+* Una colección puede contener conjuntos de datos de cualquier `type` y de cualquier instrumento; no se comprueba nada cuando un
+  conjunto de datos entra o se mueve.
+* El `name` de un conjunto de datos sigue siendo único entre **todos** tus conjuntos de datos, no por colección: mover un conjunto de datos
+  nunca lo renombra y nunca choca con los conjuntos de datos de otra colección.
+* El `name` de una colección es único entre tus colecciones y se compara tal como está escrito (`Majors` y
+  `majors` son nombres distintos). Se recorta y tiene de 1 a 100 caracteres; la `description` opcional
+  tiene hasta 500.
+* **Eliminar una colección nunca elimina datos.** `DELETE /collections/{collectionId}` quita la
+  colección para siempre y su nombre vuelve a quedar libre en el acto; los conjuntos de datos que había en ella se conservan y
+  vuelven a la raíz.
+
+| Campo | Notas |
+|---|---|
+| `collectionId` | id opaco, que empieza por `dc_` |
+| `name`, `createdAt`, `updatedAt` | siempre presentes |
+| `description` | **ausente cuando la colección no tiene** |
+| `datasetCount` | cuántos conjuntos de datos hay en ella ahora; uno que hayas eliminado no cuenta |
+| `datasetCountByType` | los mismos conjuntos de datos contados por `type` (`{"klines": 2, "ticker": 1}`). **Ausente cuando la colección no tiene conjuntos de datos.** Las claves no tienen un orden concreto |
+
+```bash
+# Create a collection
+curl -X POST https://api.qtsurfer.net/v1/collections \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Majors","description":"BTC and ETH, one-minute bars"}'
+# → 201 {"collectionId":"dc_3f9a1c2e7b0d4a5f","name":"Majors","description":"BTC and ETH, one-minute bars","createdAt":"...","updatedAt":"...","datasetCount":0}
+
+# Move a dataset into it, and back out to the root
+curl -X PATCH https://api.qtsurfer.net/v1/datasets/$DATASET_ID \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"collectionId":"dc_3f9a1c2e7b0d4a5f"}'
+curl -X PATCH https://api.qtsurfer.net/v1/datasets/$DATASET_ID \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"collectionId":null}'
+```
+
+`GET /collections` devuelve `{"collections": [...]}`: todas tus colecciones en una sola respuesta, sin
+paginación, ordenadas por `name` y después por `collectionId`; un array vacío cuando no tienes ninguna. Como una
+colección se elimina para siempre, no hay `includeDeleted`: una colección que no está en la lista ya
+no existe. `PATCH /collections/{collectionId}` admite `name`, `description` o ambos; un campo que se omite se
+conserva, `description: null` (o una en blanco) quita la descripción, y `name` no puede ser
+`null`. `DELETE` responde `{"collectionId": "...", "deleted": true}`.
+
+**Poner conjuntos de datos en una colección.** `POST /datasets` y `POST /datasets/imports` admiten un
+`collectionId` opcional (`null` es la raíz), y su respuesta lleva `collectionId` solo cuando lo enviaste.
+`PATCH /datasets/{datasetId}` mueve un conjunto de datos existente y admite exactamente `{"collectionId": "dc_..."}`
+o `{"collectionId": null}`: un cuerpo sin ese campo, o con cualquier otro, es `400`. Responde con el conjunto de
+datos, como hace `GET /datasets/{datasetId}`; mover un conjunto de datos adonde ya está funciona y
+no cambia nada. Un conjunto de datos eliminado conserva su sitio en su colección, y un listado con
+`includeDeleted=true` lo muestra ahí.
+
+**Errores.**
+
+| Estado | Cuándo |
+|---|---|
+| `400` | un cuerpo ausente, un `name` en blanco o demasiado largo, una `description` demasiado larga, un `collectionId` que no es un texto (o que está vacío en un `PATCH`, o en el filtro de `GET /datasets`), un `PATCH` de un conjunto de datos con cualquier campo que no sea `collectionId` |
+| `404` | la colección no existe **o no es tuya**: las dos se responden igual, y el mensaje nombra la colección (`Collection not found: dc_...`), para que nunca se confirmen ids de otras cuentas. En `POST /datasets` y `POST /datasets/imports` se responde antes de crear nada o de contarlo contra tu plan. Un conjunto de datos que no existe (o está eliminado) es el `404` habitual de conjuntos de datos |
+| `409` | ya tienes una colección con ese `name` (al crearla o al renombrarla) |
+| `413` | el cuerpo de la petición es demasiado grande |
+| `429` | has llegado al número de colecciones que puede conservar una cuenta: `reason: COLLECTIONS_LIMIT`, `retryable: false`, sin `Retry-After`. Elimina una colección para hacer sitio. Es un límite de la plataforma y no de un plan, así que no se ofrece un enlace de mejora |
+
+```json
+{"code": 429, "message": "Collection limit reached. Delete a collection first.", "reason": "COLLECTIONS_LIMIT", "retryable": false}
+```
+
+Las rutas de colecciones necesitan el permiso `datasets`: `read` para los `GET` y `write` para `POST`,
+`PATCH` y `DELETE` (consulta [Autenticación y alcances](auth)).
 
 ## Obtener un conjunto de datos
 

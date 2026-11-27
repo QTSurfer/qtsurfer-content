@@ -3,7 +3,7 @@ title: Authentication and scopes
 description: Exchange your API key for a token, and see what the scopes of your key allow.
 order: 5.05
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: 8fd7c0742c8940b7643f4e899aef9e51a1cd2ade
 upstreamPath: docs/auth.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -96,7 +96,7 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
 | `market_data` | `read` | the hourly ticker and kline downloads |
 | `strategies` | `read`, `write` | list, inspect and read the source of a strategy; compile, validate and delete one |
 | `backtests` | `read`, `write`, `execute` | prepare, run, sweep and cancel backtests; read their status and results |
-| `datasets` | `read`, `write` | list and read your datasets; create, upload, import and delete them |
+| `datasets` | `read`, `write` | list and read your datasets and collections; create, upload, import, move and delete datasets; create, rename and delete collections |
 | `live` | `read`, `write`, `execute` | read live runs, their signals and paper accounts; change a run; start, stop and command one, and manage its stream |
 | `signals` | `read`, `write` | read your signal channels, their notices, offers and codes, your subscriptions and what they received; create, change and delete a channel, publish a notice, create offers, mint and revoke codes, redeem a code, renew or cancel a subscription and feed runs from it |
 
@@ -131,8 +131,8 @@ A key carries scopes: a map from a resource to the actions it may take on it, in
 
 | Operation | Scope |
 |---|---|
-| `GET /datasets`, `GET /datasets/{datasetId}`, `GET /datasets/{datasetId}/uploads/{uploadId}`, `GET /datasets/{datasetId}/imports/{importId}` | `datasets` : `read` |
-| `POST /datasets`, `DELETE /datasets/{datasetId}`, `POST /datasets/{datasetId}/uploads`, `POST /datasets/{datasetId}/uploads/{uploadId}/finalize`, `POST /datasets/imports` | `datasets` : `write` |
+| `GET /datasets`, `GET /datasets/{datasetId}`, `GET /datasets/{datasetId}/uploads/{uploadId}`, `GET /datasets/{datasetId}/imports/{importId}`, `GET /collections`, `GET /collections/{collectionId}` | `datasets` : `read` |
+| `POST /datasets`, `PATCH /datasets/{datasetId}`, `DELETE /datasets/{datasetId}`, `POST /datasets/{datasetId}/uploads`, `POST /datasets/{datasetId}/uploads/{uploadId}/finalize`, `POST /datasets/imports`, `POST /collections`, `PATCH /collections/{collectionId}`, `DELETE /collections/{collectionId}` | `datasets` : `write` |
 
 **Live runs** — [Live execution](live), [Paper trading](live_paper)
 

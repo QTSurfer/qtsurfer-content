@@ -5,7 +5,7 @@ order: 5.47
 upstreamRepository: QTSurfer/qtsurfer-api
 upstreamCommit: 8fd7c0742c8940b7643f4e899aef9e51a1cd2ade
 upstreamPath: docs/signals.md
-lastUpdated: '2026-11-23T00:30:55Z'
+lastUpdated: '2026-11-28T11:11:09Z'
 ---
 
 Un **canal de señales** lleva **avisos** de un proveedor a ejecuciones en vivo. Un proveedor es cualquier usuario, normalmente un

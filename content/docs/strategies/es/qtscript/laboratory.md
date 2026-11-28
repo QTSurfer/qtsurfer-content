@@ -5,6 +5,7 @@ order: 11
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/laboratory.md
+lastUpdated: '2026-11-28T17:22:49Z'
 ---
 
 El Laboratorio de QTSurfer ejecuta un fichero `.qtscript` en el navegador, sobre los datos de mercado que la persona ha cargado, y muestra

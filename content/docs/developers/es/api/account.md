@@ -3,7 +3,7 @@ title: Cuenta
 description: Consulta los límites de tu plan y tu uso de almacenamiento en vivo frente a ellos.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: ac92099f232c881003b2723558c9abe595b1ecaf
 upstreamPath: docs/account.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -42,6 +42,7 @@ curl https://api.qtsurfer.net/v1/account \
   "maxCexImportRangeHours": 24,
   "maxConcurrentImports": 1,
   "maxDatasets": 3,
+  "maxCollections": 2,
   "maxDatasetBytes": 52428800,
   "maxTotalStorageBytes": 104857600,
   "_links": {
@@ -64,6 +65,7 @@ curl https://api.qtsurfer.net/v1/account \
 | `maxCexImportRangeHours` | longitud máxima, en horas, del rango de tiempo de una importación de un conjunto de datos del histórico de un exchange centralizado (`type: cex`), que se cuenta aparte de `maxImportRangeHours`. Consulta [Importar el histórico de un exchange](datasets#importar-el-histórico-de-un-exchange) |
 | `maxConcurrentImports` | número máximo de [importaciones de conjuntos de datos](datasets#importar-un-conjunto-de-datos-en-lugar-de-subirlo) que tu cuenta puede tener en curso a la vez, en cola o en ejecución, sean del histórico de un exchange o de una pool. Una importación nueva por encima de ese número se rechaza con `429` hasta que termine una |
 | `maxDatasets` | número máximo de [conjuntos de datos](datasets) activos que permite tu plan |
+| `maxCollections` | número máximo de [colecciones de conjuntos de datos](datasets#colecciones) que tu plan te deja conservar. Una nueva por encima de él se rechaza con `429`, `reason: PLAN_LIMIT`. Consulta [Colecciones por plan](datasets#colecciones-por-plan) |
 | `maxDatasetBytes` | tamaño máximo, en bytes, de una sola versión de un conjunto de datos **tal como se almacena** (los `bytes` de su versión lista: para una subida CSV, el fichero convertido, no el que subes). Consulta [Límites de tamaño](datasets#límites-de-tamaño) |
 | `maxTotalStorageBytes` | almacenamiento combinado máximo, en bytes, entre todos los conjuntos de datos, señales de ejecución de estrategia y estrategias registradas de tu cuenta — ver abajo |
 

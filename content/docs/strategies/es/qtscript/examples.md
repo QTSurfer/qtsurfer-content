@@ -5,7 +5,7 @@ order: 10
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 7c6e6ae7ab538e8e1988a1bfefaa55f0878e6201
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/examples.md
-lastUpdated: '2026-11-28T17:22:49Z'
+lastUpdated: '2026-11-28T18:24:14Z'
 ---
 
 Ficheros `.qtscript` completos: cada uno es la estrategia entera, sin omitir nada. QTScript está en beta;

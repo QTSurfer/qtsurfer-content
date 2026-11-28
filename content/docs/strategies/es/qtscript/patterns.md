@@ -5,6 +5,7 @@ order: 9
 upstreamRepository: QTSurfer/strategy-skills
 upstreamCommit: 7c6e6ae7ab538e8e1988a1bfefaa55f0878e6201
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/patterns.md
+lastUpdated: '2026-11-28T18:24:14Z'
 ---
 
 Patrones que se repiten en estrategias que han corrido de verdad, escritos como ficheros `.qtscript` completos: pega uno, cambia los números

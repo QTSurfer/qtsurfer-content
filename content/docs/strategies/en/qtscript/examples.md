@@ -3,9 +3,8 @@ title: QTScript examples
 description: Use complete QTScript strategies, one for each data source.
 order: 10
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f
+upstreamCommit: 7c6e6ae7ab538e8e1988a1bfefaa55f0878e6201
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/examples.md
-lastUpdated: '2026-11-28T17:22:49Z'
 ---
 
 Complete `.qtscript` files — each one is the whole strategy, nothing omitted. QTScript is in beta;

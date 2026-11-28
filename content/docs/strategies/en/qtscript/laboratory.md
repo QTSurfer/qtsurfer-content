@@ -3,9 +3,8 @@ title: QTScript in the Laboratory
 description: What a QTScript file can use when it runs in the browser, and what does not apply there.
 order: 11
 upstreamRepository: QTSurfer/strategy-skills
-upstreamCommit: 0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f
+upstreamCommit: 7c6e6ae7ab538e8e1988a1bfefaa55f0878e6201
 upstreamPath: skills/qtsurfer-qtscript-strategy/references/laboratory.md
-lastUpdated: '2026-11-28T17:22:49Z'
 ---
 
 The QTSurfer Laboratory runs a `.qtscript` file in the browser, on market data the person has loaded, and shows

@@ -1,7 +1,7 @@
 {
 	"repository": "https://github.com/QTSurfer/strategy-skills",
-	"ref": "0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f",
-	"commit": "0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f",
+	"ref": "7c6e6ae7ab538e8e1988a1bfefaa55f0878e6201",
+	"commit": "7c6e6ae7ab538e8e1988a1bfefaa55f0878e6201",
 	"path": "skills/qtsurfer-java-strategy",
 	"skillPaths": ["skills/qtsurfer-java-strategy", "skills/qtsurfer-qtscript-strategy"],
 	"generatedPages": [
@@ -29,6 +29,11 @@
 			"skillPath": "skills/qtsurfer-qtscript-strategy",
 			"sourcePath": "references/indicators.md",
 			"outputName": "qtscript/indicators.md"
+		},
+		{
+			"skillPath": "skills/qtsurfer-qtscript-strategy",
+			"sourcePath": "references/patterns.md",
+			"outputName": "qtscript/patterns.md"
 		},
 		{
 			"skillPath": "skills/qtsurfer-qtscript-strategy",

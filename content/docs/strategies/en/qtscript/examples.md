@@ -1,0 +1,308 @@
+---
+title: QTScript examples
+description: Use complete QTScript strategies, one for each data source.
+order: 10
+upstreamRepository: QTSurfer/strategy-skills
+upstreamCommit: 0c9fa0a8cb6b01c195c39246bcfe1b6cab74335f
+upstreamPath: skills/qtsurfer-qtscript-strategy/references/examples.md
+---
+
+Complete `.qtscript` files — each one is the whole strategy, nothing omitted. QTScript is in beta;
+see [the QTScript guide](/docs/strategies/qtscript) for the language and the
+[Java strategy guide](/docs/strategies/java/strategy_coding) for the API the braced bodies are written against.
+
+## 1. RSI reversion (ticker)
+
+The smallest useful strategy: one indicator, one window, two signals.
+
+```qtscript
+strategy "RSI reversion"
+
+param rsiLow  = 30  "Oversold"
+param rsiHigh = 70  "Overbought"
+
+instruments */usdt
+
+setup:
+  rsi(14) window m1 {
+    if (actual < rsiLow)  emitBuy(price);
+    if (actual > rsiHigh) emitSell(price);
+  }
+```
+
+## 2. EMA cross with a position flag (ticker)
+
+Two indicators read by name, and the shared per-instrument store used to emit on the crossing only
+once.
+
+```qtscript
+strategy "EMA cross"
+
+param fast = 9  "Fast EMA"
+param slow = 21 "Slow EMA"
+
+instruments */usdt
+
+setup:
+  ema(fast)
+  ema(slow)
+  window price s5 {
+    double f = value("ema" + fast);
+    double s = value("ema" + slow);
+    if (f > s && !store.is("long")) {
+      store.set("long");
+      emitBuy(price);
+    }
+    if (f < s && store.is("long")) {
+      store.unset("long");
+      emitSell(price);
+    }
+  }
+```
+
+`value("name")` reads any registered indicator; `store` is the same store every window of the
+instrument shares.
+
+## 3. Named sections and a shared counter (ticker)
+
+Two windows on different indicators and periods, bodies written at column 0 rather than inline.
+
+```qtscript
+strategy "Two windows"
+
+param rsiLow = 30
+
+setup:
+  rsi(14) window Oversold
+  ema(20)
+  window ema20 Trend
+
+window Oversold m1 {
+  if (actual < rsiLow && store.inc("oversoldBars") >= 3) {
+    emitBuy(price);
+  }
+}
+
+Trend m5 {
+  store.setState("trendUp", actual > prev);
+}
+```
+
+Both bodies write to one store, so `Trend` can leave a value `Oversold` reads on its next close.
+
+## 4. Crossing a level with `prev` (ticker)
+
+A window hands you the value the indicator had when the previous window closed as `prev`, so a crossing needs
+nothing in the store. This enters when the RSI climbs back through a level, once, on the window where it
+happens.
+
+```qtscript
+strategy "RSI re-entry"
+
+param level = 30 "Level to climb back through"
+
+setup:
+  rsi(14) window m1 {
+    if (prev < level && actual >= level) emitBuy(price);
+  }
+```
+
+The first time a window fires there is no earlier window: `prev` is the value the indicator had when that
+first window opened, and an indicator with a warm-up period has not settled yet. Let the first firings pass
+when the rule needs two real closes.
+
+## 5. True range from the previous close (kline)
+
+On `kline`, a window on `close` gives the previous bar's close as `prev`, which is what the true range needs
+next to the bar's own `high` and `low`.
+
+```qtscript
+strategy "True range" kline
+
+setup:
+  window close m1 {
+    double trueRange = Math.max(high - low, Math.max(Math.abs(high - prev), Math.abs(low - prev)));
+    emitInfo("trueRange", trueRange);
+  }
+```
+
+## 6. Candle range breakout (kline)
+
+On `kline` the bar's fields are in scope as plain variables. The bar width is not in the file: it
+is the `cadence` you prepare the data at (`1m`, `1h`, `1d`, …), so the same strategy runs at any of
+them.
+
+```qtscript
+strategy "Range breakout" kline
+
+param minRange = 0.5 "Minimum range, percent"
+
+setup:
+  window close m1 {
+    double range = (high - low) / low * 100.0;
+    if (range < minRange) return;
+    if (close > open) emitBuy(close);
+    else              emitSell(close);
+  }
+```
+
+## 7. Funding rate watch (funding)
+
+A strategy that computes rather than trades: `emitInfo` attaches fields to an informational signal.
+On funding there is no price — the value is `rate`. The platform accepts this file and can prepare
+funding data, but a backtest or sweep over funding data is rejected for now.
+
+```qtscript
+strategy "Funding watch" funding
+
+instruments ~"^[A-Z]+/USDT:USDT$"
+
+Main m5 {
+  emitInfo("funding", rate, "instrument", instrument.symbol());
+}
+```
+
+The regular expression keeps this to perpetuals quoted and settled in USDT, which is what a funding
+strategy sees.
+
+## 8. An initialiser and the native instrument filter
+
+`init` for engine setters, and the braced form of `instruments` when a pattern is not enough.
+
+```qtscript
+strategy "Configured"
+
+param gain = 0.5 "Minimum percent gain"
+
+init {
+  setPercentGain(gain);
+  setMultiEntryEnabled(true);
+}
+
+instruments {
+  if (instrument.quote().equalsIgnoreCase("usdt")) {
+    return !instrument.base().equals("USDC");
+  }
+  return false;
+}
+
+setup:
+  ema(12) window m1 {
+    if (actual > prev) emitBuy(price);
+  }
+```
+
+> `init` cannot assign a `param` — `setPercentGain(gain)` _reads_ one, which is fine. Assigning
+> `gain` there would be overwritten by the declared default; the compiler warns.
+
+## 9. Pro indicators: bands and a cloud (kline)
+
+`uses pro.*` brings in all seventy-six pro indicators. Thirty-six of them read whole bars and so belong in a `kline` strategy
+(the last column of the table in [the QTScript guide](/docs/strategies/qtscript#the-pro-indicators-uses) says which). This one uses bands and a cloud: a window on `superTrend` or `ichimoku` attaches to the main
+line, and the body reads the others with `value($indicator + "…")`. Running it needs the Pro or Elite plan; on another
+plan the answer is a `402`.
+
+```qtscript
+strategy "Cloud and bands" kline
+uses pro.*
+
+setup:
+  superTrend(10, 3) window m5 {
+    if (close > value($indicator + "Upper")) emitSell(close);
+    if (close < value($indicator + "Lower")) emitBuy(close);
+  }
+  ichimoku() window m5 {
+    if (close > value($indicator + "SenkouA") && close > value($indicator + "SenkouB")) emitBuy(close);
+  }
+  vwap()
+  yangZhang(20)
+```
+
+## 10. Entry price, stop loss and take profit (kline)
+
+A number kept between windows is a value in the store: written with `setState`, read with a cast and a
+default (see [Inside a body](/docs/strategies/qtscript#inside-a-body)). Here the entry price is the
+position: `0.0` means flat.
+
+```qtscript
+strategy "RSI with stop and target" kline
+
+param rsiLow  = 30  "Oversold level"
+param stopPct = 2.0 "Stop loss, percent under the entry"
+param takePct = 4.0 "Take profit, percent over the entry"
+
+setup:
+  rsi(14) window m1 {
+    double entry = (Double) store.getState("entry", 0.0);
+    if (entry == 0.0) {
+      if (actual < rsiLow) {
+        store.setState("entry", close);
+        emitBuy(close);
+      }
+    } else if (close <= entry * (1 - stopPct / 100) || close >= entry * (1 + takePct / 100)) {
+      store.setState("entry", 0.0);
+      emitSell(close);
+    }
+  }
+```
+
+## 11. Highest high of the last N bars (kline)
+
+`max` and `min` are running extremes, not the extreme of the last N bars, so the bars are kept in the store:
+a ring of `bars` keys for the highs and another for the lows, and the position `n` as a value. The bar
+being closed is compared first and written after, so it is measured against the N before it.
+
+```qtscript
+strategy "Breakout of the last N bars" kline
+
+param bars = 20 "Bars to look back"
+
+setup:
+  window close m1 {
+    int n = (Integer) store.getState("n", 0);
+    if (n >= bars) {
+      double highest = -Double.MAX_VALUE;
+      double lowest = Double.MAX_VALUE;
+      for (int i = 0; i < bars; i++) {
+        highest = Math.max(highest, (Double) store.getState("h" + i, 0.0));
+        lowest = Math.min(lowest, (Double) store.getState("l" + i, 0.0));
+      }
+      if (close > highest && !store.is("long")) {
+        store.set("long");
+        emitBuy(close);
+      }
+      if (close < lowest && store.is("long")) {
+        store.unset("long");
+        emitSell(close);
+      }
+    }
+    store.setState("h" + (n % bars), high);
+    store.setState("l" + (n % bars), low);
+    store.setState("n", n + 1);
+  }
+```
+
+A `double[]` or a `List` would be shorter, and it works on the server, but the Laboratory does not translate
+either: keys in the store work in both.
+
+## 12. A cooldown counted in bars (kline)
+
+The bars since the last signal are a value, not a counter: the body has to read the count without moving it,
+and a counter is read only through what `inc` returns. Starting from `cooldown` lets the first signal through.
+
+```qtscript
+strategy "RSI with a cooldown" kline
+
+param rsiLow   = 30 "Oversold level"
+param cooldown = 15 "Bars to wait after a signal"
+
+setup:
+  rsi(14) window m1 {
+    int since = (Integer) store.getState("since", cooldown) + 1;
+    store.setState("since", since);
+    if (since > cooldown && actual < rsiLow) {
+      emitBuy(close);
+      store.setState("since", 0);
+    }
+  }
+```

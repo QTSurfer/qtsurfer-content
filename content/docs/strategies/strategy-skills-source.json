@@ -29,6 +29,16 @@
 			"skillPath": "skills/qtsurfer-qtscript-strategy",
 			"sourcePath": "references/indicators.md",
 			"outputName": "qtscript/indicators.md"
+		},
+		{
+			"skillPath": "skills/qtsurfer-qtscript-strategy",
+			"sourcePath": "references/examples.md",
+			"outputName": "qtscript/examples.md"
+		},
+		{
+			"skillPath": "skills/qtsurfer-qtscript-strategy",
+			"sourcePath": "references/laboratory.md",
+			"outputName": "qtscript/laboratory.md"
 		}
 	]
 }

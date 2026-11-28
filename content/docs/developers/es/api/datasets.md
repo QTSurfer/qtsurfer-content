@@ -3,7 +3,7 @@ title: Conjuntos de datos
 description: Sube datos históricos de ticker y úsalos en el flujo estándar de backtesting.
 order: 5.6
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: 8fd7c0742c8940b7643f4e899aef9e51a1cd2ade
+upstreamCommit: ac92099f232c881003b2723558c9abe595b1ecaf
 upstreamPath: docs/datasets.md
 lastUpdated: '2026-11-28T11:11:09Z'
 ---
@@ -705,14 +705,30 @@ no cambia nada. Un conjunto de datos eliminado conserva su sitio en su colecció
 | `404` | la colección no existe **o no es tuya**: las dos se responden igual, y el mensaje nombra la colección (`Collection not found: dc_...`), para que nunca se confirmen ids de otras cuentas. En `POST /datasets` y `POST /datasets/imports` se responde antes de crear nada o de contarlo contra tu plan. Un conjunto de datos que no existe (o está eliminado) es el `404` habitual de conjuntos de datos |
 | `409` | ya tienes una colección con ese `name` (al crearla o al renombrarla) |
 | `413` | el cuerpo de la petición es demasiado grande |
-| `429` | has llegado al número de colecciones que puede conservar una cuenta: `reason: COLLECTIONS_LIMIT`, `retryable: false`, sin `Retry-After`. Elimina una colección para hacer sitio. Es un límite de la plataforma y no de un plan, así que no se ofrece un enlace de mejora |
+| `429` | ya conservas tantas colecciones como puedes. `reason: PLAN_LIMIT` cuando es el límite de tu plan ([Colecciones por plan](#colecciones-por-plan)); `reason: COLLECTIONS_LIMIT` cuando es el límite de la plataforma, que está por encima de todos los planes. Ninguno es reintentable: `retryable: false`, sin `Retry-After`. Elimina una colección para hacer sitio |
 
 ```json
+{"code": 429, "message": "You already keep as many collections as your plan allows. Delete a collection first.", "reason": "PLAN_LIMIT", "retryable": false}
 {"code": 429, "message": "Collection limit reached. Delete a collection first.", "reason": "COLLECTIONS_LIMIT", "retryable": false}
 ```
 
 Las rutas de colecciones necesitan el permiso `datasets`: `read` para los `GET` y `write` para `POST`,
 `PATCH` y `DELETE` (consulta [Autenticación y alcances](auth)).
+
+### Colecciones por plan
+
+Cuántas colecciones puedes conservar depende de tu plan. Esta tabla es el único sitio que las lista.
+
+| Plan | Colecciones que conservas |
+|---|---|
+| free | 2 |
+| basic | 10 |
+| pro | 20 |
+| elite | 100 |
+
+`GET /account` te dice la tuya, como `maxCollections`. Pasado ese número, crear una colección se rechaza con `429`
+y `reason: PLAN_LIMIT`. Una cuenta que ya tiene más de las que permite su plan las conserva todas y
+no puede crear otra hasta estar por debajo del límite; no se borra nada cuando cambia un plan.
 
 ## Obtener un conjunto de datos
 

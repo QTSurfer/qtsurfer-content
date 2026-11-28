@@ -3,7 +3,7 @@ title: Account
 description: Check your tier's limits and your live storage usage against them.
 order: 5.8
 upstreamRepository: QTSurfer/qtsurfer-api
-upstreamCommit: f7b4fd51bffd08b355aaf0334108c2c47348bb0f
+upstreamCommit: ac92099f232c881003b2723558c9abe595b1ecaf
 upstreamPath: docs/account.md
 lastUpdated: '2026-11-23T00:30:55Z'
 ---
@@ -40,6 +40,7 @@ curl https://api.qtsurfer.net/v1/account \
   "maxCexImportRangeHours": 24,
   "maxConcurrentImports": 1,
   "maxDatasets": 3,
+  "maxCollections": 2,
   "maxDatasetBytes": 52428800,
   "maxTotalStorageBytes": 104857600,
   "_links": {
@@ -62,6 +63,7 @@ curl https://api.qtsurfer.net/v1/account \
 | `maxCexImportRangeHours` | maximum length, in hours, of the time range of one dataset import of a centralized exchange's history (`type: cex`), counted apart from `maxImportRangeHours`. See [Importing an exchange's history](datasets#importing-an-exchanges-history) |
 | `maxConcurrentImports` | maximum number of [dataset imports](datasets#importing-a-dataset-instead-of-uploading-one) your account may have in flight at once, queued or running, whether of an exchange's history or of a pool. A new import over it is refused with `429` until one has finished |
 | `maxDatasets` | maximum number of active [datasets](datasets) your tier allows |
+| `maxCollections` | maximum number of [dataset collections](datasets#collections) your plan lets you keep. A new one past it is refused with `429`, `reason: PLAN_LIMIT`. See [Collections by plan](datasets#collections-by-plan) |
 | `maxDatasetBytes` | maximum size, in bytes, of a single dataset version **as stored** (the `bytes` of its ready version: for a CSV upload, the converted file, not the file you upload). See [Size limits](datasets#size-limits) |
 | `maxTotalStorageBytes` | maximum combined storage, in bytes, across every dataset, strategy-execution signal, and registered strategy on your account — see below |
 
